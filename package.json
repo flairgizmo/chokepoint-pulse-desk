@@ -1,0 +1,22 @@
+{
+  "name": "chokepoint-pulse-desk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chokepoint Pulse Desk (Situation Brief) — thin intelligence desk companion for God's Eye View",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5173",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "proof": "node scripts/capture-proof.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.0.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.8"
+  }
+}
