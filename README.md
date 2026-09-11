@@ -1,27 +1,46 @@
-# Chokepoint Pulse Desk
+# QntDesk
 
-**Also branded:** Situation Brief
+Independent encyclopedia of [Quant Network](https://quant.network), Overledger, programmable money and adjacent standards — plus the original **Chokepoint Pulse Desk** situation room.
 
-Thin intelligence desk companion for [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view).
+> The Internet of Value, made visible.
 
-> **GEV is the eye; we ship the pulse.**
-
-We own editorial briefing cards + share-link routing. GEV owns the globe.  
-This repo does **not** fork or vendor Cesium / God's Eye View.
+This desk is **not** Quant Network, UK Finance, the Bank of England, the BIS, Oracle, Murex, or the Linux Foundation. Every named programme is graded: live pilot, lab, announced, or landscape. Nothing here is financial advice.
 
 **UNCLASSIFIED // PUBLIC SOURCES ONLY**
 
-## Quick Start
+## What you can do
+
+| Surface | What it holds |
+| --- | --- |
+| Earth | Interactive globe. Click London, Tokyo, Miami… sourced city dossiers. Token corridors are programme arcs, not live SWIFT. |
+| Vision / Stack / Programmes / CBDC / Standards | The encyclopedia chapters — Overledger as gateway OS, GBTD vs CBDC, SATP stages, ISO/TS 23516. |
+| People | Officers, architects, founding authors (including those who have left). Initials only where no official portrait exists. Faces are never generated. |
+| Research | 48 documents: whitepaper, ACM DLT paper, SATP drafts, patents, GBTD notices. |
+| Markets | Live QNT from Coinbase, Kraken or Binance; cap/supply/venues from CoinGecko. Last-good cache. Never invented. |
+| News | Headlines that name Quant / Overledger / QNT from Google News (same-origin proxy), plus official voices `@quantnetwork` `@OverledgerDev` `@gverdian`. |
+| Glossary | The language of programmable money. |
+| Desk | Five chokepoint briefing cards that deep-link into [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view). |
+| ⌘K | Command palette across papers, people, cities and terms. |
+
+## Facts this build refuses to blur
+
+- **Overledger is not a blockchain.** Gateway OS. 2018 whitepaper at UCL Discovery.
+- **GBTD is not a CBDC.** Tokenised sterling deposits; liabilities of Barclays, HSBC, Lloyds, NatWest, Nationwide and Santander. Quant is technology partner (Overledger + PayScript). Selected 26 September 2025.
+- **SATP is IETF work**, not a Quant SKU. 2PC lives inside stage 3.
+- **QNT** ERC-20 `0x4a220E6096B25EADb88358cb44068A3248254675` — utility token, not equity. 14 September 2018 burn. Quant’s post-burn total and Bitstamp’s MiCA figure disagree; both sit on the record; live circulating from CoinGecko.
+- **Synchronisation Lab** (Feb 2026) is simulated RT2 — not endorsement, not a live RTGS hook-up, not a digital pound.
+- **Project Rosalind** (2023) concluded. Quant says vendor with UST. BIS: experiment, not policy.
+
+## Quick start
 
 ```bash
-cd /workspace/chokepoint-pulse-desk
 npm install
-npm run dev          # http://localhost:5173
-npm test             # GevShareLink encoder unit tests
-npm run build        # production build → dist/
+npm run dev          # preview on the port Vite prints
+npm test             # share-link encoder + encyclopedia contract
+npm run build        # typecheck + production build → dist/
 ```
 
-Optional env:
+Optional:
 
 ```bash
 # .env
@@ -30,73 +49,8 @@ VITE_GEV_BASE=http://localhost:4173
 
 ## Pair with local God's Eye View
 
-1. In a separate checkout of [gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) (not this repo):
-
-   ```bash
-   npm run doctor && npm run dev
-   ```
-
-   GEV typically serves at **`http://localhost:4173`**.
-
-2. Run Pulse Desk (`npm run dev`). Mission CTAs open deep-links into that base URL.
-
-3. **Note:** [maptheworld.ai](https://maptheworld.ai) is Bilawal’s Substack — **not** the GEV web app. Deep-links target local GEV.
-
-## What ships (v1)
-
-| Surface | Notes |
-| --- | --- |
-| Situation Room | Hero + classification banner + attribution |
-| 5 mission cards | Hormuz, Malacca, Suez, Panama, Taiwan Strait |
-| `GevShareLink` | Hash encoder matching GEV `src/sharelink.js` |
-| Live tickers | USGS M4.5+ day GeoJSON (real fetch); optional adsb.lol (honest EXAMPLE/degraded if CORS blocks) |
-| Detail view | Ops brief, sensor look, shot notes, ethics, copy-link |
-
-## Share-link format
-
-Encoded hash keys (aligned with GEV `sharelink.js` + v2 `layerState.js`):
-
-`#v=&lat=&lon=&alt=&heading=&pitch=&style=&bloom=&bi=&bv=&sharpen=&si=&hud=&hv=&dm=&dd=&da=&kf=&ko=&cr=&map=&l=&lo=`
-
-Style URL names: `normal`, `crt`, `nvg`, `flir`, `anime`, `noir`, `snow`.
-
-### Layer handoff (Bottleneck Belief / PIST)
-
-Pulse Desk now emits GEV v2 layer params so camera **and** primary overlay are productizable:
-
-| Mission | `primaryLayer` | Hash |
-| --- | --- | --- |
-| Hormuz, Malacca, Suez, Panama | `ais` | `l=a` |
-| Taiwan Strait | `flights` | `l=f` |
-
-- `v=2` is required whenever `l` is present (GEV layer decode).
-- Optional tracked-target: `lo=f.t.<icao24>` when a **real** ICAO24 is known and flights are enabled. Invalid ids are omitted (not truncated); desk CTAs do not invent tracks.
-- Tokens we map: `a` ais · `f` flights · `e` earthquakes · `s` satellites · `m` military · `t` traffic (joined in registry order).
-
-**Note:** Live GEV restore still needs a local God's Eye View instance on `:4173` (not cloned into this repo).
-
-## Data-source honesty
-
-- **USGS earthquakes** — public domain; `commercial_ok: yes`. Source URL + last-updated stamped in UI.
-- **adsb.lol** (optional) — ODbL; keyless today. Browser CORS may block → chip **EXAMPLE** / **degraded**, **zero invented tracks**.
-- Static briefing copy is editorial. Live numbers only appear when a feed returns them.
-- No API keys required to boot.
-
-## Attribution
-
-- **God's Eye View** — Bilawal Sidhu; GEV source is MIT. Link: https://github.com/bilawalsidhu/gods-eye-view
-- **This app (Chokepoint Pulse Desk)** — MIT (see `LICENSE`)
-
-## Scripts
-
-| Script | Purpose |
-| --- | --- |
-| `npm run dev` | Vite dev server |
-| `npm run build` | `tsc --noEmit` + Vite production build |
-| `npm test` | Vitest — `GevShareLink` |
-| `npm run preview` | Preview production build |
-| `npm run proof` | Puppeteer screenshots → `proof/` |
+The Situation Room still encodes GEV share hashes (`l=a` AIS, `l=f` flights). Deep-links target local GEV (`http://localhost:4173` by default). [maptheworld.ai](https://maptheworld.ai) is Bilawal’s Substack — not the app.
 
 ## License
 
-MIT — see `LICENSE`. GEV remains a separate project under its own terms.
+MIT — see `LICENSE`. Quant Network, Overledger, bank marks and cited papers belong to their owners.

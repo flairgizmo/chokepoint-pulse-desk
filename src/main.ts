@@ -1,10 +1,7 @@
 import './styles/main.css';
-import { PulseDeskApp } from './ui/app';
+import { QntDesk } from './ui/app';
 
 const root = document.querySelector<HTMLElement>('#app');
-if (!root) {
-  throw new Error('#app root missing');
-}
+if (!root) throw new Error('#app root missing');
 
-const app = new PulseDeskApp(root);
-void app.start();
+new QntDesk(root).start();

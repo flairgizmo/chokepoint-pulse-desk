@@ -1,0 +1,370 @@
+[
+  {
+    "id": "not-cbdc",
+    "category": "CBDC",
+    "q": "Did you know tokenised sterling deposits are not a digital pound?",
+    "a": "A CBDC is a liability of the central bank. GBTD tokens are liabilities of Barclays, HSBC, Lloyds, NatWest, Nationwide and Santander. Quant was selected to provide the programmable-money infrastructure \u2014 Overledger and PayScript \u2014 not to issue the money. The future-of-money move is making commercial-bank money programmable without pretending it is central-bank money.",
+    "cta": "",
+    "to": "/cbdc"
+  },
+  {
+    "id": "http-402",
+    "category": "AI agents",
+    "q": "Did you know HTTP 402 has been reserved since 1997?",
+    "a": "\u2018Payment Required\u2019 sat unused in the web stack for a generation. x402, hosted at the Linux Foundation, revives it so software can pay software. Quant\u2019s published claim is that Fusion Layer 2.5 is x402-ready from day one, and that the missing piece is settling those agent payments in tokenised bank money rather than only in unregulated tokens.",
+    "cta": "",
+    "to": "https://quant.network/news/how-quant-is-connecting-agentic-ai-payments-to-the-banking-system/"
+  },
+  {
+    "id": "gateway-not-chain",
+    "category": "Technology",
+    "q": "Did you know Overledger is not a twelfth blockchain?",
+    "a": "The 2018 whitepaper\u2019s whole point is single-ledger dependency. Overledger maps a request onto Ethereum, Hyperledger Fabric, Corda, a bank core, or all of them. If the future of money is many ledgers and many rails, the scarce resource is a gateway OS, not another validator set.",
+    "cta": "",
+    "to": "/read/overledger-2018"
+  },
+  {
+    "id": "acm-gateway",
+    "category": "Research",
+    "q": "Did you know Overledger\u2019s category has an ACM paper attached?",
+    "a": "Belchior, Riley, Hardjono, Vasconcelos and Correia, 2023, ACM Distributed Ledger Technologies: \u2018Do You Need a Distributed Ledger Technology Interoperability Solution?\u2019 Modes (data, asset transfer, asset exchange) \u00d7 infrastructure (nodes, proxies, gateways). Quant\u2019s product claim sits in the gateway cell. Read that before the homepage.",
+    "cta": "",
+    "to": "/read/acm-3564532"
+  },
+  {
+    "id": "sat-2pc",
+    "category": "Standards",
+    "q": "Did you know SATP\u2019s 2-phase commit sits inside stage 3 \u2014 not instead of the stages?",
+    "a": "Stage-0 is pre-transfer verification (context-ID, FATF identity) and is out of the core spec. Stage-1 is initiation. Stage-2 is lock-assertion: the origin gateway signs that a possibly-private ledger has immobilised the asset. Stage-3 is classic 2PC: commit-prepare, ack-prepare, commit-final (burn), ack-commit-final (mint). Crash recovery is a separate Belchior draft. Read the architecture before the core.",
+    "cta": "",
+    "to": "/standards#satp-method"
+  },
+  {
+    "id": "satp-not-sku",
+    "category": "Standards",
+    "q": "Did you know SATP is an IETF work item, not a Quant product?",
+    "a": "Hargreaves and Chiriac are Quant authors; Facer co-chairs the working group. Hardjono (MIT), Belchior (T\u00e9cnico Lisboa) and Ramakrishna (IBM Research) are listed authors who are not Quant staff. Overledger can implement a SATP-shaped gateway. That still does not make the protocol a SKU.",
+    "cta": "",
+    "to": "/standards#satp"
+  },
+  {
+    "id": "mit-serc",
+    "category": "AI agents",
+    "q": "Did you know MIT writes the ethics paper next to agent payments?",
+    "a": "SERC (Schwarzman College of Computing), led by associate deans Nikos Trichakis and Brian Hedden, is MIT\u2019s social-and-ethical-computing programme \u2014 landscape, not a Quant office. The 30 April 2026 symposium had a Jon Kleinberg keynote. Hardjono co-authored \u2018Authenticated Delegation and Authorized AI Agents\u2019 (arXiv 2501.09674) and the ICML 2025 position \u2018AI Agents Need Authenticated Delegation\u2019: an agent that pays must carry an OAuth/OIDC-delegated, auditable authority, not a key in a prompt. That is the constraint Flow/MCP and x402 still have to satisfy.",
+    "cta": "",
+    "to": "/read/ai-agents-delegation"
+  },
+  {
+    "id": "iso-decade",
+    "category": "Standards",
+    "q": "Did you know ISO\u2019s DLT interoperability framework took a decade?",
+    "a": "Verdian proposed ISO/TC 307 in 2015. ISO/TS 23516:2026 (project 82098) is the interoperability framework: DLT to DLT, and DLT to the world outside the ledger. Standards are slow on purpose. Quant\u2019s product bet is that the gateway layer can ship while the vocabulary is still being written down in Geneva.",
+    "cta": "",
+    "to": "https://www.iso.org/standard/82098.html"
+  },
+  {
+    "id": "mcp-flows",
+    "category": "AI agents",
+    "q": "Did you know an AI agent can call the same payment flow a human clicks?",
+    "a": "Luke Riley\u2019s Flow Applications note: every Overledger workflow auto-exposes MCP tool definitions \u2014 natural-language hints, risk flags, idempotency. Claude Desktop, Cursor, or a headless agent can execute the same steps as Quant Connect. That is how programmable money meets agentic software without rewriting the bank\u2019s workflow twice.",
+    "cta": "",
+    "to": "https://quant.network/perspectives/flow-applications-build-once-deploy-everywhere/"
+  },
+  {
+    "id": "oracle-fabric",
+    "category": "Technology",
+    "q": "Did you know Oracle\u2019s digital-asset platform sits on Hyperledger Fabric?",
+    "a": "Oracle Blockchain Platform Digital Assets Edition (Feb 2025) is Fabric-based, with Besu also in the family. Oracle\u2019s own blog names Quant Overledger as the orchestration layer for cross-ledger, two-phase workflows \u2014 the \u2018singleness of money\u2019 problem the BIS talks about. Linux Foundation software underneath, Quant gateway across.",
+    "cta": "",
+    "to": "https://blogs.oracle.com/blockchain/unveiling-oracle-blockchain-platform-digital-assets-edition-accelerate-innovation-in-finance-and-other-industries"
+  },
+  {
+    "id": "three-layer",
+    "category": "Vision",
+    "q": "Did you know Verdian publishes money as three layers plus a horizontal one?",
+    "a": "Layer 1: wholesale CBDC / RTGS finality. Layer 2: tokenised commercial-bank deposits (GBTD lives here). Layer 3: public-chain stablecoins and RWAs. The system only coheres if a horizontal interoperability layer talks to all three and to SWIFT, Faster Payments, Open Banking. That horizontal layer is the Overledger claim.",
+    "cta": "",
+    "to": "https://quant.network/perspectives/the-three-layer-digital-money-architecture/"
+  },
+  {
+    "id": "patent-order",
+    "category": "Standards",
+    "q": "Did you know Quant patented ordering transactions across chains?",
+    "a": "US11842335B2, inventors Verdian, Paterson, Mondelli, Tasca: a method for keeping a chronological record of transactions that appear on different blockchains. If money is going to hop ledgers, time has to mean the same thing on both sides. A 2026 Japanese patent extends the multi-DLT token / Fusion rollup idea.",
+    "cta": "",
+    "to": "https://patents.google.com/patent/US11842335B2/en"
+  },
+  {
+    "id": "tasca-risk",
+    "category": "Vision",
+    "q": "Did you know Tasca called the Internet of Value a risky necessity?",
+    "a": "The 2020 Frontiers essay argues that moving value as easily as packets is coming whether banks like it or not \u2014 and that datafication, platformisation and privacy risk come with it. Overledger\u2019s answer is not to deny the risk; it is to put a governed gateway in front of the ledgers so regulated money can move without every institution becoming a crypto exchange.",
+    "cta": "",
+    "to": "https://www.frontiersin.org/journals/blockchain/articles/10.3389/fbloc.2020.00039/full"
+  },
+  {
+    "id": "rln-to-gbtd",
+    "category": "Programmes",
+    "q": "Did you know GBTD sits on a 2024 RLN rehearsal?",
+    "a": "UK Finance\u2019s 2024 Regulated Liability Network phase was the dress rehearsal. In September 2025 the same industry group selected Quant for live tokenised-sterling-deposit transactions running into mid-2026. Same problem \u2014 singleness of commercial-bank money across institutions \u2014 now with Overledger and PayScript named in the stack.",
+    "cta": "",
+    "to": "https://www.ukfinance.org.uk/news-and-insight/press-release/uk-finance-announces-live-pilot-phase-deliver-tokenised-sterling"
+  },
+  {
+    "id": "boe-lab-not-live",
+    "category": "Programmes",
+    "q": "Did you know the Bank of England lab is not a live RTGS hook-up?",
+    "a": "In February 2026 Quant was selected for the BoE Synchronisation Lab: a simulated RT2 environment for atomic multi-bank treasury bundles. Quant\u2019s own press note says this is not endorsement, not policy, not a live deployment. The interesting question is whether synchronisation can sit beside RTGS without replacing it \u2014 gateway thinking, again.",
+    "cta": "",
+    "to": "https://quant.network/press-releases/quant-selected-to-participate-in-the-bank-of-englands-synchronisation-lab/"
+  },
+  {
+    "id": "rosalind-concluded",
+    "category": "Programmes",
+    "q": "Did you know Quant was on the vendor team for Project Rosalind?",
+    "a": "In 2023 the BIS Innovation Hub London Centre and the Bank of England tested APIs for a retail CBDC. Quant\u2019s own note says it supplied Overledger infrastructure with UST on the frontend. The BIS page is explicit: experiment, not policy, not a launch. A past credit, graded separately from GBTD.",
+    "cta": "",
+    "to": "https://www.bis.org/about/bisih/topics/cbdc/rosalind.htm"
+  },
+  {
+    "id": "verdian-ciso",
+    "category": "People",
+    "q": "Did you know Quant\u2019s founder left the CISO chair at UK payments rails?",
+    "a": "Gilbert Verdian was CISO at Vocalink \u2014 Mastercard\u2019s UK payments infrastructure \u2014 and CISO of the Year in 2017. He left that chair in May 2018 to build a gateway OS instead of another chain. The scarce resource, in his telling, was never a twelfth validator set.",
+    "cta": "",
+    "to": "/team/verdian"
+  },
+  {
+    "id": "tasca-iov-people",
+    "category": "People",
+    "q": "Did you know Tasca wrote the Internet of Value as a warning, not a slogan?",
+    "a": "Paolo Tasca, co-founder and former Chief Strategist, treated moving value like packets as a risky necessity: datafication and platformisation come with the pipes. A governed gateway is one engineered answer so a regulated institution can hop ledgers without becoming an exchange. He had left Quant by 2022; the books remain.",
+    "cta": "",
+    "to": "/team/tasca"
+  },
+  {
+    "id": "riley-kcl",
+    "category": "People",
+    "q": "Did you know Luke Riley joined Quant from King\u2019s College London?",
+    "a": "September 2019. The 2021 DLT-options note and the 2023 ACM paper put Overledger in a cell \u2014 gateway, not bridge, not a twelfth chain \u2014 and Flow Applications later taught AI agents to call those same workflows. Academia had taxonomies; Quant needed one a procurement team could use.",
+    "cta": "",
+    "to": "/team/riley"
+  },
+  {
+    "id": "belchior-while",
+    "category": "People",
+    "q": "Did you know Belchior\u2019s ACM interoperability paper was written while at Quant?",
+    "a": "The 2023 ACM Distributed Ledger Technologies paper \u2014 modes \u00d7 infrastructure \u2014 carries the footnote \u2018Work done while \u2026 at Quant Network\u2019. Belchior is now at T\u00e9cnico Lisboa; he is in this encyclopedia because he was on the payroll when the taxonomy was written, not because SATP lists him.",
+    "cta": "",
+    "to": "/team/belchior"
+  },
+  {
+    "id": "hargreaves-vocalink",
+    "category": "People",
+    "q": "Did you know SATP\u2019s two-phase commit comes from a payments product person?",
+    "a": "Martin Hargreaves spent thirteen years at Vocalink before Quant. SATP is a 2-phase commit because payments people already know what atomic settlement has to feel like. He is why a gateway OS became something a chief product officer could buy, not only something a working group could draft.",
+    "cta": "",
+    "to": "/team/hargreaves"
+  },
+  {
+    "id": "paterson-clock",
+    "category": "People",
+    "q": "Did you know the first CTO patented the clock across chains?",
+    "a": "Colin Paterson, co-founder and former CTO, is on US11842335B2 with Verdian, Mondelli and Tasca: a method for keeping a chronological record of transactions that appear on different blockchains. Bridges move a token. An OS keeps a clock. He had left by 2022; the patent remains assigned to Quant Network Ltd.",
+    "cta": "",
+    "to": "/team/paterson"
+  },
+  {
+    "id": "rosalind-not-policy",
+    "category": "CBDC",
+    "q": "Did you know Project Rosalind was never a digital-pound launch?",
+    "a": "The BIS Innovation Hub London Centre and the Bank of England tested APIs for a retail CBDC in 2023. Quant was on the vendor team with UST. The BIS page is explicit: experiment, not policy, not a design, not a launch. A concluded lab, graded separately from GBTD.",
+    "cta": "",
+    "to": "/read/rosalind-bis"
+  },
+  {
+    "id": "lab-not-pound",
+    "category": "CBDC",
+    "q": "Did you know the Synchronisation Lab sits beside RTGS, in simulation?",
+    "a": "February 2026: Quant in a simulated RT2 environment for atomic multi-bank treasury bundles. Quant\u2019s own press note treats selection as participation rather than endorsement, policy, or a live RTGS connection. Synchronisation sitting beside RTGS is gateway thinking \u2014 a lab, distinct from GBTD.",
+    "cta": "",
+    "to": "/read/boe-lab"
+  },
+  {
+    "id": "payscript",
+    "category": "Technology",
+    "q": "Did you know GBTD names PayScript next to Overledger?",
+    "a": "UK Finance\u2019s live tokenised-sterling-deposit pilot selected Quant to provide the programmable-money infrastructure: Overledger as the gateway OS, PayScript as the language the banks\u2019 tokens can be programmed in. The product claim is orchestration of commercial-bank money \u2014 not issuance of a digital pound.",
+    "cta": "",
+    "to": "/institutional#gbtd"
+  },
+  {
+    "id": "fusion-25",
+    "category": "Technology",
+    "q": "Did you know Fusion Layer 2.5 is Quant\u2019s x402-ready claim?",
+    "a": "The x402 Foundation, hosted at the Linux Foundation, revives HTTP 402 so software can pay software. Quant\u2019s published claim is that Fusion Layer 2.5 is ready from day one, and that the missing piece is settling those agent payments in tokenised bank money rather than only in unregulated tokens. A claim, not a live CBDC.",
+    "cta": "",
+    "to": "/read/x402"
+  },
+  {
+    "id": "odap-lineage",
+    "category": "Research",
+    "q": "Did you know SATP was called ODAP in 2020?",
+    "a": "Hargreaves and Hardjono\u2019s Open Digital Asset Protocol is the same gateway-to-gateway shape under a different name. Read the 2020 individual draft to see the lineage; read SATP core and architecture for the work item the IETF is actually standardising. The name changed. The pair of gateways did not.",
+    "cta": "",
+    "to": "/read/odap"
+  },
+  {
+    "id": "same-year-2018",
+    "category": "Research",
+    "q": "Did you know 2018 produced two interoperability philosophies in the same year?",
+    "a": "Verdian, Tasca, Paterson and Mondelli published the Overledger whitepaper via UCL Discovery: applications should not be trapped on a single ledger. Hardjono, Lipton and Pentland published \u2018Towards a Design Philosophy for Interoperable Blockchain Systems\u2019 at MIT. Same problem, different rooms. SATP later sits in the corridor between them.",
+    "cta": "",
+    "to": "/read/hardjono-design"
+  },
+  {
+    "id": "belchior-284",
+    "category": "Research",
+    "q": "Did you know the canonical interoperability survey covered 284 papers?",
+    "a": "Belchior, Vasconcelos, Guerreiro and Correia, ACM Computing Surveys 2021: public connectors, blockchain engines, hybrid connectors. SATP and Hyperledger Cacti sit in that literature. It is context for Overledger\u2019s gateway cell \u2014 not a Quant SKU, and not a product spec.",
+    "cta": "",
+    "to": "/read/belchior-survey"
+  },
+  {
+    "id": "ucl-whitepaper",
+    "category": "Vision",
+    "q": "Did you know the Overledger whitepaper lives on UCL Discovery?",
+    "a": "2018, still the product. A gateway OS over many ledgers, rather than a twelfth chain. UCL hosts the PDF; a local copy is here so the argument is readable without leaving the map.",
+    "cta": "",
+    "to": "/read/overledger-2018"
+  },
+  {
+    "id": "gateway-tcpip",
+    "category": "Vision",
+    "q": "Did you know Overledger\u2019s analogy is TCP/IP, not Bitcoin?",
+    "a": "TCP/IP did not replace Ethernet, token ring or the telephone network. It sat over them. Overledger\u2019s published claim is the same move for ledgers and legacy: Fabric, Corda, Ethereum, a bank core, Faster Payments \u2014 one request, many rails. The future of money is many ledgers. The scarce layer is the gateway.",
+    "cta": "",
+    "to": "/technology"
+  },
+  {
+    "id": "oracle-named",
+    "category": "Programmes",
+    "q": "Did you know Oracle\u2019s own blog names Overledger?",
+    "a": "February 2025, Oracle Blockchain Platform Digital Assets Edition. Hyperledger Fabric underneath; Oracle\u2019s post names Quant Overledger as the orchestration layer for cross-ledger, two-phase workflows \u2014 the \u2018singleness of money\u2019 problem the BIS talks about. Announced vendor work, not a Quant office in Austin.",
+    "cta": "",
+    "to": "/read/oracle-blog"
+  },
+  {
+    "id": "murex-mx3",
+    "category": "Programmes",
+    "q": "Did you know Murex wired tokenised deposits into MX.3?",
+    "a": "25 March 2026. Murex and Quant announced that Overledger lets the MX.3 capital-markets platform talk to multiple ledgers for tokenised deposits and digital bonds. Paris is the pin. Graded announced \u2014 a joint press note, not a production attestation.",
+    "cta": "",
+    "to": "/read/murex"
+  },
+  {
+    "id": "x402-foundation",
+    "category": "AI agents",
+    "q": "Did you know the x402 Foundation is at the Linux Foundation, not at Quant?",
+    "a": "Coinbase contributed the protocol; the Linux Foundation hosts the foundation (intent April 2026, operational July 2026). Quant is listed among general members and says Fusion Layer 2.5 is x402-ready. Membership is not a mandate, and agent payments in tokenised bank money is still a thesis.",
+    "cta": "",
+    "to": "/institutional#x402"
+  },
+  {
+    "id": "facer-cochair",
+    "category": "Standards",
+    "q": "Did you know a Quant engineer co-chairs the SATP working group?",
+    "a": "Claire Facer co-chairs IETF SATP. Hargreaves and Chiriac are Quant authors on the drafts. That still does not make SATP a Quant SKU: Hardjono (MIT), Belchior and Ramakrishna (IBM Research) are listed authors who are not Quant staff, and the work item is the IETF\u2019s.",
+    "cta": "",
+    "to": "/standards#satp"
+  },
+  {
+    "id": "mondelli-inventor",
+    "category": "People",
+    "q": "Did you know Mondelli is an inventor on the Overledger protocol itself?",
+    "a": "Gaetano Mondelli is on the 2018 whitepaper and on US11842335B2. His own site says he invented Overledger. The engineering claim \u2014 applications should not be trapped on a single ledger \u2014 is the same sentence as the later tokenisation story: make the asset portable, not the chain special.",
+    "cta": "",
+    "to": "/team/mondelli"
+  },
+  {
+    "id": "sentelidis-hot",
+    "category": "People",
+    "q": "Did you know Quant\u2019s Head of Technology is not a whitepaper author?",
+    "a": "Theodore Sentelidis joined in 2020 and sits on the about-us list as Head of Technology. The 2018 whitepaper and the ordering patent do not carry his name. The job is to ship Overledger, Fusion and Flow \u2014 the stack the founding authors described \u2014 for the banks the C-suite talks about.",
+    "cta": "",
+    "to": "/team/sentelidis"
+  },
+  {
+    "id": "lovesey-vocalink",
+    "category": "People",
+    "q": "Did you know the Vocalink corridor may run through engineering, not only the C-suite?",
+    "a": "Verdian (CISO), Hargreaves (VP product) and Yates (CEO) all have Vocalink \u2014 Mastercard\u2019s UK payments infrastructure \u2014 in the public record. A 2026 community thread additionally names Chris Lovesey as Technical Lead, previously Engineering Manager there, and Gaetano Mondelli as a former Vocalink senior engineer. Quant\u2019s about page lists none of that engineering-bench claim. The desk files the screenshot and the silence.",
+    "cta": "",
+    "to": "/team/lovesey"
+  },
+  {
+    "id": "mondelli-thesis",
+    "category": "People",
+    "q": "Did you know Mondelli\u2019s 2017 thesis already named intercommunicability as the problem?",
+    "a": "The year before the Overledger whitepaper, Gaetano Mondelli filed a Politecnico di Torino master\u2019s thesis placed at UCL\u2019s Centre for Blockchain Technologies: Blockchain a business solution in the Bitcoin Era. The abstract flags extendibility, intercommunicability and scale. The full text is secretated. The bibliographic record is enough to date the question.",
+    "cta": "",
+    "to": "https://webthesis.biblio.polito.it/id/eprint/6575"
+  },
+  {
+    "id": "lacchain-2021",
+    "category": "Programmes",
+    "q": "Did you know Quant announced a LACChain partnership in 2021?",
+    "a": "1 February 2021. Quant and LACChain (IDB Lab, Inter-American Development Bank Group) announced Overledger interoperability for Latin America and the Caribbean, and tokenised cross-border payments as the ambition. A 2021 press release. Not a live 2026 Latin-American mandate.",
+    "cta": "",
+    "to": "/institutional#lacchain"
+  },
+  {
+    "id": "dentsu-tokyo",
+    "category": "Programmes",
+    "q": "Did you know Tokyo now has a named Quant partner, not only a patent?",
+    "a": "14 January 2026: Quant and Dentsu Soken announced work on tokenised deposits and programmable settlement for Japanese institutions. StreamR is BOJ-NET compatible. The same note lists prior regulated pilots including the ECB \u2014 Quant\u2019s sentence, not an ECB confirmation.",
+    "cta": "",
+    "to": "/institutional#dentsu"
+  },
+  {
+    "id": "sibos-stand-13",
+    "category": "Programmes",
+    "q": "Did you know Sibos 2025 was Quant at stand 13 in Frankfurt?",
+    "a": "29 September to 2 October 2025, Messe Frankfurt. Verdian on the Discover stage, 1 October: institutional money in transition. A concluded SWIFT community week. Frankfurt on this globe is euro-clearing adjacency plus that named week.",
+    "cta": "",
+    "to": "/institutional#sibos"
+  },
+  {
+    "id": "quantnet-name",
+    "category": "Technology",
+    "q": "Did you know QuantNet is the bank-facing name for the gateway?",
+    "a": "Quant\u2019s QuantNet page describes a programmable gateway connecting banks to tokenised money, built on the architecture underpinning GBTD. The three-layer essay places it in the Synchronisation Lab coordinating a GBP leg via RTGS \u2014 Quant\u2019s claim about a simulated environment. Overledger remains the platform name.",
+    "cta": "",
+    "to": "/institutional#quantnet"
+  },
+  {
+    "id": "qnt-burn",
+    "category": "Vision",
+    "q": "Did you know Quant burned unsold QNT on 14 September 2018?",
+    "a": "Their own post: total supply 14,612,493.080826178, sent to the contract itself. Bitstamp\u2019s May 2026 MiCA filing cites a slightly different maximum (14,881,364) and a 68.19 / 31.81 TGE split. This desk reports both and takes today\u2019s circulating from CoinGecko. QNT is a utility token, not equity.",
+    "cta": "",
+    "to": "/markets#tokenomics"
+  },
+  {
+    "id": "ey-support",
+    "category": "Programmes",
+    "q": "Did you know EY is a supporting firm on GBTD \u2014 not Quant\u2019s auditor?",
+    "a": "UK Finance named EY and Linklaters alongside Quant on 26 September 2025. Quant\u2019s 6 October write-up records Mike Kearney of EY citing analysis of around \u00a34 billion annual UK benefit. Kearney, at a convening, as reported by Quant. Not an audit opinion.",
+    "cta": "",
+    "to": "/institutional#ey"
+  },
+  {
+    "id": "payscript-treasury",
+    "category": "Technology",
+    "q": "Did you know PayScript has a published treasury demonstration?",
+    "a": "At the UK Finance Digital Innovation Summit (30 June 2026), Quant\u2019s write-up describes a parent account minting tokenised deposits into a subsidiary when the balance falls below a threshold \u2014 milliseconds, no phone call. Quant\u2019s demo of programmable M1, not a Bank of England product.",
+    "cta": "",
+    "to": "/cbdc#treasury"
+  }
+]

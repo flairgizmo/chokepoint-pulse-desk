@@ -59,7 +59,7 @@ async function main() {
   await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 1 });
 
   const base = 'http://127.0.0.1:5179';
-  await page.goto(base, { waitUntil: 'networkidle0', timeout: 60000 });
+  await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForSelector('[data-proof="hero"]');
 
   await page.screenshot({
@@ -67,17 +67,20 @@ async function main() {
     clip: { x: 0, y: 0, width: 1440, height: 720 },
   });
 
+  await page.goto(`${base}/desk`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForSelector('[data-proof="gallery"]');
   const gallery = await page.$('[data-proof="gallery"]');
   if (gallery) {
     await gallery.screenshot({ path: join(proofDir, '02-gallery.png') });
   }
 
+  await page.goto(`${base}/markets`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   const ticker = await page.$('[data-proof="ticker"]');
   if (ticker) {
     await ticker.screenshot({ path: join(proofDir, '04-ticker.png') });
   }
 
-  await page.goto(`${base}/#mission/hormuz`, { waitUntil: 'networkidle0', timeout: 60000 });
+  await page.goto(`${base}/desk/hormuz`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForSelector('[data-proof="detail"]');
   await page.screenshot({
     path: join(proofDir, '03-detail-hormuz.png'),
