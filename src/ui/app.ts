@@ -60,7 +60,12 @@ export class QntDesk {
       if (location.hash.startsWith('#mission/')) this.syncLegacyHash();
     });
     document.addEventListener('click', (ev) => {
-      const a = (ev.target as HTMLElement).closest('a');
+      const target = ev.target as HTMLElement;
+      const more = this.root.querySelector('details.more');
+      if (more instanceof HTMLDetailsElement && more.open && !target.closest('details.more')) {
+        more.open = false;
+      }
+      const a = target.closest('a');
       if (!a) return;
       const href = a.getAttribute('href');
       if (!href || href.startsWith('http') || href.startsWith('mailto:') || a.target === '_blank') return;
@@ -508,6 +513,9 @@ export class QntDesk {
   private closeMenu(): void {
     this.root.querySelector('#mobile-nav')?.classList.remove('is-open');
     this.root.querySelector('[data-open-menu]')?.setAttribute('aria-expanded', 'false');
+    this.root.querySelectorAll('details.more').forEach((el) => {
+      (el as HTMLDetailsElement).open = false;
+    });
   }
 
   private togglePalette(open: boolean): void {
