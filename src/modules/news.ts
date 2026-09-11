@@ -92,12 +92,18 @@ export function parseGoogleNewsRss(xml: string): Headline[] {
     });
   }
   const seen = new Set<string>();
-  return items.filter((h) => {
-    const key = h.title.toLowerCase();
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  return items
+    .filter((h) => {
+      const key = h.title.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => {
+      const ta = a.published ? Date.parse(a.published) : 0;
+      const tb = b.published ? Date.parse(b.published) : 0;
+      return tb - ta;
+    });
 }
 
 export async function fetchNews(signal?: AbortSignal): Promise<NewsRiver> {

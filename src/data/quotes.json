@@ -1,0 +1,626 @@
+[
+  {
+    "id": "whitepaper-abstract-trap",
+    "who": "Verdian, Tasca, Paterson, Mondelli",
+    "role": "Overledger whitepaper v0.1, 2018 — UCL Discovery abstract",
+    "text": "This limitation forces distributed applications to be single-ledger-dependent, i.e. limited to be only executed on a single ledger.",
+    "href": "whitepaperUcl",
+    "page": "vision",
+    "also": ["home", "research"]
+  },
+  {
+    "id": "whitepaper-abstract-overledger",
+    "who": "Verdian, Tasca, Paterson, Mondelli",
+    "role": "Overledger whitepaper v0.1, 2018 — UCL Discovery abstract",
+    "text": "This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.",
+    "href": "whitepaperUcl",
+    "page": "vision",
+    "also": ["technology", "home"]
+  },
+  {
+    "id": "whitepaper-abstract-internet",
+    "who": "Verdian, Tasca, Paterson, Mondelli",
+    "role": "Overledger whitepaper v0.1, 2018 — UCL Discovery abstract",
+    "text": "The traditional Internet architecture has not yet achieved its vision of an open, trusted and secure network.",
+    "href": "whitepaperUcl",
+    "page": "vision"
+  },
+  {
+    "id": "quant-pioneers",
+    "who": "Quant",
+    "role": "About Quant",
+    "text": "Leading pioneers in unlocking the power of programmable money.",
+    "href": "about",
+    "page": "vision",
+    "also": ["home", "people"]
+  },
+  {
+    "id": "quant-foundation",
+    "who": "Quant",
+    "role": "quant.network",
+    "text": "The foundation of digital finance.",
+    "href": "about",
+    "page": "vision",
+    "also": ["people"]
+  },
+  {
+    "id": "quant-redefine",
+    "who": "Quant",
+    "role": "About Quant",
+    "text": "Ready to redefine how money works for you?",
+    "href": "about",
+    "page": "vision"
+  },
+  {
+    "id": "quant-leadership",
+    "who": "Quant",
+    "role": "About Quant",
+    "text": "Our leadership team has deep experience in government, financial services, technology, healthcare, and management consulting.",
+    "href": "about",
+    "page": "people"
+  },
+  {
+    "id": "quant-innovation",
+    "who": "Quant",
+    "role": "Company value — Innovation",
+    "text": "We love a challenge and have little respect for the status quo. Experience has taught us that problems are a matter of perspective and that, with new ideas and a fresh way of looking at things, solutions – more often than not – present themselves.",
+    "href": "about",
+    "page": "people"
+  },
+  {
+    "id": "quant-ambition",
+    "who": "Quant",
+    "role": "Company value — Ambition",
+    "text": "The scale of a task won’t deter us when we believe it will take us closer to our vision. Every problem is an opportunity. Every obstacle is a chance to take a calculated risk and question assumptions. In short, we’re not afraid to think big.",
+    "href": "about",
+    "page": "people"
+  },
+  {
+    "id": "quant-trust",
+    "who": "Quant",
+    "role": "Company value — Trust",
+    "text": "Fundamental to a prosperous economy, trust also lies at the heart of our company. Indeed, we believe it is the bedrock of a healthy society committed to equality and fairness. We trust each other, we engineer trust into our solutions, and we work hard every day to earn the trust of our clients and partners.",
+    "href": "about",
+    "page": "people"
+  },
+  {
+    "id": "quant-adapt",
+    "who": "Quant",
+    "role": "Company value — Adaptability",
+    "text": "We remain open-minded, objective and flexible at all times. When the facts change, so does our approach. We embrace that agility and encourage all those we work with to do the same.",
+    "href": "about",
+    "page": "people"
+  },
+  {
+    "id": "quant-respect",
+    "who": "Quant",
+    "role": "Company value — Respect",
+    "text": "We’re respectful of the ideas and perspectives of others; we celebrate peoples’ differences and recognise the achievements of others.",
+    "href": "about",
+    "page": "people"
+  },
+  {
+    "id": "overledger-api-gateway",
+    "who": "Quant",
+    "role": "Overledger product page",
+    "text": "Overledger is a universal API connector that ensures secure interoperability between traditional financial systems and blockchain networks.",
+    "href": "overledger",
+    "page": "technology",
+    "also": ["home"]
+  },
+  {
+    "id": "overledger-first-gateway",
+    "who": "Quant",
+    "role": "Overledger product page",
+    "text": "How? With Overledger, the world’s first API-based blockchain gateway.",
+    "href": "overledger",
+    "page": "technology"
+  },
+  {
+    "id": "quantnet-connects",
+    "who": "Quant",
+    "role": "QuantNet product page",
+    "text": "QuantNet connects banks to tokenised money and digital assets through a single programmable gateway, enabling value movement across public and private networks, payment systems, and asset platforms with certainty and control.",
+    "href": "quantNet",
+    "page": "programmes",
+    "also": ["technology"]
+  },
+  {
+    "id": "quantnet-rln",
+    "who": "Quant",
+    "role": "QuantNet product page",
+    "text": "Built on the proven architecture underpinning GB Tokenised Deposits (UK RLN), it is seamless, compliant, and ready for global adoption.",
+    "href": "quantNet",
+    "page": "programmes"
+  },
+  {
+    "id": "quantnet-infra",
+    "who": "Quant",
+    "role": "QuantNet product page",
+    "text": "QuantNet: The Infrastructure of Money.",
+    "href": "quantNet",
+    "page": "programmes"
+  },
+  {
+    "id": "tasca-iov-title",
+    "who": "Paolo Tasca",
+    "role": "Frontiers in Blockchain, 15 September 2020",
+    "text": "Internet of Value: A Risky Necessity",
+    "href": "tascaIov",
+    "page": "vision",
+    "personId": "tasca",
+    "also": ["research"]
+  },
+  {
+    "id": "tasca-freely",
+    "who": "Paolo Tasca",
+    "role": "Frontiers in Blockchain, 2020",
+    "text": "…an information society populated by digital things and digital citizens interconnected in a new world of Internet of Value (IoV), where value is exchanged as freely and easily as information.",
+    "href": "tascaIov",
+    "page": "vision",
+    "personId": "tasca",
+    "also": ["home"]
+  },
+  {
+    "id": "tasca-necessary-journey",
+    "who": "Paolo Tasca",
+    "role": "Frontiers in Blockchain, 2020",
+    "text": "In this Editorial, I argue that the blooming of the Internet of Value is a necessary journey that we need to take in order to accommodate the unfolding of four long-term mega socio-techno trends: datafication, dematerialization, platformization, and social and resources value awareness.",
+    "href": "tascaIov",
+    "page": "vision",
+    "personId": "tasca"
+  },
+  {
+    "id": "tasca-risks",
+    "who": "Paolo Tasca",
+    "role": "Frontiers in Blockchain, 2020",
+    "text": "Unfortunately, as pictured in Figure 1, this journey will not be without obstacles. Systemic risk, governance risk, privacy risk, and social welfare risk are four major sources of risk that we must mitigate in order to build an open, accessible, and secure Internet of Value for an equitable global economy.",
+    "href": "tascaIov",
+    "page": "vision",
+    "personId": "tasca",
+    "also": ["standards"]
+  },
+  {
+    "id": "tasca-invite",
+    "who": "Paolo Tasca",
+    "role": "Frontiers in Blockchain, 2020",
+    "text": "I, therefore, invite all the operators and stakeholders who are building the new digital economy to work together to build an open, accessible, and secure IoV for an equitable global economy.",
+    "href": "tascaIov",
+    "page": "people",
+    "personId": "tasca"
+  },
+  {
+    "id": "verdian-three-lede",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "A framework every bank needs to understand before building tokenisation infrastructure.",
+    "href": "threeLayer",
+    "page": "vision",
+    "personId": "verdian"
+  },
+  {
+    "id": "verdian-horizontal",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "Quant’s Overledger platform is the horizontal interoperability layer, a universal API gateway that any institution can connect to once, gaining the ability to transact across any distributed ledger and any legacy rail in the three-layer architecture.",
+    "href": "threeLayer",
+    "page": "technology",
+    "personId": "verdian",
+    "also": ["vision", "home"]
+  },
+  {
+    "id": "verdian-three-must-talk",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "The three-layer architecture functions as a coherent system only when all three layers can communicate with each other and with the legacy infrastructure, including RTGS, SWIFT, Faster Payments, and Open Banking, that will continue to process the majority of financial transactions for years alongside the new architecture.",
+    "href": "threeLayer",
+    "page": "vision",
+    "personId": "verdian",
+    "also": ["cbdc"]
+  },
+  {
+    "id": "verdian-layer2",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "Tokenised deposits are ordinary commercial bank money, the M1/M2 deposits that fund the overwhelming majority of global economic activity, made programmable through distributed ledger technology.",
+    "href": "threeLayer",
+    "page": "cbdc",
+    "personId": "verdian",
+    "also": ["programmes"]
+  },
+  {
+    "id": "verdian-start-l2",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "Start at Layer 2. Tokenised deposits are the most mature, most deployed, and most regulatory-clear component. They are where institutional use cases live today.",
+    "href": "threeLayer",
+    "page": "cbdc",
+    "personId": "verdian"
+  },
+  {
+    "id": "verdian-quant-horizontal",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "Quant is the horizontal interoperability layer connecting all three tiers of the digital money architecture.",
+    "href": "threeLayer",
+    "page": "vision",
+    "personId": "verdian",
+    "also": ["technology"]
+  },
+  {
+    "id": "verdian-sync-lab",
+    "who": "Gilbert Verdian",
+    "role": "The three-layer digital money architecture, 23 April 2026",
+    "text": "The Bank of England’s Synchronisation Lab, in which Quant participates as a Synchronisation Operator, is testing atomic multi-party settlement over the existing RTGS synchronisation capability, where QuantNet coordinates cross-ledger transactions with the GBP leg settling through RTGS.",
+    "href": "threeLayer",
+    "page": "cbdc",
+    "personId": "verdian",
+    "also": ["programmes"]
+  },
+  {
+    "id": "verdian-gbtd",
+    "who": "Gilbert Verdian",
+    "role": "CEO of Quant — UK Finance GBTD announcement, 26 September 2025",
+    "text": "Being selected for this project marks a pivotal step in the UK’s financial evolution. This milestone goes beyond improving payments, it’s about enabling new forms of programmable money that will fundamentally transform how value is moved and managed. Our involvement underscores Quant’s leadership in digital finance, as we work alongside the UK’s leading institutions to build the infrastructure powering tomorrow’s economy.",
+    "href": "gbtdUkFinance",
+    "page": "programmes",
+    "personId": "verdian",
+    "also": ["home", "people"]
+  },
+  {
+    "id": "verdian-murex-ops",
+    "who": "Gilbert Verdian",
+    "role": "Founder and CEO — Murex newsroom, 25 March 2026",
+    "text": "Banks and capital markets firms know tokenization is happening. The question they are working through is how to operationalize it without compromising the risk management, compliance and operational resilience they have spent decades building.",
+    "href": "murexNews",
+    "page": "programmes",
+    "personId": "verdian"
+  },
+  {
+    "id": "verdian-murex-programmable",
+    "who": "Gilbert Verdian",
+    "role": "Founder and CEO — Murex newsroom, 25 March 2026",
+    "text": "The next generation of capital markets infrastructure will not replace what works. It will make what works programmable.",
+    "href": "murexNews",
+    "page": "programmes",
+    "personId": "verdian",
+    "also": ["home", "technology"]
+  },
+  {
+    "id": "verdian-oracle",
+    "who": "Gilbert Verdian",
+    "role": "CEO and Founder — Oracle Blockchain blog, 12 February 2025",
+    "text": "Quant is delighted with the launch of Oracle’s Blockchain Platform Digital Assets Edition. We have partnered with Oracle not only to bring the concept of a unified ledger to life, but also to enable seamless interoperability for Oracle’s platform for implementations of assets and regulated networks such the Regulated Liability Network (RLN).",
+    "href": "oracleBlog",
+    "page": "technology",
+    "personId": "verdian",
+    "also": ["programmes"]
+  },
+  {
+    "id": "verdian-oracle-institutional",
+    "who": "Gilbert Verdian",
+    "role": "CEO and Founder — Oracle Blockchain blog, 12 February 2025",
+    "text": "And for institutional clients, this is key, as it addresses the challenge of securely connecting, orchestrating and programming the movement of money and assets across multiple networks of value.",
+    "href": "oracleBlog",
+    "page": "technology",
+    "personId": "verdian"
+  },
+  {
+    "id": "hargreaves-programmable",
+    "who": "Martin Hargreaves",
+    "role": "Chief Product Officer, Financial Services — 2 May 2025",
+    "text": "Programmable payments present a transformative opportunity for financial transactions – enabling automation, customisation and greater control beyond the traditional payment mechanisms we have today.",
+    "href": "programmability",
+    "page": "technology",
+    "personId": "hargreaves",
+    "also": ["people"]
+  },
+  {
+    "id": "hargreaves-simple",
+    "who": "Martin Hargreaves",
+    "role": "Chief Product Officer, Financial Services — 2 May 2025",
+    "text": "In simple terms, programmable payments are automated payments that are triggered when certain conditions are met.",
+    "href": "programmability",
+    "page": "technology",
+    "personId": "hargreaves"
+  },
+  {
+    "id": "hargreaves-account",
+    "who": "Martin Hargreaves",
+    "role": "Chief Product Officer, Financial Services — 2 May 2025",
+    "text": "We’re proposing a new model where programmability is embedded at the account level, regardless of the type of funds, allowing for greater flexibility and enabling customers to select payment methods on a per-transaction basis, without being constrained by predefined functionality.",
+    "href": "programmability",
+    "page": "technology",
+    "personId": "hargreaves"
+  },
+  {
+    "id": "hargreaves-payscript",
+    "who": "Martin Hargreaves",
+    "role": "Chief Product Officer, Financial Services — 2 May 2025",
+    "text": "PayScript, our fully customisable, open standard language enables businesses to develop programmable workflows that improve the efficiency of payment processes by removing repetitive manual tasks.",
+    "href": "programmability",
+    "page": "technology",
+    "personId": "hargreaves"
+  },
+  {
+    "id": "riley-overledger",
+    "who": "Dr Luke Riley",
+    "role": "Head of Innovation — Flow Applications, 21 May 2026",
+    "text": "Overledger is Quant’s enterprise blockchain platform, the connectivity and orchestration layer that sits across public and private distributed ledger networks.",
+    "href": "flowApps",
+    "page": "technology",
+    "personId": "riley",
+    "also": ["people"]
+  },
+  {
+    "id": "riley-flow-ship",
+    "who": "Dr Luke Riley",
+    "role": "Head of Innovation — Flow Applications, 21 May 2026",
+    "text": "Flow Applications are where Overledger’s network connectivity becomes something you can ship: pre-built, reusable workflows that any interface can consume from day one.",
+    "href": "flowApps",
+    "page": "technology",
+    "personId": "riley",
+    "also": ["home"]
+  },
+  {
+    "id": "riley-flow-def",
+    "who": "Dr Luke Riley",
+    "role": "Head of Innovation — Flow Applications, 21 May 2026",
+    "text": "A Flow Application is a complete business workflow, bridging assets, executing payments, deploying contracts, managing permissions, hosted on Overledger and ready to consume.",
+    "href": "flowApps",
+    "page": "technology",
+    "personId": "riley"
+  },
+  {
+    "id": "riley-gateway-best",
+    "who": "Dr Luke Riley",
+    "role": "DLT interoperability options note, 11 November 2021",
+    "text": "We explain why we think that the API gateway categorisation is the best approach, and why Quant’s Overledger is the leading solution in this category.",
+    "href": "dltOptions",
+    "page": "technology",
+    "personId": "riley",
+    "also": ["research"]
+  },
+  {
+    "id": "riley-preeminent",
+    "who": "Dr Luke Riley",
+    "role": "DLT interoperability options note, 11 November 2021",
+    "text": "Quant’s Overledger is the pre-eminent instance of API gateway categorisation.",
+    "href": "dltOptions",
+    "page": "technology",
+    "personId": "riley",
+    "also": ["research"]
+  },
+  {
+    "id": "riley-future-interop",
+    "who": "Dr Luke Riley",
+    "role": "DLT interoperability options note, 11 November 2021",
+    "text": "The future of Distributed Ledger Technology (DLT) is interoperability. But at the moment, most DLT implementations don’t work together, presenting a huge barrier to adoption.",
+    "href": "dltOptions",
+    "page": "technology",
+    "personId": "riley"
+  },
+  {
+    "id": "rawel-coordination",
+    "who": "Kirat Rawel",
+    "role": "Head of Sales — 9 July 2026",
+    "text": "Synchronised settlement across jurisdictions is technically achievable today. The reason it is not the default is a coordination problem, not a capability problem.",
+    "href": "crossBorder",
+    "page": "programmes",
+    "personId": "rawel",
+    "also": ["people", "standards"]
+  },
+  {
+    "id": "rawel-messaging",
+    "who": "Kirat Rawel",
+    "role": "Head of Sales — 9 July 2026",
+    "text": "When a payment message moves seamlessly between institutions across jurisdictions using ISO 20022, that is real progress. But message delivery is not the same as settlement finality, it is just the communication of a transfer instruction.",
+    "href": "crossBorder",
+    "page": "standards",
+    "personId": "rawel",
+    "also": ["programmes"]
+  },
+  {
+    "id": "rawel-not-middleware",
+    "who": "Kirat Rawel",
+    "role": "Head of Sales — 9 July 2026",
+    "text": "This is not middleware in the traditional sense. Traditional middleware passes messages back and forth, but this system coordinates the movement of money or assets based on programmable conditions.",
+    "href": "crossBorder",
+    "page": "technology",
+    "personId": "rawel"
+  },
+  {
+    "id": "quant-trusted-who",
+    "who": "Quant",
+    "role": "Trusted Node Program, 10 September 2026",
+    "text": "On a public Layer 1, the honest answer is whoever meets the technical requirements to validate, with no identity check and no jurisdiction disclosed.",
+    "href": "trustedNode",
+    "page": "programmes"
+  },
+  {
+    "id": "quant-trusted-choose",
+    "who": "Quant",
+    "role": "Trusted Node Program, 10 September 2026",
+    "text": "The Trusted Node Program lets an institution choose exactly who processes its transactions, and where.",
+    "href": "trustedNode",
+    "page": "programmes"
+  },
+  {
+    "id": "quant-trusted-three",
+    "who": "Quant",
+    "role": "Trusted Node Program, 10 September 2026",
+    "text": "Together, they answer the three questions every risk committee asks: who can touch my asset, who runs my transaction, who can see it.",
+    "href": "trustedNode",
+    "page": "programmes",
+    "also": ["technology"]
+  },
+  {
+    "id": "quant-trusted-issue",
+    "who": "Quant",
+    "role": "Trusted Node Program, 10 September 2026",
+    "text": "For an institution deciding whether to issue on Fusion, the Trusted Node Program is what makes issuance defensible internally.",
+    "href": "trustedNode",
+    "page": "programmes"
+  },
+  {
+    "id": "ukf-launch",
+    "who": "UK Finance",
+    "role": "GBTD live-pilot announcement, 26 September 2025",
+    "text": "UK Finance has launched a collaborative industry pilot project to deliver the first UK live transactions of tokenised sterling deposits (GBTD).",
+    "href": "gbtdUkFinance",
+    "page": "programmes",
+    "also": ["cbdc"]
+  },
+  {
+    "id": "ukf-definition",
+    "who": "UK Finance",
+    "role": "GBTD live-pilot announcement, 26 September 2025",
+    "text": "These tokenised deposits are a digital representation of traditional sterling commercial bank money. They retain the trust and regulatory protections of conventional deposits, while offering benefits such as enhanced speed and fraud protection.",
+    "href": "gbtdUkFinance",
+    "page": "cbdc",
+    "also": ["programmes", "home"]
+  },
+  {
+    "id": "ukf-cohort",
+    "who": "UK Finance",
+    "role": "GBTD live-pilot announcement, 26 September 2025",
+    "text": "Participating firms currently include Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "mackintosh-gbtd",
+    "who": "Jana Mackintosh",
+    "role": "Managing Director, UK Finance — 26 September 2025",
+    "text": "This project is a powerful example of industry collaboration to deliver next generation payments for the benefit of customers and businesses - and an opportunity for the UK to lead globally in setting standards for tokenised money.",
+    "href": "gbtdUkFinance",
+    "page": "programmes",
+    "also": ["cbdc"]
+  },
+  {
+    "id": "mackintosh-bailey",
+    "who": "Jana Mackintosh",
+    "role": "Managing Director, UK Finance — 26 September 2025",
+    "text": "Andrew Bailey, Governor of the Bank of England, recently called for innovation in how digital technology is applied to the money we use today. That’s exactly what tokenised deposits represent: a secure, regulated evolution of the payments landscape.",
+    "href": "gbtdUkFinance",
+    "page": "cbdc"
+  },
+  {
+    "id": "hayward-barclays",
+    "who": "Ryan Hayward",
+    "role": "Head of Digital Assets, Barclays — 26 September 2025",
+    "text": "The upgrading of bank deposits to a digital form will help to ensure that commercial bank money remains central to the economy and customers continue to benefit from the protections and trust that go alongside that form of money.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "oneill-hsbc",
+    "who": "John O’Neill",
+    "role": "Group Head of Digital Assets & Currencies, HSBC — 26 September 2025",
+    "text": "Tokenised deposits are an important development in digital money, and we look forward to drawing on our global experience in this field to serve our clients.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "left-lloyds",
+    "who": "Peter Left",
+    "role": "Head of Digital Markets and Innovation, Lloyds — 26 September 2025",
+    "text": "Lloyds is pleased to continue working together with industry partners to lead the development of tokenised deposits with the aim of delivering the next generation of financial technology that can help our customers to meet their financial needs in faster, safer and more innovative ways.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "pitt-nationwide",
+    "who": "Isabel Pitt",
+    "role": "Deputy Payments Director, Nationwide — 26 September 2025",
+    "text": "As a mutual, we deliver long-term value for our customers, and we’re excited by what tokenised deposits could potentially mean for customer experience in the future.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "mcnabb-natwest",
+    "who": "Lee McNabb",
+    "role": "Payments and Digital Assets Lead, NatWest Group — 26 September 2025",
+    "text": "We feel Tokenised deposits are a great opportunity for the UK, bringing added functionality mixed with security of existing commercial bank money.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "horlock-santander",
+    "who": "Paul Horlock",
+    "role": "Chief Payments Officer, Santander UK — 26 September 2025",
+    "text": "Bringing the opportunity for ‘smart money’ to retail consumers to provide increased confidence, security and flexibility is part of our evolution to a multi-money future and is consistent with the aspirations of the UK’s National Payments Vision.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "hay-linklaters",
+    "who": "Richard Hay",
+    "role": "Global Co-Head of Fintech, Linklaters — 26 September 2025",
+    "text": "This pilot is a significant step forward in the evolution of digital money in the UK. By enabling live transactions with tokenised sterling deposits, the industry is harnessing technology to enhance trust, security and efficiency across critical payment and settlement workflows.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "zehetmayr-ey",
+    "who": "Mike Zehetmayr",
+    "role": "UK Financial Services Partner, EY — 26 September 2025",
+    "text": "This industry-wide pilot is an important step in supporting the necessary infrastructure behind innovative digital payments leveraging tokenised deposits so they can be used more confidently and flexibly on a larger scale.",
+    "href": "gbtdUkFinance",
+    "page": "programmes"
+  },
+  {
+    "id": "wigley-ukf",
+    "who": "Bob Wigley",
+    "role": "Chair of UK Finance — 8 September 2026",
+    "text": "Tokenisation will reshape market infrastructure - the question is whether the UK wants to shape it or adapt to decisions made elsewhere.",
+    "href": "ukfDigitalMarketsPress",
+    "page": "programmes",
+    "also": ["standards"]
+  },
+  {
+    "id": "ekberg-wyman",
+    "who": "Jason Ekberg",
+    "role": "Partner and Global Digital Assets Lead, Oliver Wyman — 8 September 2026",
+    "text": "Tokenisation can make capital, collateral and liquidity move more efficiently through the financial system, with the greatest potential coming from connecting digital assets, money, and market infrastructure rather than developing them in isolation.",
+    "href": "ukfDigitalMarketsPress",
+    "page": "programmes"
+  },
+  {
+    "id": "oracle-overledger",
+    "who": "Mark Rakhmilevich and Gourav Sarkar",
+    "role": "Oracle Blockchain blog, 12 February 2025",
+    "text": "Combining Oracle Blockchain Platform support of X/Open XA standard with 2 phase commit (2PC) and powerful orchestration provided by Quant Network’s Overledger enables cross-ledger operations and workflows required to implement a unified ledger architecture, helping to overcome blockchain fragmentation and preserve “singleness of money.”",
+    "href": "oracleBlog",
+    "page": "technology",
+    "also": ["standards", "cbdc"]
+  },
+  {
+    "id": "khy-murex",
+    "who": "Solène Khy",
+    "role": "Murex head of FX, equities, commodities and digital assets — 25 March 2026",
+    "text": "This partnership enables clients to integrate these new capabilities into existing capital markets systems without overhauling their infrastructure, with a comprehensive coverage across both TradFi and DeFi, and providing flexibility in their choice of custody systems.",
+    "href": "murexNews",
+    "page": "programmes"
+  },
+  {
+    "id": "mondelli-invented",
+    "who": "Gaetano Mondelli",
+    "role": "Personal site — documentary inventor",
+    "text": "He invented Overledger.",
+    "href": "mondelliSite",
+    "page": "people",
+    "personId": "mondelli",
+    "note": "Mondelli’s own site. Documentary role is inventor; not a current Quant officer."
+  },
+  {
+    "id": "belchior-footnote",
+    "who": "Rafael Belchior et al.",
+    "role": "ACM Distributed Ledger Technologies, 2023",
+    "text": "Work done while … at Quant Network.",
+    "href": "acmDltNeed",
+    "page": "research",
+    "personId": "belchior",
+    "note": "The paper’s own affiliation footnote, as filed on this desk."
+  }
+]

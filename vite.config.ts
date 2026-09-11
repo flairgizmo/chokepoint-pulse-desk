@@ -5,6 +5,62 @@ const port = Number(process.env.PORT) || 5173;
 const GNEWS =
   'https://news.google.com/rss/search?q=%22Quant+Network%22+OR+Overledger+OR+QNT&hl=en-GB&gl=GB&ceid=GB:en';
 
+function chatDesk(): Plugin {
+  return {
+    name: 'qntdesk-chat',
+    configureServer(server) {
+      server.middlewares.use('/api/chat', (req, res, next) => {
+        if (req.method !== 'POST') {
+          next();
+          return;
+        }
+        const chunks: Buffer[] = [];
+        req.on('data', (c) => chunks.push(Buffer.from(c)));
+        req.on('end', () => {
+          void (async () => {
+            const { answerFromDesk } = await import('./src/modules/assistant');
+            let question = '';
+            try {
+              question = String(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}').question ?? '');
+            } catch {
+              question = '';
+            }
+            const reply = answerFromDesk(question);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.end(JSON.stringify(reply));
+          })();
+        });
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use('/api/chat', (req, res, next) => {
+        if (req.method !== 'POST') {
+          next();
+          return;
+        }
+        const chunks: Buffer[] = [];
+        req.on('data', (c) => chunks.push(Buffer.from(c)));
+        req.on('end', () => {
+          void (async () => {
+            const { answerFromDesk } = await import('./src/modules/assistant');
+            let question = '';
+            try {
+              question = String(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}').question ?? '');
+            } catch {
+              question = '';
+            }
+            const reply = answerFromDesk(question);
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.end(JSON.stringify(reply));
+          })();
+        });
+      });
+    },
+  };
+}
+
 function gnewsProxy(): Plugin {
   async function handle(_req: IncomingMessage, res: ServerResponse): Promise<void> {
     try {
@@ -46,7 +102,7 @@ export default defineConfig({
   root: '.',
   publicDir: 'public',
   appType: 'spa',
-  plugins: [gnewsProxy()],
+  plugins: [gnewsProxy(), chatDesk()],
   server: {
     port,
     host: true,

@@ -13,6 +13,7 @@ export interface MarketPrint {
   totalSupply: number | null;
   ath: number | null;
   atl: number | null;
+  sparkline: number[];
   tickers: Array<{ name: string; volume: number }>;
   updated: string | null;
   error?: string;
@@ -142,7 +143,7 @@ export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
     const [quote, gecko] = await Promise.allSettled([
       firstVenue(signal),
       fetchJson(
-        'https://api.coingecko.com/api/v3/coins/quant-network?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=false',
+        'https://api.coingecko.com/api/v3/coins/quant-network?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=true',
         signal,
       ),
     ]);
@@ -164,6 +165,7 @@ export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
         totalSupply: null,
         ath: null,
         atl: null,
+        sparkline: [],
         tickers: [],
         updated: new Date().toISOString(),
         error: 'Markets unreachable — no invented price.',
@@ -185,6 +187,7 @@ export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
               total_supply?: number;
               ath?: { usd?: number };
               atl?: { usd?: number };
+              sparkline_7d?: { price?: number[] };
             };
             tickers?: Array<{ market?: { name?: string }; converted_volume?: { usd?: number } }>;
           })
@@ -212,6 +215,7 @@ export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
       totalSupply: md?.total_supply ?? null,
       ath: md?.ath?.usd ?? null,
       atl: md?.atl?.usd ?? null,
+      sparkline: md?.sparkline_7d?.price ?? [],
       tickers,
       updated: new Date().toISOString(),
     };
@@ -234,6 +238,7 @@ export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
       totalSupply: null,
       ath: null,
       atl: null,
+      sparkline: [],
       tickers: [],
       updated: new Date().toISOString(),
       error: err instanceof Error ? err.message : String(err),

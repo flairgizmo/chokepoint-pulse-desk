@@ -1,26 +1,23 @@
-import { papers, didYouKnow, QNT_CONTRACT } from '../data/catalog';
+import { papers, quotes, didYouKnow, QNT_CONTRACT } from '../data/catalog';
 import { CITIES } from '../data/cities';
 import { PEOPLE } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
 import { fetchMarkets, staleCache, type MarketPrint } from '../modules/markets';
 import { fetchNews, type NewsRiver } from '../modules/news';
-import { LiveFeeds } from '../modules/feeds';
-import { MissionBook } from '../modules/missions';
 import type { EarthGlobe } from './globe';
+import { chatMarkup, wireChat } from './chat';
 import { esc, fmtCompact, fmtMoney, fmtPct } from './html';
 import {
   DISCLAIMER,
   renderCbdc,
   renderCity,
-  renderDesk,
-  renderDeskDetail,
   renderDonate,
   renderGlossary,
+  renderGone,
   renderHome,
   renderMarkets,
   renderNews,
   renderNotFound,
-  renderOps,
   renderPeople,
   renderProgrammes,
   renderRead,
@@ -41,7 +38,6 @@ export class QntDesk {
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
-  private toastTimer = 0;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -57,7 +53,7 @@ export class QntDesk {
   private bindNav(): void {
     window.addEventListener('popstate', () => this.render());
     window.addEventListener('hashchange', () => {
-      if (location.hash.startsWith('#mission/')) this.syncLegacyHash();
+      if (location.hash.startsWith('#mission/')) this.go('/', true);
     });
     document.addEventListener('click', (ev) => {
       const target = ev.target as HTMLElement;
@@ -69,7 +65,6 @@ export class QntDesk {
       if (!a) return;
       const href = a.getAttribute('href');
       if (!href || href.startsWith('http') || href.startsWith('mailto:') || a.target === '_blank') return;
-      if (a.hasAttribute('data-gev-link')) return;
       ev.preventDefault();
       this.go(href);
     });
@@ -92,10 +87,7 @@ export class QntDesk {
 
   private syncLegacyHash(): void {
     const raw = location.hash.replace(/^#/, '');
-    if (raw.startsWith('mission/')) {
-      const id = raw.slice('mission/'.length);
-      if (MissionBook.byId(id)) this.go(`/desk/${id}`, true);
-    }
+    if (raw.startsWith('mission/')) this.go('/', true);
   }
 
   private go(path: string, replace = false): void {
@@ -112,7 +104,7 @@ export class QntDesk {
     const parts = path.split('/').filter(Boolean);
     if (parts.length === 0) return { name: 'home' };
     const head = parts[0];
-    if (head === 'desk' && parts[1]) return { name: 'desk-detail', id: parts[1] };
+    if (head === 'desk') return { name: 'gone-desk' };
     if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
@@ -156,14 +148,9 @@ export class QntDesk {
       case 'markets':
         return renderMarkets(this.markets ?? undefined);
       case 'news':
-      case 'desk-home':
         return renderNews(this.news ?? undefined);
-      case 'desk':
-        return renderDesk();
-      case 'desk-detail': {
-        const m = route.id ? MissionBook.byId(route.id) : undefined;
-        return m ? renderDeskDetail(m) : renderNotFound();
-      }
+      case 'gone-desk':
+        return renderGone('desk');
       case 'city': {
         const city = CITIES.find((c) => c.id === route.id);
         return city ? renderCity(city) : renderNotFound();
@@ -172,7 +159,7 @@ export class QntDesk {
         return renderDonate();
       case 'ops':
       case 'how':
-        return renderOps();
+        return renderGone('ops');
       default:
         return renderNotFound();
     }
@@ -199,25 +186,23 @@ export class QntDesk {
             <a href="/technology" ${route.name === 'technology' ? 'aria-current="page"' : ''}>Technology</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
             <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
-            <a href="/desk" ${route.name.startsWith('desk') ? 'aria-current="page"' : ''}>Desk</a>
+            <a href="/people" ${route.name === 'people' || route.name === 'team' ? 'aria-current="page"' : ''}>People</a>
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
                 <a href="/news">News</a>
                 <a href="/markets">Markets</a>
-                <a href="/people">People</a>
                 <a href="/cbdc">CBDC</a>
                 <a href="/standards">Standards</a>
                 <a href="/glossary">Glossary</a>
                 <a href="/donate">Donate</a>
-                <a href="/ops">How this is built</a>
               </div>
             </details>
           </nav>
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
             <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">${esc(shortcut)}</button>
-            <a class="btn btn-primary cta-nav" href="/desk"><span class="btn-swap"><span>Read the desk</span><span>Open the map</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
+            <a class="btn btn-primary cta-nav" href="/vision"><span class="btn-swap"><span>Read the thesis</span><span>Open Vision</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
         </header>
@@ -232,7 +217,6 @@ export class QntDesk {
         </div>
         <div class="mobile-nav" id="mobile-nav">
           <a href="/">Earth</a>
-          <a href="/desk">Desk</a>
           <a href="/news">News</a>
           <a href="/markets">Markets</a>
           <a href="/vision">Vision</a>
@@ -251,9 +235,8 @@ export class QntDesk {
               <span class="word">Qnt<span>Desk</span></span>
               <p>Independent encyclopedia of Overledger and programmable money. Not Quant Network.</p>
             </div>
-            <nav class="foot-col" aria-label="Desk">
-              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Desk</p>
-              <a href="/desk">Situation Room</a>
+            <nav class="foot-col" aria-label="Live">
+              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Live</p>
               <a href="/news">News</a>
               <a href="/markets">Markets</a>
               <a href="/donate">Donate</a>
@@ -271,7 +254,6 @@ export class QntDesk {
               <a href="/people">People</a>
               <a href="/standards">Standards</a>
               <a href="/glossary">Glossary</a>
-              <a href="/ops">How this is built</a>
             </nav>
           </div>
           <div class="foot-legal">
@@ -289,7 +271,7 @@ export class QntDesk {
           <input type="search" id="palette-input" placeholder="Search papers, people, cities, terms…" aria-label="Command palette" />
           <ul id="palette-results"></ul>
         </div>
-        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        ${chatMarkup()}
       </div>`;
   }
 
@@ -306,18 +288,39 @@ export class QntDesk {
     const palIn = this.root.querySelector<HTMLInputElement>('#palette-input');
     palIn?.addEventListener('input', () => this.paintPalette(palIn.value));
 
+    wireChat(this.root);
     if (route.name === 'home') void this.wireGlobe();
     if (route.name === 'markets') this.hydrateMarkets();
-    if (route.name === 'news') this.hydrateNews();
+    if (route.name === 'news') {
+      if (this.news) this.hydrateNews();
+      else this.bindNewsFilter();
+    }
     if (route.name === 'home') this.hydrateHomeLive();
-    if (route.name === 'desk') this.wireDesk();
-    if (route.name === 'desk-detail') this.wireCopy();
     if (route.name === 'research' || route.name === 'library') {
       const input = this.root.querySelector<HTMLInputElement>('#lib-search');
-      input?.addEventListener('input', () => {
+      const apply = () => {
         const main = this.root.querySelector('main');
-        if (main) main.innerHTML = renderResearch(input.value);
+        const on = this.root.querySelector<HTMLButtonElement>('#research-regions .chip.is-on');
+        if (main) main.innerHTML = renderResearch(input?.value ?? '', on?.dataset.region ?? 'ALL');
         this.wire(route);
+      };
+      input?.addEventListener('input', apply);
+      this.root.querySelectorAll<HTMLButtonElement>('#research-regions [data-region]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.root.querySelectorAll('#research-regions .chip').forEach((c) => c.classList.remove('is-on'));
+          btn.classList.add('is-on');
+          apply();
+        });
+      });
+    }
+    if (route.name === 'programmes' || route.name === 'institutional') {
+      const input = this.root.querySelector<HTMLInputElement>('#prog-search');
+      input?.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        this.root.querySelectorAll('#prog-grid .chapter').forEach((el) => {
+          const hit = !q || (el.textContent ?? '').toLowerCase().includes(q);
+          (el as HTMLElement).hidden = !hit;
+        });
       });
     }
     if (route.name === 'glossary') {
@@ -336,8 +339,9 @@ export class QntDesk {
       });
       this.root.querySelector('.stage')?.classList.add('open');
     }
-    if (route.name === 'people' && route.id) {
-      document.getElementById(route.id)?.scrollIntoView({ block: 'start' });
+    if (route.name === 'people') {
+      const id = route.id || location.hash.replace(/^#/, '');
+      if (id) document.getElementById(id)?.scrollIntoView({ block: 'start' });
     }
   }
 
@@ -369,7 +373,7 @@ export class QntDesk {
       const apply = () => {
         const key = input.dataset.globeOpt;
         const on = input.checked;
-        if (key === 'spin' || key === 'labels' || key === 'night' || key === 'routes' || key === 'corridors' || key === 'activity') {
+        if (key === 'spin' || key === 'labels' || key === 'day' || key === 'night' || key === 'routes' || key === 'corridors' || key === 'activity') {
           this.globe?.setOverlays({ [key]: on });
         }
       };
@@ -382,61 +386,6 @@ export class QntDesk {
     });
   }
 
-  private wireDesk(): void {
-    this.root.querySelectorAll<HTMLElement>('[data-mission]').forEach((el) => {
-      const id = el.dataset.mission!;
-      el.addEventListener('click', (ev) => {
-        const t = ev.target as HTMLElement;
-        if (t.closest('[data-gev-link]')) return;
-        if (t.closest('a')) return;
-        this.go(`/desk/${id}`);
-      });
-      el.addEventListener('keydown', (ev) => {
-        if (ev.key === 'Enter' || ev.key === ' ') {
-          ev.preventDefault();
-          this.go(`/desk/${id}`);
-        }
-      });
-    });
-    void this.fillDeskTickers();
-  }
-
-  private wireCopy(): void {
-    this.root.querySelectorAll<HTMLElement>('[data-copy]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        void navigator.clipboard.writeText(btn.dataset.copy ?? '').then(
-          () => this.toast('Copied'),
-          () => this.toast('Clipboard blocked — select the link manually'),
-        );
-      });
-    });
-  }
-
-  private async fillDeskTickers(): Promise<void> {
-    const host = this.root.querySelector('#desk-tickers');
-    if (!host) return;
-    const quakes = await LiveFeeds.fetchEarthquakes();
-    const hormuz = MissionBook.byId('hormuz');
-    const air = hormuz
-      ? await LiveFeeds.fetchAircraftNear('hormuz', hormuz.camera.lat, hormuz.camera.lon, 120)
-      : null;
-    const qRows = quakes.items
-      .slice(0, 6)
-      .map(
-        (q) => `<li class="ticker-item"><span class="mag">M${q.mag?.toFixed(1) ?? '?'}</span><a href="${esc(q.url)}" target="_blank" rel="noopener noreferrer">${esc(q.place)}</a></li>`,
-      )
-      .join('');
-    host.innerHTML = `<div class="ticker-grid">
-      <div><h3>USGS earthquakes</h3><span class="chip ${quakes.status.toLowerCase()}">${esc(quakes.status)}</span>
-        <ul class="ticker-list">${qRows || `<li class="empty-note">${esc(quakes.error ?? 'No M4.5+ in the current window.')}</li>`}</ul>
-        <p class="feed-foot">${esc(quakes.attribution)} · ${esc(quakes.sourceUrl)}</p>
-      </div>
-      <div><h3>Aircraft (optional)</h3><span class="chip ${(air?.status ?? 'EXAMPLE').toLowerCase()}">${esc(air?.status ?? 'EXAMPLE')}</span>
-        <p class="empty-note">${esc(air?.note ?? 'Optional adsb.lol probe — never invent tracks.')}</p>
-      </div>
-    </div>`;
-  }
-
   private hydrateMarkets(): void {
     const main = this.root.querySelector('main');
     if (!main || !this.markets) return;
@@ -446,7 +395,19 @@ export class QntDesk {
   private hydrateNews(): void {
     const main = this.root.querySelector('main');
     if (!main || !this.news) return;
-    main.innerHTML = renderNews(this.news);
+    const prev = this.root.querySelector<HTMLInputElement>('#news-filter')?.value ?? '';
+    main.innerHTML = renderNews(this.news, prev);
+    this.bindNewsFilter();
+  }
+
+  private bindNewsFilter(): void {
+    const main = this.root.querySelector('main');
+    const input = this.root.querySelector<HTMLInputElement>('#news-filter');
+    if (!main || !input) return;
+    input.addEventListener('input', () => {
+      main.innerHTML = renderNews(this.news ?? undefined, input.value);
+      this.bindNewsFilter();
+    });
   }
 
   private hydrateHomeLive(): void {
@@ -548,8 +509,6 @@ export class QntDesk {
       ['/markets', 'Markets', 'Live QNT'],
       ['/news', 'News', 'The wire'],
       ['/glossary', 'Glossary', 'Programmable money language'],
-      ['/desk', 'Situation Room', 'Chokepoint Pulse Desk'],
-      ['/ops', 'How this is built', 'Architecture note'],
     ];
     for (const [href, title, sub] of pages) {
       if (!query || `${title} ${sub}`.toLowerCase().includes(query)) rows.push({ href, title, sub });
@@ -561,7 +520,7 @@ export class QntDesk {
     }
     for (const person of PEOPLE) {
       if (query && `${person.name} ${person.role}`.toLowerCase().includes(query)) {
-        rows.push({ href: `/people`, title: person.name, sub: person.role });
+        rows.push({ href: `/people#${person.id}`, title: person.name, sub: person.role });
       }
     }
     for (const city of CITIES) {
@@ -579,18 +538,15 @@ export class QntDesk {
         rows.push({ href: d.to || '/', title: d.q, sub: d.category });
       }
     }
+    for (const quote of quotes) {
+      if (query && `${quote.who} ${quote.text}`.toLowerCase().includes(query)) {
+        rows.push({ href: `/${quote.page}`, title: `“${quote.text.slice(0, 72)}”`, sub: quote.who });
+      }
+    }
     box.innerHTML = rows
       .slice(0, 18)
       .map((r) => `<li><a href="${esc(r.href)}"><strong>${esc(r.title)}</strong><span>${esc(r.sub)}</span></a></li>`)
       .join('');
   }
 
-  private toast(msg: string): void {
-    const el = this.root.querySelector('#toast');
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.add('show');
-    window.clearTimeout(this.toastTimer);
-    this.toastTimer = window.setTimeout(() => el.classList.remove('show'), 2200);
-  }
 }
