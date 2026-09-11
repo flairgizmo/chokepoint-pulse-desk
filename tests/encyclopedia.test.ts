@@ -66,6 +66,11 @@ describe('Google News RSS parser', () => {
           <source>Example</source>
         </item>
         <item>
+          <title>Quantinuum (QNT) Stock May Be Too Expensive</title>
+          <link>https://example.com/quantinuum</link>
+          <source>simplywall.st</source>
+        </item>
+        <item>
           <title>Overledger is not a twelfth blockchain</title>
           <link>https://example.net/ol</link>
           <source>Industry Desk</source>

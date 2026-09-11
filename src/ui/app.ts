@@ -335,6 +335,10 @@ export class QntDesk {
       b.addEventListener('click', () => this.globe?.zoomBy(Number(b.dataset.zoom)));
     });
     this.root.querySelector('[data-reset-globe]')?.addEventListener('click', () => this.globe?.reset());
+    if (window.matchMedia('(max-width: 959px)').matches) {
+      const labels = this.root.querySelector<HTMLInputElement>('[data-globe-opt="labels"]');
+      if (labels) labels.checked = false;
+    }
     this.root.querySelectorAll<HTMLInputElement>('[data-globe-opt]').forEach((input) => {
       const apply = () => {
         const key = input.dataset.globeOpt;

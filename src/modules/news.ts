@@ -79,6 +79,7 @@ export function parseGoogleNewsRss(xml: string): Headline[] {
     const source = xmlTag(raw, 'source') || 'Google News';
     const pub = xmlTag(raw, 'pubDate');
     if (!title || !url) continue;
+    if (/\bquantinuum\b/i.test(`${title} ${source}`) && !/\bquant network\b/i.test(title)) continue;
     if (!RE.test(`${title} ${source}`)) continue;
     const ts = pub ? Date.parse(pub) : NaN;
     items.push({

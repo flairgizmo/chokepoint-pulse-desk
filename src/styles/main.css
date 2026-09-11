@@ -1053,6 +1053,40 @@ main {
   color: var(--accent);
 }
 
+@media (max-width: 959px) {
+  .earth-hero {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .earth-stage {
+    position: relative;
+    inset: auto;
+    height: min(62dvh, 520px);
+    min-height: 380px;
+  }
+
+  .earth-hud {
+    position: absolute;
+    inset: 0.5rem 0.5rem auto;
+    max-height: min(62dvh, 520px);
+    overflow: auto;
+  }
+
+  .earth-hero .earth-copy {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: min(640px, calc(100% - 2rem));
+    margin: 1rem 1rem 1.75rem;
+  }
+
+  .kind-legend {
+    display: none;
+  }
+}
+
 @media (min-width: 960px) {
   .nav {
     display: flex;
