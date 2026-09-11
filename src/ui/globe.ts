@@ -35,8 +35,8 @@ function makeLabelSprite(text: string): THREE.Sprite {
   const ctx = canvas.getContext('2d');
   if (ctx) {
     ctx.clearRect(0, 0, 256, 64);
-    ctx.font = '600 28px "IBM Plex Sans", system-ui, sans-serif';
-    ctx.fillStyle = 'rgba(7, 9, 12, 0.72)';
+    ctx.font = '600 28px "Inter Tight", system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(17, 17, 17, 0.78)';
     const w = Math.min(240, ctx.measureText(text).width + 24);
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 14, w, 36, 8);
@@ -211,7 +211,7 @@ export class EarthGlobe {
     const atmosphere = new THREE.Mesh(
       new THREE.SphereGeometry(1.045, 48, 32),
       new THREE.MeshBasicMaterial({
-        color: 0x1ec9b0,
+        color: 0x2451e6,
         transparent: true,
         opacity: 0.09,
         side: THREE.BackSide,
