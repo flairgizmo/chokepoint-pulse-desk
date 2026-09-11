@@ -7,7 +7,7 @@ import { fetchNews, type NewsRiver } from '../modules/news';
 import { LiveFeeds } from '../modules/feeds';
 import { MissionBook } from '../modules/missions';
 import type { EarthGlobe } from './globe';
-import { esc, fmtMoney, fmtPct } from './html';
+import { esc, fmtCompact, fmtMoney, fmtPct } from './html';
 import {
   DISCLAIMER,
   renderCbdc,
@@ -77,7 +77,10 @@ export class QntDesk {
         ev.preventDefault();
         this.togglePalette(true);
       }
-      if (ev.key === 'Escape') this.togglePalette(false);
+      if (ev.key === 'Escape') {
+        this.togglePalette(false);
+        this.closeMenu();
+      }
     });
     this.syncLegacyHash();
   }
@@ -94,6 +97,7 @@ export class QntDesk {
     const url = path.startsWith('/') ? path : `/${path}`;
     if (replace) history.replaceState({}, '', url);
     else history.pushState({}, '', url);
+    this.closeMenu();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     this.render();
   }
@@ -104,7 +108,7 @@ export class QntDesk {
     if (parts.length === 0) return { name: 'home' };
     const head = parts[0];
     if (head === 'desk' && parts[1]) return { name: 'desk-detail', id: parts[1] };
-    if (head === 'city' && parts[1]) return { name: 'city', id: parts[1] };
+    if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
     return { name: head };
@@ -173,6 +177,11 @@ export class QntDesk {
     const price = this.markets?.priceUsd != null ? fmtMoney(this.markets.priceUsd) : '—';
     const chg = this.markets?.change24h;
     const live = this.markets?.status === 'live';
+    const vol =
+      this.markets?.volume24h != null ? `Vol ${fmtCompact(this.markets.volume24h)}` : '';
+    const cap =
+      this.markets?.marketCap != null ? `Mcap ${fmtCompact(this.markets.marketCap)}` : '';
+    const shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
     return `
       <div class="app">
         <header class="top">
@@ -202,16 +211,20 @@ export class QntDesk {
           </nav>
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
-            <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">⌘K</button>
-            <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu">☰</button>
+            <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">${esc(shortcut)}</button>
+            <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
         </header>
         <div class="market-bar">
           <a href="/markets">Markets</a>
-          <span data-bar-print>${esc(price)} ${chg != null ? fmtPct(chg) : ''} · ${esc(this.markets?.venue ?? 'loading')}</span>
+          <span data-bar-print>${esc(price)} ${chg != null ? fmtPct(chg) : ''} 24h</span>
+          <span data-bar-vol>${esc(vol)}</span>
+          <span data-bar-cap>${esc(cap)}</span>
+          <span class="chip ${live ? 'live' : 'degraded'}" data-bar-status>${live ? 'Live' : esc(this.markets?.status ?? 'loading')}</span>
+          <span data-bar-venue>${esc(this.markets?.venue ? `${this.markets.venue} QNT-USD` : '')}</span>
           <a href="/news" class="push">Live news →</a>
         </div>
-        <div class="mobile-nav" hidden>
+        <div class="mobile-nav" id="mobile-nav">
           <a href="/">Earth</a>
           <a href="/desk">Desk</a>
           <a href="/news">News</a>
@@ -245,6 +258,7 @@ export class QntDesk {
             <span class="mono">QNT ${esc(QNT_CONTRACT)}</span>
           </p>
         </footer>
+        <div class="palette-scrim" hidden id="palette-scrim"></div>
         <div class="palette" hidden id="palette">
           <input type="search" id="palette-input" placeholder="Search papers, people, cities, terms…" aria-label="Command palette" />
           <ul id="palette-results"></ul>
@@ -255,9 +269,13 @@ export class QntDesk {
 
   private wire(route: Route): void {
     this.root.querySelector('[data-open-palette]')?.addEventListener('click', () => this.togglePalette(true));
+    this.root.querySelector('#palette-scrim')?.addEventListener('click', () => this.togglePalette(false));
     this.root.querySelector('[data-open-menu]')?.addEventListener('click', () => {
-      const nav = this.root.querySelector('.mobile-nav');
-      if (nav) nav.toggleAttribute('hidden');
+      const nav = this.root.querySelector('#mobile-nav');
+      const btn = this.root.querySelector('[data-open-menu]');
+      if (!nav || !btn) return;
+      const open = nav.classList.toggle('is-open');
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     const palIn = this.root.querySelector<HTMLInputElement>('#palette-input');
     palIn?.addEventListener('input', () => this.paintPalette(palIn.value));
@@ -317,6 +335,17 @@ export class QntDesk {
       b.addEventListener('click', () => this.globe?.zoomBy(Number(b.dataset.zoom)));
     });
     this.root.querySelector('[data-reset-globe]')?.addEventListener('click', () => this.globe?.reset());
+    this.root.querySelectorAll<HTMLInputElement>('[data-globe-opt]').forEach((input) => {
+      const apply = () => {
+        const key = input.dataset.globeOpt;
+        const on = input.checked;
+        if (key === 'spin' || key === 'labels' || key === 'night' || key === 'routes' || key === 'corridors' || key === 'activity') {
+          this.globe?.setOverlays({ [key]: on });
+        }
+      };
+      input.addEventListener('change', apply);
+      apply();
+    });
     this.root.querySelector<HTMLSelectElement>('#city-select')?.addEventListener('change', (ev) => {
       const id = (ev.target as HTMLSelectElement).value;
       this.globe?.focusCity(id);
@@ -401,10 +430,17 @@ export class QntDesk {
     }
     const news = this.root.querySelector('[data-home-news]');
     if (news && this.news) {
+      const meta = this.root.querySelector('[data-home-news-meta]');
+      if (meta) {
+        meta.textContent = `${this.news.items.length} headlines · ${this.news.status}`;
+      }
       news.innerHTML = this.news.items.length
         ? this.news.items
-            .slice(0, 4)
-            .map((h) => `<li><a href="${esc(h.url)}" target="_blank" rel="noopener noreferrer">${esc(h.title)}</a></li>`)
+            .slice(0, 5)
+            .map(
+              (h) =>
+                `<li><span class="kicker">${esc(h.lane)}</span> <a href="${esc(h.url)}" target="_blank" rel="noopener noreferrer">${esc(h.title)}</a></li>`,
+            )
             .join('')
         : `<li class="empty-note">${esc(this.news.error ?? 'No matching headlines yet.')}</li>`;
     }
@@ -422,8 +458,19 @@ export class QntDesk {
       if (chip && m.priceUsd != null) chip.textContent = fmtMoney(m.priceUsd);
       const bar = this.root.querySelector('[data-bar-print]');
       if (bar && m.priceUsd != null) {
-        bar.textContent = `${fmtMoney(m.priceUsd)} ${m.change24h != null ? fmtPct(m.change24h) : ''} · ${m.venue}`;
+        bar.textContent = `${fmtMoney(m.priceUsd)} ${m.change24h != null ? fmtPct(m.change24h) : ''} 24h`;
       }
+      const volEl = this.root.querySelector('[data-bar-vol]');
+      if (volEl && m.volume24h != null) volEl.textContent = `Vol ${fmtCompact(m.volume24h)}`;
+      const capEl = this.root.querySelector('[data-bar-cap]');
+      if (capEl && m.marketCap != null) capEl.textContent = `Mcap ${fmtCompact(m.marketCap)}`;
+      const statusEl = this.root.querySelector('[data-bar-status]');
+      if (statusEl) {
+        statusEl.textContent = m.status === 'live' ? 'Live' : m.status;
+        statusEl.className = `chip ${m.status.toLowerCase()}`;
+      }
+      const venueEl = this.root.querySelector('[data-bar-venue]');
+      if (venueEl) venueEl.textContent = m.venue ? `${m.venue} QNT-USD` : '';
       const route = this.parse();
       if (route.name === 'markets') this.hydrateMarkets();
       if (route.name === 'news') this.hydrateNews();
@@ -433,10 +480,17 @@ export class QntDesk {
     }
   }
 
+  private closeMenu(): void {
+    this.root.querySelector('#mobile-nav')?.classList.remove('is-open');
+    this.root.querySelector('[data-open-menu]')?.setAttribute('aria-expanded', 'false');
+  }
+
   private togglePalette(open: boolean): void {
     const pal = this.root.querySelector<HTMLElement>('#palette');
+    const scrim = this.root.querySelector<HTMLElement>('#palette-scrim');
     if (!pal) return;
     pal.hidden = !open;
+    if (scrim) scrim.hidden = !open;
     if (open) {
       const input = pal.querySelector<HTMLInputElement>('input');
       input?.focus();

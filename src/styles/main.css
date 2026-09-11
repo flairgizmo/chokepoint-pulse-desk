@@ -29,6 +29,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   color-scheme: dark;
   scroll-behavior: smooth;
@@ -263,6 +267,7 @@ a:hover {
   font-size: 0.72rem;
   color: var(--muted);
   overflow-x: auto;
+  white-space: nowrap;
 }
 
 .market-bar a {
@@ -279,12 +284,16 @@ a:hover {
 }
 
 .mobile-nav {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.25rem;
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
+}
+
+.mobile-nav.is-open {
+  display: grid;
 }
 
 .mobile-nav a {
@@ -312,7 +321,8 @@ main {
 .toolbar,
 .calendar,
 .voices,
-.wire {
+.wire,
+.essays {
   width: min(1120px, calc(100% - 2rem));
   margin-inline: auto;
 }
@@ -440,6 +450,49 @@ main {
   padding: 0.25rem 0.45rem;
 }
 
+.hud-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.hud-toggles label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2rem;
+}
+
+.hud-toggles input {
+  accent-color: var(--accent);
+}
+
+.essays {
+  padding: 3rem 0;
+}
+
+.month-item,
+.cal-item {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar ul {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
 .isr-line {
   width: 100%;
   margin: 0;
@@ -527,7 +580,8 @@ main {
 .compare,
 .detail-grid,
 .voice-grid,
-.ticker-grid {
+.ticker-grid,
+.essay-grid {
   display: grid;
   gap: 1rem;
 }
@@ -877,6 +931,13 @@ main {
   gap: 0.8rem 1.2rem;
 }
 
+.palette-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(4, 6, 8, 0.55);
+}
+
 .palette {
   position: fixed;
   inset: 12vh 1rem auto;
@@ -1002,17 +1063,23 @@ main {
   .qnt-chip {
     display: inline-flex;
   }
+  .mobile-nav,
+  .mobile-nav.is-open {
+    display: none !important;
+  }
   .triptych,
-  .live-rail,
   .compare,
   .detail-grid,
   .voice-grid,
   .ticker-grid {
     grid-template-columns: 1fr 1fr;
   }
-  .triptych,
-  .live-rail {
+  .triptych.hex,
+  .essay-grid {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+  .live-rail {
+    grid-template-columns: minmax(220px, 0.9fr) 1.4fr;
   }
   .earth-copy {
     left: 1.25rem;

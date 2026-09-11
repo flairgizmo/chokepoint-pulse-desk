@@ -17,7 +17,7 @@ This desk is **not** Quant Network, UK Finance, the Bank of England, the BIS, Or
 | People | Officers, architects, founding authors (including those who have left). Initials only where no official portrait exists. Faces are never generated. |
 | Research | 48 documents: whitepaper, ACM DLT paper, SATP drafts, patents, GBTD notices. |
 | Markets | Live QNT from Coinbase, Kraken or Binance; cap/supply/venues from CoinGecko. Last-good cache. Never invented. |
-| News | Headlines that name Quant / Overledger / QNT, plus official voices `@quantnetwork` `@OverledgerDev` `@gverdian`. |
+| News | Headlines that name Quant / Overledger / QNT from Google News (same-origin proxy), plus official voices `@quantnetwork` `@OverledgerDev` `@gverdian`. |
 | Glossary | The language of programmable money. |
 | Desk | Five chokepoint briefing cards that deep-link into [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view). |
 | ⌘K | Command palette across papers, people, cities and terms. |

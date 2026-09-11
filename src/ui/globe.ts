@@ -18,11 +18,40 @@ export interface GlobeOverlays {
   routes: boolean;
   corridors: boolean;
   activity: boolean;
+  labels: boolean;
+  night: boolean;
+  spin: boolean;
 }
 
 interface GlobeOptions {
   onCity: (id: string) => void;
   onHud: (hud: GlobeHud) => void;
+}
+
+function makeLabelSprite(text: string): THREE.Sprite {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  if (ctx) {
+    ctx.clearRect(0, 0, 256, 64);
+    ctx.font = '600 28px "IBM Plex Sans", system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(7, 9, 12, 0.72)';
+    const w = Math.min(240, ctx.measureText(text).width + 24);
+    ctx.beginPath();
+    if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 14, w, 36, 8);
+    else ctx.rect(8, 14, w, 36);
+    ctx.fill();
+    ctx.fillStyle = '#eef3f6';
+    ctx.fillText(text, 20, 40);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.scale.set(0.42, 0.105, 1);
+  sprite.center.set(0, 0.5);
+  return sprite;
 }
 
 function latLonToVec(lat: number, lon: number, r: number): THREE.Vector3 {
@@ -59,11 +88,21 @@ export class EarthGlobe {
   private rotY = 0.35;
   private rotX = 0.42;
   private distance = 4.2;
-  private overlays: GlobeOverlays = { routes: true, corridors: true, activity: true };
+  private overlays: GlobeOverlays = {
+    routes: true,
+    corridors: true,
+    activity: true,
+    labels: true,
+    night: true,
+    spin: false,
+  };
   private routeLines: THREE.Line[] = [];
   private corridorLines: THREE.Line[] = [];
   private pulse: THREE.Mesh | null = null;
   private pinMeshes: THREE.Mesh[] = [];
+  private labelSprites: THREE.Sprite[] = [];
+  private globeMesh: THREE.Mesh | null = null;
+  private nightTex: THREE.Texture | null = null;
   private raycaster = new THREE.Raycaster();
   private pointer = new THREE.Vector2();
   private opts: GlobeOptions;
@@ -81,6 +120,8 @@ export class EarthGlobe {
     for (const l of this.routeLines) l.visible = this.overlays.routes;
     for (const l of this.corridorLines) l.visible = this.overlays.corridors;
     if (this.pulse) this.pulse.visible = this.overlays.activity;
+    for (const s of this.labelSprites) s.visible = this.overlays.labels;
+    this.applyNight();
   }
 
   focusCity(id: string): void {
@@ -149,6 +190,7 @@ export class EarthGlobe {
         emissive: 0x031016,
       }),
     );
+    this.globeMesh = globe;
     group.add(globe);
 
     const loader = new THREE.TextureLoader();
@@ -157,12 +199,8 @@ export class EarthGlobe {
       'https://unpkg.com/three-globe@2.44.1/example/img/earth-night.jpg',
       (tex) => {
         tex.colorSpace = THREE.SRGBColorSpace;
-        const mat = globe.material as THREE.MeshStandardMaterial;
-        mat.map = tex;
-        mat.color = new THREE.Color(0xffffff);
-        mat.emissiveMap = tex;
-        mat.emissive = new THREE.Color(0x334455);
-        mat.needsUpdate = true;
+        this.nightTex = tex;
+        this.applyNight();
       },
       undefined,
       () => {
@@ -196,6 +234,11 @@ export class EarthGlobe {
       pin.userData.cityId = city.id;
       group.add(pin);
       this.pinMeshes.push(pin);
+      const label = makeLabelSprite(city.name);
+      label.position.copy(latLonToVec(city.lat, city.lon, 1.08));
+      label.userData.cityId = city.id;
+      group.add(label);
+      this.labelSprites.push(label);
     }
 
     const london = CITIES.find((c) => c.id === 'london')!;
@@ -299,8 +342,8 @@ export class EarthGlobe {
 
   private tick(): void {
     if (!this.renderer || !this.scene || !this.camera || !this.earth) return;
-    if (!this.reduced && !this.dragging) {
-      /* stationary by default — no auto-spin */
+    if (!this.reduced && !this.dragging && this.overlays.spin) {
+      this.rotY += 0.0012;
     }
     this.earth.rotation.y = this.rotY;
     this.earth.rotation.x = this.rotX * 0.15;
@@ -321,6 +364,23 @@ export class EarthGlobe {
       altitudeKm: Math.max(40, altitudeKm),
       zoom: Number((4.2 / this.distance).toFixed(1)),
     });
+  }
+
+  private applyNight(): void {
+    const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
+    if (!mat) return;
+    if (this.overlays.night && this.nightTex) {
+      mat.map = this.nightTex;
+      mat.emissiveMap = this.nightTex;
+      mat.color = new THREE.Color(0xffffff);
+      mat.emissive = new THREE.Color(0x334455);
+    } else {
+      mat.map = null;
+      mat.emissiveMap = null;
+      mat.color = new THREE.Color(0x0b2a32);
+      mat.emissive = new THREE.Color(0x031016);
+    }
+    mat.needsUpdate = true;
   }
 }
 

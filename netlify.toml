@@ -2,6 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
+# Same-origin news proxy so the browser never hits Google News CORS.
+[[redirects]]
+  from = "/api/gnews"
+  to = "https://news.google.com/rss/search?q=%22Quant+Network%22+OR+Overledger+OR+QNT&hl=en-GB&gl=GB&ceid=GB:en"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

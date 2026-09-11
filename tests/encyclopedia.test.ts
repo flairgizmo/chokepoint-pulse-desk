@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { QNT_CONTRACT, chapters, papers, didYouKnow } from '../src/data/catalog';
+import { QNT_CONTRACT, chapters, papers, didYouKnow, sources } from '../src/data/catalog';
 import { CITIES } from '../src/data/cities';
 import { GLOSSARY } from '../src/data/glossary';
 import { PEOPLE } from '../src/data/people';
-import { GBTD_BANKS } from '../src/data/timeline';
+import { GBTD_BANKS, THIS_MONTH } from '../src/data/timeline';
+import { laneFor, parseGoogleNewsRss } from '../src/modules/news';
 
 describe('QntDesk encyclopedia contract', () => {
   it('keeps the QNT ERC-20 address unmodified', () => {
@@ -35,5 +36,45 @@ describe('QntDesk encyclopedia contract', () => {
     expect(gbtd?.body.toLowerCase()).toContain('commercial-bank');
     expect(papers.some((p) => p.id === 'overledger-2018')).toBe(true);
     expect(papers.some((p) => p.id === 'acm-3564532')).toBe(true);
+  });
+
+  it('keeps September 2026 sourced notes on the record', () => {
+    expect(THIS_MONTH.length).toBeGreaterThanOrEqual(5);
+    const node = THIS_MONTH.find((n) => n.id === 'trusted-node');
+    expect(node?.href).toBe('trustedNode');
+    expect(sources.trustedNode).toContain('trusted-node-program');
+    expect(sources.ukfDigitalMarketsPress).toContain('ukfinance.org.uk');
+    expect(sources.hmtUkfSpeech).toContain('gov.uk');
+    expect(chapters.some((c) => c.id === 'trusted-node')).toBe(true);
+    expect(chapters.some((c) => c.id === 'uk-digital-markets')).toBe(true);
+  });
+});
+
+describe('Google News RSS parser', () => {
+  it('extracts Quant headlines and grades market copy', () => {
+    const xml = `<?xml version="1.0"?>
+      <rss><channel>
+        <item>
+          <title>Quant (QNT) Drops 4.47% Amid Broad Crypto Pullback - CoinMarketCap</title>
+          <link>https://news.google.com/rss/articles/abc</link>
+          <pubDate>Fri, 11 Sep 2026 12:00:00 GMT</pubDate>
+          <source url="https://coinmarketcap.com">CoinMarketCap</source>
+        </item>
+        <item>
+          <title>Unrelated soybean futures rally</title>
+          <link>https://example.com/soy</link>
+          <source>Example</source>
+        </item>
+        <item>
+          <title>Overledger is not a twelfth blockchain</title>
+          <link>https://example.net/ol</link>
+          <source>Industry Desk</source>
+        </item>
+      </channel></rss>`;
+    const items = parseGoogleNewsRss(xml);
+    expect(items).toHaveLength(2);
+    expect(items[0].lane).toBe('Markets');
+    expect(items[1].title).toContain('Overledger');
+    expect(laneFor('The Trusted Node Program', 'quant.network')).toBe('Official');
   });
 });

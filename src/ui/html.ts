@@ -27,6 +27,15 @@ export function fmtPct(n: number): string {
   return `${sign}${n.toFixed(2)}%`;
 }
 
+export function fmtCompact(n: number): string {
+  if (!Number.isFinite(n)) return '—';
+  const abs = Math.abs(n);
+  if (abs >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(2)}B`;
+  if (abs >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
+  if (abs >= 1_000) return `${(n / 1_000).toFixed(2)}K`;
+  return n.toFixed(0);
+}
+
 export function extLink(href: string, label: string, extraClass = ''): string {
   return `<a class="ext ${extraClass}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(label)} <span aria-hidden="true">↗</span></a>`;
 }

@@ -278,5 +278,19 @@
     "title": "IFGS, Digital Innovation Summit, Sibos",
     "body": "Three rooms, three dates. IFGS 2026 (28 April write-up): Verdian on a UK multi-money panel \u2014 commercial-bank money, tokenised deposits, stablecoins, a possible CBDC as a choice the National Payments Vision is supposed to leave open; Quant says it is engaged in the Synchronisation Lab. UK Finance Digital Innovation Summit (30 June 2026): Verdian with Barclays, Lloyds and NatWest on live GBTD pilots, plus the PayScript treasury demo. Sibos 2025: stand 13, Discover stage. The industry talks in panels. Quant shows up with working money.",
     "page": "programmes"
+  },
+  {
+    "id": "trusted-node",
+    "kicker": "Official \u00b7 September 2026",
+    "title": "Trusted Node Program \u2014 who processes the transaction",
+    "body": "On 10 September 2026 Quant published a perspective on the Trusted Node Program: KYC-verified operators, chosen jurisdictions for Fusion, and DORA Article 28 named as the compliance test. It is a company essay on who is allowed to process a transaction on that network \u2014 not a regulator circular and not a bank mandate. Read it as Quant\u2019s own sentence about Fusion operations.",
+    "page": "programmes"
+  },
+  {
+    "id": "uk-digital-markets",
+    "kicker": "Landscape \u00b7 September 2026",
+    "title": "UK Finance names GBTD as UK innovation",
+    "body": "On 8 September 2026 UK Finance, with Oliver Wyman, published Building Digital Markets of the Future and a press note setting out a securities-tokenisation roadmap. The report cites the Great British Tokenised Deposit as evidence the UK can lead while preserving stability. The Economic Secretary\u2019s speech at the launch flags a DIGIT gilt in Q1 2027. That speech does not name Quant. Grade: landscape around a live pilot Quant is already in, not a new Quant contract.",
+    "page": "programmes"
   }
 ]

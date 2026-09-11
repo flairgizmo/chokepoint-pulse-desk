@@ -52,6 +52,64 @@ export interface CalendarEvent {
   hrefLabel: string;
 }
 
+export interface MonthNote {
+  id: string;
+  date: string;
+  source: string;
+  title: string;
+  body: string;
+  href: string;
+  lane: 'Official' | 'Landscape' | 'Event';
+}
+
+export const THIS_MONTH: MonthNote[] = [
+  {
+    id: 'trusted-node',
+    date: '2026-09-10',
+    source: 'Quant Network',
+    title: 'The Trusted Node Program: Who’s processing your transaction?',
+    body: 'Official Quant perspective, 10 September 2026. KYC-verified operators and chosen jurisdictions for Fusion; DORA Article 28 is named as the compliance test. A company essay on who processes the transaction.',
+    href: 'trustedNode',
+    lane: 'Official',
+  },
+  {
+    id: 'ukf-roadmap',
+    date: '2026-09-08',
+    source: 'UK Finance',
+    title: 'UK Finance sets out roadmap to accelerate digital market adoption',
+    body: 'UK Finance × Oliver Wyman, 8 September 2026. The report names the Great British Tokenised Deposit as UK innovation — the live pilot Quant is already in.',
+    href: 'ukfDigitalMarketsPress',
+    lane: 'Landscape',
+  },
+  {
+    id: 'ukf-report',
+    date: '2026-09-07',
+    source: 'UK Finance / Oliver Wyman',
+    title: 'Building Digital Markets of the Future',
+    body: 'Report dated 7 September 2026, published 8 September. Securities tokenisation roadmap. GBTD is cited as evidence the UK can lead while preserving stability.',
+    href: 'ukfDigitalMarkets',
+    lane: 'Landscape',
+  },
+  {
+    id: 'hmt-digit',
+    date: '2026-09-08',
+    source: 'GOV.UK',
+    title: 'Economic Secretary to the Treasury speech at UK Finance',
+    body: 'HMT speech at the report launch, 8 September 2026. DIGIT gilt in Q1 2027, wholesale digital markets. Landscape around the same week as the UK Finance note. The speech does not name Quant.',
+    href: 'hmtUkfSpeech',
+    lane: 'Landscape',
+  },
+  {
+    id: 'sibos-miami-note',
+    date: '2026-08-05',
+    source: 'Quant',
+    title: 'Quant at Sibos 2026 Miami — 28 September to 1 October, stand DISL51',
+    body: 'Quant’s own Sibos 2026 page, posted from @quantnetwork on 5 August. Discover Stage 28 Sept 10:30 with Murex on programmable settlement. Welcome drinks 29 Sept 16:30–18:30. Conference stage 1 October. The week is still ahead.',
+    href: 'sibos2026',
+    lane: 'Event',
+  },
+];
+
 export const CALENDAR: CalendarEvent[] = [
   {
     id: 'sibos-2026',
