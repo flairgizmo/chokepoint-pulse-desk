@@ -1,15 +1,20 @@
 import { defineConfig } from 'vitest/config';
 
+const port = Number(process.env.PORT) || 5173;
+
 export default defineConfig({
   root: '.',
   publicDir: 'public',
+  appType: 'spa',
   server: {
-    port: 5173,
+    port,
     host: true,
+    allowedHosts: true,
   },
   preview: {
-    port: 5173,
+    port,
     host: true,
+    allowedHosts: true,
   },
   build: {
     outDir: 'dist',

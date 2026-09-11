@@ -1,0 +1,597 @@
+[
+  {
+    "id": "overledger-2018",
+    "title": "Quant Overledger: Whitepaper v0.1",
+    "year": "2018",
+    "venue": "UCL Discovery",
+    "kind": "primary",
+    "hrefKey": "whitepaperUcl",
+    "authors": [
+      "Gilbert Verdian",
+      "Paolo Tasca",
+      "Colin Paterson",
+      "Gaetano Mondelli"
+    ],
+    "lede": "The original gateway-OS argument: applications should not be trapped on a single ledger. Historical document, not a product spec."
+  },
+  {
+    "id": "mondelli-thesis-2017",
+    "title": "Blockchain a business solution in the Bitcoin Era",
+    "year": "2017",
+    "venue": "Politecnico di Torino \u00b7 UCL CBT",
+    "kind": "primary",
+    "hrefKey": "mondelliThesis",
+    "authors": [
+      "Gaetano Mondelli"
+    ],
+    "lede": "Master\u2019s thesis in Computer Engineering (rel. Elio Piccolo), placed at UCL\u2019s Centre for Blockchain Technologies \u2014 the same centre Tasca directed. Full text is secretated on PoliTo WebThesis; bibliographic record only."
+  },
+  {
+    "id": "treasury",
+    "title": "Overledger Network Treasury",
+    "year": "2018",
+    "venue": "Quant",
+    "kind": "primary",
+    "hrefKey": "treasuryPdf",
+    "authors": [],
+    "lede": "Treasury and network-design note from the whitepaper era. Not evidence of a live token economy."
+  },
+  {
+    "id": "acm-3564532",
+    "title": "Do You Need a Distributed Ledger Technology Interoperability Solution?",
+    "year": "2023",
+    "venue": "ACM Distributed Ledger Technologies",
+    "kind": "primary",
+    "hrefKey": "acmDltNeed",
+    "authors": [
+      "Rafael Belchior",
+      "Luke Riley",
+      "Thomas Hardjono",
+      "Andr\u00e9 Vasconcelos",
+      "Miguel Correia"
+    ],
+    "lede": "The academic paper behind Overledger\u2019s taxonomy. Modes (data transfer, asset transfer, asset exchange) \u00d7 infrastructure (nodes, proxies, gateways). Quant\u2019s product claim sits in the gateway cell."
+  },
+  {
+    "id": "belchior-survey",
+    "title": "A Survey on Blockchain Interoperability: Past, Present, and Future Trends",
+    "year": "2021",
+    "venue": "ACM Computing Surveys",
+    "kind": "survey",
+    "hrefKey": "belchiorSurveyArxiv",
+    "authors": [
+      "Rafael Belchior",
+      "Andr\u00e9 Vasconcelos",
+      "S\u00e9rgio Guerreiro",
+      "Miguel Correia"
+    ],
+    "lede": "The canonical literature review (284 papers + grey literature). Public connectors, blockchain engines, hybrid connectors. Context for SATP and Cacti, not a Quant SKU."
+  },
+  {
+    "id": "sok-interop",
+    "title": "SoK: Security and Privacy of Blockchain Interoperability",
+    "year": "2024",
+    "venue": "IEEE Symposium on Security and Privacy",
+    "kind": "survey",
+    "hrefKey": "sokArxiv",
+    "authors": [
+      "Andr\u00e9 Augusto",
+      "Rafael Belchior",
+      "Miguel Correia",
+      "Andr\u00e9 Vasconcelos",
+      "Luyao Zhang",
+      "Thomas Hardjono"
+    ],
+    "lede": "Systematisation of knowledge on what actually breaks when two ledgers talk. The security case for a standard gateway protocol rather than a zoo of bridges."
+  },
+  {
+    "id": "brief-history",
+    "title": "A Brief History of Blockchain Interoperability",
+    "year": "2024",
+    "venue": "MIT DSpace / CACM adjacency",
+    "kind": "survey",
+    "hrefKey": "briefHistory",
+    "authors": [
+      "Rafael Belchior",
+      "Thomas Hardjono"
+    ],
+    "lede": "Why interoperability is needed and what a decade of attempts actually produced. Academic corridor (Lisbon\u2013Boston), not a product brochure."
+  },
+  {
+    "id": "dlt-options",
+    "title": "DLT interoperability: what are the options?",
+    "year": "2021",
+    "venue": "Quant research",
+    "kind": "primary",
+    "hrefKey": "dltOptions",
+    "authors": [
+      "Luke Riley"
+    ],
+    "lede": "WEF-shaped categories compared on resilience, decentralisation and UX. Riley\u2019s conclusion: API gateway, and Overledger as the instance Quant ships."
+  },
+  {
+    "id": "tasca-enabling",
+    "title": "Enabling the Internet of Value",
+    "year": "2022",
+    "venue": "Springer",
+    "kind": "book",
+    "hrefKey": "tascaEnabling",
+    "authors": [
+      "Paolo Tasca (ed.)",
+      "Horst Treiblmaier (ed.)"
+    ],
+    "lede": "How blockchain connects global businesses. The philosophical library behind \u2018network of networks\u2019."
+  },
+  {
+    "id": "tasca-banking",
+    "title": "Banking Beyond Banks and Money",
+    "year": "2016",
+    "venue": "Springer",
+    "kind": "book",
+    "hrefKey": "tascaBanking",
+    "authors": [
+      "Paolo Tasca",
+      "Tomaso Aste",
+      "Loriana Pelizzon",
+      "Nicolas Perony"
+    ],
+    "lede": "What happens when money leaves the branch. Pre-Overledger academic context."
+  },
+  {
+    "id": "tasca-iov",
+    "title": "Internet of Value: A Risky Necessity",
+    "year": "2020",
+    "venue": "Frontiers in Blockchain",
+    "kind": "primary",
+    "hrefKey": "tascaIov",
+    "authors": [
+      "Paolo Tasca"
+    ],
+    "lede": "Opinion essay: a value layer on the internet is coming; governance risk is the price of admission."
+  },
+  {
+    "id": "flow-apps",
+    "title": "Flow Applications: build once, deploy everywhere",
+    "year": "2026",
+    "venue": "Quant",
+    "kind": "note",
+    "hrefKey": "flowApps",
+    "authors": [
+      "Luke Riley"
+    ],
+    "lede": "Overledger workflows that the same human UI, HTTP client or MCP-compatible agent can call."
+  },
+  {
+    "id": "three-layer",
+    "title": "The three-layer digital money architecture",
+    "year": "2026",
+    "venue": "Quant",
+    "kind": "note",
+    "hrefKey": "threeLayer",
+    "authors": [
+      "Gilbert Verdian"
+    ],
+    "lede": "Wholesale CBDC, tokenised deposits, public-chain stablecoins \u2014 plus a horizontal interoperability layer. Quant\u2019s published map of the future of money, not a central-bank paper."
+  },
+  {
+    "id": "satp-core",
+    "title": "Secure Asset Transfer Protocol (SATP) Core",
+    "year": "ongoing",
+    "venue": "IETF SATP working group",
+    "kind": "standards",
+    "hrefKey": "satpCore",
+    "authors": [
+      "Martin Hargreaves",
+      "Thomas Hardjono",
+      "Rafael Belchior",
+      "Venkatraman Ramakrishna",
+      "Alexandru Chiriac"
+    ],
+    "lede": "Standards-track draft. Gateway-to-gateway asset transfer. Not a Quant SKU."
+  },
+  {
+    "id": "satp-arch",
+    "title": "Secure Asset Transfer architecture",
+    "year": "ongoing",
+    "venue": "IETF SATP working group",
+    "kind": "standards",
+    "hrefKey": "satpArch",
+    "authors": [
+      "Thomas Hardjono",
+      "Martin Hargreaves",
+      "Ned Smith",
+      "Venkatraman Ramakrishna"
+    ],
+    "lede": "Architecture companion to SATP core."
+  },
+  {
+    "id": "odap",
+    "title": "Open Digital Asset Protocol (ODAP)",
+    "year": "2020",
+    "venue": "IETF individual draft",
+    "kind": "standards",
+    "hrefKey": "odap",
+    "authors": [
+      "Martin Hargreaves",
+      "Thomas Hardjono"
+    ],
+    "lede": "The 2020 precursor that became SATP. Same gateway-to-gateway shape; different name."
+  },
+  {
+    "id": "satp-adapt",
+    "title": "Adapting SATP for Secure Cross-Network Asset Exchange",
+    "year": "2025",
+    "venue": "TechRxiv",
+    "kind": "primary",
+    "hrefKey": "satpAdapt",
+    "authors": [
+      "Kjell-Erik Marstein",
+      "Paulina Davita",
+      "Luke Riley"
+    ],
+    "lede": "UCL master\u2019s work supervised by Riley: how SATP\u2019s transfer machine can be adapted for exchange, not only transfer. Academic adjacency, not a product spec."
+  },
+  {
+    "id": "iso-23516",
+    "title": "ISO/TS 23516:2026 \u2014 DLT interoperability framework",
+    "year": "2026",
+    "venue": "ISO/TC 307 (project 82098)",
+    "kind": "standards",
+    "hrefKey": "iso23516",
+    "authors": [],
+    "lede": "Framework for interoperability between DLT systems and entities outside them. Verdian convened WG7; the standard is ISO\u2019s, not a product."
+  },
+  {
+    "id": "iso-tc307",
+    "title": "ISO/TC 307 \u2014 Blockchain and distributed ledger technologies",
+    "year": "2016\u2013",
+    "venue": "ISO",
+    "kind": "standards",
+    "hrefKey": "isoTc307",
+    "authors": [],
+    "lede": "The committee Verdian proposed in 2015. Landscape for every interoperability conversation on this map."
+  },
+  {
+    "id": "patent-us",
+    "title": "Blockchain communications and ordering (US11842335B2)",
+    "year": "2023",
+    "venue": "USPTO",
+    "kind": "patent",
+    "hrefKey": "patentUs",
+    "authors": [
+      "Gilbert Verdian",
+      "Colin Paterson",
+      "Gaetano Mondelli",
+      "Paolo Tasca"
+    ],
+    "lede": "Granted method for chronologically ordering transactions from different blockchains. Assigned to Quant Network Ltd."
+  },
+  {
+    "id": "patent-app",
+    "title": "US20200311718A1 \u2014 application publication",
+    "year": "2020",
+    "venue": "USPTO",
+    "kind": "patent",
+    "hrefKey": "patentApp",
+    "authors": [],
+    "lede": "Application that became US11842335B2. Useful for the claim set as originally published."
+  },
+  {
+    "id": "patent-jp",
+    "title": "Japanese patent \u2014 multi-DLT token / Fusion rollup",
+    "year": "2026",
+    "venue": "Quant / JPO",
+    "kind": "patent",
+    "hrefKey": "patentJp",
+    "authors": [],
+    "lede": "Quant\u2019s note on Japanese acceptance covering updates across two or more ledgers \u2014 the Fusion rollup claim."
+  },
+  {
+    "id": "hargreaves-vocalink",
+    "title": "Vocalink / Mastercard payment patents (Hargreaves)",
+    "year": "2018\u20132019",
+    "venue": "USPTO",
+    "kind": "patent",
+    "hrefKey": "hargreavesPatents",
+    "authors": [
+      "Martin Hargreaves"
+    ],
+    "lede": "Two Vocalink-era filings Quant\u2019s people page cites: data-processing / merchant-mandate review, and international ACH with addressing. Payments rails before DLT."
+  },
+  {
+    "id": "gbtd-quant",
+    "title": "Quant selected for UK tokenised sterling deposits",
+    "year": "2025",
+    "venue": "Quant press",
+    "kind": "note",
+    "hrefKey": "gbtdQuant",
+    "authors": [],
+    "lede": "26 September 2025. UK Finance and six banks select Quant to provide GBTD infrastructure. Overledger + PayScript. Not a CBDC."
+  },
+  {
+    "id": "gbtd-ukf",
+    "title": "UK Finance live GBTD pilot announcement",
+    "year": "2025",
+    "venue": "UK Finance",
+    "kind": "note",
+    "hrefKey": "gbtdUkFinance",
+    "authors": [],
+    "lede": "Primary official-sector announcement. Barclays, HSBC, Lloyds, NatWest, Nationwide, Santander; Quant, EY, Linklaters supporting."
+  },
+  {
+    "id": "rosalind-quant",
+    "title": "Quant on Project Rosalind (BIS \u00d7 Bank of England)",
+    "year": "2023",
+    "venue": "Quant news \u00b7 16 June 2023",
+    "kind": "note",
+    "hrefKey": "rosalindQuant",
+    "authors": [],
+    "lede": "Concluded experiment. Quant says it was on the vendor team with UST. BIS is explicit: not BoE policy, not a launch."
+  },
+  {
+    "id": "rosalind-bis",
+    "title": "Project Rosalind \u2014 CBDC API prototypes",
+    "year": "2023",
+    "venue": "BIS Innovation Hub London",
+    "kind": "note",
+    "hrefKey": "rosalindBis",
+    "authors": [],
+    "lede": "Primary official-sector page. Retail-CBDC API experiment run with the Bank of England. Treat as concluded lab work."
+  },
+  {
+    "id": "oracle-blog",
+    "title": "Oracle Blockchain Platform Digital Assets Edition",
+    "year": "2025",
+    "venue": "Oracle blogs",
+    "kind": "note",
+    "hrefKey": "oracleBlog",
+    "authors": [],
+    "lede": "Oracle names Quant Overledger as the orchestration layer for cross-ledger unified-ledger workflows. Hyperledger Fabric underneath."
+  },
+  {
+    "id": "x402",
+    "title": "Connecting agentic AI payments to the banking system",
+    "year": "2026",
+    "venue": "Quant",
+    "kind": "note",
+    "hrefKey": "x402Quant",
+    "authors": [],
+    "lede": "Quant joins the Linux Foundation x402 Foundation. Fusion Layer 2.5 claimed x402-ready. Agents settling in tokenised bank money is the thesis, not a live CBDC."
+  },
+  {
+    "id": "boe-lab",
+    "title": "Quant in the Bank of England Synchronisation Lab",
+    "year": "2026",
+    "venue": "Quant press",
+    "kind": "note",
+    "hrefKey": "boeLab",
+    "authors": [],
+    "lede": "Industry experimentation in a simulated RT2 environment. Quant\u2019s own note says this is not BoE endorsement, policy or a live deployment."
+  },
+  {
+    "id": "murex",
+    "title": "Murex \u00d7 Quant \u2014 tokenised deposits in MX.3",
+    "year": "2026",
+    "venue": "Murex / Quant",
+    "kind": "note",
+    "hrefKey": "murexNews",
+    "authors": [],
+    "lede": "25 March 2026. Overledger lets MX.3 talk to multiple ledgers for tokenised deposits and digital bonds."
+  },
+  {
+    "id": "deloitte-token",
+    "title": "Bank tokenization and global payments",
+    "year": "2024",
+    "venue": "Deloitte Insights",
+    "kind": "survey",
+    "hrefKey": "deloittePdf",
+    "authors": [],
+    "lede": "Landscape survey on tokenised deposits and wholesale payments."
+  },
+  {
+    "id": "synchro",
+    "title": "What is Synchro / Synthorus",
+    "year": "n.d.",
+    "venue": "Bank of England adjacency",
+    "kind": "note",
+    "hrefKey": "synchroPdf",
+    "authors": [],
+    "lede": "RTGS / research thread. Distinct from the 2026 Synchronisation Lab note."
+  },
+  {
+    "id": "verdian-cv",
+    "title": "Gilbert Verdian \u2014 public biography pack",
+    "year": "2019",
+    "venue": "Source pack",
+    "kind": "note",
+    "hrefKey": "verdianBioPdf",
+    "authors": [],
+    "lede": "Public-source pack used to keep the People chapter honest."
+  },
+  {
+    "id": "riley-hyperledger",
+    "title": "Hyperledger In-depth: categorisation of DLT interoperability",
+    "year": "2021",
+    "venue": "Linux Foundation / Hyperledger webinar",
+    "kind": "note",
+    "hrefKey": "hyperledgerRileyTalk",
+    "authors": [
+      "Luke Riley"
+    ],
+    "lede": "Riley\u2019s 2021 public walkthrough of the same taxonomy as the Quant research note, hosted by Hyperledger."
+  },
+  {
+    "id": "riley-voting",
+    "title": "Voting over a Distributed Ledger: An interdisciplinary perspective",
+    "year": "2021",
+    "venue": "Foundations and Trends in Microeconomics",
+    "kind": "primary",
+    "hrefKey": "rileyVoting",
+    "authors": [
+      "Amrita Dhillon",
+      "Grammateia Kotsialou",
+      "Peter McBurney",
+      "Luke Riley"
+    ],
+    "lede": "Riley\u2019s King\u2019s College years: what a ledger can and cannot do for elections. Pre-Quant academic work, not an Overledger feature."
+  },
+  {
+    "id": "riley-shareholder",
+    "title": "Using distributed ledger technology for shareholder rights management",
+    "year": "2018",
+    "venue": "AAMAS",
+    "kind": "primary",
+    "hrefKey": "rileyShareholder",
+    "authors": [
+      "Grammateia Kotsialou",
+      "Luke Riley",
+      "Amrita Dhillon",
+      "Toktam Mahmoodi",
+      "Peter McBurney"
+    ],
+    "lede": "AAMAS paper from the KCL voting-and-governance lab. How a permissioned ledger can record shareholder rights \u2014 adjacency to programmable assets, not a Quant product."
+  },
+  {
+    "id": "hardjono-design",
+    "title": "Towards a Design Philosophy for Interoperable Blockchain Systems",
+    "year": "2018",
+    "venue": "arXiv",
+    "kind": "primary",
+    "hrefKey": "hardjonoDesign",
+    "authors": [
+      "Thomas Hardjono",
+      "Alexander Lipton",
+      "Alex Pentland"
+    ],
+    "lede": "MIT Connection Science: interoperability as a design philosophy, not a bridge. Same year as the Overledger whitepaper; same problem, different room."
+  },
+  {
+    "id": "hardjono-tems",
+    "title": "Toward an Interoperability Architecture for Blockchain Autonomous Systems",
+    "year": "2019",
+    "venue": "IEEE Transactions on Engineering Management",
+    "kind": "primary",
+    "hrefKey": "hardjonoIeeeTems",
+    "authors": [
+      "Thomas Hardjono",
+      "Alexander Lipton",
+      "Alex Pentland"
+    ],
+    "lede": "IEEE TEMS special issue. The architecture paper SATP\u2019s gateway model sits next to. MIT, not Quant."
+  },
+  {
+    "id": "hardjono-gateways",
+    "title": "Blockchain Gateways, Bridges and Delegated Hash-Locks",
+    "year": "2021",
+    "venue": "arXiv",
+    "kind": "primary",
+    "hrefKey": "hardjonoGateways",
+    "authors": [
+      "Thomas Hardjono"
+    ],
+    "lede": "Why a gateway is not a bridge. The vocabulary SATP later standardises."
+  },
+  {
+    "id": "hermes",
+    "title": "Hermes: Fault-tolerant middleware for blockchain interoperability",
+    "year": "2022",
+    "venue": "Future Generation Computer Systems",
+    "kind": "primary",
+    "hrefKey": "hermes",
+    "authors": [
+      "Rafael Belchior",
+      "Andr\u00e9 Vasconcelos",
+      "Miguel Correia",
+      "Thomas Hardjono"
+    ],
+    "lede": "Academic middleware paper. Cousin to Cacti and SATP, not a Quant SKU."
+  },
+  {
+    "id": "satp-recovery",
+    "title": "SATP gateway recovery",
+    "year": "ongoing",
+    "venue": "IETF individual draft",
+    "kind": "standards",
+    "hrefKey": "satpRecovery",
+    "authors": [
+      "Rafael Belchior"
+    ],
+    "lede": "How a SATP gateway resumes a transfer after a crash. Individual draft, not a Quant product."
+  },
+  {
+    "id": "satp-views",
+    "title": "Protocol for requesting and sharing views across networks",
+    "year": "ongoing",
+    "venue": "IETF individual draft",
+    "kind": "standards",
+    "hrefKey": "satpViews",
+    "authors": [
+      "Venkatraman Ramakrishna",
+      "Vinayaka Pandit"
+    ],
+    "lede": "IBM Research SATP adjacency: how two networks share a view of state. Complements core transfer."
+  },
+  {
+    "id": "satp-use-cases",
+    "title": "Secure Asset Transfer use cases",
+    "year": "2022",
+    "venue": "IETF individual draft",
+    "kind": "standards",
+    "hrefKey": "satpUseCases",
+    "authors": [
+      "Venkatraman Ramakrishna"
+    ],
+    "lede": "Why anyone would run SATP: the use-case draft from IBM Research."
+  },
+  {
+    "id": "cacti-whitepaper",
+    "title": "Hyperledger Cacti whitepaper",
+    "year": "2019\u2013",
+    "venue": "Linux Foundation",
+    "kind": "standards",
+    "hrefKey": "cactiWhitepaper",
+    "authors": [],
+    "lede": "LF Decentralized Trust\u2019s enterprise interoperability project. Belchior maintains it. Open-source neighbour of Overledger, not a Quant SKU."
+  },
+  {
+    "id": "satp-impl",
+    "title": "SATP Implementation Guide",
+    "year": "ongoing",
+    "venue": "IETF individual draft",
+    "kind": "standards",
+    "hrefKey": "satpImplGuide",
+    "authors": [],
+    "lede": "How a SATP gateway actually locks, burns, mints and commits on the networks it represents. Methodology for implementers, not a Quant SKU."
+  },
+  {
+    "id": "satp-exchange",
+    "title": "Secure Asset Exchange Protocol",
+    "year": "2025",
+    "venue": "IETF individual draft",
+    "kind": "standards",
+    "hrefKey": "satpExchange",
+    "authors": [
+      "Kjell-Erik Marstein"
+    ],
+    "lede": "Lock-and-assign instead of burn-and-mint: SATP\u2019s cousin for exchange rather than transfer."
+  },
+  {
+    "id": "ai-agents-delegation",
+    "title": "Authenticated Delegation and Authorized AI Agents",
+    "year": "2025",
+    "venue": "arXiv 2501.09674 \u00b7 ICML 2025 position",
+    "kind": "primary",
+    "hrefKey": "aiAgentsArxiv",
+    "authors": [
+      "Tobin South",
+      "Samuele Marro",
+      "Thomas Hardjono",
+      "Robert Mahari",
+      "Cedric Deslandes Whitney",
+      "Dazza Greenwood",
+      "Alan Chan",
+      "Alex Pentland"
+    ],
+    "lede": "Extends OAuth 2.0 and OpenID Connect with agent-specific credentials. The ethics constraint next to Flow/MCP and x402. MIT, not a Quant product."
+  }
+]

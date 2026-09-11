@@ -1,19 +1,23 @@
 {
-  "name": "chokepoint-pulse-desk",
-  "version": "1.0.0",
+  "name": "qntdesk",
+  "version": "2.0.0",
   "private": true,
-  "description": "Chokepoint Pulse Desk (Situation Brief) — thin intelligence desk companion for God's Eye View",
+  "description": "QntDesk — independent encyclopedia of Quant Network, Overledger and programmable money, with the Chokepoint Pulse Desk still on board.",
   "type": "module",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --port 5173",
+    "preview": "vite preview --host",
     "test": "vitest run",
     "test:watch": "vitest",
     "proof": "node scripts/capture-proof.mjs"
   },
+  "dependencies": {
+    "three": "^0.186.0"
+  },
   "devDependencies": {
+    "@types/three": "^0.186.0",
     "puppeteer": "^24.0.0",
     "typescript": "^5.8.2",
     "vite": "^6.2.0",
