@@ -300,7 +300,7 @@ a:hover {
   font-size: 1.2rem;
 }
 
-.cta-nav {
+a.btn.cta-nav {
   display: none;
 }
 
@@ -627,19 +627,23 @@ main {
 .btn-swap {
   display: grid;
   align-items: center;
+  height: 1.1em;
+  overflow: hidden;
 }
 
 .btn-swap span {
   grid-area: 1 / 1;
+  line-height: 1.1;
+  white-space: nowrap;
   transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .btn-swap span:last-child {
-  transform: translateY(130%);
+  transform: translateY(110%);
 }
 
 .btn:hover .btn-swap span:first-child {
-  transform: translateY(-130%);
+  transform: translateY(-110%);
 }
 
 .btn:hover .btn-swap span:last-child {
@@ -1368,9 +1372,12 @@ main {
 }
 
 @media (min-width: 960px) {
-  .nav,
-  .cta-nav {
+  .nav {
     display: flex;
+  }
+
+  a.btn.cta-nav {
+    display: inline-flex;
   }
 
   .menu-btn {
