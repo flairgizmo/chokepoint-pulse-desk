@@ -1,26 +1,24 @@
 # QntDesk
 
-Independent encyclopedia of [Quant Network](https://quant.network), Overledger, programmable money and adjacent standards — plus the original **Chokepoint Pulse Desk** situation room.
+Independent **protocol magazine** and encyclopedia of [Quant Network](https://quant.network), Overledger, programmable money and adjacent standards.
 
-> The Internet of Value, made visible.
+> The Internet of Value, written as history, present, and what is still ahead.
 
 This desk is **not** Quant Network, UK Finance, the Bank of England, the BIS, Oracle, Murex, or the Linux Foundation. Every named programme is graded: live pilot, lab, announced, or landscape. Nothing here is financial advice.
-
-**UNCLASSIFIED // PUBLIC SOURCES ONLY**
 
 ## What you can do
 
 | Surface | What it holds |
 | --- | --- |
-| Earth | Interactive globe. Click London, Tokyo, Miami… sourced city dossiers. Token corridors are programme arcs, not live SWIFT. |
-| Vision / Stack / Programmes / CBDC / Standards | The encyclopedia chapters — Overledger as gateway OS, GBTD vs CBDC, SATP stages, ISO/TS 23516. |
-| People | Officers, architects, founding authors (including those who have left). Initials only where no official portrait exists. Faces are never generated. |
+| Notes | Professional blog built from sourced Did-you-know items and September 2026 notes. Nothing invented. |
+| Earth | Interactive Three.js globe. Click London, Tokyo, Miami… sourced city dossiers. Token corridors are programme arcs, not live SWIFT. |
+| Vision / Stack / Programmes / CBDC / Standards | Encyclopedia chapters — Overledger as gateway OS, GBTD vs CBDC, SATP stages, ISO/TS 23516. |
+| People | Officers, architects, founding authors (including those who have left). Faces are never generated. |
 | Research | 48 documents: whitepaper, ACM DLT paper, SATP drafts, patents, GBTD notices. |
 | Markets | Live QNT from Coinbase, Kraken or Binance; cap/supply/venues from CoinGecko. Last-good cache. Never invented. |
-| News | Headlines that name Quant / Overledger / QNT from Google News (same-origin proxy), plus official voices `@quantnetwork` `@OverledgerDev` `@gverdian`. |
+| News | Headlines that name Quant / Overledger / QNT from Google News, plus official voices `@quantnetwork` `@OverledgerDev` `@gverdian`. |
 | Glossary | The language of programmable money. |
-| Desk | Five chokepoint briefing cards that deep-link into [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view). |
-| ⌘K | Command palette across papers, people, cities and terms. |
+| ⌘K | Command palette across notes, papers, people, cities and terms. |
 
 ## Facts this build refuses to blur
 
@@ -35,21 +33,12 @@ This desk is **not** Quant Network, UK Finance, the Bank of England, the BIS, Or
 
 ```bash
 npm install
-npm run dev          # preview on the port Vite prints
+npm run dev          # 0.0.0.0:8080
 npm test             # share-link encoder + encyclopedia contract
 npm run build        # typecheck + production build → dist/
 ```
 
-Optional:
-
-```bash
-# .env
-VITE_GEV_BASE=http://localhost:4173
-```
-
-## Pair with local God's Eye View
-
-The Situation Room still encodes GEV share hashes (`l=a` AIS, `l=f` flights). Deep-links target local GEV (`http://localhost:4173` by default). [maptheworld.ai](https://maptheworld.ai) is Bilawal’s Substack — not the app.
+Auth is off. No accounts, no wallets, no seed prompts.
 
 ## License
 

@@ -12,6 +12,7 @@ import {
 import { CITIES } from '../src/data/cities';
 import { GLOSSARY } from '../src/data/glossary';
 import { PEOPLE } from '../src/data/people';
+import { featuredNote, notesFromDesk, noteById } from '../src/data/notes';
 import { GBTD_BANKS, THIS_MONTH } from '../src/data/timeline';
 import { laneFor, parseGoogleNewsRss } from '../src/modules/news';
 
@@ -78,6 +79,17 @@ describe('QntDesk encyclopedia contract', () => {
     expect(sources.hmtUkfSpeech).toContain('gov.uk');
     expect(chapters.some((c) => c.id === 'trusted-node')).toBe(true);
     expect(chapters.some((c) => c.id === 'uk-digital-markets')).toBe(true);
+  });
+
+  it('publishes sourced magazine notes from DYK and this month', () => {
+    const notes = notesFromDesk();
+    expect(notes.length).toBeGreaterThanOrEqual(40);
+    expect(noteById('not-cbdc')?.body.toLowerCase()).toContain('commercial');
+    expect(featuredNote().id).toBe('not-cbdc');
+    expect(notes.every((n) => n.body.trim().length > 20)).toBe(true);
+    expect(notes.some((n) => n.era === 'history')).toBe(true);
+    expect(notes.some((n) => n.era === 'present')).toBe(true);
+    expect(notes.some((n) => n.era === 'future')).toBe(true);
   });
 });
 
