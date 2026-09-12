@@ -2378,8 +2378,8 @@ button.chip {
   border-radius: 22px;
   overflow: hidden;
   background: #071428;
-  min-height: 12rem;
-  max-height: min(42dvh, 420px);
+  min-height: 11rem;
+  max-height: min(28dvh, 280px);
   aspect-ratio: 16 / 9;
 }
 
