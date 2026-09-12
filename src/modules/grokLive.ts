@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { ChatReply, ChatTurn } from './assistant';
+import { sanitizeHistory, sanitizeQuestion } from './chatGuard';
 
 import { XAI_CHAT } from './liveSources';
 
@@ -45,7 +46,8 @@ export async function answerWithGrok(
   briefing: ChatReply,
 ): Promise<ChatReply | null> {
   const key = grokApiKey();
-  if (!key || !question.trim()) return null;
+  const asked = sanitizeQuestion(question);
+  if (!key || !asked) return null;
 
   const system = [
     'You are Ask Grok on QntDesk, a research desk on Quant Network, Overledger and programmable money.',
@@ -61,8 +63,8 @@ export async function answerWithGrok(
 
   const messages = [
     { role: 'system', content: system },
-    ...history.slice(-8).map((t) => ({ role: t.role, content: t.content })),
-    { role: 'user', content: question.trim() },
+    ...sanitizeHistory(history).map((t) => ({ role: t.role, content: t.content })),
+    { role: 'user', content: asked },
   ];
 
   const res = await fetch(XAI_CHAT, {

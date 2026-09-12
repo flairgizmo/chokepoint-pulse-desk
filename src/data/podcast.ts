@@ -32,14 +32,74 @@ export const HOSTS: Record<HostId, { name: string; title: string; voice: string 
   james: {
     name: 'James Hale',
     title: 'QntDesk correspondent',
-    voice: 'alan',
+    voice: 'en-GB-RyanNeural',
   },
   amelia: {
     name: 'Amelia Crowe',
     title: 'QntDesk correspondent',
-    voice: 'cori',
+    voice: 'en-GB-SoniaNeural',
   },
 };
+
+export interface TalkLine {
+  who: HostId;
+  text: string;
+}
+
+const JAMES_CUES = [
+  'Keep the names on it — that is how a desk stays honest.',
+  'And that is the through-line of this series.',
+  'Which is why the banks are already in the room.',
+  'Optimistic, and on the record.',
+];
+
+const AMELIA_CUES = [
+  'Exactly. Stay with that thread.',
+  'And that is how the rooms connect.',
+  'Yes — the architecture is already live.',
+  'That is the optimistic read, and the filings support it.',
+];
+
+export function talkTrack(script: string, opener: HostId = 'james'): TalkLine[] {
+  const cleaned = script
+    .replace(/This is QntDesk, and I am James Hale\.\s*/g, '')
+    .replace(/Amelia Crowe, QntDesk\.\s*/g, '')
+    .replace(/Twenty short films\. Five minutes each\.\s*/gi, '')
+    .replace(/Twenty films\. Five minutes\.\s*/gi, '');
+  const sentences = cleaned
+    .split(/(?<=[.!?])\s+(?=[A-Z“"‘])/)
+    .map((s) => s.replace(/\s+/g, ' ').trim())
+    .filter((s) => s.length > 6);
+  const lines: TalkLine[] = [];
+  let who: HostId = opener;
+  let cue = 0;
+  for (let i = 0; i < sentences.length; i += 2) {
+    const chunk = sentences.slice(i, i + 2).join(' ');
+    if (!chunk) continue;
+    if (!lines.length) {
+      lines.push({ who, text: chunk });
+    } else {
+      const bank = who === 'amelia' ? AMELIA_CUES : JAMES_CUES;
+      lines.push({ who, text: `${bank[cue % bank.length]} ${chunk}` });
+      cue += 1;
+    }
+    who = who === 'james' ? 'amelia' : 'james';
+  }
+  if (lines.length === 1) {
+    const other: HostId = opener === 'james' ? 'amelia' : 'james';
+    lines.push({
+      who: other,
+      text: 'And the next film picks up the next room — same network, same record.',
+    });
+  }
+  return lines;
+}
+
+export function dialogueScript(lines: TalkLine[]): string {
+  return lines
+    .map((l) => `${HOSTS[l.who].name}: ${l.text}`)
+    .join('\n\n');
+}
 
 function ep(
   n: number,
@@ -70,7 +130,12 @@ function ep(
     videoSrc: `/podcast/beds/${bed}.mp4`,
     posterSrc: `/podcast/stills/${bed}.png`,
     quotes,
-    script: `${script.trim()}\n\n${(CODA[n] ?? '').trim()}\n\n${(ACT3[n] ?? '').trim()}`.trim(),
+    script: dialogueScript(
+      talkTrack(
+        `${script.trim()}\n\n${(CODA[n] ?? '').trim()}\n\n${(ACT3[n] ?? '').trim()}`.trim(),
+        host,
+      ),
+    ),
   };
 }
 
@@ -96,7 +161,7 @@ export const EPISODES: Episode[] = [
         text: 'Leading pioneers in unlocking the power of programmable money.',
       },
     ],
-    `This is QntDesk, and I am James Hale. Twenty short films. Five minutes each. The story of Quant Network, Overledger, and the future of money — told from the record, latest facts first, voices named.
+    `This is QntDesk. James Hale and Amelia Crowe open the Quant story from the beginning — the rooms, the rails, and the people who built the gateway. The story of Quant Network, Overledger, and the future of money, told from the record, voices named.
 
 Paolo Tasca, writing in Frontiers in Blockchain on the fifteenth of September, twenty twenty, titled his essay with four words that still set the temperature of this industry: Internet of Value: A Risky Necessity. He pictured an information society of digital things and digital citizens, a world where value is exchanged as freely and easily as information. That is the destination. The road is the work.
 
@@ -133,7 +198,7 @@ Stay with us. The Internet of Value is no longer a slogan. It is a set of named 
         text: 'Quant’s Overledger is the pre-eminent instance of API gateway categorisation.',
       },
     ],
-    `Amelia Crowe, QntDesk. If you remember one object from this series, remember this one. Overledger is a gateway operating system. It maps a request onto the settlement domains it is connected to — Ethereum, Hyperledger Fabric, Corda, a bank core, Faster Payments, SWIFT.
+    `If you remember one object from this series, remember this one. Overledger is a gateway operating system. It maps a request onto the settlement domains it is connected to — Ethereum, Hyperledger Fabric, Corda, a bank core, Faster Payments, SWIFT.
 
 The twenty eighteen whitepaper, version zero point one, sits at UCL Discovery. Verdian, Tasca, Paterson, Mondelli, Overledger whitepaper v0.1, twenty eighteen, UCL Discovery abstract: This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.
 
@@ -736,12 +801,16 @@ That is the future of money as this desk can state it from the record. Commercia
 
 QNT is how the network is metered. Overledger is how the networks speak. The banks still owe the holder. The instruction is new.
 
-Twenty films. Five minutes. The people named, the titles attached, the dates on the page. This is QntDesk. The Internet of Value is already in the room. Thank you for listening, and for watching.`,
+Twenty films. The people named, the titles attached, the dates on the page. This is QntDesk. The Internet of Value is already in the room. Thank you for listening, and for watching.`,
   ),
 ];
 
 export function episodesNewestFirst(): Episode[] {
   return [...EPISODES].sort((a, b) => b.n - a.n || b.published.localeCompare(a.published));
+}
+
+export function episodesInOrder(): Episode[] {
+  return [...EPISODES].sort((a, b) => a.n - b.n);
 }
 
 export function episodeById(id: string): Episode | undefined {

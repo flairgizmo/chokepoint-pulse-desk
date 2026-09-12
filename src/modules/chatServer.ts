@@ -1,4 +1,5 @@
 import { answerFromDesk, type ChatReply, type ChatTurn } from './assistant';
+import { sanitizeHistory, sanitizeQuestion } from './chatGuard';
 import { answerWithGrok, grokConnected } from './grokLive';
 import { fetchMarketsDirect } from './markets';
 import { fetchNewsRiver } from './news';
@@ -38,12 +39,14 @@ async function liveDeskBrief(): Promise<string> {
 }
 
 export async function answerChat(question: string, history: ChatTurn[] = []): Promise<ChatReply> {
-  const local = answerFromDesk(question);
+  const asked = sanitizeQuestion(question);
+  const turns = sanitizeHistory(history);
+  const local = answerFromDesk(asked);
   if (!grokConnected()) return local;
   try {
     const extra = await liveDeskBrief();
     const briefing = extra ? { ...local, text: `${local.text}\n\n${extra}` } : local;
-    const live = await answerWithGrok(question, history, briefing);
+    const live = await answerWithGrok(asked, turns, briefing);
     return live ?? local;
   } catch {
     return { ...local, mode: 'sourced' };

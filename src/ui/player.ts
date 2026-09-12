@@ -1,4 +1,4 @@
-import { episodeById, episodeByN, episodesNewestFirst, type Episode } from '../data/podcast';
+import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
 
 function fmtTime(sec: number): string {
@@ -8,15 +8,7 @@ function fmtTime(sec: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function hostInitial(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((p) => p[0] ?? '')
-    .join('')
-    .slice(0, 2);
-}
-
-export function playerMarkup(ep: Episode, playlist = episodesNewestFirst()): string {
+export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string {
   const list = playlist
     .map(
       (item) => `<li>
@@ -24,7 +16,7 @@ export function playerMarkup(ep: Episode, playlist = episodesNewestFirst()): str
           <span class="n">${String(item.n).padStart(2, '0')}</span>
           <span>
             <strong>${esc(item.title)}</strong>
-            <em>${esc(item.hostName)} · ${esc(item.hostTitle)}</em>
+            <em>James Hale and Amelia Crowe</em>
           </span>
         </a>
       </li>`,
@@ -38,15 +30,30 @@ export function playerMarkup(ep: Episode, playlist = episodesNewestFirst()): str
       </blockquote>`,
     )
     .join('');
-  const newer = episodeByN(ep.n + 1);
-  const older = episodeByN(ep.n - 1);
+  const next = episodeByN(ep.n + 1);
+  const prev = episodeByN(ep.n - 1);
+  const bubbles = ep.script
+    .split(/\n\n+/)
+    .map((block) => {
+      const m = /^(James Hale|Amelia Crowe):\s*([\s\S]+)$/.exec(block.trim());
+      if (!m) return `<p>${esc(block)}</p>`;
+      const who = m[1] === 'James Hale' ? 'james' : 'amelia';
+      return `<p class="pod-line ${who}"><strong>${esc(m[1])}</strong> ${esc(m[2])}</p>`;
+    })
+    .join('');
+  const dots = playlist
+    .map(
+      (item) =>
+        `<a class="series-dot${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}" aria-label="Episode ${item.n}">${String(item.n).padStart(2, '0')}</a>`,
+    )
+    .join('');
   return `
-    <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-video="${esc(ep.videoSrc)}" data-next="${older ? `/podcast/${esc(older.id)}` : ''}">
+    <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-video="${esc(ep.videoSrc)}" data-next="${next ? `/podcast/${esc(next.id)}` : ''}">
       <div class="player-stage">
         <video class="player-video" poster="${esc(ep.posterSrc)}" playsinline loop muted></video>
         <canvas class="player-wave" data-wave aria-hidden="true"></canvas>
         <div class="player-scrim">
-          <p class="kicker">Episode ${String(ep.n).padStart(2, '0')} · ${esc(ep.hostName)}</p>
+          <p class="kicker">Episode ${String(ep.n).padStart(2, '0')} · James Hale and Amelia Crowe</p>
           <h2 class="display">${esc(ep.title)}</h2>
         </div>
       </div>
@@ -66,24 +73,26 @@ export function playerMarkup(ep: Episode, playlist = episodesNewestFirst()): str
         </select>
       </div>
       <p class="player-byline">
-        <span class="host-tile" aria-hidden="true">${esc(hostInitial(ep.hostName))}</span>
-        <strong>${esc(ep.hostName)}</strong> · ${esc(ep.hostTitle)} · film
+        <span class="host-tile james" aria-hidden="true">JH</span>
+        <span class="host-tile amelia" aria-hidden="true">AC</span>
+        <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · correspondents · series ${String(ep.n).padStart(2, '0')} of 20
       </p>
+      <nav class="series-dots" aria-label="Series">${dots}</nav>
       <nav class="player-adjacent">
-        ${newer ? `<a class="text-link" href="/podcast/${esc(newer.id)}">← ${esc(newer.title)}</a>` : '<span></span>'}
-        ${older ? `<a class="text-link" href="/podcast/${esc(older.id)}">${esc(older.title)} →</a>` : '<span></span>'}
+        ${prev ? `<a class="text-link" href="/podcast/${esc(prev.id)}">← ${esc(prev.title)}</a>` : '<span></span>'}
+        ${next ? `<a class="text-link" href="/podcast/${esc(next.id)}">${esc(next.title)} →</a>` : '<span></span>'}
       </nav>
     </section>
     <section class="pod-quotes">
       <p class="kicker">In this episode</p>
       ${quotes}
     </section>
-    <details class="pod-transcript">
-      <summary>Transcript</summary>
-      <p>${esc(ep.script).replace(/\n\n/g, '</p><p>')}</p>
+    <details class="pod-transcript" open>
+      <summary>The conversation</summary>
+      ${bubbles}
     </details>
     <nav class="pod-list" aria-label="All episodes">
-      <p class="kicker">Latest first</p>
+      <p class="kicker">The series, in order</p>
       <ol>${list}</ol>
     </nav>`;
 }
@@ -216,7 +225,7 @@ export function relatedEpisodeCard(id: string): string {
     <span>
       <p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
       <strong>${esc(ep.title)}</strong>
-      <em>${esc(ep.hostName)} · ${esc(ep.hostTitle)}</em>
+      <em>James Hale and Amelia Crowe</em>
     </span>
   </a>`;
 }

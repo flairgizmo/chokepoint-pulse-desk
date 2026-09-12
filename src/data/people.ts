@@ -10,6 +10,7 @@ export interface Person {
   bio: string;
   note?: string;
   href?: string;
+  photo?: string;
 }
 
 export const PEOPLE: Person[] = [
@@ -21,6 +22,7 @@ export const PEOPLE: Person[] = [
     initials: 'GV',
     current: true,
     href: 'verdianPeople',
+    photo: '/people/verdian.jpg',
     bio: 'Left the CISO chair at Vocalink — Mastercard’s UK payments infrastructure — to build a gateway OS instead of another chain. Two decades securing government and bank rails; the person who put blockchain on the ISO agenda. CISO of the Year in 2017. Left that chair in May 2018. ISO/TC 307 is that refusal written as a standard. Quant is that refusal written as a company.',
   },
   {
@@ -31,6 +33,7 @@ export const PEOPLE: Person[] = [
     initials: 'MH',
     current: true,
     href: 'hargreavesPeople',
+    photo: '/people/hargreaves.jpg',
     bio: 'CPO for financial services. Thirteen years of Vocalink / Mastercard product, two payments patents, and a named author of IETF SATP — the gateway protocol, not a Quant SKU. SATP is a two-phase commit because payments people already know what atomic settlement has to feel like.',
   },
   {
@@ -41,6 +44,7 @@ export const PEOPLE: Person[] = [
     initials: 'LR',
     current: true,
     href: 'russPeople',
+    photo: '/people/russ.jpg',
     bio: 'Joined Quant in 2024. Sales, marketing and product development. Previously CRO at Tradeteq — private debt and trade finance, not a DLT native.',
   },
   {
@@ -61,6 +65,7 @@ export const PEOPLE: Person[] = [
     initials: 'LR',
     current: true,
     href: 'rileyPeople',
+    photo: '/people/riley.jpg',
     bio: 'Joined from King’s College London in September 2019 to run Quant Labs and Overledger R&D. The ACM interoperability paper, the 2021 options note, Flow Applications for AI agents — his name is on the research the product sits on. Academia had taxonomies; Quant needed one a procurement team could use.',
   },
   {
@@ -71,7 +76,7 @@ export const PEOPLE: Person[] = [
     initials: 'TS',
     current: true,
     href: 'sentelidisPeople',
-    bio: 'Leads Quant’s engineering organisation. Public about-us title; joined 2020. Not a whitepaper-era author. Faces are taken from Quant’s public people pages — never generated.',
+    bio: 'Leads Quant’s engineering organisation. Public about-us title; joined 2020. Not a whitepaper-era author. His official story lives on Quant’s people page.',
   },
   {
     id: 'facer',
@@ -81,6 +86,7 @@ export const PEOPLE: Person[] = [
     initials: 'CF',
     current: true,
     href: 'facerPeople',
+    photo: '/people/facer.png',
     bio: 'Quant product manager and co-chair of the IETF SATP working group. The protocol is standardised at the IETF; Quant contributes, it does not own it. A standard dies in a drawer if nobody chairs the call.',
   },
   {
@@ -120,7 +126,8 @@ export const PEOPLE: Person[] = [
     group: 'heads',
     initials: 'RB',
     current: true,
-    bio: 'Writes Quant’s public notes, including the Oracle Blockchain Platform Digital Assets partnership.',
+    photo: '/people/baugh.png',
+    bio: 'Writes Quant’s public communications, including the Oracle Blockchain Platform Digital Assets partnership.',
   },
   {
     id: 'lovesey',
@@ -129,8 +136,8 @@ export const PEOPLE: Person[] = [
     group: 'heads',
     initials: 'CL',
     current: true,
-    note: 'Identified by a 2026 community thread as Technical Lead. Previously Engineering Manager at Vocalink. Not on Quant’s about page. No photograph — initials only.',
-    bio: 'Technical Lead as identified by a 2026 community thread — previously Engineering Manager at Vocalink. Not on Quant’s public about page. This encyclopedia files the thread as a sourced gap, not as an official title, and does not invent a portrait.',
+    note: 'Identified by a 2026 community thread as Technical Lead. Previously Engineering Manager at Vocalink. Not on Quant’s about page. Initials only until Quant publishes a portrait.',
+    bio: 'Technical Lead as identified by a 2026 community thread — previously Engineering Manager at Vocalink. Not on Quant’s public about page. This encyclopedia files the thread as a sourced gap, not as an official title.',
   },
   {
     id: 'tasca',
@@ -180,6 +187,7 @@ export const PEOPLE: Person[] = [
     initials: 'GD',
     current: true,
     href: 'dietrichPeople',
+    photo: '/people/dietrich.jpg',
     bio: 'Joined the Quant board in April 2019 from Rockefeller Capital Management. US expansion and institutional adjacency — not an operating executive.',
   },
   {
@@ -190,6 +198,7 @@ export const PEOPLE: Person[] = [
     initials: 'NS',
     current: true,
     href: 'smitPeople',
+    photo: '/people/smit.jpg',
     bio: 'Vice Chairman of Comcast Corporation. Former President and CEO of Comcast Cable. Quant board director. Documented director — not an operating owner of the technology thesis.',
   },
   {
@@ -200,6 +209,7 @@ export const PEOPLE: Person[] = [
     initials: 'DY',
     current: true,
     href: 'yatesPeople',
+    photo: '/people/yates.jpg',
     bio: 'Former CEO and Chairman of Vocalink. Joined the Quant board in October 2024. Payments-infrastructure lineage.',
   },
 ];

@@ -10,6 +10,15 @@
   XAI_API_KEY = "Change me to your xAI key from https://console.x.ai"
   XAI_MODEL = "grok-3-mini"
 
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://i.ytimg.com https://unpkg.com; media-src 'self'; connect-src 'self' https://api.coingecko.com https://api.exchange.coinbase.com https://api.kraken.com https://api.binance.com https://unpkg.com; worker-src 'self' blob:; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

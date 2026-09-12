@@ -29,10 +29,21 @@ function chatDesk(): Plugin {
       return;
     }
     const chunks: Buffer[] = [];
-    req.on('data', (c) => chunks.push(Buffer.from(c)));
+    let received = 0;
+    req.on('data', (c) => {
+      received += c.length;
+      if (received > 24_000) {
+        res.statusCode = 413;
+        res.end('Payload too large');
+        req.destroy();
+        return;
+      }
+      chunks.push(Buffer.from(c));
+    });
     req.on('end', () => {
       void (async () => {
         const { answerChat } = await import('./src/modules/chatServer');
+        const { sanitizeHistory, sanitizeQuestion } = await import('./src/modules/chatGuard');
         let question = '';
         let history: Array<{ role: 'user' | 'assistant'; content: string }> = [];
         try {
@@ -40,8 +51,8 @@ function chatDesk(): Plugin {
             question?: string;
             history?: Array<{ role: 'user' | 'assistant'; content: string }>;
           };
-          question = String(parsed.question ?? '');
-          history = Array.isArray(parsed.history) ? parsed.history : [];
+          question = sanitizeQuestion(parsed.question);
+          history = sanitizeHistory(parsed.history);
         } catch {
           question = '';
         }
@@ -114,11 +125,35 @@ function liveApis(): Plugin {
   };
 }
 
+function securityHeaders(): Plugin {
+  const apply = (res: ServerResponse): void => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+  };
+  return {
+    name: 'qntdesk-security-headers',
+    configureServer(server) {
+      server.middlewares.use((_req, res, next) => {
+        apply(res);
+        next();
+      });
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use((_req, res, next) => {
+        apply(res);
+        next();
+      });
+    },
+  };
+}
+
 export default defineConfig({
   root: '.',
   publicDir: 'public',
   appType: 'spa',
-  plugins: [liveApis(), chatDesk()],
+  plugins: [securityHeaders(), liveApis(), chatDesk()],
   server: {
     port,
     host: true,

@@ -1,4 +1,4 @@
-/** Interactive 4D tesseract — the QntDesk mark, drawn live. */
+/** Interactive 4D network — drawn live on the home hero. */
 
 export function mountTesseract(canvas: HTMLCanvasElement): () => void {
   const ctx = canvas.getContext('2d');
@@ -9,7 +9,7 @@ export function mountTesseract(canvas: HTMLCanvasElement): () => void {
   let ax = 0.42;
   let ay = 0.31;
   let aw = 0.18;
-  let spin = reduced ? 0 : 0.004;
+  let spin = reduced ? 0 : 0.002;
   let dragging = false;
   let lastX = 0;
   let lastY = 0;
@@ -72,13 +72,13 @@ export function mountTesseract(canvas: HTMLCanvasElement): () => void {
       return [W / 2 + x * scale, H / 2 + y * scale] as [number, number];
     });
     ctx.lineCap = 'round';
-    ctx.shadowColor = 'rgba(77, 180, 255, 0.55)';
-    ctx.shadowBlur = Math.max(8, W / 90);
+    ctx.shadowColor = 'rgba(47, 91, 255, 0.28)';
+    ctx.shadowBlur = Math.max(4, W / 140);
     for (let i = 0; i < edges.length; i += 1) {
       const [a, b] = edges[i];
       const g = ctx.createLinearGradient(pts[a][0], pts[a][1], pts[b][0], pts[b][1]);
-      g.addColorStop(0, 'rgba(77, 180, 255, 0.92)');
-      g.addColorStop(1, 'rgba(140, 90, 255, 0.92)');
+      g.addColorStop(0, 'rgba(47, 91, 255, 0.92)');
+      g.addColorStop(1, 'rgba(0, 212, 170, 0.88)');
       ctx.strokeStyle = g;
       ctx.lineWidth = Math.max(1.4, W / 380);
       ctx.beginPath();
@@ -87,7 +87,7 @@ export function mountTesseract(canvas: HTMLCanvasElement): () => void {
       ctx.stroke();
     }
     ctx.shadowBlur = Math.max(10, W / 70);
-    ctx.fillStyle = '#9ee7ff';
+    ctx.fillStyle = '#00D4AA';
     for (const [x, y] of pts) {
       ctx.beginPath();
       ctx.arc(x, y, Math.max(2.4, W / 260), 0, Math.PI * 2);

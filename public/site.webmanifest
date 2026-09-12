@@ -4,8 +4,8 @@
   "description": "Overledger, programmable sterling, live QNT, and a twenty-part film on the Internet of Value.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#050810",
-  "theme_color": "#050810",
+  "background_color": "#eaf1ff",
+  "theme_color": "#2F5BFF",
   "icons": [
     {
       "src": "/brand/qntdesk-mark.svg",

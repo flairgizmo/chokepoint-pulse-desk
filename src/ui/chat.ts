@@ -30,7 +30,7 @@ export function chatMarkup(): string {
       </ol>
       <form id="grok-form">
         <label class="sr-only" for="grok-input">Ask Grok</label>
-        <input id="grok-input" type="text" autocomplete="off" placeholder="What is GBTD?" />
+        <input id="grok-input" type="text" autocomplete="off" maxlength="2000" placeholder="What is GBTD?" />
         <button type="submit" class="btn btn-primary">Ask</button>
       </form>
     </div>
@@ -98,7 +98,7 @@ export function wireChat(root: HTMLElement): void {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, history, local }),
+        body: JSON.stringify({ question: q.slice(0, 2000), history: history.slice(-8) }),
         signal: AbortSignal.timeout(22_000),
       });
       if (res.ok) {

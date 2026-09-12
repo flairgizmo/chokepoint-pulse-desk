@@ -74,11 +74,11 @@ describe('Official and standards parsers', () => {
 });
 
 describe('Brand mark', () => {
-  it('ships the tesseract lockup, icon, motion beds, and a dark mark', () => {
+  it('ships the bright Q mark, icon, motion beds, and lockup', () => {
     const svg = readFileSync('public/brand/qntdesk-mark.svg', 'utf8');
-    expect(svg).toContain('#4D8DFF');
-    expect(svg).toContain('#7B6CFF');
-    expect(svg).toContain('#050810');
+    expect(svg).toContain('#2F5BFF');
+    expect(svg).toContain('#00D4AA');
+    expect(svg).toContain('#EAF1FF');
     expect(existsSync('public/brand/qntdesk-lockup.jpg')).toBe(true);
     expect(existsSync('public/brand/qntdesk-icon.png')).toBe(true);
     expect(existsSync('public/brand/qntdesk-logo.png')).toBe(true);
@@ -86,10 +86,12 @@ describe('Brand mark', () => {
     expect(existsSync('public/visuals/beds/hero.mp4')).toBe(true);
     expect(existsSync('public/visuals/beds/gateway.mp4')).toBe(true);
     expect(existsSync('public/visuals/stills/sterling.jpg')).toBe(true);
+    expect(existsSync('public/people/verdian.jpg')).toBe(true);
+    expect(existsSync('public/people/hargreaves.jpg')).toBe(true);
   });
 });
 
-describe('Tesseract desk', () => {
+describe('Public desk', () => {
   it('puts the interactive mark and official constellation on the home page', () => {
     const html = renderHome();
     expect(html).toContain('id="tesseract"');
