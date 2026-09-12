@@ -5,7 +5,7 @@ export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
     <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
       <span class="grok-mark" aria-hidden="true">G</span>
-      Ask Grok
+      <span class="grok-label">Ask Grok</span>
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
