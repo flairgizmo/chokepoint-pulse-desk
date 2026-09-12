@@ -40,6 +40,7 @@ export const PEOPLE: Person[] = [
     group: 'c-suite',
     initials: 'LR',
     current: true,
+    href: 'russPeople',
     bio: 'Joined Quant in 2024. Sales, marketing and product development. Previously CRO at Tradeteq — private debt and trade finance, not a DLT native.',
   },
   {
@@ -49,6 +50,7 @@ export const PEOPLE: Person[] = [
     group: 'c-suite',
     initials: 'PA',
     current: true,
+    href: 'ashtonPeople',
     bio: 'Joined Quant in 2022. People, employer brand and talent. Nearly thirty years in international HR.',
   },
   {
@@ -98,6 +100,7 @@ export const PEOPLE: Person[] = [
     group: 'heads',
     initials: 'KR',
     current: true,
+    href: 'rawelPeople',
     bio: 'Joined 2023 from Finastra, Santander UK, Accenture, Citi and Google. Leads Quant’s sales organisation.',
   },
   {
@@ -107,6 +110,7 @@ export const PEOPLE: Person[] = [
     group: 'heads',
     initials: 'JA',
     current: true,
+    href: 'alvesPeople',
     bio: 'Listed on Quant’s about page as Lead Sales Engineer — the technical counterpart to the sales organisation.',
   },
   {
@@ -185,6 +189,7 @@ export const PEOPLE: Person[] = [
     group: 'board',
     initials: 'NS',
     current: true,
+    href: 'smitPeople',
     bio: 'Vice Chairman of Comcast Corporation. Former President and CEO of Comcast Cable. Quant board director. Documented director — not an operating owner of the technology thesis.',
   },
   {
@@ -194,6 +199,7 @@ export const PEOPLE: Person[] = [
     group: 'board',
     initials: 'DY',
     current: true,
+    href: 'yatesPeople',
     bio: 'Former CEO and Chairman of Vocalink. Joined the Quant board in October 2024. Payments-infrastructure lineage.',
   },
 ];

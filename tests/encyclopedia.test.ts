@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { QNT_CONTRACT, chapters, papers, didYouKnow, sources } from '../src/data/catalog';
+import {
+  QNT_CONTRACT,
+  chapters,
+  papers,
+  didYouKnow,
+  sources,
+  quotes,
+  paperYearKey,
+  papersNewestFirst,
+} from '../src/data/catalog';
 import { CITIES } from '../src/data/cities';
 import { GLOSSARY } from '../src/data/glossary';
 import { PEOPLE } from '../src/data/people';
@@ -36,6 +45,28 @@ describe('QntDesk encyclopedia contract', () => {
     expect(gbtd?.body.toLowerCase()).toContain('commercial-bank');
     expect(papers.some((p) => p.id === 'overledger-2018')).toBe(true);
     expect(papers.some((p) => p.id === 'acm-3564532')).toBe(true);
+  });
+
+  it('files sourced quotations from people and the company', () => {
+    expect(quotes.length).toBeGreaterThanOrEqual(40);
+    for (const q of quotes) {
+      expect(sources[q.href], q.id).toMatch(/^https?:\/\//);
+      expect(q.text.trim().length).toBeGreaterThan(8);
+    }
+    expect(quotes.some((q) => q.who.includes('Verdian'))).toBe(true);
+    expect(quotes.some((q) => q.who.includes('Tasca'))).toBe(true);
+    expect(quotes.some((q) => q.who.includes('Riley'))).toBe(true);
+    expect(quotes.some((q) => q.who.includes('Hargreaves'))).toBe(true);
+    expect(quotes.some((q) => q.who.includes('Rawel'))).toBe(true);
+    expect(quotes.some((q) => q.who === 'Quant')).toBe(true);
+    expect(quotes.some((q) => q.who === 'UK Finance')).toBe(true);
+    expect(chapters.find((c) => c.id === 'not-l1')?.body).not.toMatch(/Hmm/);
+  });
+
+  it('lists the library newest first', () => {
+    const list = papersNewestFirst();
+    expect(list).toHaveLength(48);
+    expect(paperYearKey(list[0])).toBeGreaterThanOrEqual(paperYearKey(list[list.length - 1]));
   });
 
   it('keeps September 2026 sourced notes on the record', () => {

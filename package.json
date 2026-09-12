@@ -2,7 +2,7 @@
   "name": "qntdesk",
   "version": "2.0.0",
   "private": true,
-  "description": "QntDesk — independent encyclopedia of Quant Network, Overledger and programmable money, with the Chokepoint Pulse Desk still on board.",
+  "description": "QntDesk — independent encyclopedia of Quant Network, Overledger and programmable money.",
   "type": "module",
   "license": "MIT",
   "scripts": {
