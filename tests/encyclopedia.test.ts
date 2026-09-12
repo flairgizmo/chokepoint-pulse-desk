@@ -100,6 +100,9 @@ describe('QntDesk encyclopedia contract', () => {
   it('ships a twenty-part podcast with named hosts and sourced quotes', () => {
     expect(EPISODES).toHaveLength(20);
     expect(episodesNewestFirst()[0].n).toBe(20);
+    expect(EPISODES.some((e) => /Keep the names on it|Exactly\. Stay with that thread/.test(e.script))).toBe(
+      false,
+    );
     for (const ep of EPISODES) {
       expect(ep.script.trim().length).toBeGreaterThan(1400);
       expect(ep.hostName.length).toBeGreaterThan(3);

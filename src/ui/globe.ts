@@ -41,7 +41,7 @@ function makeLabelSprite(text: string): THREE.Sprite {
   const ctx = canvas.getContext('2d');
   if (ctx) {
     ctx.clearRect(0, 0, 256, 64);
-    ctx.font = '600 28px "Inter Tight", system-ui, sans-serif';
+    ctx.font = '600 28px "IBM Plex Sans", system-ui, sans-serif';
     ctx.fillStyle = 'rgba(11, 16, 22, 0.82)';
     const w = Math.min(240, ctx.measureText(text).width + 24);
     ctx.beginPath();
@@ -110,7 +110,7 @@ export class EarthGlobe {
   private startY = 0;
   private rotY = 0.35;
   private rotX = 0.42;
-  private distance = 3.8;
+  private distance = 3.4;
   private overlays: GlobeOverlays = {
     routes: true,
     corridors: true,
@@ -157,17 +157,18 @@ export class EarthGlobe {
     if (!city) return;
     this.rotY = THREE.MathUtils.degToRad(-city.lon) + Math.PI;
     this.rotX = THREE.MathUtils.degToRad(city.lat) * 0.65;
-    this.distance = 2.35;
+    this.distance = 1.42;
   }
 
   zoomBy(delta: number): void {
-    this.distance = THREE.MathUtils.clamp(this.distance + delta, 1.55, 7.5);
+    const step = this.distance < 1.8 ? delta * 0.55 : delta;
+    this.distance = THREE.MathUtils.clamp(this.distance + step, 1.12, 8.2);
   }
 
   reset(): void {
     this.rotY = 0.35;
     this.rotX = 0.42;
-    this.distance = 3.8;
+    this.distance = 3.4;
   }
 
   dispose(): void {
@@ -205,7 +206,7 @@ export class EarthGlobe {
     const scene = new THREE.Scene();
     this.scene = scene;
     scene.add(stars());
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 40);
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 50);
     this.camera = camera;
 
     const group = new THREE.Group();
@@ -213,7 +214,7 @@ export class EarthGlobe {
     scene.add(group);
 
     const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 96, 64),
+      new THREE.SphereGeometry(1, 128, 96),
       new THREE.MeshStandardMaterial({
         color: 0x0b2a32,
         roughness: 0.62,
@@ -223,9 +224,10 @@ export class EarthGlobe {
     );
     this.globeMesh = globe;
     group.add(globe);
+    group.add(this.graticule());
 
     const lights = new THREE.Mesh(
-      new THREE.SphereGeometry(1.004, 96, 64),
+      new THREE.SphereGeometry(1.004, 128, 96),
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
@@ -238,7 +240,7 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.07, 64, 48),
+      new THREE.SphereGeometry(1.07, 96, 72),
       new THREE.ShaderMaterial({
         uniforms: { color: { value: new THREE.Color(0x4c7cff) } },
         vertexShader:
@@ -379,12 +381,12 @@ export class EarthGlobe {
       'wheel',
       (e) => {
         e.preventDefault();
-        this.zoomBy(e.deltaY * 0.002);
+        this.zoomBy(e.deltaY * 0.0016);
       },
       { passive: false },
     );
     canvas.addEventListener('dblclick', () => {
-      this.distance = THREE.MathUtils.clamp(this.distance - 1.1, 1.55, 7.5);
+      this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 8.2);
     });
 
     this.resize();
@@ -394,6 +396,25 @@ export class EarthGlobe {
       this.tick();
     };
     loop();
+  }
+
+  private graticule(): THREE.LineSegments {
+    const pts: THREE.Vector3[] = [];
+    for (let lat = -75; lat <= 75; lat += 15) {
+      for (let lon = -180; lon < 180; lon += 6) {
+        pts.push(latLonToVec(lat, lon, 1.012), latLonToVec(lat, lon + 6, 1.012));
+      }
+    }
+    for (let lon = -180; lon < 180; lon += 15) {
+      for (let lat = -80; lat < 80; lat += 6) {
+        pts.push(latLonToVec(lat, lon, 1.012), latLonToVec(lat + 6, lon, 1.012));
+      }
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(pts);
+    return new THREE.LineSegments(
+      geo,
+      new THREE.LineBasicMaterial({ color: 0x8eb4ff, transparent: true, opacity: 0.16 }),
+    );
   }
 
   private addArc(a: City, b: City, color: number, opacity: number): THREE.Line {
@@ -450,7 +471,7 @@ export class EarthGlobe {
       lat: THREE.MathUtils.radToDeg(this.rotX),
       lon: THREE.MathUtils.radToDeg(-this.rotY),
       altitudeKm: Math.max(40, altitudeKm),
-      zoom: Number((3.8 / this.distance).toFixed(1)),
+      zoom: Number((3.4 / this.distance).toFixed(1)),
       hoverId: this.hoverId,
     });
   }

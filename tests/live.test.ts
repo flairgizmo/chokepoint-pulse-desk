@@ -96,7 +96,10 @@ describe('Brand mark', () => {
 describe('Public desk', () => {
   it('puts the interactive mark and official constellation on the home page', () => {
     const html = renderHome();
-    expect(html).toContain('id="tesseract"');
+    expect(html).toContain('id="gateway"');
+    expect(html).toContain('/marks/barclays.svg');
+    expect(html).toContain('/visuals/stories/city.jpg');
+    expect(html).not.toContain('Nothing invented');
     expect(html).toContain('/visuals/stills/hero.jpg');
     expect(html).toContain('docs.overledger.dev');
     expect(html).toContain('https://www.youtube.com/watch?v=IfXSET1rEOE');

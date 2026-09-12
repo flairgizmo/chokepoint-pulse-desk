@@ -5,7 +5,7 @@ import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
 import { chatMarkup, wireChat } from './chat';
 import { wirePlayer } from './player';
-import { mountTesseract } from './tesseract';
+import { mountGateway } from './gateway';
 import { esc, fmtCompact, fmtMoney, fmtPct, fmtQty } from './html';
 import {
   DISCLAIMER,
@@ -53,7 +53,7 @@ export class QntDesk {
     this.bindNav();
     this.render();
     void this.refreshFeeds();
-    window.setInterval(() => void this.refreshFeeds(), 50_000);
+    window.setInterval(() => void this.refreshFeeds(), 30_000);
   }
 
   private bindNav(): void {
@@ -288,17 +288,10 @@ export class QntDesk {
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     wireChat(this.root);
-    this.wireTesseract();
+    this.wireGateway();
     this.wireMotionBeds();
+    this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
-    this.root.querySelectorAll<HTMLVideoElement>('.pod-tease video').forEach((vid) => {
-      const card = vid.closest('.pod-tease');
-      card?.addEventListener('mouseenter', () => void vid.play());
-      card?.addEventListener('mouseleave', () => {
-        vid.pause();
-        vid.currentTime = 0;
-      });
-    });
     if (route.name === 'home') void this.wireGlobe();
     if (route.name === 'markets') this.hydrateMarkets();
     if (route.name === 'news') {
@@ -327,7 +320,7 @@ export class QntDesk {
       const input = this.root.querySelector<HTMLInputElement>('#prog-search');
       input?.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
-        this.root.querySelectorAll('#prog-grid .chapter').forEach((el) => {
+        this.root.querySelectorAll('#prog-grid .chapter, #prog-grid .reveal').forEach((el) => {
           const hit = !q || (el.textContent ?? '').toLowerCase().includes(q);
           (el as HTMLElement).hidden = !hit;
         });
@@ -355,10 +348,23 @@ export class QntDesk {
     }
   }
 
-  private wireTesseract(): void {
-    const canvas = this.root.querySelector<HTMLCanvasElement>('#tesseract');
+  private wireGateway(): void {
+    const canvas = this.root.querySelector<HTMLCanvasElement>('#gateway');
     if (!canvas) return;
-    this.tessDispose = mountTesseract(canvas);
+    this.tessDispose = mountGateway(canvas);
+  }
+
+  private wireFlips(): void {
+    this.root.querySelectorAll<HTMLElement>('.flip-card').forEach((card) => {
+      card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+      card.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          card.classList.toggle('is-flipped');
+        }
+      });
+      card.tabIndex = 0;
+    });
   }
 
   private wireMotionBeds(): void {
@@ -383,7 +389,7 @@ export class QntDesk {
         const zoom = this.root.querySelector('#zoom-readout');
         const hover = this.root.querySelector<HTMLElement>('#city-hover');
         if (line) {
-          line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced programme corridors`;
+          line.textContent = `LOOK-DOWN  ALT ${hud.altitudeKm.toLocaleString()} km  ${hud.lat.toFixed(3)}° ${hud.lon.toFixed(3)}°  ZOOM ${hud.zoom.toFixed(1)}×  SRC corridors`;
         }
         if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
         if (hover && hud.hoverId !== this.lastHoverId) {
