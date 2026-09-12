@@ -16,7 +16,7 @@ export interface ChatReply {
 }
 
 const HARD =
-  'QntDesk is an independent encyclopedia. Overledger is a gateway OS, not a blockchain. GBTD is tokenised commercial-bank sterling — not a CBDC. QNT is a utility token, not equity. Do not invent prices, headlines, mandates or faces.';
+  'QntDesk is a research desk on Quant, Overledger and programmable money. Overledger is a gateway operating system. GBTD is tokenised commercial-bank sterling. QNT is a utility token. Answer from the record. Do not invent prices, headlines, mandates or faces.';
 
 function score(hay: string, q: string): number {
   const words = q.toLowerCase().split(/\W+/).filter((w) => w.length > 2);
@@ -41,22 +41,40 @@ export function answerFromDesk(question: string): ChatReply {
   const bits: string[] = [];
 
   if (/\b(cbdc|digital pound|gbtd)\b/.test(lower)) {
-    bits.push(
-      `GBTD tokens are liabilities of ${GBTD_BANKS.join(', ')}. A CBDC would be a liability of a central bank. Quant is the named technology partner (Overledger + PayScript), not the issuer.`,
-    );
-    cites.push({ label: 'Liability test', href: '/cbdc' });
+    const quote = quotes.find((q) => q.id === 'ukf-definition') ?? quotes.find((q) => q.id === 'verdian-gbtd');
+    return {
+      text: [
+        `GBTD tokens are liabilities of ${GBTD_BANKS.join(', ')}. UK Finance selected Quant on 26 September 2025 to supply Overledger and PayScript. The six banks issue the deposits.`,
+        quote ? `“${quote.text}” — ${quote.who}, ${quote.role}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n'),
+      cites: [
+        { label: 'Programmes', href: '/programmes#gbtd' },
+        { label: 'Liability test', href: '/cbdc' },
+      ],
+      mode: 'sourced',
+    };
   }
   if (/\b(overledger|blockchain|l1|twelfth)\b/.test(lower)) {
-    bits.push(
-      'Overledger is a gateway operating system. It maps applications onto ledgers and bank cores. It does not mint a native L1.',
-    );
-    cites.push({ label: 'The stack', href: '/technology' });
+    const quote = quotes.find((q) => q.id === 'whitepaper-abstract-overledger');
+    return {
+      text: [
+        'Overledger is a gateway operating system. It maps applications onto ledgers and bank cores — Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments.',
+        quote ? `“${quote.text}” — ${quote.who}, ${quote.role}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n'),
+      cites: [{ label: 'The stack', href: '/technology' }],
+      mode: 'sourced',
+    };
   }
   if (/\bqnt\b|tokenomics|contract/.test(lower)) {
-    bits.push(
-      'QNT is an ERC-20 utility token. Live price on this desk comes from Coinbase, Kraken or Binance — never invented. Check the Ethereum contract on Markets before sending anything.',
-    );
-    cites.push({ label: 'Markets', href: '/markets' });
+    return {
+      text: 'QNT is an ERC-20 utility token. Overledger licences settle in it. Live price on this desk comes from Coinbase, Kraken or Binance. Check the Ethereum contract on Markets before sending anything.',
+      cites: [{ label: 'Markets', href: '/markets' }],
+      mode: 'sourced',
+    };
   }
 
   const chHits = chapters
@@ -149,5 +167,5 @@ export function answerFromDesk(question: string): ChatReply {
 }
 
 export function formatQuote(q: Quote): string {
-  return `“${q.text}” — ${q.who}`;
+  return `“${q.text}” — ${q.who}, ${q.role}`;
 }

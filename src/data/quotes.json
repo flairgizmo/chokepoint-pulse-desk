@@ -149,7 +149,7 @@
     "href": "tascaIov",
     "page": "vision",
     "personId": "tasca",
-    "also": ["research"]
+    "also": ["research", "home"]
   },
   {
     "id": "tasca-freely",
@@ -168,7 +168,8 @@
     "text": "In this Editorial, I argue that the blooming of the Internet of Value is a necessary journey that we need to take in order to accommodate the unfolding of four long-term mega socio-techno trends: datafication, dematerialization, platformization, and social and resources value awareness.",
     "href": "tascaIov",
     "page": "vision",
-    "personId": "tasca"
+    "personId": "tasca",
+    "also": ["home"]
   },
   {
     "id": "tasca-risks",
@@ -187,7 +188,8 @@
     "text": "I, therefore, invite all the operators and stakeholders who are building the new digital economy to work together to build an open, accessible, and secure IoV for an equitable global economy.",
     "href": "tascaIov",
     "page": "people",
-    "personId": "tasca"
+    "personId": "tasca",
+    "also": ["home", "vision"]
   },
   {
     "id": "verdian-three-lede",
@@ -235,7 +237,8 @@
     "text": "Start at Layer 2. Tokenised deposits are the most mature, most deployed, and most regulatory-clear component. They are where institutional use cases live today.",
     "href": "threeLayer",
     "page": "cbdc",
-    "personId": "verdian"
+    "personId": "verdian",
+    "also": ["home", "vision"]
   },
   {
     "id": "verdian-quant-horizontal",
@@ -469,7 +472,7 @@
     "text": "UK Finance has launched a collaborative industry pilot project to deliver the first UK live transactions of tokenised sterling deposits (GBTD).",
     "href": "gbtdUkFinance",
     "page": "programmes",
-    "also": ["cbdc"]
+    "also": ["cbdc", "home"]
   },
   {
     "id": "ukf-definition",
@@ -486,7 +489,8 @@
     "role": "GBTD live-pilot announcement, 26 September 2025",
     "text": "Participating firms currently include Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters.",
     "href": "gbtdUkFinance",
-    "page": "programmes"
+    "page": "programmes",
+    "also": ["home"]
   },
   {
     "id": "mackintosh-gbtd",
@@ -495,7 +499,7 @@
     "text": "This project is a powerful example of industry collaboration to deliver next generation payments for the benefit of customers and businesses - and an opportunity for the UK to lead globally in setting standards for tokenised money.",
     "href": "gbtdUkFinance",
     "page": "programmes",
-    "also": ["cbdc"]
+    "also": ["cbdc", "home"]
   },
   {
     "id": "mackintosh-bailey",
@@ -503,7 +507,8 @@
     "role": "Managing Director, UK Finance — 26 September 2025",
     "text": "Andrew Bailey, Governor of the Bank of England, recently called for innovation in how digital technology is applied to the money we use today. That’s exactly what tokenised deposits represent: a secure, regulated evolution of the payments landscape.",
     "href": "gbtdUkFinance",
-    "page": "cbdc"
+    "page": "cbdc",
+    "also": ["home", "vision"]
   },
   {
     "id": "hayward-barclays",

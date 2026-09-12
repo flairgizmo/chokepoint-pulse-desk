@@ -1,4 +1,5 @@
 import { papers, quotes, didYouKnow, QNT_CONTRACT } from '../data/catalog';
+import { notesFromDesk } from '../data/notes';
 import { CITIES } from '../data/cities';
 import { PEOPLE } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
@@ -6,6 +7,7 @@ import { fetchMarkets, staleCache, type MarketPrint } from '../modules/markets';
 import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
 import { chatMarkup, wireChat } from './chat';
+import { wirePlayer } from './player';
 import { esc, fmtCompact, fmtMoney, fmtPct } from './html';
 import {
   DISCLAIMER,
@@ -13,11 +15,14 @@ import {
   renderCity,
   renderDonate,
   renderGlossary,
-  renderGone,
   renderHome,
   renderMarkets,
+  renderEpisode,
   renderNews,
+  renderNote,
+  renderNotes,
   renderNotFound,
+  renderPodcast,
   renderPeople,
   renderProgrammes,
   renderRead,
@@ -92,12 +97,30 @@ export class QntDesk {
   }
 
   private go(path: string, replace = false): void {
-    const url = path.startsWith('/') ? path : `/${path}`;
-    if (replace) history.replaceState({}, '', url);
-    else history.pushState({}, '', url);
-    this.closeMenu();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    this.render();
+    const apply = (): void => {
+      const url = path.startsWith('/') ? path : `/${path}`;
+      if (replace) history.replaceState({}, '', url);
+      else history.pushState({}, '', url);
+      this.closeMenu();
+      window.scrollTo(0, 0);
+      this.render();
+      const heading = this.root.querySelector<HTMLElement>('main h1');
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+    };
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduced && typeof document.startViewTransition === 'function') {
+      try {
+        const t = document.startViewTransition(apply);
+        void t.finished.catch(() => undefined);
+      } catch {
+        apply();
+      }
+    } else {
+      apply();
+    }
   }
 
   private parse(): Route {
@@ -105,9 +128,11 @@ export class QntDesk {
     const parts = path.split('/').filter(Boolean);
     if (parts.length === 0) return { name: 'home' };
     const head = parts[0];
-    if (head === 'desk') return { name: 'gone-desk' };
+    if (head === 'desk' || head === 'ops' || head === 'how') return { name: 'home' };
     if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
+    if (head === 'notes' && parts[1]) return { name: 'note', id: parts[1] };
+    if (head === 'podcast' && parts[1]) return { name: 'episode', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
     return { name: head };
   }
@@ -145,23 +170,26 @@ export class QntDesk {
         return renderResearch();
       case 'read':
         return route.id ? renderRead(route.id) : renderNotFound();
+      case 'notes':
+        return renderNotes();
+      case 'note':
+        return route.id ? renderNote(route.id) : renderNotFound();
+      case 'podcast':
+        return renderPodcast();
+      case 'episode':
+        return route.id ? renderEpisode(route.id) : renderNotFound();
       case 'glossary':
         return renderGlossary();
       case 'markets':
         return renderMarkets(this.markets ?? undefined);
       case 'news':
         return renderNews(this.news ?? undefined);
-      case 'gone-desk':
-        return renderGone('desk');
       case 'city': {
         const city = CITIES.find((c) => c.id === route.id);
         return city ? renderCity(city) : renderNotFound();
       }
       case 'donate':
         return renderDonate();
-      case 'ops':
-      case 'how':
-        return renderGone('ops');
       default:
         return renderNotFound();
     }
@@ -179,19 +207,22 @@ export class QntDesk {
     return `
       <div class="app">
         <header class="top">
+          <div class="top-bar">
           <a class="brand" href="/" aria-label="QntDesk home">
-            <span class="mark" aria-hidden="true"></span>
+            <img class="logo" src="/brand/qntdesk-logo.png" width="36" height="36" alt="" />
             <span class="word">Qnt<span>Desk</span></span>
           </a>
           <nav class="nav" aria-label="Primary">
+            <a href="/notes" ${route.name === 'notes' || route.name === 'note' ? 'aria-current="page"' : ''}>Notes</a>
+            <a href="/podcast" ${route.name === 'podcast' || route.name === 'episode' ? 'aria-current="page"' : ''}>Podcast</a>
             <a href="/vision" ${route.name === 'vision' ? 'aria-current="page"' : ''}>Vision</a>
-            <a href="/technology" ${route.name === 'technology' ? 'aria-current="page"' : ''}>Technology</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
             <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
-            <a href="/people" ${route.name === 'people' || route.name === 'team' ? 'aria-current="page"' : ''}>People</a>
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
+                <a href="/people">People</a>
+                <a href="/technology">The stack</a>
                 <a href="/news">News</a>
                 <a href="/markets">Markets</a>
                 <a href="/cbdc">CBDC</a>
@@ -204,8 +235,9 @@ export class QntDesk {
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
             <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">${esc(shortcut)}</button>
-            <a class="btn btn-primary cta-nav" href="/vision"><span class="btn-swap"><span>Read the thesis</span><span>Open Vision</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
+            <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Play the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
+          </div>
           </div>
         </header>
         <div class="market-bar">
@@ -218,7 +250,8 @@ export class QntDesk {
           <a href="/news" class="push">Live news →</a>
         </div>
         <div class="mobile-nav" id="mobile-nav">
-          <a href="/">Earth</a>
+          <a href="/notes">Notes</a>
+          <a href="/podcast">Podcast</a>
           <a href="/news">News</a>
           <a href="/markets">Markets</a>
           <a href="/vision">Vision</a>
@@ -235,12 +268,14 @@ export class QntDesk {
           <div class="foot-grid">
             <div class="foot-col">
               <span class="word">Qnt<span>Desk</span></span>
-              <p>Independent encyclopedia of Overledger and programmable money. Not Quant Network.</p>
+              <p>The Internet of Value. Overledger, programmable money, and the people building it.</p>
             </div>
             <nav class="foot-col" aria-label="Live">
               <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Live</p>
               <a href="/news">News</a>
               <a href="/markets">Markets</a>
+              <a href="/notes">Notes</a>
+              <a href="/podcast">Podcast</a>
               <a href="/donate">Donate</a>
             </nav>
             <nav class="foot-col" aria-label="Encyclopedia">
@@ -291,6 +326,15 @@ export class QntDesk {
     palIn?.addEventListener('input', () => this.paintPalette(palIn.value));
 
     wireChat(this.root);
+    if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
+    this.root.querySelectorAll<HTMLVideoElement>('.pod-tease video').forEach((vid) => {
+      const card = vid.closest('.pod-tease');
+      card?.addEventListener('mouseenter', () => void vid.play());
+      card?.addEventListener('mouseleave', () => {
+        vid.pause();
+        vid.currentTime = 0;
+      });
+    });
     if (route.name === 'home') void this.wireGlobe();
     if (route.name === 'markets') this.hydrateMarkets();
     if (route.name === 'news') {
@@ -322,6 +366,23 @@ export class QntDesk {
         this.root.querySelectorAll('#prog-grid .chapter').forEach((el) => {
           const hit = !q || (el.textContent ?? '').toLowerCase().includes(q);
           (el as HTMLElement).hidden = !hit;
+        });
+      });
+    }
+    if (route.name === 'notes') {
+      const input = this.root.querySelector<HTMLInputElement>('#notes-search');
+      const apply = () => {
+        const main = this.root.querySelector('main');
+        const on = this.root.querySelector<HTMLButtonElement>('#notes-eras .chip.is-on');
+        if (main) main.innerHTML = renderNotes(input?.value ?? '', (on?.dataset.era as 'ALL' | 'history' | 'present' | 'future') ?? 'ALL');
+        this.wire(route);
+      };
+      input?.addEventListener('input', apply);
+      this.root.querySelectorAll<HTMLButtonElement>('#notes-eras [data-era]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.root.querySelectorAll('#notes-eras .chip').forEach((c) => c.classList.remove('is-on'));
+          btn.classList.add('is-on');
+          apply();
         });
       });
     }
@@ -359,7 +420,7 @@ export class QntDesk {
         const zoom = this.root.querySelector('#zoom-readout');
         const hover = this.root.querySelector<HTMLElement>('#city-hover');
         if (line) {
-          line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced corridors, not live SWIFT`;
+          line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced programme corridors`;
         }
         if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
         if (hover && hud.hoverId !== this.lastHoverId) {
@@ -512,7 +573,9 @@ export class QntDesk {
     const query = q.trim().toLowerCase();
     const rows: Array<{ href: string; title: string; sub: string }> = [];
     const pages = [
-      ['/', 'Earth', 'Home globe'],
+      ['/', 'Earth', 'Latest record and the globe'],
+      ['/notes', 'Notes', 'Latest field notes'],
+      ['/podcast', 'Podcast', 'Twenty films'],
       ['/vision', 'Vision', 'Internet of Value'],
       ['/technology', 'The stack', 'Overledger, Fusion, PayScript'],
       ['/programmes', 'Programmes', 'GBTD, Murex, Rosalind'],
@@ -547,9 +610,14 @@ export class QntDesk {
         rows.push({ href: `/glossary`, title: t.term, sub: t.body.slice(0, 80) });
       }
     }
+    for (const note of notesFromDesk()) {
+      if (query && `${note.title} ${note.body} ${note.kicker}`.toLowerCase().includes(query)) {
+        rows.push({ href: `/notes/${note.id}`, title: note.title, sub: `${note.kicker} · ${note.era}` });
+      }
+    }
     for (const d of didYouKnow) {
       if (query && d.q.toLowerCase().includes(query)) {
-        rows.push({ href: d.to || '/', title: d.q, sub: d.category });
+        rows.push({ href: `/notes/${d.id}`, title: d.q, sub: d.category });
       }
     }
     for (const quote of quotes) {

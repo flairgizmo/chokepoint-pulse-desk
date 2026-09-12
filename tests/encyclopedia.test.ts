@@ -12,6 +12,8 @@ import {
 import { CITIES } from '../src/data/cities';
 import { GLOSSARY } from '../src/data/glossary';
 import { PEOPLE } from '../src/data/people';
+import { featuredNote, notesFromDesk, noteById } from '../src/data/notes';
+import { EPISODES, episodesNewestFirst } from '../src/data/podcast';
 import { GBTD_BANKS, THIS_MONTH } from '../src/data/timeline';
 import { laneFor, parseGoogleNewsRss } from '../src/modules/news';
 
@@ -78,6 +80,37 @@ describe('QntDesk encyclopedia contract', () => {
     expect(sources.hmtUkfSpeech).toContain('gov.uk');
     expect(chapters.some((c) => c.id === 'trusted-node')).toBe(true);
     expect(chapters.some((c) => c.id === 'uk-digital-markets')).toBe(true);
+  });
+
+  it('publishes sourced notes from DYK and this month', () => {
+    const notes = notesFromDesk();
+    expect(notes.length).toBeGreaterThanOrEqual(40);
+    expect(noteById('not-cbdc')?.body.toLowerCase()).toContain('commercial');
+    expect(featuredNote().id).toBe('trusted-node');
+    expect(notesFromDesk()[0].id).toBe('trusted-node');
+    const dated = notesFromDesk().filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n.dateLabel));
+    const dates = dated.map((n) => n.dateLabel);
+    expect(dates).toEqual([...dates].sort((a, b) => b.localeCompare(a)));
+    expect(notes.every((n) => n.body.trim().length > 20)).toBe(true);
+    expect(notes.some((n) => n.era === 'history')).toBe(true);
+    expect(notes.some((n) => n.era === 'present')).toBe(true);
+    expect(notes.some((n) => n.era === 'future')).toBe(true);
+  });
+
+  it('ships a twenty-part podcast with named hosts and sourced quotes', () => {
+    expect(EPISODES).toHaveLength(20);
+    expect(episodesNewestFirst()[0].n).toBe(20);
+    for (const ep of EPISODES) {
+      expect(ep.script.trim().length).toBeGreaterThan(1400);
+      expect(ep.hostName.length).toBeGreaterThan(3);
+      expect(ep.hostTitle.length).toBeGreaterThan(3);
+      expect(ep.quotes.length).toBeGreaterThan(0);
+      for (const q of ep.quotes) {
+        expect(q.who.trim().length).toBeGreaterThan(2);
+        expect(q.role.trim().length).toBeGreaterThan(2);
+        expect(q.text.trim().length).toBeGreaterThan(8);
+      }
+    }
   });
 });
 
