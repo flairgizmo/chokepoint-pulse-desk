@@ -86,7 +86,11 @@ describe('QntDesk encyclopedia contract', () => {
     const notes = notesFromDesk();
     expect(notes.length).toBeGreaterThanOrEqual(40);
     expect(noteById('not-cbdc')?.body.toLowerCase()).toContain('commercial');
-    expect(featuredNote().id).toBe('not-cbdc');
+    expect(featuredNote().id).toBe('trusted-node');
+    expect(notesFromDesk()[0].id).toBe('trusted-node');
+    const dated = notesFromDesk().filter((n) => /^\d{4}-\d{2}-\d{2}$/.test(n.dateLabel));
+    const dates = dated.map((n) => n.dateLabel);
+    expect(dates).toEqual([...dates].sort((a, b) => b.localeCompare(a)));
     expect(notes.every((n) => n.body.trim().length > 20)).toBe(true);
     expect(notes.some((n) => n.era === 'history')).toBe(true);
     expect(notes.some((n) => n.era === 'present')).toBe(true);
@@ -97,7 +101,7 @@ describe('QntDesk encyclopedia contract', () => {
     expect(EPISODES).toHaveLength(20);
     expect(episodesNewestFirst()[0].n).toBe(20);
     for (const ep of EPISODES) {
-      expect(ep.script.trim().length).toBeGreaterThan(400);
+      expect(ep.script.trim().length).toBeGreaterThan(1400);
       expect(ep.hostName.length).toBeGreaterThan(3);
       expect(ep.hostTitle.length).toBeGreaterThan(3);
       expect(ep.quotes.length).toBeGreaterThan(0);

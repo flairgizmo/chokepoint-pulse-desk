@@ -29,13 +29,14 @@ for row in rows:
     n = int(row["n"])
     mp3 = out_dir / f"ep-{n:02d}.mp3"
     wav = Path(f"/tmp/qntdesk-ep-{n:02d}.wav")
-    if mp3.exists() and mp3.stat().st_size > 80_000:
+    force = os.environ.get("FORCE_PODCAST") == "1"
+    if not force and mp3.exists() and mp3.stat().st_size > 80_000:
         print(f"skip {mp3.name}", flush=True)
         continue
     model = models[row["voice"]]
     print(f"render {mp3.name} ({row['voice']})", flush=True)
     subprocess.run(
-        [piper, "-m", str(model), "-f", str(wav), "--sentence_silence", "0.42", "--length_scale", "0.96"],
+        [piper, "-m", str(model), "-f", str(wav), "--sentence_silence", "0.44", "--length_scale", "1.08"],
         input=row["script"].encode("utf-8"),
         check=True,
     )

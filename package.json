@@ -2,7 +2,7 @@
   "name": "qntdesk",
   "version": "2.0.0",
   "private": true,
-  "description": "QntDesk — independent encyclopedia of Quant Network, Overledger and programmable money.",
+  "description": "QntDesk — Overledger, programmable money, and the Quant record.",
   "type": "module",
   "license": "MIT",
   "scripts": {

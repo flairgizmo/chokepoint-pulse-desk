@@ -245,7 +245,6 @@ export class QntDesk {
           <a href="/news" class="push">Live news →</a>
         </div>
         <div class="mobile-nav" id="mobile-nav">
-          <a href="/">Home</a>
           <a href="/notes">Notes</a>
           <a href="/podcast">Podcast</a>
           <a href="/news">News</a>
@@ -416,7 +415,7 @@ export class QntDesk {
         const zoom = this.root.querySelector('#zoom-readout');
         const hover = this.root.querySelector<HTMLElement>('#city-hover');
         if (line) {
-          line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced corridors, not live SWIFT`;
+          line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced programme corridors`;
         }
         if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
         if (hover && hud.hoverId !== this.lastHoverId) {
@@ -569,7 +568,7 @@ export class QntDesk {
     const query = q.trim().toLowerCase();
     const rows: Array<{ href: string; title: string; sub: string }> = [];
     const pages = [
-      ['/', 'Earth', 'Home globe'],
+      ['/', 'Earth', 'Latest record and the globe'],
       ['/notes', 'Notes', 'Latest field notes'],
       ['/podcast', 'Podcast', 'Twenty films'],
       ['/vision', 'Vision', 'Internet of Value'],

@@ -1,3 +1,6 @@
+import { ACT3 } from './podcast-act3';
+import { CODA } from './podcast-coda';
+
 export type HostId = 'james' | 'amelia';
 
 export interface EpisodeQuote {
@@ -67,7 +70,7 @@ function ep(
     videoSrc: `/podcast/beds/${bed}.mp4`,
     posterSrc: `/podcast/stills/${bed}.png`,
     quotes,
-    script: script.trim(),
+    script: `${script.trim()}\n\n${(CODA[n] ?? '').trim()}\n\n${(ACT3[n] ?? '').trim()}`.trim(),
   };
 }
 
@@ -159,6 +162,11 @@ That is why this desk keeps saying gateway. The scarce resource, if money is goi
         role: 'About Quant',
         text: 'The foundation of digital finance.',
       },
+      {
+        who: 'Gilbert Verdian',
+        role: 'The three-layer digital money architecture, 23 April 2026',
+        text: 'Quant is the horizontal interoperability layer connecting all three tiers of the digital money architecture.',
+      },
     ],
     `James Hale. QNT is an ERC-20 on Ethereum. The contract is zero x four a two two zero E six zero nine six B two five E A D b eight eight three five eight c b four four zero six eight A three two four eight two five four six seven five. Check it yourself on Etherscan before you send anything.
 
@@ -189,6 +197,11 @@ If you came here for a price target, leave with a contract address and two suppl
         role: 'The three-layer digital money architecture, 23 April 2026',
         text: 'A framework every bank needs to understand before building tokenisation infrastructure.',
       },
+      {
+        who: 'Dr Luke Riley',
+        role: 'Head of Innovation — DLT interoperability options note, 11 November 2021',
+        text: 'The future of Distributed Ledger Technology (DLT) is interoperability.',
+      },
     ],
     `Amelia Crowe. Standards are slow on purpose. In twenty fifteen Gilbert Verdian put a blockchain committee in front of ISO. That proposal became ISO Technical Committee three hundred and seven. A decade later the interoperability framework is ISO/TS 23516, project eighty two thousand and ninety eight: DLT to DLT, and DLT to the world outside the ledger.
 
@@ -218,6 +231,11 @@ The enthusiasm here is not for a committee number. It is for the moment a bank c
         who: 'Quant',
         role: 'QuantNet product page',
         text: 'QuantNet: The Infrastructure of Money.',
+      },
+      {
+        who: 'Kirat Rawel',
+        role: 'Head of Sales — 9 July 2026',
+        text: 'Synchronised settlement across jurisdictions is technically achievable today. The reason it is not the default is a coordination problem, not a capability problem.',
       },
     ],
     `James Hale. First of February, twenty twenty one. Quant and LACChain, the IDB Lab programme, announce Overledger interoperability and tokenised cross-border payments for Latin America and the Caribbean. The grade on this desk is announced. It is a named room in twenty twenty one.
@@ -307,6 +325,16 @@ So the company’s own product page draws a straight line: RLN, GBTD, QuantNet. 
         who: 'Gilbert Verdian',
         role: 'The three-layer digital money architecture, 23 April 2026',
         text: 'Tokenised deposits are ordinary commercial bank money, the M1/M2 deposits that fund the overwhelming majority of global economic activity, made programmable through distributed ledger technology.',
+      },
+      {
+        who: 'UK Finance',
+        role: 'GBTD live-pilot announcement, 26 September 2025',
+        text: 'These tokenised deposits are a digital representation of traditional sterling commercial bank money.',
+      },
+      {
+        who: 'Jana Mackintosh',
+        role: 'Managing Director, UK Finance — 26 September 2025',
+        text: 'This project is a powerful example of industry collaboration to deliver next generation payments for the benefit of customers and businesses - and an opportunity for the UK to lead globally in setting standards for tokenised money.',
       },
     ],
     `Amelia Crowe. This is the live one. Twenty sixth of September, twenty twenty five. UK Finance selects Quant to provide the technology for live tokenised sterling deposits with Barclays, HSBC, Lloyds Bank, NatWest, Nationwide and Santander. EY and Linklaters support. Overledger and PayScript are named as the foundation.
@@ -684,6 +712,16 @@ Episode twenty is the decade ahead — DIGIT, deposits, and the sentence Verdian
         who: 'Paolo Tasca',
         role: 'Frontiers in Blockchain, 2020',
         text: 'I, therefore, invite all the operators and stakeholders who are building the new digital economy to work together to build an open, accessible, and secure IoV for an equitable global economy.',
+      },
+      {
+        who: 'UK Finance',
+        role: 'GBTD live-pilot announcement, 26 September 2025',
+        text: 'These tokenised deposits are a digital representation of traditional sterling commercial bank money. They retain the trust and regulatory protections of conventional deposits, while offering benefits such as enhanced speed and fraud protection.',
+      },
+      {
+        who: 'Jana Mackintosh',
+        role: 'Managing Director, UK Finance — 26 September 2025',
+        text: 'This project is a powerful example of industry collaboration to deliver next generation payments for the benefit of customers and businesses - and an opportunity for the UK to lead globally in setting standards for tokenised money.',
       },
     ],
     `Amelia Crowe. We end where the calendar is still warm. On the eighth of September, twenty twenty six, the Economic Secretary to the Treasury speaks at UK Finance. The speech names a DIGIT gilt in the first quarter of twenty twenty seven, and wholesale digital markets. UK Finance’s report the same week names GBTD as UK innovation.

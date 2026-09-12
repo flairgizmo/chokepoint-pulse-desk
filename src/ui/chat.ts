@@ -1,6 +1,8 @@
 import { answerFromDesk, type ChatTurn } from '../modules/assistant';
 import { esc } from './html';
 
+const PROMPTS = ['What is GBTD?', 'What is Overledger?', 'Why does QNT exist?', 'What is PayScript?'];
+
 export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
     <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
@@ -13,7 +15,7 @@ export function chatMarkup(): string {
           <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
           <div>
             <p class="kicker">Ask Grok</p>
-            <p class="subtle">The desk’s assistant. Answers from the record.</p>
+            <p class="subtle">Research assistant. Answers from the record, names and titles attached.</p>
           </div>
         </div>
         <button type="button" class="icon-btn" data-grok-toggle aria-label="Close assistant">×</button>
@@ -21,6 +23,9 @@ export function chatMarkup(): string {
       <ol class="grok-log" id="grok-log">
         <li class="grok-assistant grok-welcome">
           <p>Ask about Overledger, GBTD, QNT, SATP, Fusion, or the people who signed the papers.</p>
+          <div class="grok-chips">
+            ${PROMPTS.map((p) => `<button type="button" class="grok-chip" data-grok-prompt="${esc(p)}">${esc(p)}</button>`).join('')}
+          </div>
         </li>
       </ol>
       <form id="grok-form">
@@ -64,9 +69,7 @@ export function wireChat(root: HTMLElement): void {
     log.scrollTop = log.scrollHeight;
   };
 
-  form.addEventListener('submit', async (ev) => {
-    ev.preventDefault();
-    const q = input.value.trim();
+  const ask = async (q: string) => {
     if (!q) return;
     input.value = '';
     paint('user', q);
@@ -91,5 +94,17 @@ export function wireChat(root: HTMLElement): void {
     }
     paint('assistant', local.text, local.cites);
     history.push({ role: 'assistant', content: local.text });
+  };
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    void ask(input.value.trim());
+  });
+
+  root.querySelectorAll<HTMLButtonElement>('[data-grok-prompt]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (panel.hidden) toggle();
+      void ask(btn.dataset.grokPrompt ?? btn.textContent ?? '');
+    });
   });
 }

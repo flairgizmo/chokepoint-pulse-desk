@@ -63,8 +63,13 @@ function dykNotes(): NotePost[] {
   });
 }
 
+function dateKey(n: NotePost): number {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(n.dateLabel)) return Date.parse(`${n.dateLabel}T00:00:00Z`);
+  return 0;
+}
+
 export function notesFromDesk(): NotePost[] {
-  return [...monthNotes(), ...dykNotes()];
+  return [...monthNotes(), ...dykNotes()].sort((a, b) => dateKey(b) - dateKey(a) || a.title.localeCompare(b.title));
 }
 
 export function noteById(id: string): NotePost | undefined {
@@ -72,7 +77,11 @@ export function noteById(id: string): NotePost | undefined {
 }
 
 export function featuredNote(): NotePost {
-  return noteById('not-cbdc') ?? notesFromDesk()[0];
+  const latest = notesFromDesk()[0];
+  if (latest) return latest;
+  const fallback = noteById('not-cbdc');
+  if (fallback) return fallback;
+  throw new Error('QntDesk notes are empty');
 }
 
 export function notesForEra(era: NoteEra | 'ALL', list = notesFromDesk()): NotePost[] {

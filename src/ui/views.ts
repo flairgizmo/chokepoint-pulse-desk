@@ -54,6 +54,10 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
   return `<a class="btn btn-${kind}" href="${esc(href)}"><span class="btn-swap"><span>${esc(label)}</span><span>${esc(hover)}</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>`;
 }
 
+function storyBed(bed: 'london' | 'gateway' | 'sterling' | 'future'): string {
+  return `<video class="story-bed" muted loop playsinline autoplay poster="/podcast/stills/${esc(bed)}.png" src="/podcast/beds/${esc(bed)}.mp4"></video>`;
+}
+
 function chapterCard(c: Chapter): string {
   return `<article class="chapter" id="${esc(c.id)}">
     ${kicker(c.kicker)}
@@ -238,7 +242,7 @@ function featuredStory(): string {
 }
 
 function latestStrip(): string {
-  const month = THIS_MONTH.slice(0, 3)
+  const month = [...THIS_MONTH].sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title)).slice(0, 3)
     .map((n) => {
       const stamp = dateStamp(n.date);
       return `<li class="month-card">
@@ -366,7 +370,7 @@ export function renderHome(): string {
           </ul>
         </details>
         <div class="hud-city" id="city-hover" hidden></div>
-        <p class="isr-line mono" id="isr-line">Educational look-down · sourced corridors, not live SWIFT</p>
+        <p class="isr-line mono" id="isr-line">Educational look-down · sourced programme corridors</p>
       </div>
     </section>
 
@@ -408,7 +412,7 @@ export function renderHome(): string {
 
     <section class="triptych hex">
       <article class="panel"><span class="panel-n">01</span>${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Multi-DLT and multi-legacy connectivity without forcing a new settlement chain. Tasca called it a risky necessity. Verdian built a company on that sentence.</p><a class="text-link" href="/vision">Vision →</a></article>
-      <article class="panel"><span class="panel-n">02</span>${kicker('SATP')}<h2 class="display">How assets move between networks</h2><p>Secure Asset Transfer Protocol is IETF work Quant helps write. Stage-3 is burn-and-mint under two-phase commit. Not a product SKU.</p><a class="text-link" href="/standards">Standards →</a></article>
+      <article class="panel"><span class="panel-n">02</span>${kicker('SATP')}<h2 class="display">How assets move between networks</h2><p>Secure Asset Transfer Protocol is IETF work Quant helps write. Stage three is burn-and-mint under two-phase commit — the asset in one place when the transfer ends.</p><a class="text-link" href="/standards">Standards →</a></article>
       <article class="panel"><span class="panel-n">03</span>${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>UK Finance selected Quant as technology partner for tokenised deposits with six banks. The banks owe the holder. Overledger runs the rails.</p><a class="text-link" href="/cbdc">The distinction →</a></article>
       <article class="panel"><span class="panel-n">04</span>${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>An ERC-20, burned down in 2018. Overledger licences settle in it. Live price and circulating come from CoinGecko. Utility token, not equity.</p><a class="text-link" href="/markets#tokenomics">Markets →</a></article>
       <article class="panel"><span class="panel-n">05</span>${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, multi-ledger rollup, programming layer. Oracle and Murex sit on top of that sentence, not beside a new chain.</p><a class="text-link" href="/technology">The stack →</a></article>
@@ -428,7 +432,8 @@ export function renderChapterPage(
   mute = '',
 ): string {
   const body = chaptersFor(page).map(chapterCard).join('');
-  return `${pageHero(k, title, lede, mute)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
+  const bed = page === 'vision' ? 'future' : page === 'technology' ? 'gateway' : page === 'cbdc' ? 'sterling' : 'london';
+  return `${pageHero(k, title, lede, mute)}${storyBed(bed)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
 }
 
 export function renderVision(): string {
@@ -445,7 +450,7 @@ export function renderVision(): string {
       <article class="panel"><h3>TCP/IP for packets</h3><p>Applications stopped caring which physical network carried the bits. Ethernet, satellite, serial lines — one internet, many wires.</p></article>
       <article class="panel"><h3>Overledger for value</h3><p>Applications should stop caring which ledger, core or rail settles the money. Fabric, Ethereum, Corda, a bank core — one gateway, many domains.</p></article>
     </div>`,
-    'not another chain.',
+    'the gateway OS.',
   );
 }
 
@@ -469,13 +474,13 @@ export function renderProgrammes(): string {
     <article class="chapter" id="gbtd">
       ${kicker('GBTD — London')}
       <h2>Live tokenised sterling deposits</h2>
-      <p>On 26 September 2025 UK Finance selected Quant to provide the technology for live tokenised sterling deposits with ${GBTD_BANKS.join(', ')}. EY and Linklaters support. Overledger and PayScript are named as the foundation. This is commercial-bank money, building on the 2024 RLN phase — not a Bank of England CBDC, and not a Quant-issued token.</p>
+      <p>On 26 September 2025 UK Finance selected Quant to provide the technology for live tokenised sterling deposits with ${GBTD_BANKS.join(', ')}. EY and Linklaters support. Overledger and PayScript are named as the foundation. The six banks issue the deposits — commercial-bank sterling, building on the 2024 RLN phase.</p>
       <p class="source-row">${extLink(sources.gbtdUkFinance, 'UK Finance')} ${extLink(sources.gbtdQuant, 'Quant')} ${extLink(sources.gbtdUseCases, 'Three use cases')} ${extLink(sources.linklatersGbtd, 'Linklaters')}</p>
     </article>
     <article class="chapter" id="murex">
       ${kicker('Murex — Paris')}
       <h2>Tokenised deposits inside MX.3</h2>
-      <p>On 25 March 2026 Murex and Quant announced a partnership to put tokenised deposits and digital-bond settlement inside MX.3, the cross-asset platform used by more than 300 institutions. Named vendor integration — not a central-bank programme and not a GBTD membership.</p>
+      <p>On 25 March 2026 Murex and Quant announced a partnership to put tokenised deposits and digital-bond settlement inside MX.3, the cross-asset platform used by more than 300 institutions. Named vendor integration: programmable markets inside a platform the industry already runs.</p>
       <p class="source-row">${extLink(sources.murexNews, 'Murex newsroom')} ${extLink(sources.murexQuant, 'Quant')}</p>
     </article>
     <article class="chapter" id="oracle">
@@ -486,8 +491,8 @@ export function renderProgrammes(): string {
     </article>
     <article class="chapter" id="basel">
       ${kicker('BIS — Basel')}
-      <h2>Bibliography, not a standing office</h2>
-      <p>Project Agora, “singleness of money” speeches, and wholesale CBDC research live in Basel. Project Rosalind was a concluded CBDC API experiment run from London. Geography plus citations; not a secret mandate.</p>
+      <h2>Bibliography of the rooms</h2>
+      <p>Project Agora, “singleness of money” speeches, and wholesale CBDC research live in Basel. Project Rosalind was a concluded CBDC API experiment run from London. Geography plus citations.</p>
       <p class="source-row">${extLink(sources.bisHome, 'BIS')} ${extLink(sources.rosalindBis, 'Rosalind')}</p>
     </article>`;
   const chapters = chaptersNewestFirst('programmes').map(chapterCard).join('');
@@ -497,6 +502,7 @@ export function renderProgrammes(): string {
     'Newest first. Search the rooms. GBTD is live as a UK tokenised-deposit experiment with Quant as technology partner. Murex is a named Overledger integration. Rosalind was a 2023 BIS × Bank of England API experiment Quant says it supplied as a vendor — concluded. The 2026 Bank of England lab is a simulated RT2.',
     'in the room.',
   )}
+    ${storyBed('sterling')}
     ${quoteRail('programmes', 24)}
     ${filterBox('prog-search', 'Search programmes, banks, labs…', '')}
     <div class="chapter-stack" id="prog-grid">${extra}${chapters}</div>
@@ -509,12 +515,12 @@ export function renderCbdc(): string {
   return `${pageHero(
     'Liability test',
     'Tokenised deposits are',
-    'A central-bank digital currency is a liability of the central bank. GBTD tokens are liabilities of commercial banks. Mixing the two is the most common error on this map. AI agents, x402, Hyperledger, Oracle and Linux Foundation software change the rails — not that test.',
+    'A central-bank digital currency is a liability of the central bank. GBTD tokens are liabilities of commercial banks. Keep those two lines clean. AI agents, x402, Hyperledger, Oracle and Linux Foundation software change the rails.',
     'commercial-bank money.',
   )}
   ${quoteRail('cbdc')}
   <ol class="liability-cards">
-    <li data-kind="cbdc"><span class="n">01</span><div><h3>CBDC</h3><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> BoE Synchronisation Lab is adjacent experimentation — not a live CBDC.</p></div></li>
+    <li data-kind="cbdc"><span class="n">01</span><div><h3>CBDC</h3><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> The Bank of England Synchronisation Lab is adjacent experimentation on wholesale rails.</p></div></li>
     <li data-kind="deposit"><span class="n">02</span><div><h3>Tokenised deposit</h3><p><b>Who owes it.</b> A commercial bank.</p><p><b>Example.</b> GBTD tokens between ${GBTD_BANKS.join(', ')}.</p><p><b>On this map.</b> The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</p></div></li>
     <li data-kind="stable"><span class="n">03</span><div><h3>Stablecoin / crypto</h3><p><b>Who owes it.</b> Usually a private issuer or protocol.</p><p><b>Example.</b> x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</p><p><b>On this map.</b> Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</p></div></li>
   </ol>
@@ -869,10 +875,10 @@ export function renderDonate(): string {
     'Support',
     'Donations keep the desk',
     'Optional. Buys no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
-    'independent.',
+    'on the air.',
   )}
   <article class="chapter">
-    <p>QNT token contract for verification only — this is not a donation address: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. We never ask for a seed.</p>
+    <p>QNT token contract for verification only — a separate address from the desk recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. We never ask for a seed.</p>
     <p>Published desk recipients:</p>
     <ul class="donate-list">
       <li><span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code></li>
@@ -888,7 +894,7 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not', 'Try Notes, Podcast, Vision, Programmes, Research or Markets.', 'on the map.')}<p class="masthead" style="padding-top:0">${pill('/', 'Home', 'Back')} ${pill('/notes', 'Latest notes', 'Open notes', 'ghost')}</p>`;
+  return `${pageHero('404', 'This page is not', 'Try Notes, Podcast, Vision, Programmes, Research or Markets.', 'on the map.')}<p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/notes', 'Latest notes', 'Open notes', 'ghost')}</p>`;
 }
 
 export function renderPodcast(): string {
@@ -896,7 +902,7 @@ export function renderPodcast(): string {
   return `${pageHero(
     'Podcast',
     'Twenty films on Quant,',
-    'British correspondents James Hale and Amelia Crowe tell the Internet of Value from the record — latest episode first. Video on, audio on, names and titles attached.',
+    'British correspondents James Hale and Amelia Crowe tell the Internet of Value from the record — latest episode first. Video on, audio on, names and titles attached. Twenty films, five minutes each.',
     'and the future of money.',
   )}${playerMarkup(latest)}`;
 }

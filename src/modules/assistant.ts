@@ -42,7 +42,7 @@ export function answerFromDesk(question: string): ChatReply {
 
   if (/\b(cbdc|digital pound|gbtd)\b/.test(lower)) {
     bits.push(
-      `GBTD tokens are liabilities of ${GBTD_BANKS.join(', ')}. A CBDC would be a liability of a central bank. Quant is the named technology partner (Overledger + PayScript), not the issuer.`,
+      `GBTD tokens are liabilities of ${GBTD_BANKS.join(', ')}. A CBDC would be a liability of a central bank. The six banks issue the deposits. Quant supplies Overledger and PayScript.`,
     );
     cites.push({ label: 'Liability test', href: '/cbdc' });
   }
