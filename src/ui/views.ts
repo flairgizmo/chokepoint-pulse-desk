@@ -21,7 +21,7 @@ import { CITIES, type City } from '../data/cities';
 import { GROUP_LABEL, PEOPLE, type Person, type PersonGroup } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
 import { featuredNote, notesForEra, notesFromDesk, noteById, type NoteEra, type NotePost } from '../data/notes';
-import { episodesNewestFirst, latestEpisode, episodeById } from '../data/podcast';
+import { episodesInOrder, episodeById, episodeByN } from '../data/podcast';
 import { CALENDAR, GBTD_BANKS, MONEY_LAYERS, OFFICIAL_VOICES, SATP_STAGES, THIS_MONTH, TIMELINE } from '../data/timeline';
 import type { MarketPrint } from '../modules/markets';
 import type { NewsRiver } from '../modules/news';
@@ -40,8 +40,11 @@ function displayTitle(title: string, mute = ''): string {
   return `${esc(title)} <span class="display-mute">${esc(mute)}</span>`;
 }
 
-export function pageHero(k: string, title: string, lede: string, mute = ''): string {
+type VisualId = 'hero' | 'history' | 'gateway' | 'sterling' | 'future' | 'london';
+
+export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId): string {
   return `<header class="page-hero">
+    ${bed ? `<div class="page-stage">${visualBed(bed, 'page-bed')}</div>` : ''}
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${displayTitle(title, mute)}</h1>
@@ -54,8 +57,102 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
   return `<a class="btn btn-${kind}" href="${esc(href)}"><span class="btn-swap"><span>${esc(label)}</span><span>${esc(hover)}</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>`;
 }
 
-function storyBed(bed: 'london' | 'gateway' | 'sterling' | 'future'): string {
-  return `<video class="story-bed" muted loop playsinline autoplay poster="/podcast/stills/${esc(bed)}.png" src="/podcast/beds/${esc(bed)}.mp4"></video>`;
+function visualBed(id: VisualId, cls = 'visual-bed'): string {
+  const src = `/visuals/stills/${id}.jpg`;
+  return `<img class="${esc(cls)}" src="${esc(src)}" alt="" width="1920" height="1080" decoding="async" />`;
+}
+
+function constellation(): string {
+  const nodes: Array<[string, string, string]> = [
+    ['Overledger', sources.overledger, 'Gateway OS'],
+    ['PayScript', sources.payscript, 'Programmability'],
+    ['GBTD', sources.gbtdUkFinance, 'UK Finance'],
+    ['SATP', sources.satpCore, 'IETF draft'],
+    ['2018 paper', sources.whitepaperUcl, 'UCL Discovery'],
+    ['Fusion', sources.fusionMainnet, 'Layer 2.5'],
+    ['x402', sources.x402Org, 'Linux Foundation'],
+    ['Quant', sources.about, 'quant.network'],
+    ['Docs', 'https://docs.overledger.dev/', 'Developer hub'],
+    ['@quantnetwork', 'https://x.com/quantnetwork', 'Official'],
+    ['@OverledgerDev', 'https://x.com/OverledgerDev', 'Builders'],
+    ['@gverdian', 'https://x.com/gverdian', 'Founder'],
+  ];
+  return `<section class="constellation">
+    ${kicker('Open the sources')}
+    <div class="section-head">
+      <h2 class="display">The network, as links.</h2>
+      <p class="lede-sm">Official pages and the papers this desk files. Nothing invented.</p>
+    </div>
+    <ul class="constellation-grid">${nodes
+      .map(
+        ([label, href, sub]) =>
+          `<li><a href="${esc(href)}" target="_blank" rel="noopener noreferrer"><strong>${esc(label)}</strong><span>${esc(sub)}</span></a></li>`,
+      )
+      .join('')}</ul>
+  </section>`;
+}
+
+function filmRail(): string {
+  const films: Array<{ title: string; href: string; who: string; kind: string; thumb?: string }> = [
+    {
+      title: 'Hyperledger in Depth',
+      href: sources.hyperledgerRileyYt,
+      who: 'Dr Luke Riley · an hour with Quant Network',
+      kind: 'YouTube',
+      thumb: 'https://i.ytimg.com/vi/IfXSET1rEOE/hqdefault.jpg',
+    },
+    {
+      title: 'DLT interoperability',
+      href: sources.hyperledgerRileyTalk,
+      who: 'LF Decentralized Trust webinar',
+      kind: 'Talk',
+    },
+    {
+      title: 'Overledger platform',
+      href: sources.overledger,
+      who: 'Official product page',
+      kind: 'quant.network',
+    },
+    {
+      title: 'GBTD — UK Finance',
+      href: sources.gbtdUkFinance,
+      who: 'Live tokenised sterling deposits',
+      kind: 'Press',
+    },
+    {
+      title: '2018 whitepaper',
+      href: sources.whitepaperUcl,
+      who: 'Verdian, Tasca, Paterson, Mondelli',
+      kind: 'UCL',
+    },
+    {
+      title: 'SATP Core',
+      href: sources.satpCore,
+      who: 'IETF draft — not a Quant SKU',
+      kind: 'Standards',
+    },
+  ];
+  return `<section class="film-rail">
+    ${kicker('Watch and read')}
+    <div class="section-head">
+      <h2 class="display">Official rooms, on the record.</h2>
+      <p class="lede-sm">Sourced films and filings. Thumbnails are the publisher’s. Nothing invented.</p>
+    </div>
+    <ul class="film-grid">${films
+      .map(
+        (f) => `<li>
+          <a class="film-card${f.thumb ? ' has-thumb' : ''}" href="${esc(f.href)}" target="_blank" rel="noopener noreferrer">
+            <img src="${esc(f.thumb ?? '/visuals/stills/gateway.jpg')}" alt="" width="480" height="270" loading="lazy" />
+            <div>
+              <p class="kicker">${esc(f.kind)}</p>
+              <strong>${esc(f.title)}</strong>
+              <span>${esc(f.who)}</span>
+            </div>
+          </a>
+        </li>`,
+      )
+      .join('')}</ul>
+  </section>`;
 }
 
 function chapterCard(c: Chapter): string {
@@ -130,7 +227,8 @@ function dateStamp(iso: string): { day: string; rest: string } {
 }
 
 function wordmarkLi(label: string, href: string): string {
-  return `<li class="wordmark"><span class="wm" aria-hidden="true">${esc(label[0] ?? '?')}</span><a href="${esc(href)}">${esc(label)}</a></li>`;
+  const external = href.startsWith('http');
+  return `<li class="wordmark"><span class="wm" aria-hidden="true">${esc(label[0] ?? '?')}</span><a href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${esc(label)}</a></li>`;
 }
 
 function filterBox(id: string, placeholder: string, value: string, extra = ''): string {
@@ -140,7 +238,7 @@ function filterBox(id: string, placeholder: string, value: string, extra = ''): 
   </div>`;
 }
 
-function sparklineSvg(values: number[]): string {
+export function sparklineSvg(values: number[]): string {
   if (values.length < 2) return '';
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -176,23 +274,19 @@ function dykBlock(): string {
     ${kicker('Did you know')}
     <h2 class="display">The future of money, <span class="display-mute">as a question.</span></h2>
     <ul class="dyk-list">${list}</ul>
-    <p><a class="text-link" href="/notes">All sourced notes →</a></p>
+    <p><a class="text-link" href="/news">The official wire →</a></p>
   </section>`;
 }
 
-function noteHref(n: NotePost): string {
-  return `/notes/${n.id}`;
-}
-
-function noteCard(n: NotePost, featured = false, withTransition = true): string {
-  const vt = `note-${n.id.replace(/[^a-z0-9-]/gi, '-')}`;
-  const name = withTransition ? ` style="view-transition-name:${esc(vt)}"` : '';
-  return `<article class="note-card${featured ? ' is-feature' : ''}" data-era="${esc(n.era)}"${name}>
+function noteCard(n: NotePost, featured = false): string {
+  const href = n.href?.startsWith('http') ? n.href : n.related || '/news';
+  const external = href.startsWith('http');
+  return `<a class="note-card news-card${featured ? ' is-feature' : ''}" data-era="${esc(n.era)}" href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>
     <p class="kicker">${esc(n.kicker)} · ${esc(n.era)}</p>
     <h3>${esc(n.title)}</h3>
     <p>${esc(n.body.length > 180 ? `${n.body.slice(0, 180).trim()}…` : n.body)}</p>
-    <a class="text-link" href="${esc(noteHref(n))}">Read the note →</a>
-  </article>`;
+    <span class="text-link">${external ? 'Open the source' : 'Open the chapter'} →</span>
+  </a>`;
 }
 
 function eraStrip(): string {
@@ -201,22 +295,31 @@ function eraStrip(): string {
     <h2 class="display">Three chapters. <span class="display-mute">One network of networks.</span></h2>
     <ol class="era-grid">
       <li data-era="history">
+        ${visualBed('history', 'era-bed')}
+        <div class="era-copy">
         <p class="kicker">History</p>
         <h3>2015–2023</h3>
         <p>Verdian proposes ISO/TC 307. The 2018 whitepaper files Overledger as a gateway operating system. Unsold QNT is burned. LACChain is announced with IDB Lab in 2021. Rosalind, a BIS Innovation Hub London and Bank of England API experiment, concludes in 2023.</p>
-        <a class="text-link" href="/notes">History notes →</a>
+        <a class="text-link" href="/news">The wire →</a>
+        </div>
       </li>
       <li data-era="present">
+        ${visualBed('sterling', 'era-bed')}
+        <div class="era-copy">
         <p class="kicker">Present</p>
         <h3>2024–2026</h3>
         <p>UK Finance’s RLN phase, then GBTD on 26 September 2025: Quant as technology partner with ${GBTD_BANKS.join(', ')}. 2026 adds Dentsu Soken, the Synchronisation Lab, Murex MX.3, ISO/TS 23516, and Sibos Miami stand DISL51.</p>
         <a class="text-link" href="/programmes">Named rooms →</a>
+        </div>
       </li>
       <li data-era="future">
+        ${visualBed('future', 'era-bed')}
+        <div class="era-copy">
         <p class="kicker">Future</p>
         <h3>Still ahead</h3>
         <p>The Economic Secretary’s 8 September 2026 speech at UK Finance names a DIGIT gilt in Q1 2027. Quant’s published claim is that programmable bank money is how deposits and agent payments settle.</p>
         <a class="text-link" href="/vision">The thesis →</a>
+        </div>
       </li>
     </ol>
   </section>`;
@@ -225,7 +328,8 @@ function eraStrip(): string {
 function featuredStory(): string {
   const n = featuredNote();
   return `<section class="featured-note">
-    ${kicker('Featured note')}
+    ${kicker('Featured news')}
+    ${visualBed('gateway')}
     <div class="featured-grid">
       ${noteCard(n, true)}
       <div class="featured-aside">
@@ -233,8 +337,8 @@ function featuredStory(): string {
         <h2 class="display">A blogger’s map of Quant. <span class="display-mute">Primary sources only.</span></h2>
         <p>The Internet of Value is already a banking story: six UK banks programming sterling deposits on Overledger. QNT is the utility token of that network. This desk files the record — latest first — with the names and titles attached.</p>
         <div class="cta-row">
-          ${pill('/notes', 'Latest notes', 'All field notes')}
-          ${pill('/podcast', 'Play the series', 'Twenty films', 'ghost')}
+          ${pill('/news', 'Open the news', 'Official wire')}
+          ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
         </div>
       </div>
     </div>
@@ -253,28 +357,28 @@ function latestStrip(): string {
       </li>`;
     })
     .join('');
-  const latest = latestEpisode();
+  const first = episodeByN(1);
   return `<section class="latest-strip">
     ${kicker('Latest')}
     <div class="section-head">
       <h2 class="display">On the record this month.</h2>
-      <a class="text-link" href="/notes">All notes →</a>
+      <a class="text-link" href="/news">The wire →</a>
     </div>
     <ul class="month-cards">${month}</ul>
-    ${relatedEpisodeCard(latest.id)}
+    ${first ? relatedEpisodeCard(first.id) : ''}
   </section>`;
 }
 
 function podcastTease(): string {
-  const cards = episodesNewestFirst()
+  const cards = episodesInOrder()
     .slice(0, 4)
     .map((e) => relatedEpisodeCard(e.id))
     .join('');
   return `<section class="pod-home">
     ${kicker('Podcast')}
     <div class="section-head">
-      <h2 class="display">Twenty films. The Quant story, spoken.</h2>
-      <a class="text-link" href="/podcast">Open the player →</a>
+      <h2 class="display">Twenty films. The Quant story, from the beginning.</h2>
+      <a class="text-link" href="/podcast">Start the series →</a>
     </div>
     <div class="pod-tease-grid">${cards}</div>
   </section>`;
@@ -285,13 +389,13 @@ function notesReel(): string {
   const cards = notesFromDesk()
     .filter((n) => n.id !== featuredId)
     .slice(0, 10)
-    .map((n) => noteCard(n, false, false))
+    .map((n) => noteCard(n))
     .join('');
   return `<section class="notes-strip">
-    ${kicker('Field notes')}
+    ${kicker('News')}
     <div class="section-head">
-      <h2 class="display">Scroll the record. <span class="display-mute">Nothing invented.</span></h2>
-      <a class="text-link" href="/notes">All notes →</a>
+      <h2 class="display">Scroll the record. <span class="display-mute">Each card opens the source.</span></h2>
+      <a class="text-link" href="/news">The wire →</a>
     </div>
     <div class="notes-reel" tabindex="0">${cards}</div>
   </section>`;
@@ -316,21 +420,28 @@ export function renderHome(): string {
     })
     .join('');
   return `
-    <section class="masthead">
+    <section class="masthead masthead-lockup">
+      <div class="hero-stage">
+        ${visualBed('hero', 'hero-bed')}
+        <canvas id="tesseract" class="tesseract" role="img" aria-label="Interactive QntDesk network. Drag to turn. Click to spin."></canvas>
+        <p class="tess-hint">Drag to turn the network. Click to spin.</p>
+      </div>
       ${kicker('The Internet of Value')}
       <div class="hero-split">
         <h1 class="display">The future of Quant is already in the banks. <span class="display-mute">The history is why it works.</span></h1>
         <div>
-          <p class="lede">Overledger is the gateway that lets money talk. QNT is the utility token of that network. GBTD is live tokenised sterling with Barclays, HSBC, Lloyds, NatWest, Nationwide and Santander. This desk writes the record — latest first — and plays it as a twenty-part film.</p>
+          <p class="lede">Overledger is the gateway that lets money talk. QNT is the utility token of that network. GBTD is live tokenised sterling with Barclays, HSBC, Lloyds, NatWest, Nationwide and Santander. The rooms are named. The sterling is live. The story is on the record — and on a twenty-part series.</p>
           <div class="cta-row">
-            ${pill('/notes', 'Latest notes', 'All field notes')}
-            ${pill('/podcast', 'Play the series', 'Twenty films')}
+            ${pill('/news', 'Open the news', 'Official wire')}
+            ${pill('/podcast', 'Start the series', 'From the beginning')}
             ${pill('/vision', 'Read the thesis', 'The argument', 'ghost')}
           </div>
         </div>
       </div>
     </section>
 
+    ${constellation()}
+    ${filmRail()}
     ${latestStrip()}
     ${featuredStory()}
     ${notesReel()}
@@ -381,10 +492,14 @@ export function renderHome(): string {
       <ul class="wordmarks">${banks}</ul>
       ${kicker('The institutions around that cohort')}
       <ul class="wordmarks muted">
-        ${wordmarkLi('UK Finance', '/programmes#gbtd')}
-        ${wordmarkLi('Bank of England', '/cbdc')}
-        ${wordmarkLi('BIS', '/programmes#basel')}
-        ${wordmarkLi('Murex', '/programmes#murex')}
+        ${wordmarkLi('Quant', sources.about)}
+        ${wordmarkLi('UK Finance', sources.ukFinanceHome)}
+        ${wordmarkLi('Bank of England', sources.boeHome)}
+        ${wordmarkLi('BIS', sources.bisHome)}
+        ${wordmarkLi('IETF', sources.satpCore)}
+        ${wordmarkLi('Linux Foundation', sources.linuxX402)}
+        ${wordmarkLi('Oracle', sources.oracleBlog)}
+        ${wordmarkLi('Murex', sources.murexNews)}
       </ul>
     </section>
 
@@ -432,8 +547,8 @@ export function renderChapterPage(
   mute = '',
 ): string {
   const body = chaptersFor(page).map(chapterCard).join('');
-  const bed = page === 'vision' ? 'future' : page === 'technology' ? 'gateway' : page === 'cbdc' ? 'sterling' : 'london';
-  return `${pageHero(k, title, lede, mute)}${storyBed(bed)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
+  const bed: VisualId = page === 'vision' ? 'future' : page === 'technology' ? 'gateway' : page === 'cbdc' ? 'sterling' : 'london';
+  return `${pageHero(k, title, lede, mute, bed)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
 }
 
 export function renderVision(): string {
@@ -501,8 +616,8 @@ export function renderProgrammes(): string {
     'Where Quant is already',
     'Newest first. Search the rooms. GBTD is live as a UK tokenised-deposit experiment with Quant as technology partner. Murex is a named Overledger integration. Rosalind was a 2023 BIS × Bank of England API experiment Quant says it supplied as a vendor — concluded. The 2026 Bank of England lab is a simulated RT2.',
     'in the room.',
+    'sterling',
   )}
-    ${storyBed('sterling')}
     ${quoteRail('programmes', 24)}
     ${filterBox('prog-search', 'Search programmes, banks, labs…', '')}
     <div class="chapter-stack" id="prog-grid">${extra}${chapters}</div>
@@ -517,6 +632,7 @@ export function renderCbdc(): string {
     'Tokenised deposits are',
     'A central-bank digital currency is a liability of the central bank. GBTD tokens are liabilities of commercial banks. Keep those two lines clean. AI agents, x402, Hyperledger, Oracle and Linux Foundation software change the rails.',
     'commercial-bank money.',
+    'sterling',
   )}
   ${quoteRail('cbdc')}
   <ol class="liability-cards">
@@ -540,6 +656,7 @@ export function renderStandards(): string {
     'Convene the standard,',
     'Geneva, Sydney, Brussels, Cambridge and Boston sit on the globe as rooms where interoperability — and the ethics of agents that move value — is written down. IETF SATP, ISO/TS 23516, MIT SERC and Hardjono’s delegation paper are documents, not campuses.',
     'then connect the rails.',
+    'future',
   )}
   ${quoteRail('standards')}
   <section class="satp-lab" id="satp-method">
@@ -568,9 +685,28 @@ export function renderPeople(): string {
   return `${pageHero(
     'People',
     'The names who actually worked',
-    'Officers first, then the heads who ship the stack, then sales, then the founding authors — including those who have since left. Official portraits live on Quant’s public people pages; we link out. Faces are never generated. Sourced quotations sit under the person who said them.',
+    'Official Quant portraits where Quant published them. Each face opens that person’s official story — Quant’s people page, or their own site. Initials only when Quant has not published a picture. Quotations sit under the person who said them.',
     'on Overledger.',
-  )}${quoteRail('people')}${blocks}${dykBlock()}`;
+  )}${peopleRail()}${quoteRail('people')}${blocks}${dykBlock()}`;
+}
+
+function peopleRail(): string {
+  const faces = PEOPLE.filter((p) => p.photo)
+    .map((p) => {
+      const href = p.href ? sourceUrl(p.href) : `/people#${p.id}`;
+      const external = href.startsWith('http');
+      return `<a class="people-tile" href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+        <img src="${esc(p.photo ?? '')}" alt="${esc(p.name)}" width="160" height="160" />
+        <span><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
+      </a>`;
+    })
+    .join('');
+  return `<nav class="people-rail" aria-label="Official portraits">
+    ${kicker('On the record')}
+    <h2 class="display">The faces Quant published.</h2>
+    <p class="lede-sm">Highest-resolution stills from Quant’s own media library. Click a portrait for the official story.</p>
+    <div class="people-tiles">${faces}</div>
+  </nav>`;
 }
 
 function personCard(p: Person): string {
@@ -583,19 +719,26 @@ function personCard(p: Person): string {
       </blockquote>`,
     )
     .join('');
-  const portrait = p.href
-    ? `<p class="tiny">${extLink(sourceUrl(p.href), 'Official portrait / source')}</p>`
+  const officialHref = p.href ? sourceUrl(p.href) : '';
+  const official = officialHref
+    ? `<p class="person-cta">${extLink(officialHref, 'Full official story')}</p>`
     : p.id === 'lovesey'
-      ? '<p class="tiny">Initials only — no generated face.</p>'
+      ? '<p class="tiny">Initials only — Quant has not published a portrait.</p>'
       : '';
+  const photo = p.photo
+    ? `<img class="avatar avatar-photo avatar-${esc(p.group)}" src="${esc(p.photo)}" alt="${esc(p.name)}" width="160" height="160" />`
+    : `<div class="avatar avatar-${esc(p.group)}" aria-hidden="true">${esc(p.initials)}</div>`;
+  const face = officialHref
+    ? `<a class="person-face" href="${esc(officialHref)}" target="_blank" rel="noopener noreferrer">${photo}</a>`
+    : photo;
   return `<article class="person group-${esc(p.group)}" id="${esc(p.id)}">
-    <div class="avatar avatar-${esc(p.group)}" aria-hidden="true">${esc(p.initials)}</div>
+    ${face}
     <div>
       <h2>${esc(p.name)}</h2>
       <p class="role">${esc(p.role)}${p.current ? '' : ' · <span class="chip">left / documentary</span>'}</p>
       <p>${esc(p.bio)}</p>
       ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
-      ${portrait}
+      ${official}
       ${spoken}
     </div>
   </article>`;
@@ -622,6 +765,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     'Read the papers,',
     'Newest first. Filter UK, US, EU, standards, patents. Every card opens a reader page in this encyclopedia. From there: the original publisher. 48 documents. We do not invent a forty-ninth.',
     'then the press release.',
+    'london',
   )}
   ${quoteRail('research')}
   <div class="toolbar filter-bar">
@@ -680,7 +824,7 @@ export function renderGlossary(filter = ''): string {
       return `<section class="letter"><h3>${esc(L)}</h3>${items}</section>`;
     })
     .join('');
-  return `${pageHero('Language', 'The language of', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search the terms.', 'programmable money.')}
+  return `${pageHero('Language', 'The language of', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search the terms.', 'programmable money.', 'history')}
     <div class="toolbar">
       <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
       <p class="mono subtle">${terms.length} terms</p>
@@ -688,23 +832,39 @@ export function renderGlossary(filter = ''): string {
     ${groups}`;
 }
 
+export function venueBarsHtml(print?: MarketPrint): string {
+  const tickers = print?.tickers ?? [];
+  if (!tickers.length) return '<p class="empty-note">Venue volumes will appear when CoinGecko lists them.</p>';
+  const maxVol = Math.max(...tickers.map((t) => t.volume), 1);
+  return tickers
+    .map(
+      (t) => `<li class="bar"><span>${esc(t.name)}</span><i style="--w:${(t.volume / maxVol) * 100}%"></i><em>${fmtMoney(t.volume, 0)}</em></li>`,
+    )
+    .join('');
+}
+
+function supplyRing(pct: number): string {
+  const r = 46;
+  const c = 2 * Math.PI * r;
+  const dash = ((Number.isFinite(pct) ? pct : 0) / 100) * c;
+  return `<svg class="supply-ring" viewBox="0 0 120 120" role="img" aria-label="Circulating share of total supply">
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#dce8ff" stroke-width="12"/>
+    <circle class="supply-ring-arc" cx="60" cy="60" r="${r}" fill="none" stroke="#2F5BFF" stroke-width="12" stroke-linecap="round" stroke-dasharray="${dash.toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 60 60)"/>
+    <text x="60" y="56" text-anchor="middle" fill="#071428" font-size="18" font-family="Syne, Inter Tight, sans-serif" font-weight="700">${pct ? `${pct.toFixed(1)}%` : '—'}</text>
+    <text x="60" y="74" text-anchor="middle" fill="#3d4f6f" font-size="8">circulating</text>
+  </svg>`;
+}
+
 export function renderMarkets(print?: MarketPrint): string {
   const p = print;
-  const chip = p ? `<span class="chip ${p.status.toLowerCase()}">${esc(p.status)}</span>` : `<span class="chip degraded">loading</span>`;
+  const chip = p ? `<span class="chip ${p.status.toLowerCase()}" data-mk-status>${esc(p.status)}</span>` : `<span class="chip degraded" data-mk-status>loading</span>`;
   const change = p?.change24h != null ? fmtPct(p.change24h) : '—';
   const up = (p?.change24h ?? 0) >= 0;
   const circ = p?.circulating ?? null;
   const total = p?.totalSupply ?? null;
+  const outside = circ != null && total != null ? Math.max(0, total - circ) : null;
   const pct = circ && total ? Math.min(100, (circ / total) * 100) : 0;
-  const maxVol = Math.max(...(p?.tickers.map((t) => t.volume) ?? [1]), 1);
-  const bars =
-    p?.tickers.length
-      ? p.tickers
-          .map(
-            (t) => `<li class="bar"><span>${esc(t.name)}</span><i style="--w:${(t.volume / maxVol) * 100}%"></i><em>${fmtMoney(t.volume, 0)}</em></li>`,
-          )
-          .join('')
-      : '<p class="empty-note">Venue volumes will appear when CoinGecko lists them.</p>';
+  const bars = venueBarsHtml(p);
   return `${pageHero(
     'QNT',
     'QNT — the token of',
@@ -712,30 +872,41 @@ export function renderMarkets(print?: MarketPrint): string {
     'a network of networks.',
   )}
   ${quoteRail('markets')}
-  <section class="tape" data-proof="ticker">
-    <div class="tape-head">${chip}<span class="mono subtle">Updated ${esc(p?.updated ?? '—')} · ${esc(p?.venue ?? '')}</span></div>
+  <section class="tape" data-mk data-proof="ticker">
+    <div class="tape-head">${chip}<span class="mono subtle" data-mk-meta>Updated ${esc(p?.updated ?? '—')} · ${esc(p?.venue ?? '')}</span></div>
     <div class="stats">
-      <div><p class="kicker">Price</p><p class="stat">${p?.priceUsd != null ? fmtMoney(p.priceUsd) : '—'}</p><p class="${up ? 'up' : 'down'}">${change} 24h</p></div>
-      <div><p class="kicker">Volume 24h</p><p class="stat">${p?.volume24h != null ? fmtMoney(p.volume24h, 0) : '—'}</p></div>
-      <div><p class="kicker">Market cap</p><p class="stat">${p?.marketCap != null ? fmtMoney(p.marketCap, 0) : '—'}</p></div>
-      <div><p class="kicker">24h high / low</p><p class="stat">${p?.high24h != null ? fmtMoney(p.high24h) : '—'} <span class="subtle">/</span> ${p?.low24h != null ? fmtMoney(p.low24h) : '—'}</p></div>
-      <div><p class="kicker">Circulating</p><p class="stat">${circ != null ? fmtQty(circ) : '—'}</p></div>
-      <div><p class="kicker">Total supply</p><p class="stat">${total != null ? fmtQty(total) : '—'}</p></div>
+      <div><p class="kicker">Price</p><p class="stat" data-mk-price>${p?.priceUsd != null ? fmtMoney(p.priceUsd) : '—'}</p><p class="${up ? 'up' : 'down'}" data-mk-change>${change} 24h</p></div>
+      <div><p class="kicker">Volume 24h</p><p class="stat" data-mk-vol>${p?.volume24h != null ? fmtMoney(p.volume24h, 0) : '—'}</p></div>
+      <div><p class="kicker">Market cap</p><p class="stat" data-mk-cap>${p?.marketCap != null ? fmtMoney(p.marketCap, 0) : '—'}</p></div>
+      <div><p class="kicker">24h high / low</p><p class="stat" data-mk-range>${p?.high24h != null ? fmtMoney(p.high24h) : '—'} <span class="subtle">/</span> ${p?.low24h != null ? fmtMoney(p.low24h) : '—'}</p></div>
+      <div><p class="kicker">Circulating</p><p class="stat" data-mk-circ>${circ != null ? fmtQty(circ) : '—'}</p></div>
+      <div><p class="kicker">Total supply</p><p class="stat" data-mk-total>${total != null ? fmtQty(total) : '—'}</p></div>
     </div>
     <p class="mono contract">Contract ${extLink(sources.qntEtherscan, QNT_CONTRACT)}</p>
-    ${p?.error ? `<p class="note">${esc(p.error)}</p>` : ''}
-    ${sparklineSvg(p?.sparkline ?? [])}
+    ${p?.error ? `<p class="note" data-mk-error>${esc(p.error)}</p>` : '<p class="note" data-mk-error hidden></p>'}
+    <div data-mk-spark>${sparklineSvg(p?.sparkline ?? [])}</div>
   </section>
-  <section class="chapter">
+  <section class="chapter token-board">
     ${kicker('How much is out there')}
     <h2>Circulating against total, from CoinGecko</h2>
-    <div class="scarcity"><i style="width:${pct}%"></i></div>
-    <p class="mono subtle">${pct ? `${pct.toFixed(1)}% circulating` : 'Supply figures will appear when CoinGecko answers.'} · ATH ${p?.ath != null ? fmtMoney(p.ath) : '—'} · ATL ${p?.atl != null ? fmtMoney(p.atl) : '—'}</p>
+    <div class="token-visual">
+      ${supplyRing(pct)}
+      <div>
+        <div class="scarcity" role="img" aria-label="Circulating share of total supply"><i data-mk-bar style="width:${pct}%"></i></div>
+        <ul class="float-grid">
+          <li><span class="kicker">Circulating</span><strong data-mk-circ2>${circ != null ? fmtQty(circ) : '—'}</strong><span>CoinGecko live print</span></li>
+          <li><span class="kicker">Total</span><strong data-mk-total2>${total != null ? fmtQty(total) : '—'}</strong><span>Reported outstanding</span></li>
+          <li><span class="kicker">Outside the float</span><strong data-mk-outside>${outside != null ? fmtQty(outside) : '—'}</strong><span>Total minus circulating</span></li>
+        </ul>
+        <p class="mono subtle" data-mk-ath>${pct ? `${pct.toFixed(1)}% circulating` : 'Supply figures will appear when CoinGecko answers.'} · ATH ${p?.ath != null ? fmtMoney(p.ath) : '—'} · ATL ${p?.atl != null ? fmtMoney(p.atl) : '—'}</p>
+      </div>
+    </div>
+    <p>The 2018 burn retired the unsold allocation. Bitstamp’s MiCA filing records that licences can lock QNT for the term of the licence. This desk prints the live float. It does not invent a holder who never sells.</p>
   </section>
   <section class="chapter">
     ${kicker('Where the volume is')}
     <h2>Each cell is a CoinGecko venue, scaled to the busiest one.</h2>
-    <ul class="bars">${bars}</ul>
+    <ul class="bars" data-mk-bars>${bars}</ul>
   </section>
   <article class="chapter" id="tokenomics">
     ${kicker('Tokenomics')}
@@ -745,7 +916,7 @@ export function renderMarkets(print?: MarketPrint): string {
   </article>`;
 }
 
-export function renderNews(river?: NewsRiver, filter = ''): string {
+export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; count: number } {
   const q = filter.trim().toLowerCase();
   const rows = (river?.items ?? [])
     .slice()
@@ -769,19 +940,41 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
         .join('')}</ul></li>`;
     })
     .join('');
-  const items = grouped
-    || `<p class="empty-note">${esc(river?.error ?? 'No fresh headlines yet — check back in a minute.')}</p>`;
+  return {
+    count: rows.length,
+    html:
+      grouped ||
+      `<p class="empty-note">${esc(river?.error ?? 'No fresh headlines yet — check back in a minute.')}</p>`,
+  };
+}
+
+function sourcedNews(): string {
+  const cards = notesFromDesk()
+    .filter((n) => n.href?.startsWith('http'))
+    .slice(0, 18)
+    .map((n) => noteCard(n))
+    .join('');
+  return `<section class="notes-strip">
+    ${kicker('On the record')}
+    <h2 class="display">Sourced news. <span class="display-mute">Click through to the filing.</span></h2>
+    <div class="notes-index">${cards}</div>
+  </section>`;
+}
+
+export function renderNews(river?: NewsRiver, filter = ''): string {
+  const list = newsListMarkup(river, filter);
   return `${pageHero(
     'Wire',
     'Quant, as the story',
-    'Live GNews, newest first. Search titles. Headlines that name Quant Network, Overledger or QNT — never invented. Official posts and this month’s sourced notes sit even when the river is empty.',
+    'Official Quant feed, Overledger docs, IETF SATP, and Google News — newest first. Click a headline and you leave for the source. This month’s sourced filings stay on the page when the river is quiet.',
     'unfolds.',
   )}
   ${filterBox('news-filter', 'Search headlines…', filter)}
   <section class="wire">
-    <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}">${esc(river?.status ?? 'loading')}</span><span class="mono subtle">${rows.length} matching headlines</span></div>
-    <ul class="headlines">${items}</ul>
+    <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
+    <ul class="headlines" data-news-list>${list.html}</ul>
   </section>
+  ${sourcedNews()}
   ${renderThisMonth()}
   ${renderCalendar()}
   ${renderVoices()}`;
@@ -858,9 +1051,9 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
   return `${pageHero(
     'Moved',
     'This page now lives',
-    'The live desk is Notes, Programmes, Research and the twenty-part podcast.',
+    'The live desk is News, Programmes, Research and the twenty-part podcast.',
     'with the record.',
-  )}<p class="masthead" style="padding-top:0">${pill('/notes', 'Latest notes', 'Open notes')} ${pill('/podcast', 'Play the series', 'Twenty films', 'ghost')}</p>`;
+  )}<p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
 }
 
 export function renderCity(city: City): string {
@@ -894,17 +1087,18 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not', 'Try Notes, Podcast, Vision, Programmes, Research or Markets.', 'on the map.')}<p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/notes', 'Latest notes', 'Open notes', 'ghost')}</p>`;
+  return `${pageHero('404', 'This page is not', 'Try News, Podcast, Vision, Programmes, Research or Markets.', 'on the map.')}<p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
 }
 
 export function renderPodcast(): string {
-  const latest = latestEpisode();
+  const first = episodeByN(1);
+  if (!first) return renderNotFound();
   return `${pageHero(
     'Podcast',
     'Twenty films on Quant,',
-    'British correspondents James Hale and Amelia Crowe tell the Internet of Value from the record — latest episode first. Video on, audio on, names and titles attached. Twenty films, five minutes each.',
-    'and the future of money.',
-  )}${playerMarkup(latest)}`;
+    'James Hale and Amelia Crowe tell the Quant story in order — from ISO and the 2018 whitepaper to live sterling. Two voices, every episode. The rooms, the rails, and the people who built the gateway.',
+    'from the beginning.',
+  )}${playerMarkup(first)}${filmRail()}`;
 }
 
 export function renderEpisode(id: string): string {
@@ -929,14 +1123,15 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
     .join('');
   const cards = list.map((n) => noteCard(n)).join('');
   return `${pageHero(
-    'Notes',
-    'Field notes on Quant,',
-    'Did-you-know items and September 2026 notes, latest first. History, the live rooms, and what is still ahead — from the record.',
+    'News',
+    'Field news on Quant,',
+    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens the source.',
     'history to what is ahead.',
+    'history',
   )}
-  ${filterBox('notes-search', 'Search notes…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
-  <p class="notes-count mono subtle">${list.length} notes on the record</p>
-  <div class="notes-index">${cards || '<p class="empty-note">No note matches that filter.</p>'}</div>`;
+  ${filterBox('notes-search', 'Search news…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
+  <p class="notes-count mono subtle">${list.length} filings on the record</p>
+  <div class="notes-index">${cards || '<p class="empty-note">No filing matches that filter.</p>'}</div>`;
 }
 
 export function renderNote(id: string): string {
@@ -952,16 +1147,14 @@ export function renderNote(id: string): string {
     : n.related
       ? `<a class="text-link" href="${esc(n.related)}">Related chapter →</a>`
       : '';
-  const vt = `note-${n.id.replace(/[^a-z0-9-]/gi, '-')}`;
-  const bed = n.era === 'future' ? 'future' : n.era === 'history' ? 'london' : 'sterling';
+  const bed: VisualId = n.era === 'future' ? 'future' : n.era === 'history' ? 'history' : 'sterling';
   return `<article class="note-page">
-    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`)}
-    <video class="story-bed" muted loop playsinline autoplay poster="/podcast/stills/${bed}.png" src="/podcast/beds/${bed}.mp4"></video>
-    <div class="chapter note-body" style="view-transition-name:${esc(vt)}">
+    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed)}
+    <div class="chapter note-body">
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
       <p>${esc(n.body)}</p>
       <p class="source-row">${source}</p>
-      <p><a class="text-link" href="/notes">← All notes</a></p>
+      <p><a class="text-link" href="/news">← The wire</a></p>
     </div>
     ${related ? `<section class="notes-related">${kicker('Same era')}<div class="notes-index">${related}</div></section>` : ''}
   </article>`;

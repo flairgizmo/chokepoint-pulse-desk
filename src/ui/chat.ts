@@ -30,7 +30,7 @@ export function chatMarkup(): string {
       </ol>
       <form id="grok-form">
         <label class="sr-only" for="grok-input">Ask Grok</label>
-        <input id="grok-input" type="text" autocomplete="off" placeholder="What is GBTD?" />
+        <input id="grok-input" type="text" autocomplete="off" maxlength="2000" placeholder="What is GBTD?" />
         <button type="submit" class="btn btn-primary">Ask</button>
       </form>
     </div>
@@ -52,7 +52,7 @@ export function wireChat(root: HTMLElement): void {
     .then((s: { grok?: boolean } | null) => {
       if (!statusLine) return;
       statusLine.textContent = s?.grok
-        ? 'Grok live. Grounded in the QntDesk record, names and titles attached.'
+        ? 'Grok live. Grounded in the QntDesk record, names and titles attached, plus the live QNT print and official wire.'
         : 'From the record. Add XAI_API_KEY on the host to connect live Grok.';
     })
     .catch(() => undefined);
@@ -86,25 +86,40 @@ export function wireChat(root: HTMLElement): void {
     paint('user', q);
     history.push({ role: 'user', content: q });
     const local = answerFromDesk(q);
+    const thinking = document.createElement('li');
+    thinking.className = 'grok-assistant grok-thinking';
+    thinking.innerHTML = '<p>Reading the record…</p>';
+    log.appendChild(thinking);
+    log.scrollTop = log.scrollHeight;
+    form.setAttribute('aria-busy', 'true');
+    const askBtn = form.querySelector('button');
+    if (askBtn) askBtn.setAttribute('disabled', 'true');
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q, history, local }),
+        body: JSON.stringify({ question: q.slice(0, 2000), history: history.slice(-8) }),
+        signal: AbortSignal.timeout(22_000),
       });
       if (res.ok) {
-        const data = (await res.json()) as { text?: string; cites?: typeof local.cites };
+        const data = (await res.json()) as { text?: string; cites?: typeof local.cites; mode?: string };
         if (data.text) {
+          thinking.remove();
           paint('assistant', data.text, data.cites ?? local.cites);
           history.push({ role: 'assistant', content: data.text });
-          if (statusLine && (data as { mode?: string }).mode === 'live') {
-            statusLine.textContent = 'Grok live. Grounded in the QntDesk record, names and titles attached.';
+          if (statusLine && data.mode === 'live') {
+            statusLine.textContent =
+              'Grok live. Grounded in the QntDesk record, names and titles attached, plus the live QNT print and official wire.';
           }
           return;
         }
       }
     } catch {
       /* sourced fallback */
+    } finally {
+      thinking.remove();
+      form.removeAttribute('aria-busy');
+      if (askBtn) askBtn.removeAttribute('disabled');
     }
     paint('assistant', local.text, local.cites);
     history.push({ role: 'assistant', content: local.text });

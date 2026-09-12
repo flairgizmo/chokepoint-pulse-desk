@@ -1,3 +1,6 @@
+import { fetchJson } from './liveHttp';
+import { BINANCE_QNT, COINBASE_STATS, COINBASE_TICKER, COINGECKO_QNT, KRAKEN_QNT } from './liveSources';
+
 export type FeedStatus = 'live' | 'degraded' | 'EXAMPLE' | 'loading';
 
 export interface MarketPrint {
@@ -42,12 +45,6 @@ function writeCache(print: MarketPrint): void {
   }
 }
 
-async function fetchJson(url: string, signal?: AbortSignal): Promise<unknown> {
-  const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
 interface VenueQuote {
   venue: string;
   price: number;
@@ -58,14 +55,13 @@ interface VenueQuote {
 }
 
 async function fromCoinbase(signal?: AbortSignal): Promise<VenueQuote> {
-  const ticker = (await fetchJson(
-    'https://api.exchange.coinbase.com/products/QNT-USD/ticker',
-    signal,
-  )) as { price?: string; volume?: string };
-  const stats = (await fetchJson(
-    'https://api.exchange.coinbase.com/products/QNT-USD/stats',
-    signal,
-  )) as { open?: string; high?: string; low?: string; volume?: string };
+  const ticker = (await fetchJson(COINBASE_TICKER, signal)) as { price?: string; volume?: string };
+  const stats = (await fetchJson(COINBASE_STATS, signal)) as {
+    open?: string;
+    high?: string;
+    low?: string;
+    volume?: string;
+  };
   const price = Number(ticker.price);
   const open = Number(stats.open);
   const change = Number.isFinite(price) && Number.isFinite(open) && open
@@ -83,7 +79,7 @@ async function fromCoinbase(signal?: AbortSignal): Promise<VenueQuote> {
 
 async function fromKraken(signal?: AbortSignal): Promise<VenueQuote> {
   const data = (await fetchJson(
-    'https://api.kraken.com/0/public/Ticker?pair=QNTUSD',
+    KRAKEN_QNT,
     signal,
   )) as { result?: Record<string, { c: string[]; o: string; h: string[]; l: string[]; v: string[] }> };
   const row = data.result ? Object.values(data.result)[0] : undefined;
@@ -105,7 +101,7 @@ async function fromKraken(signal?: AbortSignal): Promise<VenueQuote> {
 
 async function fromBinance(signal?: AbortSignal): Promise<VenueQuote> {
   const data = (await fetchJson(
-    'https://api.binance.com/api/v3/ticker/24hr?symbol=QNTUSDT',
+    BINANCE_QNT,
     signal,
   )) as {
     lastPrice?: string;
@@ -137,15 +133,12 @@ async function firstVenue(signal?: AbortSignal): Promise<VenueQuote> {
   throw new Error(errors.join('; ') || 'No venue');
 }
 
-export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
+export async function fetchMarketsDirect(signal?: AbortSignal): Promise<MarketPrint> {
   const cached = readCache();
   try {
     const [quote, gecko] = await Promise.allSettled([
       firstVenue(signal),
-      fetchJson(
-        'https://api.coingecko.com/api/v3/coins/quant-network?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=true',
-        signal,
-      ),
+      fetchJson(COINGECKO_QNT, signal),
     ]);
 
     if (quote.status === 'rejected' && gecko.status === 'rejected') {
@@ -244,6 +237,25 @@ export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
       error: err instanceof Error ? err.message : String(err),
     };
   }
+}
+
+export async function fetchMarkets(signal?: AbortSignal): Promise<MarketPrint> {
+  try {
+    const res = await fetch('/api/markets', {
+      signal,
+      headers: { Accept: 'application/json' },
+    });
+    if (res.ok) {
+      const print = (await res.json()) as MarketPrint;
+      if (print && (print.priceUsd != null || print.status)) {
+        writeCache(print);
+        return print;
+      }
+    }
+  } catch {
+    /* same-origin proxy down — fall through to public REST */
+  }
+  return fetchMarketsDirect(signal);
 }
 
 export function staleCache(): MarketPrint | null {
