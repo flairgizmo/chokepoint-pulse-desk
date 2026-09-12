@@ -32,14 +32,302 @@ export const HOSTS: Record<HostId, { name: string; title: string; voice: string 
   james: {
     name: 'James Hale',
     title: 'QntDesk correspondent',
-    voice: 'alan',
+    voice: 'en-GB-RyanNeural',
   },
   amelia: {
     name: 'Amelia Crowe',
     title: 'QntDesk correspondent',
-    voice: 'cori',
+    voice: 'en-GB-SoniaNeural',
   },
 };
+
+export interface TalkLine {
+  who: HostId;
+  text: string;
+}
+
+type Memory = { open: [string, string]; close: [string, string] };
+
+const MEMORY: Record<number, Memory> = {
+  1: {
+    open: [
+      'We start at the beginning because every room later — GBTD, SATP, Fusion — hangs off this one sentence.',
+      'And I want the people on it. Tasca wrote the destination. Verdian built a company that treats it as an engineering problem, not a slogan.',
+    ],
+    close: [
+      'That is the map we will keep walking: a gateway, named rooms, a utility token, and a standard that moves an asset once.',
+      'Next we open the object itself. Overledger. Not a twelfth chain. The gate.',
+    ],
+  },
+  2: {
+    open: [
+      'Last conversation we filed Tasca’s risky necessity. Today the object itself.',
+      'Overledger. A gateway operating system. If you remember one thing from this series, remember that it is not a twelfth blockchain.',
+    ],
+    close: [
+      'Fusion, PayScript, Flow, QuantNet — they sit on that sentence. We will get to each of them.',
+      'First, the token that licences the network. QNT. Utility, not equity.',
+    ],
+  },
+  3: {
+    open: [
+      'If Overledger is the gate, QNT is why the gate has a token.',
+      'Utility, not equity. We will say that every time someone asks us to blur it. The contract is on Ethereum. You can read it yourself.',
+    ],
+    close: [
+      'The 2018 burn retired the unsold allocation. Two supply figures sit on the record. Today’s circulating print comes from CoinGecko.',
+      'The next room is older than the token. ISO. Verdian’s standards life — the reason a gateway company sounds like a standards company.',
+    ],
+  },
+  4: {
+    open: [
+      'Before there was a product page, there was a committee. ISO Technical Committee 307.',
+      'I love this chapter because it explains the voice. Quant talks like people who have already sat in the room where the language is written down.',
+    ],
+    close: [
+      'Standards first, then Latin America. LACChain is the first big public room on this map.',
+      'Same founder. Same instinct: connect what already exists. Do not ask a continent to move house.',
+    ],
+  },
+  5: {
+    open: [
+      'LACChain, 2021. IDB Lab. The first time this desk can point at a public interoperability programme with Quant inside it.',
+      'I keep this next to ISO on purpose. The committee writes the language. The development bank tries it in the wild.',
+    ],
+    close: [
+      'From a regional chain of chains to a London API experiment. Rosalind is the next room — and it has already concluded.',
+      'Concluded matters. We do not leave a 2023 lab sounding like it is still warm.',
+    ],
+  },
+  6: {
+    open: [
+      'Project Rosalind. BIS Innovation Hub London and the Bank of England. An API experiment. Concluded in 2023.',
+      'Quant says it supplied technology as a vendor. That is a precise sentence. Vendor, not issuer. API, not a live digital pound.',
+    ],
+    close: [
+      'The next step in the UK is not a CBDC. It is commercial-bank sterling learning to take an instruction.',
+      'RLN, then GBTD. The liability stays with the banks. Hold that — we will need it every week.',
+    ],
+  },
+  7: {
+    open: [
+      'The Regulated Liability Network is the rehearsal. GBTD is the live show.',
+      'I like the humility of a rehearsal. The UK tried the idea among banks before it asked sterling to move for real.',
+    ],
+    close: [
+      'Twenty twenty-five names the technology partner. Quant. Overledger and PayScript.',
+      'And then it names the six banks. That is the sentence this series has been walking toward.',
+    ],
+  },
+  8: {
+    open: [
+      'Twenty-sixth of September, twenty twenty-five. UK Finance selects Quant. Live tokenised sterling deposits.',
+      'I still get a lift from that date. Not because it is a victory lap — because it is specific. A partner. A product. A liability that is not the central bank’s.',
+    ],
+    close: [
+      'GBTD is not a CBDC. Say it kindly, and say it every time.',
+      'Next we sit with the six names. Barclays, HSBC, Lloyds, NatWest, Nationwide, Santander. The banks owe the holder.',
+    ],
+  },
+  9: {
+    open: [
+      'Six commercial banks. I want them said out loud, the way a roll-call is said out loud.',
+      'Barclays. HSBC. Lloyds Bank. NatWest. Nationwide. Santander. Those are the issuers. Quant is the technology partner.',
+    ],
+    close: [
+      'Sterling that can take an instruction, still owed by a bank you already know.',
+      'The next room is not a bank. It is a protocol. SATP. How an asset moves once, and only once.',
+    ],
+  },
+  10: {
+    open: [
+      'Secure Asset Transfer Protocol. IETF work. Not a Quant SKU. Quant helps write it.',
+      'I care about that distinction. A company can sit in a working group without owning the standard. That is how grown-up rails get built.',
+    ],
+    close: [
+      'Stage three is burn-and-mint under two-phase commit. The asset lives in one place when the transfer ends.',
+      'If SATP is how value moves between networks, Fusion is how Quant rolls many ledgers into one operating hour. Layer 2.5.',
+    ],
+  },
+  11: {
+    open: [
+      'Fusion. Layer 2.5. A multi-ledger rollup. Trusted Node is who processes it.',
+      'Last conversation we had a protocol. Today we have an operating model. Someone has to run the node. Quant is naming who.',
+    ],
+    close: [
+      'A rollup is interesting. A named operator is what makes a bank comfortable.',
+      'Then the language at the account. PayScript. Programmability with a name you can put in a stack diagram.',
+    ],
+  },
+  12: {
+    open: [
+      'PayScript is the sentence GBTD actually uses. Programmability at the account.',
+      'I have been waiting to say this since episode eight. The banks did not buy a slogan. They bought a way to write an instruction on a deposit.',
+    ],
+    close: [
+      'Overledger maps. PayScript writes. Fusion settles the hour. The stack is starting to feel like a stack.',
+      'Agents come next. Flow Applications. The same steps a human runs, an agent can call.',
+    ],
+  },
+  13: {
+    open: [
+      'Flow Applications. MCP-callable workflows. Build once, deploy everywhere — Quant’s own line.',
+      'This is where the series stops being only a banking story and becomes a story about who is allowed to move value.',
+    ],
+    close: [
+      'If an agent can call a workflow, the settlement still wants bank money. That is the optimistic Quant read, and it is on their pages.',
+      'x402 is the payment rail the Linux Foundation is carrying. Quant is a general member. We will keep those ranks honest.',
+    ],
+  },
+  14: {
+    open: [
+      'x402. A Linux Foundation project. Quant is a general member — not the steward, not the owner.',
+      'I like a company that can sit in a room without pretending the room is theirs. That is the same instinct as SATP.',
+    ],
+    close: [
+      'Agent payments still want a bank on the other side. Layer 2 again. Deposits.',
+      'Oracle is the next named platform. Overledger as the orchestration layer on Fabric. New York is the pin.',
+    ],
+  },
+  15: {
+    open: [
+      'Oracle’s own blog names Overledger. February 2025. Cross-ledger, two-phase workflows on Hyperledger Fabric.',
+      'When a platform that size writes your product into their sentence, the gateway stops being a whitepaper object.',
+    ],
+    close: [
+      'Fabric underneath. Overledger across. The same map we have been drawing since episode two.',
+      'Paris next. Murex. Tokenised deposits inside MX.3 — a platform more than three hundred institutions already run.',
+    ],
+  },
+  16: {
+    open: [
+      'Murex, twenty-fifth of March, twenty twenty-six. Tokenised deposits and digital-bond settlement inside MX.3.',
+      'This is my favourite vendor sentence in the series. Not a new chain. A named integration in a system the industry already trusts.',
+    ],
+    close: [
+      'Verdian, on that newsroom page: the next generation will not replace what works. It will make what works programmable.',
+      'Tokyo after Paris. Dentsu Soken. The same architecture, a different working day.',
+    ],
+  },
+  17: {
+    open: [
+      'Dentsu Soken. Japan’s tokenised-deposit conversation, with Quant named as a partner.',
+      'I keep GBTD in one hand when I read this. London is live. Tokyo is a second market practising the same idea.',
+    ],
+    close: [
+      'Programmable deposits are not a UK curiosity. They are a design that other rooms can pick up.',
+      'Home again. The Bank of England Synchronisation Lab. Simulated RT2. A different liability from GBTD. Stay kind, and stay precise.',
+    ],
+  },
+  18: {
+    open: [
+      'February twenty twenty-six. The Synchronisation Lab. Simulated RT2. Quant as a Synchronisation Operator.',
+      'I want the word simulated said clearly. This is practice beside RTGS, not a live digital pound, and not GBTD.',
+    ],
+    close: [
+      'Layer one in Verdian’s diagram. Wholesale central-bank money. GBTD remains layer two. Different who-owes-it.',
+      'Then the industry fair. Trusted Node, and Sibos Miami. Who processes the transaction — and who walks over to the stand.',
+    ],
+  },
+  19: {
+    open: [
+      'Tenth of September, twenty twenty-six. Quant publishes Trusted Node: who is processing your transaction?',
+      'If Fusion is a multi-ledger rollup, someone has to run the node. Naming the operator is how you earn a bank’s afternoon.',
+    ],
+    close: [
+      'Sibos Miami, stand DISL fifty-one, with Murex on programmable settlement. The industry still walks the floor.',
+      'The last conversation is the decade ahead. DIGIT. Deposits. A gateway that already exists.',
+    ],
+  },
+  20: {
+    open: [
+      'We end where the calendar is still warm. The Economic Secretary, eighth of September, twenty twenty-six, at UK Finance.',
+      'A DIGIT gilt in the first quarter of twenty twenty-seven. The speech does not name Quant. It is the same week’s landscape, and we will not invent a credit.',
+    ],
+    close: [
+      'Twenty conversations. The people named, the titles attached, the dates on the page. The Internet of Value is already in the room.',
+      'QNT meters the network. Overledger lets the networks speak. The banks still owe the holder. The instruction is new. Thank you for listening.',
+    ],
+  },
+};
+
+const JAMES_BRIDGES = [
+  'That line still gets me.',
+  'Hold that — this is why the banks walked in.',
+  'You can hear the 2018 paper in that sentence.',
+  'I keep a map: gate, rooms, token, standard.',
+  'Optimistic, yes — because the rooms are named.',
+  'Same architecture. Different liability.',
+];
+
+const AMELIA_BRIDGES = [
+  'And this is where sterling stops being a thought experiment.',
+  'Right. The filing actually says it.',
+  'Stay with the title on the quote. It earns the next room.',
+  'That is the through-line, and it is a kind one.',
+  'I can feel the decade connecting here.',
+  'The banks still owe the holder. The instruction is new.',
+];
+
+function otherHost(who: HostId): HostId {
+  return who === 'james' ? 'amelia' : 'james';
+}
+
+export function talkTrack(script: string, opener: HostId = 'james', n = 1): TalkLine[] {
+  const cleaned = script
+    .replace(/This is QntDesk, and I am James Hale\.\s*/g, '')
+    .replace(/This is QntDesk\.\s*/g, '')
+    .replace(/Amelia Crowe, QntDesk\.\s*/g, '')
+    .replace(/James Hale and Amelia Crowe open the Quant story from the beginning[^.]*\.\s*/g, '')
+    .replace(/^(James Hale|Amelia Crowe)\.\s*/gm, '')
+    .replace(/Twenty short films\. Five minutes each\.\s*/gi, '')
+    .replace(/Twenty films\. Five minutes\.\s*/gi, '')
+    .replace(/Twenty films\./gi, 'Twenty conversations.')
+    .replace(/, and for watching\.?/gi, '.')
+    .replace(/and for watching\.?/gi, '');
+  const sentences = cleaned
+    .split(/(?<=[.!?])\s+(?=[A-Z“"‘])/)
+    .map((s) => s.replace(/\s+/g, ' ').trim())
+    .filter((s) => s.length > 6);
+  const lines: TalkLine[] = [];
+  const memory = MEMORY[n];
+  let who: HostId = opener;
+  if (memory) {
+    lines.push({ who, text: memory.open[0] });
+    who = otherHost(who);
+    lines.push({ who, text: memory.open[1] });
+    who = otherHost(who);
+  }
+  let cue = 0;
+  for (let i = 0; i < sentences.length; i += 2) {
+    const chunk = sentences.slice(i, i + 2).join(' ');
+    if (!chunk) continue;
+    const bridgeBank = who === 'amelia' ? AMELIA_BRIDGES : JAMES_BRIDGES;
+    const useBridge = lines.length > 1 && i > 0 && i % 6 === 0;
+    lines.push({
+      who,
+      text: useBridge ? `${bridgeBank[cue % bridgeBank.length]} ${chunk}` : chunk,
+    });
+    if (useBridge) cue += 1;
+    who = otherHost(who);
+  }
+  if (memory) {
+    lines.push({ who, text: memory.close[0] });
+    lines.push({ who: otherHost(who), text: memory.close[1] });
+  } else if (lines.length === 1) {
+    lines.push({
+      who: otherHost(opener),
+      text: 'And the next conversation picks up the next room — same network, same record.',
+    });
+  }
+  return lines;
+}
+
+export function dialogueScript(lines: TalkLine[]): string {
+  return lines
+    .map((l) => `${HOSTS[l.who].name}: ${l.text}`)
+    .join('\n\n');
+}
 
 function ep(
   n: number,
@@ -70,7 +358,13 @@ function ep(
     videoSrc: `/podcast/beds/${bed}.mp4`,
     posterSrc: `/podcast/stills/${bed}.png`,
     quotes,
-    script: `${script.trim()}\n\n${(CODA[n] ?? '').trim()}\n\n${(ACT3[n] ?? '').trim()}`.trim(),
+    script: dialogueScript(
+      talkTrack(
+        `${script.trim()}\n\n${(CODA[n] ?? '').trim()}\n\n${(ACT3[n] ?? '').trim()}`.trim(),
+        host,
+        n,
+      ),
+    ),
   };
 }
 
@@ -96,7 +390,7 @@ export const EPISODES: Episode[] = [
         text: 'Leading pioneers in unlocking the power of programmable money.',
       },
     ],
-    `This is QntDesk, and I am James Hale. Twenty short films. Five minutes each. The story of Quant Network, Overledger, and the future of money — told from the record, latest facts first, voices named.
+    `This is QntDesk. James Hale and Amelia Crowe open the Quant story from the beginning — the rooms, the rails, and the people who built the gateway. The story of Quant Network, Overledger, and the future of money, told from the record, voices named.
 
 Paolo Tasca, writing in Frontiers in Blockchain on the fifteenth of September, twenty twenty, titled his essay with four words that still set the temperature of this industry: Internet of Value: A Risky Necessity. He pictured an information society of digital things and digital citizens, a world where value is exchanged as freely and easily as information. That is the destination. The road is the work.
 
@@ -133,7 +427,7 @@ Stay with us. The Internet of Value is no longer a slogan. It is a set of named 
         text: 'Quant’s Overledger is the pre-eminent instance of API gateway categorisation.',
       },
     ],
-    `Amelia Crowe, QntDesk. If you remember one object from this series, remember this one. Overledger is a gateway operating system. It maps a request onto the settlement domains it is connected to — Ethereum, Hyperledger Fabric, Corda, a bank core, Faster Payments, SWIFT.
+    `If you remember one object from this series, remember this one. Overledger is a gateway operating system. It maps a request onto the settlement domains it is connected to — Ethereum, Hyperledger Fabric, Corda, a bank core, Faster Payments, SWIFT.
 
 The twenty eighteen whitepaper, version zero point one, sits at UCL Discovery. Verdian, Tasca, Paterson, Mondelli, Overledger whitepaper v0.1, twenty eighteen, UCL Discovery abstract: This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.
 
@@ -736,12 +1030,16 @@ That is the future of money as this desk can state it from the record. Commercia
 
 QNT is how the network is metered. Overledger is how the networks speak. The banks still owe the holder. The instruction is new.
 
-Twenty films. Five minutes. The people named, the titles attached, the dates on the page. This is QntDesk. The Internet of Value is already in the room. Thank you for listening, and for watching.`,
+Twenty films. The people named, the titles attached, the dates on the page. This is QntDesk. The Internet of Value is already in the room. Thank you for listening, and for watching.`,
   ),
 ];
 
 export function episodesNewestFirst(): Episode[] {
   return [...EPISODES].sort((a, b) => b.n - a.n || b.published.localeCompare(a.published));
+}
+
+export function episodesInOrder(): Episode[] {
+  return [...EPISODES].sort((a, b) => a.n - b.n);
 }
 
 export function episodeById(id: string): Episode | undefined {

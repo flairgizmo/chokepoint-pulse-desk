@@ -2,13 +2,17 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { defineConfig, type Plugin } from 'vitest/config';
 
 const port = Number(process.env.PORT) || 8080;
-const GNEWS =
-  'https://news.google.com/rss/search?q=%22Quant+Network%22+OR+Overledger+OR+QNT&hl=en-GB&gl=GB&ceid=GB:en';
 
 function writeJson(res: ServerResponse, status: number, body: unknown): void {
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.end(JSON.stringify(body));
+}
+
+function writeText(res: ServerResponse, status: number, body: string, type: string): void {
+  res.statusCode = status;
+  res.setHeader('Content-Type', type);
+  res.end(body);
 }
 
 function chatDesk(): Plugin {
@@ -25,10 +29,21 @@ function chatDesk(): Plugin {
       return;
     }
     const chunks: Buffer[] = [];
-    req.on('data', (c) => chunks.push(Buffer.from(c)));
+    let received = 0;
+    req.on('data', (c) => {
+      received += c.length;
+      if (received > 24_000) {
+        res.statusCode = 413;
+        res.end('Payload too large');
+        req.destroy();
+        return;
+      }
+      chunks.push(Buffer.from(c));
+    });
     req.on('end', () => {
       void (async () => {
         const { answerChat } = await import('./src/modules/chatServer');
+        const { sanitizeHistory, sanitizeQuestion } = await import('./src/modules/chatGuard');
         let question = '';
         let history: Array<{ role: 'user' | 'assistant'; content: string }> = [];
         try {
@@ -36,8 +51,8 @@ function chatDesk(): Plugin {
             question?: string;
             history?: Array<{ role: 'user' | 'assistant'; content: string }>;
           };
-          question = String(parsed.question ?? '');
-          history = Array.isArray(parsed.history) ? parsed.history : [];
+          question = sanitizeQuestion(parsed.question);
+          history = sanitizeHistory(parsed.history);
         } catch {
           question = '';
         }
@@ -58,38 +73,77 @@ function chatDesk(): Plugin {
   };
 }
 
-function gnewsProxy(): Plugin {
-  async function handle(_req: IncomingMessage, res: ServerResponse): Promise<void> {
-    try {
-      const upstream = await fetch(GNEWS, {
-        headers: {
-          Accept: 'application/rss+xml, application/xml, text/xml, */*',
-          'User-Agent':
-            'Mozilla/5.0 (compatible; QntDesk/2.0; independent encyclopedia)',
-        },
+function liveApis(): Plugin {
+  const markets = (_req: IncomingMessage, res: ServerResponse): void => {
+    void (async () => {
+      const { fetchMarketsDirect } = await import('./src/modules/markets');
+      writeJson(res, 200, await fetchMarketsDirect());
+    })().catch((err) => writeJson(res, 502, { status: 'degraded', error: String(err) }));
+  };
+
+  const news = (_req: IncomingMessage, res: ServerResponse): void => {
+    void (async () => {
+      const { fetchNewsRiver } = await import('./src/modules/news');
+      writeJson(res, 200, await fetchNewsRiver());
+    })().catch((err) => writeJson(res, 502, { status: 'degraded', items: [], error: String(err) }));
+  };
+
+  const gnews = (_req: IncomingMessage, res: ServerResponse): void => {
+    void (async () => {
+      const { fetchGoogleNewsXml } = await import('./src/modules/news');
+      const xml = await fetchGoogleNewsXml();
+      writeText(res, 200, xml, 'application/rss+xml; charset=utf-8');
+    })().catch(() => writeText(res, 502, 'News proxy failed', 'text/plain; charset=utf-8'));
+  };
+
+  const status = (_req: IncomingMessage, res: ServerResponse): void => {
+    void (async () => {
+      const { chatStatus } = await import('./src/modules/chatServer');
+      writeJson(res, 200, {
+        ok: true,
+        grok: chatStatus().grok,
+        endpoints: ['/api/chat', '/api/markets', '/api/news', '/api/gnews', '/api/status'],
       });
-      const body = await upstream.text();
-      res.statusCode = upstream.ok ? 200 : upstream.status;
-      res.setHeader('Content-Type', 'application/rss+xml; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=60');
-      res.end(body);
-    } catch {
-      res.statusCode = 502;
-      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-      res.end('News proxy failed');
-    }
-  }
+    })();
+  };
+
+  const mount = (server: { middlewares: { use: (path: string, fn: (req: IncomingMessage, res: ServerResponse) => void) => void } }) => {
+    server.middlewares.use('/api/markets', markets);
+    server.middlewares.use('/api/news', news);
+    server.middlewares.use('/api/gnews', gnews);
+    server.middlewares.use('/api/status', status);
+  };
 
   return {
-    name: 'qntdesk-gnews-proxy',
+    name: 'qntdesk-live-apis',
     configureServer(server) {
-      server.middlewares.use('/api/gnews', (req, res) => {
-        void handle(req, res);
+      mount(server);
+    },
+    configurePreviewServer(server) {
+      mount(server);
+    },
+  };
+}
+
+function securityHeaders(): Plugin {
+  const apply = (res: ServerResponse): void => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+  };
+  return {
+    name: 'qntdesk-security-headers',
+    configureServer(server) {
+      server.middlewares.use((_req, res, next) => {
+        apply(res);
+        next();
       });
     },
     configurePreviewServer(server) {
-      server.middlewares.use('/api/gnews', (req, res) => {
-        void handle(req, res);
+      server.middlewares.use((_req, res, next) => {
+        apply(res);
+        next();
       });
     },
   };
@@ -99,7 +153,7 @@ export default defineConfig({
   root: '.',
   publicDir: 'public',
   appType: 'spa',
-  plugins: [gnewsProxy(), chatDesk()],
+  plugins: [securityHeaders(), liveApis(), chatDesk()],
   server: {
     port,
     host: true,

@@ -2,20 +2,19 @@
 
 Research desk on [Quant Network](https://quant.network), Overledger, programmable money and the Internet of Value.
 
-Latest first: notes, news, programmes, and a twenty-part podcast.
+Latest first: news, programmes, and a twenty-part podcast told in order. Bright magazine desk — drag the network, open the official rooms.
 
 ## Surfaces
 
 | Surface | What it holds |
 | --- | --- |
-| Notes | Field notes from sourced Did-you-know items and September 2026 filings |
-| Podcast | Twenty films. British correspondents. Audio plus video |
+| News | Official Quant feed, Overledger docs, IETF SATP, Google News, and sourced filings. A click opens the source. |
+| Podcast | Twenty films, in order. James Hale and Amelia Crowe, every episode. |
 | Earth | Interactive globe. Sourced city dossiers |
 | Vision / Stack / Programmes / CBDC / Standards | Encyclopedia chapters |
-| People | Officers and authors. Faces are never generated |
+| People | Officers and authors. Official Quant portraits where Quant published them |
 | Research | 48 documents |
-| Markets | Live QNT from public venues. Last-good cache |
-| News | Headlines that name Quant, Overledger or QNT |
+| Markets | Live QNT, circulating float, venue volume. Last-good cache |
 | Ask Grok | Live Grok when `XAI_API_KEY` is set; otherwise the sourced desk |
 
 ## Facts on the record

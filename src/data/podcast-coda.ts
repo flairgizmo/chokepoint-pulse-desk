@@ -1,4 +1,4 @@
-/** Second movements — sourced, named, latest-first. Keeps each film near five minutes. */
+/** Second movements — sourced, named, in series order. */
 export const CODA: Record<number, string> = {
   1: `Listen again to how the whitepaper opens the problem. Verdian, Tasca, Paterson, Mondelli, Overledger whitepaper v0.1, twenty eighteen, UCL Discovery abstract: The traditional Internet architecture has not yet achieved its vision of an open, trusted and secure network. And: This limitation forces distributed applications to be single-ledger-dependent, i.e. limited to be only executed on a single ledger.
 
@@ -338,5 +338,5 @@ That is the future of money as this desk can state it from the record. Commercia
 
 QNT is how the network is metered. Overledger is how the networks speak. The banks still owe the holder. The instruction is new.
 
-Twenty films. Five minutes. The people named, the titles attached, the dates on the page. This is QntDesk. The Internet of Value is already in the room. Thank you for listening, and for watching.`,
+Twenty films. The people named, the titles attached, the dates on the page. This is QntDesk. The Internet of Value is already in the room. Thank you for listening, and for watching.`,
 };

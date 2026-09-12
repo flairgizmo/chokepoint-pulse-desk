@@ -1,16 +1,17 @@
-import { papers, quotes, didYouKnow, QNT_CONTRACT } from '../data/catalog';
-import { notesFromDesk } from '../data/notes';
+import { QNT_CONTRACT } from '../data/catalog';
 import { CITIES } from '../data/cities';
-import { PEOPLE } from '../data/people';
-import { GLOSSARY } from '../data/glossary';
 import { fetchMarkets, staleCache, type MarketPrint } from '../modules/markets';
 import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
 import { chatMarkup, wireChat } from './chat';
 import { wirePlayer } from './player';
-import { esc, fmtCompact, fmtMoney, fmtPct } from './html';
+import { mountGateway } from './gateway';
+import { esc, fmtCompact, fmtMoney, fmtPct, fmtQty } from './html';
 import {
   DISCLAIMER,
+  newsListMarkup,
+  sparklineSvg,
+  venueBarsHtml,
   renderCbdc,
   renderCity,
   renderDonate,
@@ -19,8 +20,6 @@ import {
   renderMarkets,
   renderEpisode,
   renderNews,
-  renderNote,
-  renderNotes,
   renderNotFound,
   renderPodcast,
   renderPeople,
@@ -40,6 +39,7 @@ interface Route {
 export class QntDesk {
   private root: HTMLElement;
   private globe: EarthGlobe | null = null;
+  private tessDispose: (() => void) | null = null;
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
@@ -53,7 +53,7 @@ export class QntDesk {
     this.bindNav();
     this.render();
     void this.refreshFeeds();
-    window.setInterval(() => void this.refreshFeeds(), 50_000);
+    window.setInterval(() => void this.refreshFeeds(), 30_000);
   }
 
   private bindNav(): void {
@@ -75,18 +75,7 @@ export class QntDesk {
       this.go(href);
     });
     document.addEventListener('keydown', (ev) => {
-      if ((ev.metaKey || ev.ctrlKey) && ev.key.toLowerCase() === 'k') {
-        ev.preventDefault();
-        this.togglePalette(true);
-      }
-      if (ev.key === '/' && !(ev.target instanceof HTMLInputElement) && !(ev.target instanceof HTMLTextAreaElement)) {
-        ev.preventDefault();
-        this.togglePalette(true);
-      }
-      if (ev.key === 'Escape') {
-        this.togglePalette(false);
-        this.closeMenu();
-      }
+      if (ev.key === 'Escape') this.closeMenu();
     });
     this.syncLegacyHash();
   }
@@ -110,17 +99,7 @@ export class QntDesk {
         heading.focus({ preventScroll: true });
       }
     };
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reduced && typeof document.startViewTransition === 'function') {
-      try {
-        const t = document.startViewTransition(apply);
-        void t.finished.catch(() => undefined);
-      } catch {
-        apply();
-      }
-    } else {
-      apply();
-    }
+    apply();
   }
 
   private parse(): Route {
@@ -128,10 +107,9 @@ export class QntDesk {
     const parts = path.split('/').filter(Boolean);
     if (parts.length === 0) return { name: 'home' };
     const head = parts[0];
-    if (head === 'desk' || head === 'ops' || head === 'how') return { name: 'home' };
+    if (head === 'desk' || head === 'ops' || head === 'how' || head === 'notes' || head === 'note') return { name: 'news' };
     if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
-    if (head === 'notes' && parts[1]) return { name: 'note', id: parts[1] };
     if (head === 'podcast' && parts[1]) return { name: 'episode', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
     return { name: head };
@@ -140,6 +118,8 @@ export class QntDesk {
   private render(): void {
     this.globe?.dispose();
     this.globe = null;
+    this.tessDispose?.();
+    this.tessDispose = null;
     this.lastHoverId = undefined;
     const route = this.parse();
     const body = this.body(route);
@@ -170,10 +150,6 @@ export class QntDesk {
         return renderResearch();
       case 'read':
         return route.id ? renderRead(route.id) : renderNotFound();
-      case 'notes':
-        return renderNotes();
-      case 'note':
-        return route.id ? renderNote(route.id) : renderNotFound();
       case 'podcast':
         return renderPodcast();
       case 'episode':
@@ -203,17 +179,16 @@ export class QntDesk {
       this.markets?.volume24h != null ? `Vol ${fmtCompact(this.markets.volume24h)}` : '';
     const cap =
       this.markets?.marketCap != null ? `Mcap ${fmtCompact(this.markets.marketCap)}` : '';
-    const shortcut = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
     return `
       <div class="app">
         <header class="top">
           <div class="top-bar">
           <a class="brand" href="/" aria-label="QntDesk home">
-            <img class="logo" src="/brand/qntdesk-logo.png" width="36" height="36" alt="" />
+            <img class="logo" src="/brand/qntdesk-icon.png" width="36" height="36" alt="" />
             <span class="word">Qnt<span>Desk</span></span>
           </a>
           <nav class="nav" aria-label="Primary">
-            <a href="/notes" ${route.name === 'notes' || route.name === 'note' ? 'aria-current="page"' : ''}>Notes</a>
+            <a href="/news" ${route.name === 'news' ? 'aria-current="page"' : ''}>News</a>
             <a href="/podcast" ${route.name === 'podcast' || route.name === 'episode' ? 'aria-current="page"' : ''}>Podcast</a>
             <a href="/vision" ${route.name === 'vision' ? 'aria-current="page"' : ''}>Vision</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
@@ -234,8 +209,7 @@ export class QntDesk {
           </nav>
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
-            <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">${esc(shortcut)}</button>
-            <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Play the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
+            <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Start the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
           </div>
@@ -250,9 +224,8 @@ export class QntDesk {
           <a href="/news" class="push">Live news →</a>
         </div>
         <div class="mobile-nav" id="mobile-nav">
-          <a href="/notes">Notes</a>
-          <a href="/podcast">Podcast</a>
           <a href="/news">News</a>
+          <a href="/podcast">Podcast</a>
           <a href="/markets">Markets</a>
           <a href="/vision">Vision</a>
           <a href="/technology">Stack</a>
@@ -274,7 +247,6 @@ export class QntDesk {
               <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Live</p>
               <a href="/news">News</a>
               <a href="/markets">Markets</a>
-              <a href="/notes">Notes</a>
               <a href="/podcast">Podcast</a>
               <a href="/donate">Donate</a>
             </nav>
@@ -303,18 +275,11 @@ export class QntDesk {
             </p>
           </div>
         </footer>
-        <div class="palette-scrim" hidden id="palette-scrim"></div>
-        <div class="palette" hidden id="palette">
-          <input type="search" id="palette-input" placeholder="Search papers, people, cities, terms…" aria-label="Command palette" />
-          <ul id="palette-results"></ul>
-        </div>
         ${chatMarkup()}
       </div>`;
   }
 
   private wire(route: Route): void {
-    this.root.querySelector('[data-open-palette]')?.addEventListener('click', () => this.togglePalette(true));
-    this.root.querySelector('#palette-scrim')?.addEventListener('click', () => this.togglePalette(false));
     this.root.querySelector('[data-open-menu]')?.addEventListener('click', () => {
       const nav = this.root.querySelector('#mobile-nav');
       const btn = this.root.querySelector('[data-open-menu]');
@@ -322,19 +287,11 @@ export class QntDesk {
       const open = nav.classList.toggle('is-open');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    const palIn = this.root.querySelector<HTMLInputElement>('#palette-input');
-    palIn?.addEventListener('input', () => this.paintPalette(palIn.value));
-
     wireChat(this.root);
+    this.wireGateway();
+    this.wireMotionBeds();
+    this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
-    this.root.querySelectorAll<HTMLVideoElement>('.pod-tease video').forEach((vid) => {
-      const card = vid.closest('.pod-tease');
-      card?.addEventListener('mouseenter', () => void vid.play());
-      card?.addEventListener('mouseleave', () => {
-        vid.pause();
-        vid.currentTime = 0;
-      });
-    });
     if (route.name === 'home') void this.wireGlobe();
     if (route.name === 'markets') this.hydrateMarkets();
     if (route.name === 'news') {
@@ -363,26 +320,9 @@ export class QntDesk {
       const input = this.root.querySelector<HTMLInputElement>('#prog-search');
       input?.addEventListener('input', () => {
         const q = input.value.trim().toLowerCase();
-        this.root.querySelectorAll('#prog-grid .chapter').forEach((el) => {
+        this.root.querySelectorAll('#prog-grid .chapter, #prog-grid .reveal').forEach((el) => {
           const hit = !q || (el.textContent ?? '').toLowerCase().includes(q);
           (el as HTMLElement).hidden = !hit;
-        });
-      });
-    }
-    if (route.name === 'notes') {
-      const input = this.root.querySelector<HTMLInputElement>('#notes-search');
-      const apply = () => {
-        const main = this.root.querySelector('main');
-        const on = this.root.querySelector<HTMLButtonElement>('#notes-eras .chip.is-on');
-        if (main) main.innerHTML = renderNotes(input?.value ?? '', (on?.dataset.era as 'ALL' | 'history' | 'present' | 'future') ?? 'ALL');
-        this.wire(route);
-      };
-      input?.addEventListener('input', apply);
-      this.root.querySelectorAll<HTMLButtonElement>('#notes-eras [data-era]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          this.root.querySelectorAll('#notes-eras .chip').forEach((c) => c.classList.remove('is-on'));
-          btn.classList.add('is-on');
-          apply();
         });
       });
     }
@@ -408,6 +348,35 @@ export class QntDesk {
     }
   }
 
+  private wireGateway(): void {
+    const canvas = this.root.querySelector<HTMLCanvasElement>('#gateway');
+    if (!canvas) return;
+    this.tessDispose = mountGateway(canvas);
+  }
+
+  private wireFlips(): void {
+    this.root.querySelectorAll<HTMLElement>('.flip-card').forEach((card) => {
+      card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+      card.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          card.classList.toggle('is-flipped');
+        }
+      });
+      card.tabIndex = 0;
+    });
+  }
+
+  private wireMotionBeds(): void {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.root.querySelectorAll<HTMLVideoElement>('video.hero-bed, video.era-bed, video.visual-bed, video.page-bed, video.story-bed').forEach((vid) => {
+      if (reduced) {
+        vid.removeAttribute('autoplay');
+        vid.pause();
+      }
+    });
+  }
+
   private async wireGlobe(): Promise<void> {
     const stage = this.root.querySelector<HTMLElement>('#earth-stage');
     if (!stage) return;
@@ -420,7 +389,7 @@ export class QntDesk {
         const zoom = this.root.querySelector('#zoom-readout');
         const hover = this.root.querySelector<HTMLElement>('#city-hover');
         if (line) {
-          line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced programme corridors`;
+          line.textContent = `LOOK-DOWN  ALT ${hud.altitudeKm.toLocaleString()} km  ${hud.lat.toFixed(3)}° ${hud.lon.toFixed(3)}°  ZOOM ${hud.zoom.toFixed(1)}×  SRC corridors`;
         }
         if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
         if (hover && hud.hoverId !== this.lastHoverId) {
@@ -462,26 +431,106 @@ export class QntDesk {
   }
 
   private hydrateMarkets(): void {
-    const main = this.root.querySelector('main');
-    if (!main || !this.markets) return;
-    main.innerHTML = renderMarkets(this.markets);
+    const tape = this.root.querySelector('[data-mk]');
+    if (!this.markets) return;
+    if (!tape) {
+      const main = this.root.querySelector('main');
+      if (main) main.innerHTML = renderMarkets(this.markets);
+      return;
+    }
+    const p = this.markets;
+    const set = (sel: string, text: string): void => {
+      this.root.querySelectorAll(sel).forEach((el) => {
+        el.textContent = text;
+      });
+    };
+    const circ = p.circulating;
+    const total = p.totalSupply;
+    const pct = circ && total ? Math.min(100, (circ / total) * 100) : 0;
+    const outside = circ != null && total != null ? Math.max(0, total - circ) : null;
+    set('[data-mk-price]', p.priceUsd != null ? fmtMoney(p.priceUsd) : '—');
+    const chg = this.root.querySelector('[data-mk-change]');
+    if (chg) {
+      chg.textContent = `${p.change24h != null ? fmtPct(p.change24h) : '—'} 24h`;
+      chg.className = (p.change24h ?? 0) >= 0 ? 'up' : 'down';
+    }
+    set('[data-mk-vol]', p.volume24h != null ? fmtMoney(p.volume24h, 0) : '—');
+    set('[data-mk-cap]', p.marketCap != null ? fmtMoney(p.marketCap, 0) : '—');
+    set(
+      '[data-mk-range]',
+      `${p.high24h != null ? fmtMoney(p.high24h) : '—'} / ${p.low24h != null ? fmtMoney(p.low24h) : '—'}`,
+    );
+    set('[data-mk-circ]', circ != null ? fmtQty(circ) : '—');
+    set('[data-mk-circ2]', circ != null ? fmtQty(circ) : '—');
+    set('[data-mk-total]', total != null ? fmtQty(total) : '—');
+    set('[data-mk-total2]', total != null ? fmtQty(total) : '—');
+    set('[data-mk-outside]', outside != null ? fmtQty(outside) : '—');
+    set('[data-mk-meta]', `Updated ${p.updated ?? '—'} · ${p.venue ?? ''}`);
+    set(
+      '[data-mk-ath]',
+      `${pct ? `${pct.toFixed(1)}% circulating` : 'Supply figures will appear when CoinGecko answers.'} · ATH ${p.ath != null ? fmtMoney(p.ath) : '—'} · ATL ${p.atl != null ? fmtMoney(p.atl) : '—'}`,
+    );
+    const status = this.root.querySelector('[data-mk-status]');
+    if (status) {
+      status.textContent = p.status;
+      status.className = `chip ${p.status.toLowerCase()}`;
+    }
+    const bar = this.root.querySelector<HTMLElement>('[data-mk-bar]');
+    if (bar) bar.style.width = `${pct}%`;
+    const spark = this.root.querySelector('[data-mk-spark]');
+    if (spark) spark.innerHTML = sparklineSvg(p.sparkline ?? []);
+    const bars = this.root.querySelector('[data-mk-bars]');
+    if (bars) bars.innerHTML = venueBarsHtml(p);
+    const ring = this.root.querySelector('.token-visual');
+    if (ring && circ && total) {
+      const arc = ring.querySelector('.supply-ring-arc');
+      if (arc) {
+        const r = 46;
+        const c = 2 * Math.PI * r;
+        const dash = (pct / 100) * c;
+        arc.setAttribute('stroke-dasharray', `${dash.toFixed(2)} ${c.toFixed(2)}`);
+      }
+      const label = ring.querySelector('text');
+      if (label) label.textContent = `${pct.toFixed(1)}%`;
+    }
+    const err = this.root.querySelector<HTMLElement>('[data-mk-error]');
+    if (err) {
+      err.hidden = !p.error;
+      err.textContent = p.error ?? '';
+    }
   }
 
   private hydrateNews(): void {
-    const main = this.root.querySelector('main');
-    if (!main || !this.news) return;
+    const list = this.root.querySelector('[data-news-list]');
     const prev = this.root.querySelector<HTMLInputElement>('#news-filter')?.value ?? '';
-    main.innerHTML = renderNews(this.news, prev);
+    if (!list) {
+      const main = this.root.querySelector('main');
+      if (main) main.innerHTML = renderNews(this.news ?? undefined, prev);
+      this.bindNewsFilter();
+      return;
+    }
+    const painted = newsListMarkup(this.news ?? undefined, prev);
+    list.innerHTML = painted.html;
+    const count = this.root.querySelector('[data-news-count]');
+    if (count) count.textContent = `${painted.count} matching headlines`;
+    const status = this.root.querySelector('[data-news-status]');
+    if (status) {
+      status.textContent = this.news?.status ?? 'loading';
+      status.className = `chip ${(this.news?.status ?? 'loading').toLowerCase()}`;
+    }
     this.bindNewsFilter();
   }
 
   private bindNewsFilter(): void {
-    const main = this.root.querySelector('main');
     const input = this.root.querySelector<HTMLInputElement>('#news-filter');
-    if (!main || !input) return;
+    if (!input || input.dataset.bound === '1') return;
+    input.dataset.bound = '1';
     input.addEventListener('input', () => {
-      main.innerHTML = renderNews(this.news ?? undefined, input.value);
-      this.bindNewsFilter();
+      const painted = newsListMarkup(this.news ?? undefined, input.value);
+      const list = this.root.querySelector('[data-news-list]');
+      if (list) list.innerHTML = painted.html;
+      const count = this.root.querySelector('[data-news-count]');
+      if (count) count.textContent = `${painted.count} matching headlines`;
     });
   }
 
@@ -553,82 +602,4 @@ export class QntDesk {
       (el as HTMLDetailsElement).open = false;
     });
   }
-
-  private togglePalette(open: boolean): void {
-    const pal = this.root.querySelector<HTMLElement>('#palette');
-    const scrim = this.root.querySelector<HTMLElement>('#palette-scrim');
-    if (!pal) return;
-    pal.hidden = !open;
-    if (scrim) scrim.hidden = !open;
-    if (open) {
-      const input = pal.querySelector<HTMLInputElement>('input');
-      input?.focus();
-      this.paintPalette(input?.value ?? '');
-    }
-  }
-
-  private paintPalette(q: string): void {
-    const box = this.root.querySelector('#palette-results');
-    if (!box) return;
-    const query = q.trim().toLowerCase();
-    const rows: Array<{ href: string; title: string; sub: string }> = [];
-    const pages = [
-      ['/', 'Earth', 'Latest record and the globe'],
-      ['/notes', 'Notes', 'Latest field notes'],
-      ['/podcast', 'Podcast', 'Twenty films'],
-      ['/vision', 'Vision', 'Internet of Value'],
-      ['/technology', 'The stack', 'Overledger, Fusion, PayScript'],
-      ['/programmes', 'Programmes', 'GBTD, Murex, Rosalind'],
-      ['/cbdc', 'CBDC', 'Liability test'],
-      ['/people', 'People', 'Verdian, Riley, Belchior'],
-      ['/research', 'Research', '48 documents'],
-      ['/standards', 'Standards', 'SATP, ISO'],
-      ['/markets', 'Markets', 'Live QNT'],
-      ['/news', 'News', 'The wire'],
-      ['/glossary', 'Glossary', 'Programmable money language'],
-    ];
-    for (const [href, title, sub] of pages) {
-      if (!query || `${title} ${sub}`.toLowerCase().includes(query)) rows.push({ href, title, sub });
-    }
-    for (const p of papers) {
-      if (query && `${p.title} ${p.authors.join(' ')}`.toLowerCase().includes(query)) {
-        rows.push({ href: `/read/${p.id}`, title: p.title, sub: p.venue });
-      }
-    }
-    for (const person of PEOPLE) {
-      if (query && `${person.name} ${person.role}`.toLowerCase().includes(query)) {
-        rows.push({ href: `/people#${person.id}`, title: person.name, sub: person.role });
-      }
-    }
-    for (const city of CITIES) {
-      if (query && city.name.toLowerCase().includes(query)) {
-        rows.push({ href: `/city/${city.id}`, title: city.name, sub: city.kind });
-      }
-    }
-    for (const t of GLOSSARY) {
-      if (query && `${t.term} ${t.body}`.toLowerCase().includes(query)) {
-        rows.push({ href: `/glossary`, title: t.term, sub: t.body.slice(0, 80) });
-      }
-    }
-    for (const note of notesFromDesk()) {
-      if (query && `${note.title} ${note.body} ${note.kicker}`.toLowerCase().includes(query)) {
-        rows.push({ href: `/notes/${note.id}`, title: note.title, sub: `${note.kicker} · ${note.era}` });
-      }
-    }
-    for (const d of didYouKnow) {
-      if (query && d.q.toLowerCase().includes(query)) {
-        rows.push({ href: `/notes/${d.id}`, title: d.q, sub: d.category });
-      }
-    }
-    for (const quote of quotes) {
-      if (query && `${quote.who} ${quote.text}`.toLowerCase().includes(query)) {
-        rows.push({ href: `/${quote.page}`, title: `“${quote.text.slice(0, 72)}”`, sub: quote.who });
-      }
-    }
-    box.innerHTML = rows
-      .slice(0, 18)
-      .map((r) => `<li><a href="${esc(r.href)}"><strong>${esc(r.title)}</strong><span>${esc(r.sub)}</span></a></li>`)
-      .join('');
-  }
-
 }
