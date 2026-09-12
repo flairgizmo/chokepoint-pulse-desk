@@ -390,13 +390,13 @@
   },
   {
     "id": "synchro",
-    "title": "What is Synchro / Synthorus",
-    "year": "n.d.",
-    "venue": "Bank of England adjacency",
+    "title": "Synchro / Synthorus — Bank of England adjacency",
+    "year": "adjacency",
+    "venue": "Desk research note · Bank of England adjacency",
     "kind": "note",
     "hrefKey": "synchroPdf",
     "authors": [],
-    "lede": "RTGS / research thread. Distinct from the 2026 Synchronisation Lab note."
+    "lede": "A desk research note on Synchro / Synthorus — Bank of England adjacency. Public BoE pages describe synchronisation as locking an RTGS movement to an external event. Distinct from Quant’s February 2026 Synchronisation Lab participation (simulated RT2). Verification: the desk file is not a Bank of England publication naming Quant as operator of Synthorus, and it is not a partnership claim."
   },
   {
     "id": "verdian-cv",
