@@ -61,6 +61,7 @@ function chapterCard(c: Chapter): string {
 
 function quoteCard(q: Quote): string {
   return `<blockquote class="quote-card">
+    <span class="qmark" aria-hidden="true">“</span>
     <p>${esc(q.text)}</p>
     <footer>
       <strong>${esc(q.who)}</strong>
@@ -71,14 +72,58 @@ function quoteCard(q: Quote): string {
   </blockquote>`;
 }
 
-function quoteRail(page?: string, limit = 8): string {
+function quoteRail(page?: string, limit = 6): string {
   const list = quotesFor(page).slice(0, limit);
   if (!list.length) return '';
+  const [first, ...rest] = list;
   return `<section class="quote-rail">
     ${kicker('In their words')}
     <h2 class="display">Sourced lines. <span class="display-mute">Not invented dialogue.</span></h2>
-    <div class="quote-grid">${list.map(quoteCard).join('')}</div>
+    ${quoteCard(first).replace('class="quote-card"', 'class="quote-card quote-feature"')}
+    ${rest.length ? `<div class="quote-scroll">${rest.map(quoteCard).join('')}</div>` : ''}
   </section>`;
+}
+
+function stackVisual(): string {
+  const rungs = [
+    ['apps', 'Flow Applications', 'MCP-callable workflows. Agents and humans run the same steps.'],
+    ['script', 'PayScript', 'Programmability at the account. Named in the GBTD stack.'],
+    ['fusion', 'Fusion', 'Layer 2.5 multi-ledger rollup. Trusted Node is who processes it.'],
+    ['gate', 'Overledger · QuantNet', 'Gateway OS. The bank-facing name for the same architecture.'],
+    ['ledgers', 'Ledgers & rails', 'Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments. The gateway maps; it does not replace.'],
+  ];
+  return `<section class="stack-visual">
+    ${kicker('The stack')}
+    <h2 class="display">How the products sit. <span class="display-mute">One gate, many ledgers.</span></h2>
+    <ol class="stack-rungs">${rungs
+      .map(
+        ([id, title, body]) =>
+          `<li data-rung="${esc(id)}"><strong>${esc(title)}</strong><span>${esc(body)}</span></li>`,
+      )
+      .join('')}</ol>
+  </section>`;
+}
+
+function layerBands(): string {
+  return `<ol class="layer-bands">${MONEY_LAYERS.map(
+    (l) =>
+      `<li data-band="${esc(l.n)}"><span class="n">${esc(l.n)}</span><div><h3>${esc(l.title)}</h3><p>${esc(l.body)}</p></div></li>`,
+  ).join('')}</ol>`;
+}
+
+function dateStamp(iso: string): { day: string; rest: string } {
+  const day = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  if (day) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return { day: String(Number(day[3])), rest: `${months[Number(day[2]) - 1]} ${day[1]}` };
+  }
+  const quarter = /^(\d{4})-Q(\d)$/.exec(iso);
+  if (quarter) return { day: `Q${quarter[2]}`, rest: quarter[1] };
+  return { day: iso, rest: '' };
+}
+
+function wordmarkLi(label: string, href: string): string {
+  return `<li class="wordmark"><span class="wm" aria-hidden="true">${esc(label[0] ?? '?')}</span><a href="${esc(href)}">${esc(label)}</a></li>`;
 }
 
 function filterBox(id: string, placeholder: string, value: string, extra = ''): string {
@@ -103,7 +148,9 @@ function sparklineSvg(values: number[]): string {
     })
     .join(' ');
   const up = values[values.length - 1] >= values[0];
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Seven-day CoinGecko sparkline"><polyline fill="none" stroke="${up ? '#0f7a4a' : '#c62828'}" stroke-width="3" points="${pts}"/></svg>`;
+  const stroke = up ? '#0f7a4a' : '#c62828';
+  const fill = up ? 'rgba(15,122,74,0.14)' : 'rgba(198,40,40,0.12)';
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Seven-day CoinGecko sparkline"><polygon fill="${fill}" points="${pts} ${w},${h} 0,${h}"/><polyline fill="none" stroke="${stroke}" stroke-width="3" points="${pts}"/></svg>`;
 }
 
 function dykBlock(): string {
@@ -126,21 +173,22 @@ function dykBlock(): string {
 }
 
 export function renderHome(): string {
-  const banks = GBTD_BANKS.map((b) => `<li class="wordmark"><a href="/programmes#gbtd">${esc(b)}</a></li>`).join('');
+  const banks = GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('');
   const beats = TIMELINE.map(
     (t) => `<li class="beat"><span class="year">${esc(t.year)}</span><div><h3>${esc(t.title)}</h3><p>${esc(t.body)}</p></div></li>`,
   ).join('');
   const essays = ['philosophy', 'future', 'era']
     .map((id) => chaptersFor('vision').find((c) => c.id === id))
     .filter((c): c is Chapter => Boolean(c))
-    .map(
-      (c) => `<article class="panel">
+    .map((c) => {
+      const teaser = c.body.length > 210 ? `${c.body.slice(0, 210).trim()}…` : c.body;
+      return `<article class="panel essay-card">
         ${kicker(c.kicker)}
         <h3 class="display">${esc(c.title)}</h3>
-        <p>${esc(c.body)}</p>
+        <p>${esc(teaser)}</p>
         <a class="text-link" href="/vision#${esc(c.id)}">Read →</a>
-      </article>`,
-    )
+      </article>`;
+    })
     .join('');
   return `
     <section class="masthead">
@@ -173,39 +221,38 @@ export function renderHome(): string {
           <button type="button" data-zoom="0.4" aria-label="Zoom in">+</button>
           <button type="button" data-reset-globe aria-label="Reset view">↺</button>
         </div>
-        <fieldset class="hud-toggles">
-          <legend class="sr-only">Globe overlays</legend>
-          <label><input type="checkbox" data-globe-opt="spin" /> Slow rotate</label>
-          <label><input type="checkbox" data-globe-opt="labels" checked /> City labels</label>
-          <label><input type="checkbox" data-globe-opt="day" checked /> Day marble</label>
-          <label><input type="checkbox" data-globe-opt="night" checked /> Night lights</label>
-          <label><input type="checkbox" data-globe-opt="routes" checked /> Settlement routes</label>
-          <label><input type="checkbox" data-globe-opt="corridors" checked /> Token corridors</label>
-          <label><input type="checkbox" data-globe-opt="activity" checked /> Activity</label>
-        </fieldset>
-        <ul class="kind-legend">
-          ${['Headquarters', 'Banking', 'Lab', 'Standards', 'Research', 'Markets'].map((k) => `<li data-kind="${esc(k)}">${esc(k)}</li>`).join('')}
-        </ul>
-        <p class="isr-line mono" id="isr-line">Educational look-down · stylised night Earth · sourced corridors, not live SWIFT</p>
+        <details class="hud-more">
+          <summary>Overlays</summary>
+          <fieldset class="hud-toggles">
+            <legend class="sr-only">Globe overlays</legend>
+            <label><input type="checkbox" data-globe-opt="spin" /> Slow rotate</label>
+            <label><input type="checkbox" data-globe-opt="labels" checked /> City labels</label>
+            <label><input type="checkbox" data-globe-opt="day" checked /> Day marble</label>
+            <label><input type="checkbox" data-globe-opt="night" checked /> Night lights</label>
+            <label><input type="checkbox" data-globe-opt="routes" checked /> Settlement routes</label>
+            <label><input type="checkbox" data-globe-opt="corridors" checked /> Token corridors</label>
+            <label><input type="checkbox" data-globe-opt="activity" checked /> Activity</label>
+          </fieldset>
+          <ul class="kind-legend">
+            ${['Headquarters', 'Banking', 'Lab', 'Standards', 'Research', 'Markets'].map((k) => `<li data-kind="${esc(k)}">${esc(k)}</li>`).join('')}
+          </ul>
+        </details>
+        <div class="hud-city" id="city-hover" hidden></div>
+        <p class="isr-line mono" id="isr-line">Educational look-down · sourced corridors, not live SWIFT</p>
       </div>
     </section>
 
-    <p class="congrats"><strong>This month on Quant.</strong> Trusted Node, UK Finance digital markets, Sibos Miami DISL51. Sourced notes — not invented headlines.</p>
-
     ${renderLiveRail()}
-    ${renderThisMonth()}
-    ${renderCalendar()}
-    ${renderVoices()}
 
     <section class="strip">
       ${kicker('GBTD cohort — the six commercial banks named by UK Finance')}
       <ul class="wordmarks">${banks}</ul>
       ${kicker('The institutions around that cohort')}
       <ul class="wordmarks muted">
-        <li class="wordmark"><a href="/programmes#gbtd">UK Finance</a></li>
-        <li class="wordmark"><a href="/cbdc">Bank of England</a></li>
-        <li class="wordmark"><a href="/programmes#basel">BIS</a></li>
-        <li class="wordmark"><a href="/programmes#murex">Murex</a></li>
+        ${wordmarkLi('UK Finance', '/programmes#gbtd')}
+        ${wordmarkLi('Bank of England', '/cbdc')}
+        ${wordmarkLi('BIS', '/programmes#basel')}
+        ${wordmarkLi('Murex', '/programmes#murex')}
       </ul>
     </section>
 
@@ -215,28 +262,33 @@ export function renderHome(): string {
       <div class="essay-grid">${essays}</div>
     </section>
 
+    ${quoteRail('home')}
+
+    <section class="layers-wrap">
+      ${kicker('Three layers, one horizontal gate')}
+      <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
+      ${layerBands()}
+    </section>
+
     <section class="timeline-wrap">
       ${kicker('Then and now')}
       <h2 class="display">A decade of connecting, <span class="display-mute">not replacing.</span></h2>
       <ol class="timeline">${beats}</ol>
     </section>
 
-    <section class="layers-wrap">
-      ${kicker('Three layers, one horizontal gate')}
-      <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
-      <ol class="layers">${MONEY_LAYERS.map((l) => `<li><span class="n">${esc(l.n)}</span><div><h3>${esc(l.title)}</h3><p>${esc(l.body)}</p></div></li>`).join('')}</ol>
-    </section>
+    ${renderThisMonth(true)}
+    ${renderCalendar(true)}
+    ${renderVoices()}
 
     <section class="triptych hex">
-      <article class="panel">${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Multi-DLT and multi-legacy connectivity without forcing a new settlement chain. Tasca called it a risky necessity. Verdian built a company on that sentence.</p><a class="text-link" href="/vision">Vision →</a></article>
-      <article class="panel">${kicker('SATP')}<h2 class="display">How assets move between networks</h2><p>Secure Asset Transfer Protocol is IETF work Quant helps write. Stage-3 is burn-and-mint under two-phase commit. Not a product SKU.</p><a class="text-link" href="/standards">Standards →</a></article>
-      <article class="panel">${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>UK Finance selected Quant as technology partner for tokenised deposits with six banks. The banks owe the holder. Overledger runs the rails.</p><a class="text-link" href="/cbdc">The distinction →</a></article>
-      <article class="panel">${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>An ERC-20, burned down in 2018. Overledger licences settle in it. Live price and circulating come from CoinGecko. Utility token, not equity.</p><a class="text-link" href="/markets#tokenomics">Markets →</a></article>
-      <article class="panel">${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, multi-ledger rollup, programming layer. Oracle and Murex sit on top of that sentence, not beside a new chain.</p><a class="text-link" href="/technology">The stack →</a></article>
-      <article class="panel">${kicker('Programmes')}<h2 class="display">The rooms Quant is already in</h2><p>LACChain in 2021. Rosalind in 2023. GBTD in 2025. Dentsu Soken, Murex, the Bank of England lab in 2026. A chronology of rooms, each one named.</p><a class="text-link" href="/programmes">Programmes →</a></article>
+      <article class="panel"><span class="panel-n">01</span>${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Multi-DLT and multi-legacy connectivity without forcing a new settlement chain. Tasca called it a risky necessity. Verdian built a company on that sentence.</p><a class="text-link" href="/vision">Vision →</a></article>
+      <article class="panel"><span class="panel-n">02</span>${kicker('SATP')}<h2 class="display">How assets move between networks</h2><p>Secure Asset Transfer Protocol is IETF work Quant helps write. Stage-3 is burn-and-mint under two-phase commit. Not a product SKU.</p><a class="text-link" href="/standards">Standards →</a></article>
+      <article class="panel"><span class="panel-n">03</span>${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>UK Finance selected Quant as technology partner for tokenised deposits with six banks. The banks owe the holder. Overledger runs the rails.</p><a class="text-link" href="/cbdc">The distinction →</a></article>
+      <article class="panel"><span class="panel-n">04</span>${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>An ERC-20, burned down in 2018. Overledger licences settle in it. Live price and circulating come from CoinGecko. Utility token, not equity.</p><a class="text-link" href="/markets#tokenomics">Markets →</a></article>
+      <article class="panel"><span class="panel-n">05</span>${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, multi-ledger rollup, programming layer. Oracle and Murex sit on top of that sentence, not beside a new chain.</p><a class="text-link" href="/technology">The stack →</a></article>
+      <article class="panel"><span class="panel-n">06</span>${kicker('Programmes')}<h2 class="display">The rooms Quant is already in</h2><p>LACChain in 2021. Rosalind in 2023. GBTD in 2025. Dentsu Soken, Murex, the Bank of England lab in 2026. A chronology of rooms, each one named.</p><a class="text-link" href="/programmes">Programmes →</a></article>
     </section>
 
-    ${quoteRail('home')}
     ${dykBlock()}
   `;
 }
@@ -277,13 +329,17 @@ export function renderTechnology(): string {
     'Overledger is',
     'APIs, mappers and an orchestration fabric that let applications talk to more than one ledger — and to systems that are not ledgers at all. Fusion, PayScript, Flow Applications, MCP agents, x402, Hyperledger Fabric and Oracle sit on top of that sentence, not beside a new chain.',
     'The stack',
-    '',
+    stackVisual(),
     'the gateway layer.',
   );
 }
 
 export function renderProgrammes(): string {
   const extra = `
+    <div class="cohort-marks">
+      ${kicker('The six commercial banks named by UK Finance')}
+      <ul class="wordmarks">${GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('')}</ul>
+    </div>
     <article class="chapter" id="gbtd">
       ${kicker('GBTD — London')}
       <h2>Live tokenised sterling deposits</h2>
@@ -331,16 +387,11 @@ export function renderCbdc(): string {
     'not a CBDC.',
   )}
   ${quoteRail('cbdc')}
-  <div class="table-wrap">
-    <table class="liability">
-      <thead><tr><th>Kind</th><th>Who owes it</th><th>Example</th><th>On this map</th></tr></thead>
-      <tbody>
-        <tr><td>CBDC</td><td>Liability of a central bank</td><td>A digital pound, if issued, would sit here.</td><td>BoE Synchronisation Lab is adjacent experimentation — not a live CBDC.</td></tr>
-        <tr><td>Tokenised deposit</td><td>Liability of a commercial bank</td><td>GBTD tokens between ${GBTD_BANKS.join(', ')}.</td><td>The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</td></tr>
-        <tr><td>Stablecoin / crypto</td><td>Usually a private issuer or protocol</td><td>x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</td><td>Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <ol class="liability-cards">
+    <li data-kind="cbdc"><span class="n">01</span><div><h3>CBDC</h3><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> BoE Synchronisation Lab is adjacent experimentation — not a live CBDC.</p></div></li>
+    <li data-kind="deposit"><span class="n">02</span><div><h3>Tokenised deposit</h3><p><b>Who owes it.</b> A commercial bank.</p><p><b>Example.</b> GBTD tokens between ${GBTD_BANKS.join(', ')}.</p><p><b>On this map.</b> The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</p></div></li>
+    <li data-kind="stable"><span class="n">03</span><div><h3>Stablecoin / crypto</h3><p><b>Who owes it.</b> Usually a private issuer or protocol.</p><p><b>Example.</b> x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</p><p><b>On this map.</b> Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</p></div></li>
+  </ol>
   <div class="chapter-stack">${chaptersFor('cbdc').map(chapterCard).join('')}</div>
   ${dykBlock()}`;
 }
@@ -405,8 +456,8 @@ function personCard(p: Person): string {
     : p.id === 'lovesey'
       ? '<p class="tiny">Initials only — no generated face.</p>'
       : '';
-  return `<article class="person" id="${esc(p.id)}">
-    <div class="avatar" aria-hidden="true">${esc(p.initials)}</div>
+  return `<article class="person group-${esc(p.group)}" id="${esc(p.id)}">
+    <div class="avatar avatar-${esc(p.group)}" aria-hidden="true">${esc(p.initials)}</div>
     <div>
       <h2>${esc(p.name)}</h2>
       <p class="role">${esc(p.role)}${p.current ? '' : ' · <span class="chip">left / documentary</span>'}</p>
@@ -460,7 +511,8 @@ function paperCard(p: Paper): string {
     : `/read/${p.id}`;
   const external = href.startsWith('http');
   return `<article class="paper">
-    <p class="kicker">${esc(p.kind)} · ${esc(p.year)}</p>
+    <span class="year-num">${esc(p.year)}</span>
+    <p class="kicker">${esc(p.kind)}</p>
     <h2>${esc(p.title)}</h2>
     <p class="meta">${esc(p.venue)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
     <p>${esc(p.lede)}</p>
@@ -603,37 +655,41 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
   ${renderVoices()}`;
 }
 
-function renderCalendar(): string {
-  const items = CALENDAR.map(
-    (e) => `<li class="cal-item">
-      <p class="mono">${esc(e.when)} · ${esc(e.where)}</p>
+function renderCalendar(compact = false): string {
+  const items = CALENDAR.map((e) => {
+    const stamp = dateStamp(e.when);
+    return `<li class="cal-card">
+      <time datetime="${esc(e.when)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
+      <p class="mono">${esc(e.where)}</p>
       <h3>${esc(e.title)}</h3>
-      <p>${esc(e.body)}</p>
+      ${compact ? '' : `<p>${esc(e.body)}</p>`}
       ${extLink(sourceUrl(e.href), e.hrefLabel)}
-    </li>`,
-  ).join('');
+    </li>`;
+  }).join('');
   return `<section class="calendar">
     ${kicker('Upcoming')}
     <h2 class="display">Miami is <span class="display-mute">next</span></h2>
     <p>Quant at Sibos, stand DISL51, with Murex on stage — posted from @quantnetwork. DIGIT gilt is the Treasury, speaking at the UK Finance launch on 8 September. The speech does not name Quant; it is the same week’s landscape.</p>
-    <ul>${items}</ul>
+    <ul class="cal-grid">${items}</ul>
   </section>`;
 }
 
-function renderThisMonth(): string {
-  const items = THIS_MONTH.map(
-    (n) => `<li class="month-item">
-      <p class="mono">${esc(n.date)} · ${esc(n.source)} · ${esc(n.lane)}</p>
+function renderThisMonth(compact = false): string {
+  const items = THIS_MONTH.map((n) => {
+    const stamp = dateStamp(n.date);
+    return `<li class="month-card">
+      <time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
+      <p class="mono">${esc(n.source)} · ${esc(n.lane)}</p>
       <h3>${esc(n.title)}</h3>
-      <p>${esc(n.body)}</p>
+      ${compact ? '' : `<p>${esc(n.body)}</p>`}
       ${extLink(sourceUrl(n.href), 'Open the source')}
-    </li>`,
-  ).join('');
+    </li>`;
+  }).join('');
   return `<section class="calendar month-rail">
     ${kicker('September 2026')}
     <h2 class="display">This month <span class="display-mute">on Quant</span></h2>
     <p>Quant’s Trusted Node essay. UK Finance naming GBTD as UK innovation. Sibos in Miami still ahead. Sourced notes — not invented headlines.</p>
-    <ul>${items}</ul>
+    <ul class="month-cards">${items}</ul>
   </section>`;
 }
 

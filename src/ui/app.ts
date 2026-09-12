@@ -38,6 +38,7 @@ export class QntDesk {
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
+  private lastHoverId: string | undefined;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -114,6 +115,7 @@ export class QntDesk {
   private render(): void {
     this.globe?.dispose();
     this.globe = null;
+    this.lastHoverId = undefined;
     const route = this.parse();
     const body = this.body(route);
     this.root.innerHTML = this.shell(body, route);
@@ -355,10 +357,22 @@ export class QntDesk {
       onHud: (hud) => {
         const line = this.root.querySelector('#isr-line');
         const zoom = this.root.querySelector('#zoom-readout');
+        const hover = this.root.querySelector<HTMLElement>('#city-hover');
         if (line) {
           line.textContent = `Look-down · ${hud.altitudeKm.toLocaleString()} km · ${hud.lat.toFixed(3)}°, ${hud.lon.toFixed(3)}° · sourced corridors, not live SWIFT`;
         }
         if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
+        if (hover && hud.hoverId !== this.lastHoverId) {
+          this.lastHoverId = hud.hoverId;
+          const city = hud.hoverId ? CITIES.find((c) => c.id === hud.hoverId) : undefined;
+          if (city) {
+            hover.hidden = false;
+            hover.innerHTML = `<p class="kicker">${esc(city.kind)}</p><strong>${esc(city.name)}</strong><p>${esc(city.lede)}</p>`;
+          } else {
+            hover.hidden = true;
+            hover.innerHTML = '';
+          }
+        }
       },
     });
     this.root.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) => {
