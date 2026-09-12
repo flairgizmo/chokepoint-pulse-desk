@@ -92,7 +92,19 @@ export function wireSearch(root: HTMLElement): void {
   const paint = (): void => {
     const q = input.value.trim().toLowerCase();
     const hits = q
-      ? corpus.filter((h) => `${h.title} ${h.sub} ${h.kind}`.toLowerCase().includes(q)).slice(0, 12)
+      ? corpus
+          .filter((h) => `${h.title} ${h.sub} ${h.kind}`.toLowerCase().includes(q))
+          .sort((a, b) => {
+            const rank = (h: Hit): number => {
+              const t = h.title.toLowerCase();
+              if (t === q) return 0;
+              if (t.startsWith(q)) return 1;
+              if (t.includes(q)) return 2;
+              return 3;
+            };
+            return rank(a) - rank(b);
+          })
+          .slice(0, 12)
       : corpus.slice(0, 8);
     empty.hidden = hits.length > 0;
     list.innerHTML = hits

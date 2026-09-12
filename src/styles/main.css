@@ -2631,13 +2631,13 @@ button.chip {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  min-height: 240px;
-  max-height: 540px;
+  min-height: 280px;
+  max-height: 520px;
   margin: 0 0 2rem;
-  border-radius: 22px;
+  border-radius: 4px;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
-  box-shadow: 0 0 48px rgba(77, 141, 255, 0.18);
+  border: 1px solid var(--line);
+  background: var(--graphite-950);
 }
 
 .hero-bed {
@@ -3079,7 +3079,12 @@ button.chip {
 }
 
 .page-hero.enterprise-hero .beat-figure {
-  margin-bottom: 1.2rem;
+  width: min(16rem, 42vw);
+  margin: 0 0 1.1rem;
+}
+
+.page-hero.enterprise-hero .beat-diagram {
+  width: 100%;
 }
 
 .proof-grid,
@@ -3181,25 +3186,31 @@ button.chip {
 .desk-search {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 80;
   display: grid;
   place-items: center;
+  isolation: isolate;
+}
+
+.desk-stage {
+  background: rgba(8, 10, 12, 0.82);
 }
 
 .desk-stage-backdrop,
 .desk-search-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(8, 10, 12, 0.72);
+  background: rgba(8, 10, 12, 0.55);
 }
 
 .desk-stage-sheet,
 .desk-search-panel {
   position: relative;
+  z-index: 1;
   width: min(72rem, calc(100vw - 2rem));
   max-height: min(88dvh, 56rem);
   overflow: auto;
-  background: var(--graphite-800);
+  background: #1c2128;
   border: 1px solid var(--line);
   border-radius: 4px;
   padding: 1.25rem 1.4rem 1.4rem;
@@ -3415,6 +3426,10 @@ button.chip {
 
 body.stage-open {
   overflow: hidden;
+}
+
+body.stage-open .grok {
+  visibility: hidden;
 }
 
 .grok-launch {

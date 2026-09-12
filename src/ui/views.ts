@@ -688,7 +688,7 @@ export function renderPeople(): string {
   return `${pageHero(
     'People',
     'The names on the papers,',
-    'Official Quant portraits where they exist. A face or a quote opens that person’s story on this desk. Initials as a monogram when no defensible official picture is on file. Open original is secondary.',
+    'Verdian left Vocalink to build a gateway OS. The others wrote the taxonomy, the ordering claim, the SATP drafts. Official portraits where Quant published them; a monogram when they did not.',
     'and in the rooms.',
   )}
   <div class="toolbar filter-bar">
@@ -709,7 +709,7 @@ function peopleRail(): string {
   return `<nav class="people-rail" aria-label="Official portraits">
     ${kicker('On the record')}
     <h2 class="display">The faces Quant published.</h2>
-    <p class="lede-sm">Studio-grade crops of official portraits. Click a face for the story on this desk.</p>
+    <p class="lede-sm">Studio-grade crops of official portraits. The work is the story — not the crop.</p>
     <div class="people-tiles">${faces}</div>
   </nav>`;
 }
@@ -918,7 +918,7 @@ export function renderMarkets(print?: MarketPrint): string {
   </section>
   <section class="token-lab" id="tokenomics">
     ${kicker('Tokenomics')}
-    <h2 class="display">Why QNT exists. <span class="display-mute">Open a card.</span></h2>
+    <h2 class="display">Why QNT exists.</h2>
     <div class="tokencards">
       <details class="tokencard" open>
         <summary><span class="n">01</span> Utility</summary>
@@ -1006,7 +1006,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
   return `${pageHero(
     'Wire',
     'Quant, as the story',
-    'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. A headline opens a briefing on this desk. Open original is secondary. When the river is quiet, the month’s sourced filings stay pinned.',
+    'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. Each headline is a briefing so the reader can stay. Quiet weeks keep this month’s sourced filings on the desk.',
     'unfolds.',
   )}
   ${filterBox('news-filter', 'Search headlines…', filter)}

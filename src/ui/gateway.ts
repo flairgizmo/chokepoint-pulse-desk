@@ -15,9 +15,11 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hint = canvas.parentElement?.querySelector<HTMLElement>('[data-gateway-hint]');
   let raf = 0;
-  let ax = 0.48;
-  let ay = 0.22;
-  let spin = reduced ? 0 : 0.0034;
+  const restAx = 1.08;
+  const restAy = 0.28;
+  const orbit = (12 * Math.PI) / 180;
+  let ax = restAx;
+  let ay = restAy;
   let dragging = false;
   let lastX = 0;
   let lastY = 0;
@@ -45,7 +47,7 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     z1 = y * sx + z1 * cx;
     const k = 2.05 / (3.2 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.36;
+    const scale = Math.min(W, H) * 0.44;
     return [W / 2 + x1 * k * scale + parx, H * 0.5 + y1 * k * scale + pary, z1];
   };
 
@@ -69,25 +71,29 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const draw = (now: number): void => {
     const { width: W, height: H } = canvas;
     ctx.clearRect(0, 0, W, H);
-    const pulse = reduced ? 0 : Math.sin((now - t0) / 800) * 0.03;
-    const travel = reduced ? 0.35 : ((now - t0) / 4200) % 1;
+    const pulse = reduced ? 0 : Math.sin(((now - t0) / 8000) * Math.PI * 2) * 0.018;
+    const travel = reduced ? 0.35 : ((now - t0) / 8000) % 1;
 
-    const outer = ring(-0.08, 1.12 + pulse, 20);
-    const inner = ring(0.1, 0.62 + pulse * 0.5, 14, 0.4);
+    const outer = ring(-0.08, 1.12 + pulse, 22);
+    const mid = ring(0.02, 0.86 + pulse * 0.4, 16, 0.22);
+    const inner = ring(0.1, 0.58 + pulse * 0.5, 14, 0.4);
     const po = outer.map(([x, y, z]) => project(x, y, z));
+    const pm = mid.map(([x, y, z]) => project(x, y, z));
     const pi = inner.map(([x, y, z]) => project(x, y, z));
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    for (let i = 0; i < 10; i += 1) {
-      const a = po[i * 2];
-      const b = pi[i % pi.length];
-      ctx.strokeStyle = 'rgba(126, 224, 200, 0.22)';
+    for (let i = 0; i < 12; i += 1) {
+      const a = po[i * 2 % po.length];
+      const b = pm[i % pm.length];
+      const c = pi[i % pi.length];
+      ctx.strokeStyle = 'rgba(126, 224, 200, 0.28)';
       ctx.lineWidth = Math.max(1, W / 560);
       ctx.beginPath();
       ctx.moveTo(a[0], a[1]);
       ctx.lineTo(b[0], b[1]);
+      ctx.lineTo(c[0], c[1]);
       ctx.stroke();
     }
 
@@ -109,6 +115,7 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     };
 
     strokeRing(po, '#8b7cff', selected === 0 || hover === 0);
+    strokeRing(pm, '#c9b48a', false);
     strokeRing(pi, '#7ee0c8', selected === 1 || hover === 1);
 
     const tail = [
@@ -154,7 +161,6 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   };
 
   const tick = (): void => {
-    if (spin) ay += spin;
     draw(performance.now());
     raf = requestAnimationFrame(tick);
   };
@@ -167,15 +173,21 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   };
   const onMove = (ev: PointerEvent): void => {
     hover = pick(ev.clientX, ev.clientY);
-    if (!dragging && reduced) {
-      const rect = canvas.getBoundingClientRect();
-      parx = ((ev.clientX - rect.left) / rect.width - 0.5) * 12;
-      pary = ((ev.clientY - rect.top) / rect.height - 0.5) * 8;
+    const rect = canvas.getBoundingClientRect();
+    const nx = (ev.clientX - rect.left) / rect.width - 0.5;
+    const ny = (ev.clientY - rect.top) / rect.height - 0.5;
+    if (!dragging) {
+      ay = restAy + nx * 2 * orbit;
+      ax = restAx + ny * 2 * orbit;
+      if (reduced) {
+        parx = nx * 12;
+        pary = ny * 8;
+      }
     }
     paintHint();
     if (!dragging) return;
-    ay += (ev.clientX - lastX) * 0.007;
-    ax = Math.max(0.18, Math.min(1.15, ax + (ev.clientY - lastY) * 0.006));
+    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.007));
+    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.006));
     lastX = ev.clientX;
     lastY = ev.clientY;
   };

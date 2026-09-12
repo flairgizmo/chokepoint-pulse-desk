@@ -117,7 +117,8 @@ describe('Public desk', () => {
     expect(people).not.toContain('Highest-resolution stills from Quant’s own media library');
     expect(people).not.toContain('People who worked on Overledger');
     const news = renderNews();
-    expect(news).toContain('Open original');
+    expect(people).toContain('Open original');
+    expect(news).toContain('briefing');
     expect(news).not.toContain('Click a headline and you leave for the source');
     expect(news).not.toContain('Ctrl+K');
     expect(renderTechnology()).toContain('Overledger Platform / API');
