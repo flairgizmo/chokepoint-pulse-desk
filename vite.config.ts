@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { defineConfig, type Plugin } from 'vitest/config';
 
-const port = Number(process.env.PORT) || 5173;
+const port = Number(process.env.PORT) || 8080;
 const GNEWS =
   'https://news.google.com/rss/search?q=%22Quant+Network%22+OR+Overledger+OR+QNT&hl=en-GB&gl=GB&ceid=GB:en';
 

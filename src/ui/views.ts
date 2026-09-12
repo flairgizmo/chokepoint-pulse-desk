@@ -20,6 +20,7 @@ import {
 import { CITIES, type City } from '../data/cities';
 import { GROUP_LABEL, PEOPLE, type Person, type PersonGroup } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
+import { featuredNote, notesForEra, notesFromDesk, noteById, type NoteEra, type NotePost } from '../data/notes';
 import { CALENDAR, GBTD_BANKS, MONEY_LAYERS, OFFICIAL_VOICES, SATP_STAGES, THIS_MONTH, TIMELINE } from '../data/timeline';
 import type { MarketPrint } from '../modules/markets';
 import type { NewsRiver } from '../modules/news';
@@ -169,6 +170,85 @@ function dykBlock(): string {
     ${kicker('Did you know')}
     <h2 class="display">The future of money, <span class="display-mute">as a question.</span></h2>
     <ul class="dyk-list">${list}</ul>
+    <p><a class="text-link" href="/notes">All sourced notes →</a></p>
+  </section>`;
+}
+
+function noteHref(n: NotePost): string {
+  return `/notes/${n.id}`;
+}
+
+function noteCard(n: NotePost, featured = false, withTransition = true): string {
+  const vt = `note-${n.id.replace(/[^a-z0-9-]/gi, '-')}`;
+  const name = withTransition ? ` style="view-transition-name:${esc(vt)}"` : '';
+  return `<article class="note-card${featured ? ' is-feature' : ''}" data-era="${esc(n.era)}"${name}>
+    <p class="kicker">${esc(n.kicker)} · ${esc(n.era)}</p>
+    <h3>${esc(n.title)}</h3>
+    <p>${esc(n.body.length > 180 ? `${n.body.slice(0, 180).trim()}…` : n.body)}</p>
+    <a class="text-link" href="${esc(noteHref(n))}">Read the note →</a>
+  </article>`;
+}
+
+function eraStrip(): string {
+  return `<section class="era-strip" id="eras">
+    ${kicker('History · Present · Future')}
+    <h2 class="display">Three chapters. <span class="display-mute">One network of networks.</span></h2>
+    <ol class="era-grid">
+      <li data-era="history">
+        <p class="kicker">History</p>
+        <h3>2015–2023</h3>
+        <p>Verdian proposes ISO/TC 307. The 2018 whitepaper files Overledger as a gateway OS, not an L1. Unsold QNT is burned. LACChain is announced in 2021 — graded announced, not a 2026 mandate. Rosalind concludes in 2023 as a BIS × Bank of England experiment, not a launch.</p>
+        <a class="text-link" href="/notes">History notes →</a>
+      </li>
+      <li data-era="present">
+        <p class="kicker">Present</p>
+        <h3>2024–2026</h3>
+        <p>UK Finance’s RLN phase, then GBTD on 26 September 2025: Quant as technology partner with ${GBTD_BANKS.join(', ')}. 2026 adds Dentsu Soken, a simulated RT2 lab, Murex MX.3, ISO/TS 23516, and Sibos Miami stand DISL51. SATP remains IETF work.</p>
+        <a class="text-link" href="/programmes">Named rooms →</a>
+      </li>
+      <li data-era="future">
+        <p class="kicker">Future</p>
+        <h3>Still ahead</h3>
+        <p>HMT’s 8 September 2026 speech names a DIGIT gilt in Q1 2027. The speech does not name Quant; it is the same week’s landscape. Quant’s published claim is that programmable bank money — not another chain — is how deposits and agent payments settle.</p>
+        <a class="text-link" href="/vision">The thesis →</a>
+      </li>
+    </ol>
+  </section>`;
+}
+
+function featuredStory(): string {
+  const n = featuredNote();
+  return `<section class="featured-note">
+    ${kicker('Featured note')}
+    <div class="featured-grid">
+      ${noteCard(n, true)}
+      <div class="featured-aside">
+        <p class="kicker">Why this desk exists</p>
+        <h2 class="display">A blogger’s map of Quant. <span class="display-mute">Primary sources only.</span></h2>
+        <p>The Internet of Value is already a banking story: six UK banks programming sterling deposits on a gateway that is not a twelfth blockchain. QNT is the utility token of that network. This magazine writes the history, the live rooms, and the published next step — without inventing a headline.</p>
+        <div class="cta-row">
+          ${pill('/notes', 'Open the notes', 'All field notes')}
+          ${pill('/markets', 'Live QNT', 'CoinGecko print', 'ghost')}
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function notesReel(): string {
+  const featuredId = featuredNote().id;
+  const cards = notesFromDesk()
+    .filter((n) => n.id !== featuredId)
+    .slice(0, 10)
+    .map((n) => noteCard(n, false, false))
+    .join('');
+  return `<section class="notes-strip">
+    ${kicker('Field notes')}
+    <div class="section-head">
+      <h2 class="display">Scroll the record. <span class="display-mute">Nothing invented.</span></h2>
+      <a class="text-link" href="/notes">Full magazine →</a>
+    </div>
+    <div class="notes-reel" tabindex="0">${cards}</div>
   </section>`;
 }
 
@@ -191,20 +271,24 @@ export function renderHome(): string {
     })
     .join('');
   return `
-    <section class="masthead">
-      ${kicker('The Internet of Value')}
+    <section class="masthead magazine-mast">
+      ${kicker('Independent protocol magazine')}
       <div class="hero-split">
-        <h1 class="display">Money already moves like software. <span class="display-mute">The scarce layer is the one that lets it talk.</span></h1>
+        <h1 class="display">The future of Quant is already in the banks. <span class="display-mute">The history is why it works.</span></h1>
         <div>
-          <p class="lede">Overledger sits above the ledgers and bank cores that already settle — Fabric, Ethereum, Faster Payments — the way TCP/IP sat above the wires. UK banks are already programming sterling deposits on it. QNT is the utility token of that network. GBTD is a tokenised-deposit pilot, not a CBDC.</p>
+          <p class="lede">A professional research blog for the Internet of Value. Overledger is the gateway that lets money talk. QNT is the utility token of that network. GBTD is live tokenised sterling — liabilities of six UK banks, not a CBDC. History, present, and what is still ahead. Sourced. Independent. Not Quant Network.</p>
           <div class="cta-row">
-            ${pill('/vision', 'Read the thesis', 'The argument')}
+            ${pill('/notes', 'Open the notes', 'The magazine')}
             ${pill('/programmes', 'Named programmes', 'See the rooms', 'ghost')}
-            ${pill('/people', 'In their words', 'People', 'ghost')}
+            ${pill('/vision', 'Read the thesis', 'The argument', 'ghost')}
           </div>
         </div>
       </div>
     </section>
+
+    ${eraStrip()}
+    ${featuredStory()}
+    ${notesReel()}
 
     <section class="earth-hero" data-proof="hero">
       <div class="earth-stage" id="earth-stage" tabindex="0" aria-label="Interactive 3D Earth. Drag to orbit, scroll to zoom, double-click to fly in, click a city."></div>
@@ -309,7 +393,7 @@ export function renderVision(): string {
   return renderChapterPage(
     'vision',
     'A network of networks,',
-    'The Internet of Value is a connectivity problem. Overledger’s claim is to sit above ledgers and core systems the way TCP/IP sat above physical networks — a gateway operating system, not a twelfth blockchain.',
+    'This magazine’s thesis: the Internet of Value is a connectivity problem. Overledger’s claim is to sit above ledgers and core systems the way TCP/IP sat above physical networks — a gateway operating system, not a twelfth blockchain. The history is in the 2018 whitepaper. The present is live sterling deposits. The future is still being written in standards rooms.',
     'Vision',
     `<blockquote class="pull">
       <p>This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.</p>
@@ -727,9 +811,9 @@ export function renderGone(kind: 'desk' | 'ops'): string {
   return `${pageHero(
     'Retired',
     title,
-    'God’s Eye View, the chokepoint desk and the architecture note are no longer part of this encyclopedia. The globe, the papers and the sourced quotations remain.',
+    'God’s Eye View, the chokepoint desk and the architecture note are no longer part of this encyclopedia. The magazine, the globe, the papers and the sourced quotations remain.',
     'this map.',
-  )}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')} ${pill('/news', 'Open the tape', 'Latest first', 'ghost')}</p>`;
+  )}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')} ${pill('/notes', 'Open the notes', 'The magazine', 'ghost')}</p>`;
 }
 
 export function renderCity(city: City): string {
@@ -763,5 +847,52 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not', 'The encyclopedia still has Vision, Technology, Programmes, CBDC, People, Research and Standards.', 'on the globe.')}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')}</p>`;
+  return `${pageHero('404', 'This page is not', 'The encyclopedia still has Notes, Vision, Technology, Programmes, CBDC, People, Research and Standards.', 'on the globe.')}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')} ${pill('/notes', 'Open the notes', 'The magazine', 'ghost')}</p>`;
+}
+
+export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
+  const q = filter.trim().toLowerCase();
+  const list = notesForEra(era).filter((n) => {
+    if (!q) return true;
+    return `${n.title} ${n.body} ${n.kicker} ${n.source}`.toLowerCase().includes(q);
+  });
+  const chips = (['ALL', 'history', 'present', 'future'] as const)
+    .map((r) => `<button type="button" class="chip${r === era ? ' is-on' : ''}" data-era="${esc(r)}">${esc(r === 'ALL' ? 'All eras' : r)}</button>`)
+    .join('');
+  const cards = list.map((n) => noteCard(n)).join('');
+  return `${pageHero(
+    'Notes',
+    'Field notes on Quant,',
+    'A professional blog built only from facts already on this desk: Did-you-know items and September 2026 sourced notes. History, present, and the published next step. We do not invent a forty-seventh anecdote.',
+    'history to what is ahead.',
+  )}
+  ${filterBox('notes-search', 'Search notes…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
+  <p class="notes-count mono subtle">${list.length} notes on the record</p>
+  <div class="notes-index">${cards || '<p class="empty-note">No note matches that filter.</p>'}</div>`;
+}
+
+export function renderNote(id: string): string {
+  const n = noteById(id);
+  if (!n) return renderNotFound();
+  const related = notesFromDesk()
+    .filter((o) => o.id !== n.id && o.era === n.era)
+    .slice(0, 3)
+    .map((o) => noteCard(o))
+    .join('');
+  const source = n.href
+    ? extLink(n.href, n.href.startsWith('http') ? 'Open the source' : 'Open the related chapter')
+    : n.related
+      ? `<a class="text-link" href="${esc(n.related)}">Related chapter →</a>`
+      : '';
+  const vt = `note-${n.id.replace(/[^a-z0-9-]/gi, '-')}`;
+  return `<article class="note-page">
+    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value — filed from primary sources, not invented copy.`)}
+    <div class="chapter note-body" style="view-transition-name:${esc(vt)}">
+      <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
+      <p>${esc(n.body)}</p>
+      <p class="source-row">${source}</p>
+      <p><a class="text-link" href="/notes">← All notes</a></p>
+    </div>
+    ${related ? `<section class="notes-related">${kicker('Same era')}<div class="notes-index">${related}</div></section>` : ''}
+  </article>`;
 }
