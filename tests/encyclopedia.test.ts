@@ -69,6 +69,11 @@ describe('QntDesk encyclopedia contract', () => {
     const list = papersNewestFirst();
     expect(list).toHaveLength(48);
     expect(paperYearKey(list[0])).toBeGreaterThanOrEqual(paperYearKey(list[list.length - 1]));
+    expect(papers.every((p) => !/n\.d\./i.test(p.year))).toBe(true);
+    const synchro = papers.find((p) => p.id === 'synchro');
+    expect(synchro?.title).toMatch(/Synchro \/ Synthorus/);
+    expect(synchro?.lede.toLowerCase()).toContain('adjacency');
+    expect(synchro?.lede.toLowerCase()).toContain('verification');
   });
 
   it('keeps September 2026 sourced notes on the record', () => {
