@@ -37,6 +37,9 @@ import {
 import { stageMarkup, wireStages } from './stage';
 import { searchMarkup, wireSearch } from './search';
 import { resolveStage } from './resolve';
+import { matchProgrammes } from '../data/programmes';
+import { rememberHeadline } from './newsCache';
+import { STORY } from '../data/story';
 
 interface Route {
   name: string;
@@ -332,13 +335,23 @@ export class QntDesk {
       else this.bindNewsFilter();
     }
     if (route.name === 'home') this.hydrateHomeLive();
+    if (route.name === 'programmes' || route.name === 'institutional') this.hydrateProgrammes();
+    if (route.name === 'story') this.hydrateStorySuggest();
     if (route.name === 'research' || route.name === 'library') {
       const input = this.root.querySelector<HTMLInputElement>('#lib-search');
       const apply = () => {
-        const main = this.root.querySelector('main');
-        const on = this.root.querySelector<HTMLButtonElement>('#research-regions .chip.is-on');
-        if (main) main.innerHTML = renderResearch(input?.value ?? '', on?.dataset.region ?? 'ALL');
-        this.wire(route);
+        const q = (input?.value ?? '').trim().toLowerCase();
+        const region = this.root.querySelector<HTMLButtonElement>('#research-regions .chip.is-on')?.dataset.region ?? 'ALL';
+        let n = 0;
+        this.root.querySelectorAll<HTMLElement>('#research-grid .paper').forEach((el) => {
+          const hay = (el.textContent ?? '').toLowerCase();
+          const regionOk = region === 'ALL' || (el.dataset.region ?? '').includes(region);
+          const hit = (!q || hay.includes(q)) && regionOk;
+          el.hidden = !hit;
+          if (hit) n += 1;
+        });
+        const empty = this.root.querySelector<HTMLElement>('#research-empty');
+        if (empty) empty.hidden = n > 0;
       };
       input?.addEventListener('input', apply);
       this.root.querySelectorAll<HTMLButtonElement>('#research-regions [data-region]').forEach((btn) => {
@@ -349,31 +362,18 @@ export class QntDesk {
         });
       });
     }
-    if (route.name === 'programmes' || route.name === 'institutional') {
-      const input = this.root.querySelector<HTMLInputElement>('#prog-search');
-      input?.addEventListener('input', () => {
-        const q = input.value.trim().toLowerCase();
-        this.root.querySelectorAll('#prog-grid .chapter, #prog-grid .reveal').forEach((el) => {
-          const hit = !q || (el.textContent ?? '').toLowerCase().includes(q);
-          (el as HTMLElement).hidden = !hit;
-        });
-      });
-    }
     if (route.name === 'glossary') {
       const input = this.root.querySelector<HTMLInputElement>('#gloss-search');
       input?.addEventListener('input', () => {
-        const main = this.root.querySelector('main');
-        if (main) main.innerHTML = renderGlossary(input.value);
-        this.wire(route);
-      });
-    }
-    if (route.name === 'standards') {
-      this.root.querySelectorAll('.stage-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          btn.parentElement?.classList.toggle('open');
+        const q = input.value.trim().toLowerCase();
+        this.root.querySelectorAll<HTMLElement>('main .term').forEach((el) => {
+          el.hidden = Boolean(q) && !(el.textContent ?? '').toLowerCase().includes(q);
+        });
+        this.root.querySelectorAll<HTMLElement>('main .letter').forEach((sec) => {
+          const any = [...sec.querySelectorAll<HTMLElement>('.term')].some((t) => !t.hidden);
+          sec.hidden = !any;
         });
       });
-      this.root.querySelector('.stage')?.classList.add('open');
     }
     if (route.name === 'people') {
       const id = route.id || location.hash.replace(/^#/, '');
@@ -399,38 +399,93 @@ export class QntDesk {
       });
     };
     if (route.name === 'story') {
-      bindSearch('#story-search', '.story-node', '#story-empty');
       const rail = this.root.querySelector('#story-rail');
+      const applyStory = (): void => {
+        const q = this.root.querySelector<HTMLInputElement>('#story-search')?.value.trim().toLowerCase() ?? '';
+        const theme = this.root.querySelector<HTMLButtonElement>('[data-story-theme].is-on')?.dataset.storyTheme ?? 'all';
+        const density = this.root.querySelector<HTMLSelectElement>('#story-density')?.value ?? 'year';
+        rail?.setAttribute('data-density', density);
+        let n = 0;
+        this.root.querySelectorAll<HTMLElement>('.story-node').forEach((el) => {
+          const hay = (el.dataset.q || el.textContent || '').toLowerCase();
+          const themeOk = theme === 'all' || el.dataset.theme === theme;
+          const textOk = !q || hay.includes(q);
+          const hit = themeOk && textOk;
+          el.hidden = !hit;
+          if (hit) n += 1;
+        });
+        const empty = this.root.querySelector<HTMLElement>('#story-empty');
+        if (empty) empty.hidden = n > 0;
+        const count = this.root.querySelector('[data-story-count]');
+        if (count) count.textContent = `${n} events on the rail`;
+      };
+      this.root.querySelector('#story-search')?.addEventListener('input', applyStory);
       this.root.querySelectorAll<HTMLButtonElement>('[data-story-theme]').forEach((btn) => {
         btn.addEventListener('click', () => {
           this.root.querySelectorAll('[data-story-theme]').forEach((c) => c.classList.remove('is-on'));
           btn.classList.add('is-on');
-          const theme = btn.dataset.storyTheme;
-          this.root.querySelectorAll<HTMLElement>('.story-node').forEach((el) => {
-            el.hidden = theme !== 'all' && el.dataset.theme !== theme;
-          });
+          applyStory();
         });
       });
-      this.root.querySelector<HTMLSelectElement>('#story-density')?.addEventListener('change', (ev) => {
-        rail?.setAttribute('data-density', (ev.target as HTMLSelectElement).value);
-      });
+      this.root.querySelector('#story-density')?.addEventListener('change', applyStory);
     }
     if (route.name === 'technology') bindSearch('#tech-search', '.tech-chapter', '#tech-empty');
     if (route.name === 'patents') bindSearch('#patent-search', '.patent-card', '#patent-empty');
     if (route.name === 'institutions') {
-      bindSearch('#inst-search', '.inst-card', '#inst-empty');
+      const applyInst = (): void => {
+        const q = this.root.querySelector<HTMLInputElement>('#inst-search')?.value.trim().toLowerCase() ?? '';
+        const st = this.root.querySelector<HTMLButtonElement>('[data-inst-status].is-on')?.dataset.instStatus ?? 'all';
+        let n = 0;
+        this.root.querySelectorAll<HTMLElement>('.inst-card').forEach((el) => {
+          const hay = (el.dataset.q || el.textContent || '').toLowerCase();
+          const hit = (!q || hay.includes(q)) && (st === 'all' || el.dataset.status === st);
+          el.hidden = !hit;
+          if (hit) n += 1;
+        });
+        const empty = this.root.querySelector<HTMLElement>('#inst-empty');
+        if (empty) empty.hidden = n > 0;
+      };
+      this.root.querySelector('#inst-search')?.addEventListener('input', applyInst);
       this.root.querySelectorAll<HTMLButtonElement>('[data-inst-status]').forEach((btn) => {
         btn.addEventListener('click', () => {
           this.root.querySelectorAll('[data-inst-status]').forEach((c) => c.classList.remove('is-on'));
           btn.classList.add('is-on');
-          const st = btn.dataset.instStatus;
-          this.root.querySelectorAll<HTMLElement>('.inst-card').forEach((el) => {
-            el.hidden = st !== 'all' && el.dataset.status !== st;
-          });
+          applyInst();
         });
       });
     }
-    if (route.name === 'people') bindSearch('#people-search', '.person');
+    if (route.name === 'programmes' || route.name === 'institutional') {
+      const applyProg = (): void => {
+        const q = this.root.querySelector<HTMLInputElement>('#prog-search')?.value.trim().toLowerCase() ?? '';
+        const st = this.root.querySelector<HTMLButtonElement>('[data-prog-status].is-on')?.dataset.progStatus ?? 'all';
+        let n = 0;
+        this.root.querySelectorAll<HTMLElement>('.prog-card').forEach((el) => {
+          const hay = (el.dataset.q || el.textContent || '').toLowerCase();
+          const hit = (!q || hay.includes(q)) && (st === 'all' || el.dataset.status === st);
+          el.hidden = !hit;
+          if (hit) n += 1;
+        });
+        const empty = this.root.querySelector<HTMLElement>('#prog-empty');
+        if (empty) empty.hidden = n > 0;
+      };
+      this.root.querySelector('#prog-search')?.addEventListener('input', applyProg);
+      this.root.querySelectorAll<HTMLButtonElement>('[data-prog-status]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.root.querySelectorAll('[data-prog-status]').forEach((c) => c.classList.remove('is-on'));
+          btn.classList.add('is-on');
+          applyProg();
+        });
+      });
+    }
+    if (route.name === 'people') {
+      const applyPeople = (): void => {
+        const q = this.root.querySelector<HTMLInputElement>('#people-search')?.value.trim().toLowerCase() ?? '';
+        this.root.querySelectorAll<HTMLElement>('.person, .people-tile, .ol-list li').forEach((el) => {
+          el.hidden = Boolean(q) && !(el.textContent ?? '').toLowerCase().includes(q);
+        });
+      };
+      this.root.querySelector('#people-search')?.addEventListener('input', applyPeople);
+    }
     if (route.name === 'stack') {
       this.root.querySelectorAll<HTMLButtonElement>('[data-stack-iso]').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -638,10 +693,17 @@ export class QntDesk {
       pulse.innerHTML = this.news.items.length
         ? this.news.items
             .slice(0, 8)
-            .map(
-              (h) =>
-                `<li><button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}"><span class="kicker">${esc(h.lane)}</span> ${esc(h.title)}</button></li>`,
-            )
+            .map((h) => {
+              rememberHeadline({
+                id: h.id,
+                title: h.title,
+                url: h.url,
+                source: h.source,
+                published: h.published ?? '',
+                lane: h.lane,
+              });
+              return `<li><button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}"><span class="kicker">${esc(h.lane)}</span> ${esc(h.title)}</button></li>`;
+            })
             .join('')
         : `<li class="empty-note">${esc(this.news.error ?? 'The river is quiet. Filings stay on the news desk.')}</li>`;
     }
@@ -676,9 +738,66 @@ export class QntDesk {
       if (route.name === 'markets') this.hydrateMarkets();
       if (route.name === 'news') this.hydrateNews();
       if (route.name === 'home') this.hydrateHomeLive();
+      if (route.name === 'programmes' || route.name === 'institutional') this.hydrateProgrammes();
+      if (route.name === 'story') this.hydrateStorySuggest();
     } catch {
       /* last-good already applied inside fetchers */
     }
+  }
+
+  private hydrateProgrammes(): void {
+    if (!this.news?.items.length) return;
+    this.root.querySelectorAll<HTMLElement>('[data-prog-mentions]').forEach((el) => {
+      const id = el.dataset.progMentions;
+      if (!id) return;
+      const hits = this.news?.items.filter((h) => matchProgrammes(h.title).some((p) => p.id === id)).slice(0, 3) ?? [];
+      if (!hits.length) {
+        el.hidden = true;
+        el.innerHTML = '';
+        return;
+      }
+      el.hidden = false;
+      el.innerHTML = `Mentioned on the wire: ${hits
+        .map((h) => {
+          rememberHeadline({
+            id: h.id,
+            title: h.title,
+            url: h.url,
+            source: h.source,
+            published: h.published ?? '',
+            lane: h.lane,
+          });
+          return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">${esc(h.title)}</button>`;
+        })
+        .join(' · ')}`;
+    });
+  }
+
+  private hydrateStorySuggest(): void {
+    const slot = this.root.querySelector<HTMLElement>('[data-story-suggest]');
+    if (!slot || !this.news?.items.length) return;
+    const known = new Set(STORY.map((e) => e.title.toLowerCase()));
+    const suggestions = this.news.items
+      .filter((h) => /quant|overledger|satp|gbtd|qnt/i.test(h.title) && ![...known].some((t) => h.title.toLowerCase().includes(t.slice(0, 18))))
+      .slice(0, 4);
+    if (!suggestions.length) {
+      slot.hidden = true;
+      return;
+    }
+    slot.hidden = false;
+    slot.innerHTML = `<span class="chip">unverified until placed</span> On the wire, not yet on this rail: ${suggestions
+      .map((h) => {
+        rememberHeadline({
+          id: h.id,
+          title: h.title,
+          url: h.url,
+          source: h.source,
+          published: h.published ?? '',
+          lane: h.lane,
+        });
+        return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">${esc(h.title)}</button>`;
+      })
+      .join(' · ')}`;
   }
 
   private closeMenu(): void {

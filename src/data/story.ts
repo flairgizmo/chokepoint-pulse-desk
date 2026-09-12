@@ -341,8 +341,18 @@ export const STORY: StoryEvent[] = [
   },
 ];
 
+function storySortKey(date: string): string {
+  const quarter = /^(\d{4})-Q(\d)$/.exec(date);
+  if (quarter) return `${quarter[1]}-${String(Number(quarter[2]) * 3).padStart(2, '0')}-01`;
+  if (/^\d{4}$/.test(date)) return `${date}-06-30`;
+  if (/^\d{4}-\d{2}$/.test(date)) return `${date}-01`;
+  return date;
+}
+
 export function storyChronological(): StoryEvent[] {
-  return [...STORY].sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
+  return [...STORY].sort(
+    (a, b) => storySortKey(a.date).localeCompare(storySortKey(b.date)) || a.title.localeCompare(b.title),
+  );
 }
 
 export function storyById(id: string): StoryEvent | undefined {

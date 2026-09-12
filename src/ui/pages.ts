@@ -117,7 +117,7 @@ export function renderStory(): string {
     .join('');
   const nodes = storyChronological()
     .map(
-      (e) => `<li class="story-node" data-year="${e.year}" data-theme="${esc(e.theme)}" data-q="${esc(`${e.title} ${e.body} ${e.date}`)}">
+      (e) => `<li class="story-node" data-year="${e.year}" data-decade="${Math.floor(e.year / 10) * 10}" data-theme="${esc(e.theme)}" data-q="${esc(`${e.title} ${e.body} ${e.date}`)}">
         <button type="button" class="story-hit" data-stage="event" data-stage-id="${esc(e.id)}">
           ${diagramFigure(e.id, 'event', e.date)}
           <span class="mono">${esc(e.date)}</span>
@@ -140,6 +140,7 @@ export function renderStory(): string {
       </label>
     </div>
     <p class="notes-count mono subtle" data-story-count>${STORY.length} events on the rail</p>
+    <p class="story-suggest" data-story-suggest hidden></p>
     <ol class="story-rail" id="story-rail">${nodes}</ol>
     <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>`;
 }

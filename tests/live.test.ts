@@ -6,8 +6,10 @@ import {
   SATP_ATOM,
 } from '../src/modules/liveSources';
 import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
-import { renderHome, renderPeople, renderNews, renderTechnology } from '../src/ui/views';
+import { renderHome, renderPeople, renderNews, renderTechnology, renderProgrammes, renderStandards, renderCbdc } from '../src/ui/views';
 import { renderStory } from '../src/ui/pages';
+import { chatMarkup } from '../src/ui/chat';
+import { PROGRAMMES } from '../src/data/programmes';
 
 describe('Live source URLs', () => {
   it('keeps the official Quant feed with a trailing slash', () => {
@@ -120,5 +122,17 @@ describe('Public desk', () => {
     expect(news).not.toContain('Ctrl+K');
     expect(renderTechnology()).toContain('Overledger Platform / API');
     expect(renderStory()).toContain('story-rail');
+    expect(renderStory()).toContain('data-story-theme');
+    expect(renderProgrammes()).toContain('Programme cockpit');
+    expect(renderProgrammes()).toContain('data-stage="programme"');
+    expect(PROGRAMMES.some((p) => p.id === 'gbtd' && p.status === 'active')).toBe(true);
+    expect(renderStandards()).toContain('data-stage="satp"');
+    expect(renderStandards()).not.toMatch(/data-stage="[0-3]"/);
+    expect(renderCbdc()).toContain('data-stage="money"');
+    expect(renderCbdc()).toContain('cbdc-model');
+    const grok = chatMarkup();
+    expect(grok).toContain('aria-label="Ask Grok"');
+    expect(grok).toContain('sr-only');
+    expect(`${renderPeople()}${renderNews()}${renderProgrammes()}`).not.toContain('leave for the source');
   });
 });

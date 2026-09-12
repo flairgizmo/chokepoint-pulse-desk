@@ -44,9 +44,9 @@ function saveStore(next: ChatStore): void {
 
 export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
-    <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
+    <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel" aria-label="Ask Grok">
       <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
-      <span class="grok-label">Ask Grok</span>
+      <span class="grok-label sr-only">Ask Grok</span>
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
@@ -86,6 +86,8 @@ export function wireChat(root: HTMLElement): void {
   const form = root.querySelector<HTMLFormElement>('#grok-form');
   const input = root.querySelector<HTMLInputElement>('#grok-input');
   if (!aside || !panel || !log || !form || !input) return;
+  if (aside.dataset.wired === '1') return;
+  aside.dataset.wired = '1';
 
   const store = loadStore();
   const history: ChatTurn[] = store.turns.map((t) => ({ role: t.role, content: t.text }));
@@ -161,8 +163,16 @@ export function wireChat(root: HTMLElement): void {
       if (ev.key === 'Escape') {
         ev.preventDefault();
         live.hidden = true;
-        document.querySelector('#grok')?.classList.remove('is-open');
+        live.classList.remove('is-min');
+        document.querySelector('#grok')?.classList.remove('is-open', 'is-min');
         document.querySelectorAll('[data-grok-toggle]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+        try {
+          const raw = sessionStorage.getItem(STORE);
+          const prev = raw ? (JSON.parse(raw) as ChatStore) : { open: false, turns: [] };
+          sessionStorage.setItem(STORE, JSON.stringify({ ...prev, open: false }));
+        } catch {
+          /* private mode */
+        }
       }
     });
   }

@@ -2,10 +2,13 @@ import { paperById, quotes, sourceUrl, chapters } from '../data/catalog';
 import { INSTITUTIONS, institutionById } from '../data/institutions';
 import { patentById } from '../data/patents';
 import { PEOPLE } from '../data/people';
+import { programmeById } from '../data/programmes';
 import { storyById } from '../data/story';
 import { techById } from '../data/tech';
+import { SATP_STAGES } from '../data/timeline';
 import { GLOSSARY } from '../data/glossary';
 import { diagramSvg } from './diagrams';
+import { headlineById, rememberHeadline } from './newsCache';
 import type { StageDoc } from './stage';
 
 function personStage(id: string): StageDoc | null {
@@ -165,12 +168,14 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       visual: diagramSvg(c.id, 'chapter', c.kicker),
     };
   }
-  if (kind === 'news' && el) {
-    const title = el.dataset.title || el.textContent || 'Headline';
-    const source = el.dataset.source || 'Wire';
-    const published = el.dataset.published || '';
-    const url = el.dataset.url || '';
-    const lane = el.dataset.lane || 'Industry';
+  if (kind === 'news') {
+    const cached = headlineById(id);
+    const title = el?.dataset.title || cached?.title || el?.textContent || 'Headline';
+    const source = el?.dataset.source || cached?.source || 'Wire';
+    const published = el?.dataset.published || cached?.published || '';
+    const url = el?.dataset.url || cached?.url || '';
+    const lane = el?.dataset.lane || cached?.lane || 'Industry';
+    rememberHeadline({ id, title, url, source, published, lane });
     return {
       id,
       kind: 'news',
@@ -184,6 +189,91 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       ],
       original: url ? { href: url, label: 'Open original' } : undefined,
       visual: diagramSvg(id, 'news', lane),
+    };
+  }
+  if (kind === 'programme') {
+    const p = programmeById(id);
+    if (!p) return null;
+    return {
+      id: p.id,
+      kind: 'programme',
+      title: p.title,
+      kicker: `${p.status} · ${p.kicker}`,
+      body: `${p.body} Owner: ${p.owner}. Next public milestone: ${p.milestone}`,
+      analogy: 'A programme is a room with a status chip. A mention on the wire is not a new contract.',
+      facts: [
+        { label: 'Status', value: p.status },
+        { label: 'Institutions', value: p.institutions.join(', ') || 'See body' },
+        { label: 'Related tech', value: p.tech.join(', ') },
+      ],
+      related: [{ label: 'Programme cockpit', href: `/programmes#${p.id}` }, ...p.tech.map((t) => ({ label: t, href: `/technology#${t}` }))],
+      original: p.hrefKey ? { href: sourceUrl(p.hrefKey), label: 'Open original' } : undefined,
+      visual: diagramSvg(p.id, 'programme', p.status),
+    };
+  }
+  if (kind === 'satp') {
+    const s = SATP_STAGES.find((x) => x.n === id);
+    if (!s) return null;
+    return {
+      id: s.n,
+      kind: 'satp',
+      title: `SATP stage ${s.n} — ${s.title}`,
+      kicker: 'IETF SATP',
+      body: `${s.body} ${s.tags}. SATP is IETF work. Overledger can implement it. That still does not make SATP a Quant SKU. The day the core draft is an RFC, a bank can write a gateway-to-gateway transfer without buying a brand.`,
+      analogy: 'SWIFT for the moment an asset must leave one network and arrive in exactly one other.',
+      related: [{ label: 'Standards desk', href: '/standards' }, { label: 'SATP chapter', href: '/technology#satp' }],
+      original: { href: sourceUrl('satpCore'), label: 'Open original' },
+      visual: diagramSvg(`satp-${s.n}`, 'satp', s.title),
+    };
+  }
+  if (kind === 'money') {
+    const models: Record<string, StageDoc> = {
+      wholesale: {
+        id: 'wholesale',
+        kind: 'money',
+        title: 'Wholesale CBDC / RTGS',
+        kicker: 'Liability',
+        body: 'A central-bank liability for institutions, typically sitting next to RTGS. Isolated chains cannot give you finality in the central bank’s book. Overledger’s claim is to talk to that book, not to replace it. The Synchronisation Lab is simulated RT2 — adjacency, labelled as such.',
+        analogy: 'The settlement gold in the basement. The deposits upstairs are a different IOU.',
+        related: [{ label: 'CBDC page', href: '/cbdc' }, { label: 'QuantNet', href: '/technology#quantnet' }],
+        visual: diagramSvg('money-wholesale', 'cbdc', 'Wholesale'),
+      },
+      retail: {
+        id: 'retail',
+        kind: 'money',
+        title: 'Retail CBDC',
+        kicker: 'Liability',
+        body: 'A central-bank liability intended for the public. Project Rosalind tested APIs for such an ecosystem and concluded in 2023. No live UK retail CBDC exists. GBTD is not this object.',
+        analogy: 'A public counter at the central bank that has been designed, not opened.',
+        related: [{ label: 'Rosalind', href: '/programmes#basel' }],
+        visual: diagramSvg('money-retail', 'cbdc', 'Retail'),
+      },
+      tcbm: {
+        id: 'tcbm',
+        kind: 'money',
+        title: 'Tokenised commercial-bank money',
+        kicker: 'Liability',
+        body: 'A commercial bank’s IOU, represented as a token. GBTD is the live UK specimen with six named banks. Quant is the technology partner. SATP is how an asset is supposed to leave one network and arrive in exactly one other — useful the day a wholesale CBDC and a tokenised deposit need to meet.',
+        analogy: 'The same bank IOU, now able to lock, release and settle against a condition.',
+        related: [{ label: 'GBTD', href: '/programmes#gbtd' }, { label: 'SATP', href: '/standards' }],
+        visual: diagramSvg('money-tcbm', 'cbdc', 'TCBM'),
+      },
+    };
+    return models[id] ?? null;
+  }
+  if (kind === 'source') {
+    const href = el?.dataset.url || '';
+    const who = el?.dataset.source || '';
+    const title = el?.dataset.title || el?.textContent || 'Source';
+    return {
+      id,
+      kind: 'source',
+      title,
+      kicker: who || 'On the record',
+      body: `${who}. This desk keeps the brief here. The publisher remains one click further if you want the sentence in its first room.`,
+      analogy: 'A doorway, not a redirect.',
+      original: href ? { href, label: 'Open original' } : undefined,
+      visual: diagramSvg(id, 'source', title),
     };
   }
   if (kind === 'proof') {

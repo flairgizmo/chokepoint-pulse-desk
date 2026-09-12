@@ -1704,16 +1704,17 @@ main {
 .grok-launch {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  border: 1px solid color-mix(in srgb, #4d8dff 45%, #7b6cff);
-  background: linear-gradient(180deg, #2f5bff, #1639d4);
+  justify-content: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  padding: 0.28rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
+  background: linear-gradient(180deg, #2a313b, #1c2128);
   color: #fff;
   border-radius: 999px;
-  padding: 0.35rem 0.85rem 0.35rem 0.35rem;
   font: inherit;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  box-shadow: 0 14px 32px rgba(77, 141, 255, 0.22);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
 }
 
 .grok-mark {
@@ -3302,5 +3303,143 @@ body.stage-open {
   .proof-chip,
   .story-hit {
     transition: none;
+  }
+}
+
+.film-card {
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  font: inherit;
+}
+
+.treaty-row button,
+.cbdc-model button,
+.cal-card button,
+.month-card button,
+.quote-inline {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+
+.prog-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.prog-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1rem;
+}
+
+.prog-card > button {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+}
+
+.prog-marks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.prog-mentions {
+  margin: 0.7rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.prog-mentions button {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.story-suggest {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin: 0.4rem 0 1rem;
+}
+
+.story-suggest button {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  cursor: pointer;
+}
+
+.story-rail[data-density='decade'] .story-hit p {
+  display: none;
+}
+
+.story-rail[data-density='month'] .story-hit {
+  padding-block: 1.1rem;
+}
+
+.avatar-photo[src*='riley'] {
+  object-position: 50% 12%;
+  filter: contrast(1.08) saturate(0.82) brightness(0.98);
+}
+
+.avatar-photo[src*='verdian'] {
+  object-position: 48% 10%;
+  filter: contrast(1.07) saturate(0.84) brightness(0.97);
+}
+
+.avatar-photo[src*='tasca'] {
+  object-position: 50% 18%;
+  filter: contrast(1.05) saturate(0.86) brightness(0.98);
+}
+
+.people-tile img {
+  object-fit: cover;
+  object-position: center 12%;
+  filter: contrast(1.06) saturate(0.86);
+}
+
+.status-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.status-incubating {
+  background: color-mix(in srgb, var(--violet) 18%, var(--surface));
+}
+
+.status-completed {
+  background: var(--bg-2);
+}
+
+.status-upcoming {
+  background: color-mix(in srgb, var(--gold) 16%, var(--surface));
+  color: var(--gold);
+}
+
+@media (max-width: 900px) {
+  .prog-grid {
+    grid-template-columns: 1fr;
   }
 }

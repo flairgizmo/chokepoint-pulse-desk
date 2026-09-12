@@ -5,6 +5,7 @@ import { TECH } from '../data/tech';
 import { STORY } from '../data/story';
 import { PATENTS } from '../data/patents';
 import { INSTITUTIONS } from '../data/institutions';
+import { PROGRAMMES } from '../data/programmes';
 import { esc } from './html';
 
 interface Hit {
@@ -24,6 +25,7 @@ function collect(): Hit[] {
     ...STORY.map((e) => ({ href: `/story#${e.id}`, kind: 'Timeline', title: e.title, sub: e.date })),
     ...PATENTS.map((p) => ({ href: `/patents#${p.id}`, kind: 'Patent', title: p.number, sub: p.title })),
     ...INSTITUTIONS.map((i) => ({ href: `/institutions#${i.id}`, kind: 'Institution', title: i.name, sub: i.role })),
+    ...PROGRAMMES.map((p) => ({ href: `/programmes#${p.id}`, kind: 'Programme', title: p.title, sub: p.owner })),
     ...quotes.slice(0, 40).map((q) => ({ href: `/people`, kind: 'Quote', title: q.who, sub: q.text.slice(0, 90) })),
   ];
   return hits;

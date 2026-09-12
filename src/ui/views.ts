@@ -1,6 +1,5 @@
 import {
   chaptersFor,
-  chaptersNewestFirst,
   didYouKnow,
   featuredPapers,
   paperById,
@@ -30,6 +29,8 @@ import { markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
 import { diagramFigure } from './diagrams';
 import { overledgerRoster } from './pages';
+import { PROGRAMMES } from '../data/programmes';
+import { rememberHeadline } from './newsCache';
 
 export { renderHome, renderTechnology, renderStory, renderStack, renderPatents, renderInstitutions } from './pages';
 
@@ -180,19 +181,19 @@ function filmRail(): string {
     ${kicker('Watch and read')}
     <div class="section-head">
       <h2 class="display">Interviews, conferences, the original pages.</h2>
-      <p class="lede-sm">Publisher thumbnails. Official rooms. Click through and you leave for the source.</p>
+      <p class="lede-sm">Each card opens a briefing on this desk. Open original is secondary.</p>
     </div>
     <ul class="film-grid">${films
       .map(
         (f) => `<li>
-          <a class="film-card${f.thumb ? ' has-thumb' : ''}" href="${esc(f.href)}" target="_blank" rel="noopener noreferrer">
-            <img src="${esc(f.thumb ?? '/visuals/stills/gateway.jpg')}" alt="" width="480" height="270" loading="lazy" />
+          <button type="button" class="film-card${f.thumb ? ' has-thumb' : ''}" data-stage="source" data-stage-id="${esc(f.title)}" data-title="${esc(f.title)}" data-url="${esc(f.href)}" data-source="${esc(f.who)}">
+            ${diagramFigure(`film-${f.title}`, 'source', f.kind)}
             <div>
               <p class="kicker">${esc(f.kind)}</p>
               <strong>${esc(f.title)}</strong>
               <span>${esc(f.who)}</span>
             </div>
-          </a>
+          </button>
         </li>`,
       )
       .join('')}</ul>
@@ -469,7 +470,7 @@ export function notesReel(): string {
   return `<section class="notes-strip">
     ${kicker('News')}
     <div class="section-head">
-      <h2 class="display">Scroll the record. <span class="display-mute">Each card opens the source.</span></h2>
+      <h2 class="display">Scroll the record. <span class="display-mute">Each card opens a briefing.</span></h2>
       <a class="text-link" href="/news">The wire →</a>
     </div>
     <div class="notes-reel" tabindex="0">${cards}</div>
@@ -537,49 +538,52 @@ export function renderVision(): string {
 }
 
 export function renderProgrammes(): string {
-  const extra = `
+  const cards = PROGRAMMES.map((p) => {
+    const marks = p.institutions
+      .map((name) => {
+        const mark = markFor(name);
+        return mark
+          ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="40" height="40" />`
+          : `<span class="wordmark-label">${esc(name)}</span>`;
+      })
+      .join('');
+    return `<article class="prog-card" id="${esc(p.id)}" data-status="${esc(p.status)}" data-q="${esc(`${p.title} ${p.body} ${p.owner}`)}">
+      <button type="button" data-stage="programme" data-stage-id="${esc(p.id)}">
+        ${diagramFigure(p.id, 'programme', p.status)}
+        <p class="kicker"><span class="chip status-${esc(p.status)}">${esc(p.status)}</span> ${esc(p.kicker)}</p>
+        <h2>${esc(p.title)}</h2>
+        <p class="lede-sm">${esc(p.owner)}</p>
+        <p>${esc(p.body)}</p>
+        <p class="mono subtle">Next: ${esc(p.milestone)}</p>
+        <p class="prog-tech">${p.tech.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</p>
+        <div class="prog-marks">${marks}</div>
+      </button>
+      <p class="prog-mentions" data-prog-mentions="${esc(p.id)}" hidden></p>
+    </article>`;
+  }).join('');
+  return `${pageHero(
+    'Programme cockpit',
+    'Where Quant is already',
+    'Status, owner, institutions, related tech. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never auto-filed as timeline fact.',
+    'in the room.',
+  )}
     <div class="cohort-marks">
       ${kicker('The six commercial banks named by UK Finance')}
       <ul class="wordmarks">${GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('')}</ul>
     </div>
-    <details class="reveal chapter cockpit" id="gbtd" open>
-      <summary>${kicker('Active · GBTD — London')}<h2>Live tokenised sterling deposits</h2></summary>
-      <div class="reveal-body">
-      <p>On 26 September 2025 UK Finance selected Quant to provide the technology for live tokenised sterling deposits with ${GBTD_BANKS.join(', ')}. EY and Linklaters support. Overledger and PayScript are named as the foundation. The six banks issue the deposits — commercial-bank sterling, building on the 2024 RLN phase.</p>
-      <p class="source-row">${extLink(sources.gbtdUkFinance, 'UK Finance')} ${extLink(sources.gbtdQuant, 'Quant')} ${extLink(sources.gbtdUseCases, 'Three use cases')} ${extLink(sources.linklatersGbtd, 'Linklaters')}</p>
-      </div>
-    </details>
-    <details class="reveal chapter" id="murex">
-      <summary>${kicker('Murex — Paris')}<h2>Tokenised deposits inside MX.3</h2></summary>
-      <div class="reveal-body">
-      <p>On 25 March 2026 Murex and Quant announced a partnership to put tokenised deposits and digital-bond settlement inside MX.3, the cross-asset platform used by more than 300 institutions. Named vendor integration: programmable markets inside a platform the industry already runs.</p>
-      <p class="source-row">${extLink(sources.murexNews, 'Murex newsroom')} ${extLink(sources.murexQuant, 'Quant')}</p>
-      </div>
-    </details>
-    <details class="reveal chapter" id="oracle">
-      <summary>${kicker('Oracle')}<h2>Blockchain Platform Digital Assets</h2></summary>
-      <div class="reveal-body">
-      <p>February 2025. Oracle’s own blog names Overledger as the orchestration layer for cross-ledger, two-phase workflows on a Hyperledger Fabric platform. New York is the markets pin.</p>
-      <p class="source-row">${extLink(sources.oracleBlog, 'Oracle blog')} ${extLink(sources.oracleQuant, 'Quant note')}</p>
-      </div>
-    </details>
-    <details class="reveal chapter" id="basel">
-      <summary>${kicker('BIS — Basel')}<h2>Bibliography of the rooms</h2></summary>
-      <div class="reveal-body">
-      <p>Project Agora, “singleness of money” speeches, and wholesale CBDC research live in Basel. Project Rosalind was a concluded CBDC API experiment run from London. Geography plus citations.</p>
-      <p class="source-row">${extLink(sources.bisHome, 'BIS')} ${extLink(sources.rosalindBis, 'Rosalind')}</p>
-      </div>
-    </details>`;
-  const chapters = chaptersNewestFirst('programmes').map(chapterCard).join('');
-  return `${pageHero(
-    'Programme cockpit',
-    'Where Quant is already',
-    'Status, owner, institutions, related tech. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. Upcoming items can be mentioned from the news ingest — never auto-filed as timeline fact.',
-    'in the room.',
-  )}
     ${quoteRail('programmes', 24)}
-    ${filterBox('prog-search', 'Search programmes, banks, labs…', '')}
-    <div class="chapter-stack" id="prog-grid">${extra}${chapters}</div>
+    <div class="toolbar filter-bar">
+      <input type="search" id="prog-search" placeholder="Search programmes, banks, labs…" />
+      <div class="chip-row" id="prog-status">
+        <button type="button" class="chip is-on" data-prog-status="all">All</button>
+        <button type="button" class="chip" data-prog-status="active">Active</button>
+        <button type="button" class="chip" data-prog-status="incubating">Incubating</button>
+        <button type="button" class="chip" data-prog-status="completed">Completed</button>
+        <button type="button" class="chip" data-prog-status="upcoming">Upcoming</button>
+      </div>
+    </div>
+    <p class="empty-note" id="prog-empty" hidden>No programme on this desk matches. Try GBTD, Murex, or Sibos.</p>
+    <div class="prog-grid" id="prog-grid">${cards}</div>
     ${renderThisMonth()}
     ${renderCalendar()}
     ${dykBlock()}`;
@@ -604,10 +608,12 @@ export function renderCbdc(): string {
     },
   ]
     .map(
-      (m) => `<li>
-        ${diagramFigure(`cbdc-${m.id}`, 'cbdc', m.title)}
-        <h3>${esc(m.title)}</h3>
-        <p>${esc(m.body)}</p>
+      (m) => `<li class="cbdc-model">
+        <button type="button" data-stage="money" data-stage-id="${esc(m.id)}">
+          ${diagramFigure(`cbdc-${m.id}`, 'cbdc', m.title)}
+          <h3>${esc(m.title)}</h3>
+          <p>${esc(m.body)}</p>
+        </button>
       </li>`,
     )
     .join('');
@@ -635,9 +641,9 @@ export function renderCbdc(): string {
 
 export function renderStandards(): string {
   const stages = SATP_STAGES.map(
-    (s) => `<li class="stage" data-stage="${esc(s.n)}">
-      <button type="button" class="stage-btn"><span class="n">${esc(s.n)}</span> ${esc(s.title)}</button>
-      <div class="stage-body"><p>${esc(s.body)}</p><p class="mono subtle">${esc(s.tags)}</p></div>
+    (s) => `<li class="stage" data-satp-n="${esc(s.n)}">
+      <button type="button" class="stage-btn" data-stage="satp" data-stage-id="${esc(s.n)}"><span class="n">${esc(s.n)}</span> ${esc(s.title)}</button>
+      <p class="stage-body"><span>${esc(s.body)}</span><span class="mono subtle">${esc(s.tags)}</span></p>
     </li>`,
   ).join('');
   return `${pageHero(
@@ -650,10 +656,10 @@ export function renderStandards(): string {
   <section class="treaty-table">
     ${kicker('Treaty table')}
     <ul class="treaty-row">
-      <li><span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em></li>
-      <li><span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em></li>
-      <li><span class="chip">adopted</span><strong>ISO/TC 307</strong><em>Proposed 2015</em></li>
-      <li><span class="chip">referenced</span><strong>ODAP 2020</strong><em>Maiden name of the SATP shape</em></li>
+      <li><button type="button" data-stage="satp" data-stage-id="3"><span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em></button></li>
+      <li><button type="button" data-stage="chapter" data-stage-id="iso"><span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em></button></li>
+      <li><button type="button" data-stage="event" data-stage-id="iso-2015"><span class="chip">adopted</span><strong>ISO/TC 307</strong><em>Proposed 2015</em></button></li>
+      <li><button type="button" data-stage="event" data-stage-id="odap-2020"><span class="chip">referenced</span><strong>ODAP 2020</strong><em>Maiden name of the SATP shape</em></button></li>
     </ul>
   </section>
   <section class="satp-lab" id="satp-method">
@@ -712,10 +718,10 @@ function personCard(p: Person): string {
   const spoken = quotesForPerson(p.id)
     .slice(0, 2)
     .map(
-      (q) => `<blockquote class="quote-inline">
+      (q) => `<button type="button" class="quote-inline" data-stage="quote" data-stage-id="${esc(q.id)}">
         <p>“${esc(q.text)}”</p>
-        <footer>${extLink(sourceUrl(q.href), q.role)}${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}</footer>
-      </blockquote>`,
+        <footer>${esc(q.role)}${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}</footer>
+      </button>`,
     )
     .join('');
   const officialHref = p.href ? sourceUrl(p.href) : '';
@@ -760,7 +766,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
   return `${pageHero(
     'Library',
     'Read the papers,',
-    'Forty-eight papers from the rooms that built this story. Filter by region or standard. Each card opens the publisher — UCL, IETF, ACM, Quant, the patent offices.',
+    'Forty-eight papers from the rooms that built this story. Filter by region or standard. Each card opens a reader on this desk. Open original is secondary — UCL, IETF, ACM, Quant, the patent offices.',
     'then the press release.',
     'london',
   )}
@@ -774,13 +780,14 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     ${kicker('Start here')}
     <div class="paper-grid">${featured.map(paperCard).join('')}</div>
   </section>
-  <div class="paper-grid" id="research-grid">${list || '<p class="empty-note">Nothing in this library matches. Try SATP, Tasca, or adjacency.</p>'}</div>
+  <div class="paper-grid" id="research-grid">${list}</div>
+  <p class="empty-note" id="research-empty" ${list ? 'hidden' : ''}>Nothing in this library matches. Try SATP, Tasca, or adjacency.</p>
   ${dykBlock()}`;
 }
 
 function paperCard(p: Paper): string {
   const verify = p.id === 'synchro' ? '<span class="chip">needs verification</span>' : '';
-  return `<article class="paper" id="${esc(p.id)}">
+  return `<article class="paper" id="${esc(p.id)}" data-region="${esc(paperRegions(p).join(' '))}">
     ${diagramFigure(p.id, 'paper', p.year)}
     <span class="year-num">${esc(p.year === 'n.d.' ? 'adjacency' : p.year)}</span>
     <p class="kicker">${esc(p.kind)} ${verify}</p>
@@ -854,10 +861,10 @@ function supplyRing(pct: number): string {
   const c = 2 * Math.PI * r;
   const dash = ((Number.isFinite(pct) ? pct : 0) / 100) * c;
   return `<svg class="supply-ring" viewBox="0 0 120 120" role="img" aria-label="Circulating share of total supply">
-    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#dce8ff" stroke-width="12"/>
-    <circle class="supply-ring-arc" cx="60" cy="60" r="${r}" fill="none" stroke="#2F5BFF" stroke-width="12" stroke-linecap="round" stroke-dasharray="${dash.toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 60 60)"/>
-    <text x="60" y="56" text-anchor="middle" fill="#04101f" font-size="18" font-family="IBM Plex Sans, sans-serif" font-weight="700">${pct ? `${pct.toFixed(1)}%` : '—'}</text>
-    <text x="60" y="74" text-anchor="middle" fill="#3d4f6f" font-size="8">circulating</text>
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#2d3540" stroke-width="12"/>
+    <circle class="supply-ring-arc" cx="60" cy="60" r="${r}" fill="none" stroke="#7ee0c8" stroke-width="12" stroke-linecap="round" stroke-dasharray="${dash.toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 60 60)"/>
+    <text x="60" y="56" text-anchor="middle" fill="#e8e4dc" font-size="18" font-family="IBM Plex Sans, sans-serif" font-weight="700">${pct ? `${pct.toFixed(1)}%` : '—'}</text>
+    <text x="60" y="74" text-anchor="middle" fill="#9aa3b5" font-size="8">circulating</text>
   </svg>`;
 }
 
@@ -955,10 +962,20 @@ export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; 
       if (!laneRows.length) return '';
       return `<li class="headline-lane"><p class="kicker">${esc(lane)}</p><ul>${laneRows
         .map(
-          (h) => `<li class="headline">
+          (h) => {
+            rememberHeadline({
+              id: h.id,
+              title: h.title,
+              url: h.url,
+              source: h.source,
+              published: h.published ?? '',
+              lane: h.lane,
+            });
+            return `<li class="headline">
               <button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">${esc(h.title)}</button>
               <p class="meta">${esc(h.source)} · ${esc(h.published ? h.published.replace('T', ' ').slice(0, 16) : '—')}</p>
-            </li>`,
+            </li>`;
+          },
         )
         .join('')}</ul></li>`;
     })
@@ -1007,17 +1024,18 @@ function renderCalendar(compact = false): string {
   const items = CALENDAR.map((e) => {
     const stamp = dateStamp(e.when);
     return `<li class="cal-card">
+      <button type="button" data-stage="source" data-stage-id="${esc(e.id)}" data-title="${esc(e.title)}" data-url="${esc(sourceUrl(e.href))}" data-source="${esc(e.hrefLabel)}">
       <time datetime="${esc(e.when)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(e.where)}</p>
       <h3>${esc(e.title)}</h3>
       ${compact ? '' : `<p>${esc(e.body)}</p>`}
-      ${extLink(sourceUrl(e.href), e.hrefLabel)}
+      </button>
     </li>`;
   }).join('');
   return `<section class="calendar">
     ${kicker('Upcoming')}
     <h2 class="display">Miami is <span class="display-mute">next</span></h2>
-    <p>Quant at Sibos, stand DISL51, with Murex on stage — posted from @quantnetwork. DIGIT gilt is the Treasury, speaking at the UK Finance launch on 8 September. The speech does not name Quant; it is the same week’s landscape.</p>
+    <p>Quant at Sibos, stand DISL51, with Murex on stage — posted from @quantnetwork. DIGIT gilt is the Treasury, speaking at the UK Finance launch on 8 September. The speech does not name Quant; it sits in the same week as the UK Finance filing.</p>
     <ul class="cal-grid">${items}</ul>
   </section>`;
 }
@@ -1026,11 +1044,12 @@ function renderThisMonth(compact = false): string {
   const items = THIS_MONTH.map((n) => {
     const stamp = dateStamp(n.date);
     return `<li class="month-card">
+      <button type="button" data-stage="source" data-stage-id="${esc(n.id)}" data-title="${esc(n.title)}" data-url="${esc(sourceUrl(n.href))}" data-source="${esc(n.source)}">
       <time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(n.source)} · ${esc(n.lane)}</p>
       <h3>${esc(n.title)}</h3>
       ${compact ? '' : `<p>${esc(n.body)}</p>`}
-      ${extLink(sourceUrl(n.href), 'Open the source')}
+      </button>
     </li>`;
   }).join('');
   return `<section class="calendar month-rail">
@@ -1148,7 +1167,7 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
   return `${pageHero(
     'News',
     'Field news on Quant,',
-    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens the source.',
+    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens a briefing on this desk.',
     'history to what is ahead.',
     'history',
   )}

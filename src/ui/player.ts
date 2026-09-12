@@ -1,5 +1,10 @@
+import { quotes } from '../data/catalog';
 import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
+
+function quoteStageId(text: string): string | undefined {
+  return quotes.find((q) => q.text === text || q.text.startsWith(text.slice(0, 48)))?.id;
+}
 
 function fmtTime(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
@@ -22,13 +27,14 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
       </li>`,
     )
     .join('');
-  const quotes = ep.quotes
-    .map(
-      (q) => `<blockquote class="quote-card">
-        <p>${esc(q.text)}</p>
-        <footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>
-      </blockquote>`,
-    )
+  const quoteCards = ep.quotes
+    .map((q) => {
+      const id = quoteStageId(q.text);
+      const inner = `<p>${esc(q.text)}</p><footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`;
+      return id
+        ? `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(id)}">${inner}</button>`
+        : `<blockquote class="quote-card">${inner}</blockquote>`;
+    })
     .join('');
   const next = episodeByN(ep.n + 1);
   const prev = episodeByN(ep.n - 1);
@@ -84,7 +90,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
     </section>
     <section class="pod-quotes">
       <p class="kicker">In this episode</p>
-      ${quotes}
+      ${quoteCards}
     </section>
     <details class="pod-transcript">
       <summary>The conversation</summary>
