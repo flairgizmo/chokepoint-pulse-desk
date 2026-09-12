@@ -315,7 +315,7 @@ export function renderProgrammes(): string {
     'Newest first. Search the rooms. GBTD is live as a UK tokenised-deposit experiment with Quant as technology partner. Murex is a named Overledger integration. Rosalind was a 2023 BIS × Bank of England API experiment Quant says it supplied as a vendor — concluded. The 2026 Bank of England lab is a simulated RT2.',
     'in the room.',
   )}
-    ${quoteRail('programmes')}
+    ${quoteRail('programmes', 24)}
     ${filterBox('prog-search', 'Search programmes, banks, labs…', '')}
     <div class="chapter-stack" id="prog-grid">${extra}${chapters}</div>
     ${renderThisMonth()}
