@@ -52,7 +52,7 @@ export function wireChat(root: HTMLElement): void {
     .then((s: { grok?: boolean } | null) => {
       if (!statusLine) return;
       statusLine.textContent = s?.grok
-        ? 'Grok live. Grounded in the QntDesk record, plus the live QNT print and official wire.'
+        ? 'Grok live. Grounded in the QntDesk record, names and titles attached, plus the live QNT print and official wire.'
         : 'From the record. Add XAI_API_KEY on the host to connect live Grok.';
     })
     .catch(() => undefined);
@@ -108,7 +108,8 @@ export function wireChat(root: HTMLElement): void {
           paint('assistant', data.text, data.cites ?? local.cites);
           history.push({ role: 'assistant', content: data.text });
           if (statusLine && data.mode === 'live') {
-            statusLine.textContent = 'Grok live. Grounded in the QntDesk record, plus the live QNT print and official wire.';
+            statusLine.textContent =
+              'Grok live. Grounded in the QntDesk record, names and titles attached, plus the live QNT print and official wire.';
           }
           return;
         }

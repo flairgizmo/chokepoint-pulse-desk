@@ -2,7 +2,6 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { ChatReply, ChatTurn } from './assistant';
 import { sanitizeHistory, sanitizeQuestion } from './chatGuard';
-
 import { XAI_CHAT } from './liveSources';
 
 function hydrateDotEnv(): void {
