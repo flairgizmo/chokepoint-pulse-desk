@@ -17,15 +17,26 @@ export const DISCLAIMER =
   'QntDesk is an independent educational reference. It is not affiliated with, endorsed by, or part of Quant Network Ltd, Overledger, UK Finance, the Bank of England, the BIS, Oracle, Murex, Dentsu Soken, EY, Linklaters, LACChain, the Linux Foundation, or any person, bank, or standard body named on these pages. Names, marks and documents belong to their owners and are cited for commentary and research. Nothing here is financial advice, investment advice, an official statement, or a claim of employment or partnership. Crypto is volatile.';
 
 export function kicker(text: string): string {
-  return `<p class="kicker">${esc(text)}</p>`;
+  return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
 }
 
-export function pageHero(k: string, title: string, lede: string, _section?: string): string {
+function displayTitle(title: string, mute = ''): string {
+  if (!mute) return esc(title);
+  return `${esc(title)} <span class="display-mute">${esc(mute)}</span>`;
+}
+
+export function pageHero(k: string, title: string, lede: string, mute = ''): string {
   return `<header class="page-hero">
     ${kicker(k)}
-    <h1 class="display">${esc(title)}</h1>
-    <p class="lede">${esc(lede)}</p>
+    <div class="hero-split">
+      <h1 class="display">${displayTitle(title, mute)}</h1>
+      <p class="lede">${esc(lede)}</p>
+    </div>
   </header>`;
+}
+
+function pill(href: string, label: string, hover: string, kind: 'primary' | 'ghost' = 'primary'): string {
+  return `<a class="btn btn-${kind}" href="${esc(href)}"><span class="btn-swap"><span>${esc(label)}</span><span>${esc(hover)}</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>`;
 }
 
 function chapterCard(c: Chapter): string {
@@ -50,7 +61,7 @@ function dykBlock(): string {
     .join('');
   return `<section class="dyk">
     ${kicker('Did you know')}
-    <h2 class="display">The future of money, as a question.</h2>
+    <h2 class="display">The future of money, <span class="display-mute">as a question.</span></h2>
     <ul class="dyk-list">${list}</ul>
   </section>`;
 }
@@ -73,11 +84,26 @@ export function renderHome(): string {
     )
     .join('');
   return `
+    <section class="masthead">
+      ${kicker('The Internet of Value')}
+      <div class="hero-split">
+        <h1 class="display">Money already moves like software. <span class="display-mute">The scarce layer is the one that lets it talk.</span></h1>
+        <div>
+          <p class="lede">Overledger sits above the ledgers and bank cores that already settle — Fabric, Ethereum, Faster Payments — the way TCP/IP sat above the wires. UK banks are already programming sterling deposits on it. QNT is the utility token of that network. GBTD is a tokenised-deposit pilot, not a CBDC.</p>
+          <div class="cta-row">
+            ${pill('/desk', 'Open the desk', 'Read the map')}
+            ${pill('/programmes', 'Named programmes', 'See the rooms', 'ghost')}
+            ${pill('/vision', 'Thesis', 'The argument', 'ghost')}
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="earth-hero" data-proof="hero">
       <div class="earth-stage" id="earth-stage" tabindex="0" aria-label="Interactive 3D Earth. Drag to orbit, scroll to zoom, double-click to fly in, click a city."></div>
       <div class="earth-hud">
         <div class="hud-card">
-          <p class="kicker">Earth · 3D</p>
+          <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · 3D</p>
           <p class="hud-help">ISR · look-down · stationary by default</p>
           <label class="sr-only" for="city-select">Cities</label>
           <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
@@ -102,17 +128,9 @@ export function renderHome(): string {
         </ul>
         <p class="isr-line mono" id="isr-line">Educational look-down · stylised night Earth · sourced corridors, not live SWIFT</p>
       </div>
-      <aside class="earth-copy">
-        ${kicker('The Internet of Value')}
-        <h1 class="display">Money already moves like software. The scarce layer is the one that lets it talk.</h1>
-        <p class="lede">Overledger sits above the ledgers and bank cores that already settle — Fabric, Ethereum, Faster Payments — the way TCP/IP sat above the wires. UK banks are already programming sterling deposits on it. QNT is the utility token of that network. GBTD is a tokenised-deposit pilot, not a CBDC.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href="/desk">Open the desk</a>
-          <a class="btn btn-ghost" href="/programmes">Named programmes</a>
-          <a class="btn btn-ghost" href="/vision">Thesis</a>
-        </div>
-      </aside>
     </section>
+
+    <p class="congrats"><strong>This month on Quant.</strong> Trusted Node, UK Finance digital markets, Sibos Miami DISL51. Sourced notes — not invented headlines.</p>
 
     ${renderLiveRail()}
     ${renderThisMonth()}
@@ -120,9 +138,9 @@ export function renderHome(): string {
     ${renderVoices()}
 
     <section class="strip">
-      <p class="kicker">GBTD cohort — the six commercial banks named by UK Finance</p>
+      ${kicker('GBTD cohort — the six commercial banks named by UK Finance')}
       <ul class="wordmarks">${banks}</ul>
-      <p class="kicker">The institutions around that cohort</p>
+      ${kicker('The institutions around that cohort')}
       <ul class="wordmarks muted">
         <li class="wordmark"><a href="/programmes#gbtd">UK Finance</a></li>
         <li class="wordmark"><a href="/cbdc">Bank of England</a></li>
@@ -133,19 +151,19 @@ export function renderHome(): string {
 
     <section class="essays">
       ${kicker('Essays')}
-      <h2 class="display">Philosophy. The future of money. The interop era.</h2>
+      <h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>
       <div class="essay-grid">${essays}</div>
     </section>
 
     <section class="timeline-wrap">
       ${kicker('Then and now')}
-      <h2 class="display">A decade of connecting, not replacing.</h2>
+      <h2 class="display">A decade of connecting, <span class="display-mute">not replacing.</span></h2>
       <ol class="timeline">${beats}</ol>
     </section>
 
     <section class="layers-wrap">
       ${kicker('Three layers, one horizontal gate')}
-      <h2 class="display">Each band is a different liability. The gate is Overledger.</h2>
+      <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
       <ol class="layers">${MONEY_LAYERS.map((l) => `<li><span class="n">${esc(l.n)}</span><div><h3>${esc(l.title)}</h3><p>${esc(l.body)}</p></div></li>`).join('')}</ol>
     </section>
 
@@ -168,15 +186,16 @@ export function renderChapterPage(
   lede: string,
   k: string,
   extra = '',
+  mute = '',
 ): string {
   const body = chaptersFor(page).map(chapterCard).join('');
-  return `${pageHero(k, title, lede)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
+  return `${pageHero(k, title, lede, mute)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
 }
 
 export function renderVision(): string {
   return renderChapterPage(
     'vision',
-    'A network of networks, not another chain.',
+    'A network of networks,',
     'The Internet of Value is a connectivity problem. Overledger’s claim is to sit above ledgers and core systems the way TCP/IP sat above physical networks — a gateway operating system, not a twelfth blockchain.',
     'Vision',
     `<blockquote class="pull">
@@ -187,15 +206,18 @@ export function renderVision(): string {
       <article class="panel"><h3>TCP/IP for packets</h3><p>Applications stopped caring which physical network carried the bits. Ethernet, satellite, serial lines — one internet, many wires.</p></article>
       <article class="panel"><h3>Overledger for value</h3><p>Applications should stop caring which ledger, core or rail settles the money. Fabric, Ethereum, Corda, a bank core — one gateway, many domains.</p></article>
     </div>`,
+    'not another chain.',
   );
 }
 
 export function renderTechnology(): string {
   return renderChapterPage(
     'technology',
-    'Overledger is the gateway layer.',
+    'Overledger is',
     'APIs, mappers and an orchestration fabric that let applications talk to more than one ledger — and to systems that are not ledgers at all. Fusion, PayScript, Flow Applications, MCP agents, x402, Hyperledger Fabric and Oracle sit on top of that sentence, not beside a new chain.',
     'The stack',
+    '',
+    'the gateway layer.',
   );
 }
 
@@ -227,8 +249,9 @@ export function renderProgrammes(): string {
     </article>`;
   return `${pageHero(
     'Named pilots and named labs',
-    'Where Quant is already in the room.',
+    'Where Quant is already',
     'GBTD is live as a UK tokenised-deposit experiment with Quant as technology partner. Murex is a named Overledger integration. Rosalind was a 2023 BIS × Bank of England API experiment Quant says it supplied as a vendor — concluded. The 2026 Bank of England lab is a simulated RT2.',
+    'in the room.',
   )}
     <div class="chapter-stack">${extra}${chaptersFor('programmes').map(chapterCard).join('')}</div>
     ${renderThisMonth()}
@@ -239,9 +262,9 @@ export function renderProgrammes(): string {
 export function renderCbdc(): string {
   return `${pageHero(
     'Liability test',
-    'Tokenised deposits are not a CBDC.',
+    'Tokenised deposits are',
     'A central-bank digital currency is a liability of the central bank. GBTD tokens are liabilities of commercial banks. Mixing the two is the most common error on this map. AI agents, x402, Hyperledger, Oracle and Linux Foundation software change the rails — not that test.',
-    'CBDC',
+    'not a CBDC.',
   )}
   <div class="table-wrap">
     <table class="liability">
@@ -266,9 +289,9 @@ export function renderStandards(): string {
   ).join('');
   return `${pageHero(
     'Standards rooms',
-    'Convene the standard, then connect the rails.',
+    'Convene the standard,',
     'Geneva, Sydney, Brussels, Cambridge and Boston sit on the globe as rooms where interoperability — and the ethics of agents that move value — is written down. IETF SATP, ISO/TS 23516, MIT SERC and Hardjono’s delegation paper are documents, not campuses.',
-    'Standards',
+    'then connect the rails.',
   )}
   <section class="satp-lab" id="satp-method">
     ${kicker('Verify, initiate, lock, then 2PC')}
@@ -308,9 +331,9 @@ export function renderPeople(): string {
     .join('');
   return `${pageHero(
     'People',
-    'The names who actually worked on Overledger.',
+    'The names who actually worked',
     'Officers first, then the heads who ship the stack, then sales, then the founding authors — including those who have since left. Names and photographs are taken from Quant’s public people pages, the Overledger whitepaper (UCL Discovery) and, for Rafael Belchior, his public GitHub identity. Faces are never generated.',
-    'People',
+    'on Overledger.',
   )}${blocks}${dykBlock()}`;
 }
 
@@ -325,9 +348,9 @@ export function renderResearch(filter = ''): string {
     .join('');
   return `${pageHero(
     'Library',
-    'Read the papers, then the press release.',
+    'Read the papers,',
     'Every card opens a reader page in this encyclopedia. From there: the original publisher. 48 documents. Whitepapers, IETF drafts, ISO records, patents and surveys outrank a homepage.',
-    'Research',
+    'then the press release.',
   )}
   <div class="toolbar">
     <input type="search" id="lib-search" placeholder="Search titles, authors, venues" value="${esc(filter)}" />
@@ -379,7 +402,7 @@ export function renderGlossary(filter = ''): string {
       return `<section class="letter"><h3>${esc(L)}</h3>${items}</section>`;
     })
     .join('');
-  return `${pageHero('Language', 'The language of programmable money.', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search the terms.', 'Glossary')}
+  return `${pageHero('Language', 'The language of', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search the terms.', 'programmable money.')}
     <div class="toolbar">
       <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
       <p class="mono subtle">${terms.length} terms</p>
@@ -406,9 +429,9 @@ export function renderMarkets(print?: MarketPrint): string {
       : '<p class="empty-note">Venue volumes will appear when CoinGecko lists them.</p>';
   return `${pageHero(
     'QNT',
-    'QNT — the token of a network of networks.',
+    'QNT — the token of',
     'Overledger licences settle in QNT. That is why it trades. Live quotes from Coinbase, Kraken or Binance; market cap, supply and venues from CoinGecko. The Ethereum contract is below — check it yourself before you send anything.',
-    'Markets',
+    'a network of networks.',
   )}
   <section class="tape" data-proof="ticker">
     <div class="tape-head">${chip}<span class="mono subtle">Updated ${esc(p?.updated ?? '—')} · ${esc(p?.venue ?? '')}</span></div>
@@ -462,9 +485,9 @@ export function renderNews(river?: NewsRiver): string {
     || `<p class="empty-note">${esc(river?.error ?? 'No fresh headlines yet — check back in a minute.')}</p>`;
   return `${pageHero(
     'Wire',
-    'Quant, as the story unfolds.',
+    'Quant, as the story',
     'Live headlines that name Quant Network, Overledger or QNT — gathered from Google News through this desk, never invented. Official posts and this month’s sourced notes sit even when the river is empty.',
-    'News',
+    'unfolds.',
   )}
   <section class="wire">
     <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}">${esc(river?.status ?? 'loading')}</span><span class="mono subtle">${river?.items.length ?? 0} matching headlines</span></div>
@@ -486,7 +509,7 @@ function renderCalendar(): string {
   ).join('');
   return `<section class="calendar">
     ${kicker('Upcoming')}
-    <h2 class="display">Miami is next</h2>
+    <h2 class="display">Miami is <span class="display-mute">next</span></h2>
     <p>Quant at Sibos, stand DISL51, with Murex on stage — posted from @quantnetwork. DIGIT gilt is the Treasury, speaking at the UK Finance launch on 8 September. The speech does not name Quant; it is the same week’s landscape.</p>
     <ul>${items}</ul>
   </section>`;
@@ -503,7 +526,7 @@ function renderThisMonth(): string {
   ).join('');
   return `<section class="calendar month-rail">
     ${kicker('September 2026')}
-    <h2 class="display">This month on Quant</h2>
+    <h2 class="display">This month <span class="display-mute">on Quant</span></h2>
     <p>Quant’s Trusted Node essay. UK Finance naming GBTD as UK innovation. Sibos in Miami still ahead. Sourced notes — not invented headlines.</p>
     <ul>${items}</ul>
   </section>`;
@@ -515,7 +538,7 @@ function renderVoices(): string {
   ).join('');
   return `<section class="voices">
     ${kicker('Voices')}
-    <h2 class="display">Hear it from the people building it</h2>
+    <h2 class="display">Hear it from the people <span class="display-mute">building it</span></h2>
     <p class="lede">The accounts Quant points to: the company, Overledger developers, and founder Gilbert Verdian. Each card opens the original profile.</p>
     <div class="voice-grid">${voices}</div>
   </section>`;
@@ -556,9 +579,9 @@ export function renderDesk(missions = MissionBook.all()): string {
     .join('');
   return `${pageHero(
     'Situation Room',
-    'Five chokepoints. One pulse.',
+    'Five chokepoints.',
     'GEV is the eye; we ship the pulse. Thin intelligence desk companion for God’s Eye View. Editorial briefing cards and share-link routing. Public OSINT only.',
-    'Desk',
+    'One pulse.',
   )}
   <p class="banner-class">UNCLASSIFIED // PUBLIC SOURCES ONLY · No keys required to boot</p>
   <div class="section-head"><h3>Mission gallery</h3><span class="hint">Click a card for ops brief · primary CTA opens GEV</span></div>
@@ -598,9 +621,9 @@ export function renderCity(city: City): string {
 export function renderDonate(): string {
   return `${pageHero(
     'Support',
-    'Donations keep the desk independent',
+    'Donations keep the desk',
     'Optional. Buys no tokens, no yield, and no influence over Quant Network. This encyclopedia is not official Quant. Never send funds to an address that appeared in a DM or a lookalike site.',
-    'Donate',
+    'independent.',
   )}
   <article class="chapter">
     <p>QNT token contract for verification only — this is not a donation address: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. We never ask for a seed.</p>
@@ -617,9 +640,9 @@ export function renderDonate(): string {
 export function renderOps(): string {
   return `${pageHero(
     'How this is built',
-    'Five briefs for the reconstruction.',
+    'Five briefs for',
     'Engineering, design, visual accuracy, product, roadmap. This is the independent encyclopedia’s own architecture note, not a Quant Network document.',
-    'Ops',
+    'the reconstruction.',
   )}
   <article class="chapter"><h2>God-eye Earth</h2><p>Interactive Three.js globe, stationary by default. Labels sit on the coordinate. Overlays: settlement routes between hubs, token corridors from sourced programme links (Dentsu, Murex, Oracle, LACChain, Sibos) — not live SWIFT. Activity pulse on the London HQ pin. Reduced-motion respected.</p></article>
   <article class="chapter"><h2>Live data honesty</h2><p>Markets: Coinbase, Kraken or Binance for the print; CoinGecko for cap, supply and venues. Last-good cache. When a feed dies, the last print stays and the chip reads degraded — never invented. News: Google News RSS, same-origin proxied, filtered to Quant / Overledger / QNT / Verdian / GBTD. This month’s notes are sourced URLs, not a live ticker. Official voices remain even if the river is empty.</p></article>
@@ -628,5 +651,5 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not on the globe.', 'The encyclopedia still has Vision, Technology, Programmes, CBDC, People, Research and Standards.')}<p><a class="btn btn-primary" href="/">Return to Earth</a></p>`;
+  return `${pageHero('404', 'This page is not', 'The encyclopedia still has Vision, Technology, Programmes, CBDC, People, Research and Standards.', 'on the globe.')}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')}</p>`;
 }

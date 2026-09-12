@@ -60,7 +60,12 @@ export class QntDesk {
       if (location.hash.startsWith('#mission/')) this.syncLegacyHash();
     });
     document.addEventListener('click', (ev) => {
-      const a = (ev.target as HTMLElement).closest('a');
+      const target = ev.target as HTMLElement;
+      const more = this.root.querySelector('details.more');
+      if (more instanceof HTMLDetailsElement && more.open && !target.closest('details.more')) {
+        more.open = false;
+      }
+      const a = target.closest('a');
       if (!a) return;
       const href = a.getAttribute('href');
       if (!href || href.startsWith('http') || href.startsWith('mailto:') || a.target === '_blank') return;
@@ -190,17 +195,17 @@ export class QntDesk {
             <span class="word">Qnt<span>Desk</span></span>
           </a>
           <nav class="nav" aria-label="Primary">
-            <a href="/desk" ${route.name.startsWith('desk') ? 'aria-current="page"' : ''}>Desk</a>
-            <a href="/news" ${route.name === 'news' ? 'aria-current="page"' : ''}>News</a>
-            <a href="/markets" ${route.name === 'markets' ? 'aria-current="page"' : ''}>Markets</a>
+            <a href="/vision" ${route.name === 'vision' ? 'aria-current="page"' : ''}>Vision</a>
+            <a href="/technology" ${route.name === 'technology' ? 'aria-current="page"' : ''}>Technology</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
-            <a href="/people" ${route.name === 'people' || route.name === 'team' ? 'aria-current="page"' : ''}>People</a>
-            <a href="/research" ${route.name === 'research' || route.name === 'library' ? 'aria-current="page"' : ''}>Research</a>
+            <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
+            <a href="/desk" ${route.name.startsWith('desk') ? 'aria-current="page"' : ''}>Desk</a>
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
-                <a href="/vision">Vision</a>
-                <a href="/technology">The stack</a>
+                <a href="/news">News</a>
+                <a href="/markets">Markets</a>
+                <a href="/people">People</a>
                 <a href="/cbdc">CBDC</a>
                 <a href="/standards">Standards</a>
                 <a href="/glossary">Glossary</a>
@@ -212,6 +217,7 @@ export class QntDesk {
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
             <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">${esc(shortcut)}</button>
+            <a class="btn btn-primary cta-nav" href="/desk"><span class="btn-swap"><span>Read the desk</span><span>Open the map</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
         </header>
@@ -240,23 +246,43 @@ export class QntDesk {
         </div>
         <main>${body}</main>
         <footer class="foot">
-          <nav>
-            <a href="/desk">Desk</a>
-            <a href="/news">News</a>
-            <a href="/markets">Markets</a>
-            <a href="/programmes">Programmes</a>
-            <a href="/glossary">Glossary</a>
-            <a href="/research">Library</a>
-            <a href="/donate">Donate</a>
-            <a href="/ops">How this is built</a>
-          </nav>
-          <p>${esc(DISCLAIMER)}</p>
-          <p class="voices-inline">
-            <a href="https://x.com/quantnetwork" rel="noopener noreferrer" target="_blank">@quantnetwork</a>
-            <a href="https://x.com/OverledgerDev" rel="noopener noreferrer" target="_blank">@OverledgerDev</a>
-            <a href="https://x.com/gverdian" rel="noopener noreferrer" target="_blank">@gverdian</a>
-            <span class="mono">QNT ${esc(QNT_CONTRACT)}</span>
-          </p>
+          <div class="foot-grid">
+            <div class="foot-col">
+              <span class="word">Qnt<span>Desk</span></span>
+              <p>Independent encyclopedia of Overledger and programmable money. Not Quant Network.</p>
+            </div>
+            <nav class="foot-col" aria-label="Desk">
+              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Desk</p>
+              <a href="/desk">Situation Room</a>
+              <a href="/news">News</a>
+              <a href="/markets">Markets</a>
+              <a href="/donate">Donate</a>
+            </nav>
+            <nav class="foot-col" aria-label="Encyclopedia">
+              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Encyclopedia</p>
+              <a href="/vision">Vision</a>
+              <a href="/technology">The stack</a>
+              <a href="/programmes">Programmes</a>
+              <a href="/cbdc">CBDC</a>
+            </nav>
+            <nav class="foot-col" aria-label="Research">
+              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Research</p>
+              <a href="/research">Library</a>
+              <a href="/people">People</a>
+              <a href="/standards">Standards</a>
+              <a href="/glossary">Glossary</a>
+              <a href="/ops">How this is built</a>
+            </nav>
+          </div>
+          <div class="foot-legal">
+            <p>${esc(DISCLAIMER)}</p>
+            <p class="voices-inline">
+              <a href="https://x.com/quantnetwork" rel="noopener noreferrer" target="_blank">@quantnetwork</a>
+              <a href="https://x.com/OverledgerDev" rel="noopener noreferrer" target="_blank">@OverledgerDev</a>
+              <a href="https://x.com/gverdian" rel="noopener noreferrer" target="_blank">@gverdian</a>
+              <span class="mono">QNT ${esc(QNT_CONTRACT)}</span>
+            </p>
+          </div>
         </footer>
         <div class="palette-scrim" hidden id="palette-scrim"></div>
         <div class="palette" hidden id="palette">
@@ -487,6 +513,9 @@ export class QntDesk {
   private closeMenu(): void {
     this.root.querySelector('#mobile-nav')?.classList.remove('is-open');
     this.root.querySelector('[data-open-menu]')?.setAttribute('aria-expanded', 'false');
+    this.root.querySelectorAll('details.more').forEach((el) => {
+      (el as HTMLDetailsElement).open = false;
+    });
   }
 
   private togglePalette(open: boolean): void {
