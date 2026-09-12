@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Ask Grok">
+  <defs>
+    <radialGradient id="core" cx="50%" cy="50%" r="18%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#00D4AA"/>
+    </radialGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="230" fill="#071428"/>
+  <path fill="#00D4AA" d="M512 148 L562 452 L844 512 L562 572 L512 876 L462 572 L180 512 L462 452 Z"/>
+  <circle cx="512" cy="512" r="54" fill="url(#core)"/>
+</svg>

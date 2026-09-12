@@ -188,6 +188,28 @@ h2.display {
   view-transition-name: brand;
 }
 
+.boot {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.85rem;
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.boot img {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 14px;
+  box-shadow: 0 16px 36px rgba(47, 91, 255, 0.22);
+}
+
+.boot p {
+  margin: 0;
+}
+
 .logo {
   width: 2.25rem;
   height: 2.25rem;
@@ -220,8 +242,8 @@ h2.display {
 }
 
 .word span {
-  color: var(--grey);
-  font-weight: 500;
+  color: var(--accent);
+  font-weight: 600;
 }
 
 .nav {
@@ -1768,6 +1790,21 @@ main {
   background: linear-gradient(135deg, color-mix(in srgb, var(--live) 16%, var(--surface)), var(--accent-soft));
 }
 
+.grok-thinking p {
+  color: var(--muted);
+}
+
+.grok-thinking p::after {
+  content: '';
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-left: 0.45rem;
+  border-radius: 99px;
+  background: var(--live);
+  animation: live-pulse 1s ease-in-out infinite;
+}
+
 .grok-log {
   list-style: none;
   margin: 0;
@@ -2388,6 +2425,10 @@ button.chip {
   min-width: 5.2rem;
   background: var(--accent);
   color: #fff;
+}
+
+.player-play.is-loading {
+  opacity: 0.7;
 }
 
 .player-skip {

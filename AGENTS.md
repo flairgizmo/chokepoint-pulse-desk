@@ -1,6 +1,6 @@
 # QntDesk — agent contract
 
-Independent encyclopedia and protocol magazine about Quant Network, Overledger, and programmable money. **Not official Quant.**
+Independent encyclopedia and research desk about Quant Network, Overledger, and programmable money. **Not official Quant.**
 
 This is a vanilla Vite + TypeScript SPA (no React, no TanStack, no Cesium, no auth). Preview the site on **`0.0.0.0:8080`** via `npm run dev` / `startup.sh`. Leave the dev server running after edits.
 

@@ -1,6 +1,6 @@
 # Security — what is actually in place
 
-This site is an independent research magazine. It is not Quant Network. It does not claim to harden the visitor’s machine.
+This site is an educational research desk on Quant Network, Overledger and programmable money. It does not claim to harden the visitor’s machine.
 
 ## Implemented
 

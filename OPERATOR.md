@@ -4,7 +4,8 @@ No `.env` in the repo. Platform injects secrets on deploy. **Auth is OFF.**
 
 | Key | Effect if missing |
 |---|---|
-| `XAI_API_KEY` | Ask Grok uses the local encyclopedia brain / returns an error from the Netlify function |
+| `XAI_API_KEY` | Ask Grok uses the local encyclopedia brain until this is set on the host |
+| `XAI_MODEL` | Defaults to `grok-3-mini` |
 | `PORT` | Dev server defaults to `8080` |
 
 Never prefix secrets with `VITE_`.

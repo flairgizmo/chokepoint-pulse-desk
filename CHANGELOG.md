@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-12 — Professional mark and live APIs
+
+- QntDesk mark: cobalt gateway ring, mint live node. SVG in the header, PNG for share cards.
+- Same-origin `/api/markets`, `/api/news`, `/api/gnews`, `/api/status`, `/api/chat`.
+- News river merges Quant’s official feed, Overledger docs, IETF SATP, and Google News.
+- Ask Grok loading state; live Grok (when keyed) sees the desk’s QNT print and official titles.
+- Boot screen, player load/error handling, globe texture failures stay silent.
+
 ## 2026-09-12 — Public desk, podcast, latest first
 
 - Professional QntDesk mark and Ask Grok assistant.

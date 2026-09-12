@@ -6,16 +6,22 @@ const PROMPTS = ['What is GBTD?', 'What is Overledger?', 'Why does QNT exist?', 
 export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
     <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
-      <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
+      <picture>
+        <source type="image/svg+xml" srcset="/brand/grok-mark.svg" />
+        <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
+      </picture>
       <span class="grok-label">Ask Grok</span>
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
         <div class="grok-head">
-          <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
+          <picture>
+            <source type="image/svg+xml" srcset="/brand/grok-mark.svg" />
+            <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
+          </picture>
           <div>
             <p class="kicker">Ask Grok</p>
-            <p class="subtle">Research assistant. Answers from the record, names and titles attached.</p>
+            <p class="subtle" data-grok-status>Research assistant. Add XAI_API_KEY to speak with live Grok. Until then, answers come from the record.</p>
           </div>
         </div>
         <button type="button" class="icon-btn" data-grok-toggle aria-label="Close assistant">×</button>
@@ -45,6 +51,17 @@ export function wireChat(root: HTMLElement): void {
   if (!panel || !log || !form || !input) return;
 
   const history: ChatTurn[] = [];
+  const statusLine = root.querySelector('[data-grok-status]');
+
+  void fetch('/api/chat')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((s: { grok?: boolean } | null) => {
+      if (!statusLine) return;
+      statusLine.textContent = s?.grok
+        ? 'Grok live. Grounded in the QntDesk record, plus the live QNT print and official wire.'
+        : 'From the record. Add XAI_API_KEY on the host to connect live Grok.';
+    })
+    .catch(() => undefined);
 
   const toggle = () => {
     panel.hidden = !panel.hidden;
@@ -75,22 +92,39 @@ export function wireChat(root: HTMLElement): void {
     paint('user', q);
     history.push({ role: 'user', content: q });
     const local = answerFromDesk(q);
+    const thinking = document.createElement('li');
+    thinking.className = 'grok-assistant grok-thinking';
+    thinking.innerHTML = '<p>Reading the record…</p>';
+    log.appendChild(thinking);
+    log.scrollTop = log.scrollHeight;
+    form.setAttribute('aria-busy', 'true');
+    const askBtn = form.querySelector('button');
+    if (askBtn) askBtn.setAttribute('disabled', 'true');
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q, history, local }),
+        signal: AbortSignal.timeout(22_000),
       });
       if (res.ok) {
-        const data = (await res.json()) as { text?: string; cites?: typeof local.cites };
+        const data = (await res.json()) as { text?: string; cites?: typeof local.cites; mode?: string };
         if (data.text) {
+          thinking.remove();
           paint('assistant', data.text, data.cites ?? local.cites);
           history.push({ role: 'assistant', content: data.text });
+          if (statusLine && data.mode === 'live') {
+            statusLine.textContent = 'Grok live. Grounded in the QntDesk record, plus the live QNT print and official wire.';
+          }
           return;
         }
       }
     } catch {
       /* sourced fallback */
+    } finally {
+      thinking.remove();
+      form.removeAttribute('aria-busy');
+      if (askBtn) askBtn.removeAttribute('disabled');
     }
     paint('assistant', local.text, local.cites);
     history.push({ role: 'assistant', content: local.text });
