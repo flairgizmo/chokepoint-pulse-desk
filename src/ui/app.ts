@@ -8,6 +8,7 @@ import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
 import { chatMarkup, wireChat } from './chat';
 import { wirePlayer } from './player';
+import { mountTesseract } from './tesseract';
 import { esc, fmtCompact, fmtMoney, fmtPct } from './html';
 import {
   DISCLAIMER,
@@ -40,6 +41,7 @@ interface Route {
 export class QntDesk {
   private root: HTMLElement;
   private globe: EarthGlobe | null = null;
+  private tessDispose: (() => void) | null = null;
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
@@ -140,6 +142,8 @@ export class QntDesk {
   private render(): void {
     this.globe?.dispose();
     this.globe = null;
+    this.tessDispose?.();
+    this.tessDispose = null;
     this.lastHoverId = undefined;
     const route = this.parse();
     const body = this.body(route);
@@ -209,7 +213,7 @@ export class QntDesk {
         <header class="top">
           <div class="top-bar">
           <a class="brand" href="/" aria-label="QntDesk home">
-            <img class="logo" src="/brand/qntdesk-logo.png" width="36" height="36" alt="" />
+            <img class="logo" src="/brand/qntdesk-icon.png" width="36" height="36" alt="" />
             <span class="word">Qnt<span>Desk</span></span>
           </a>
           <nav class="nav" aria-label="Primary">
@@ -326,6 +330,8 @@ export class QntDesk {
     palIn?.addEventListener('input', () => this.paintPalette(palIn.value));
 
     wireChat(this.root);
+    this.wireTesseract();
+    this.wireMotionBeds();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
     this.root.querySelectorAll<HTMLVideoElement>('.pod-tease video').forEach((vid) => {
       const card = vid.closest('.pod-tease');
@@ -406,6 +412,22 @@ export class QntDesk {
       const id = route.id || location.hash.replace(/^#/, '');
       if (id) document.getElementById(id)?.scrollIntoView({ block: 'start' });
     }
+  }
+
+  private wireTesseract(): void {
+    const canvas = this.root.querySelector<HTMLCanvasElement>('#tesseract');
+    if (!canvas) return;
+    this.tessDispose = mountTesseract(canvas);
+  }
+
+  private wireMotionBeds(): void {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.root.querySelectorAll<HTMLVideoElement>('video.hero-bed, video.era-bed, video.visual-bed, video.page-bed, video.story-bed').forEach((vid) => {
+      if (reduced) {
+        vid.removeAttribute('autoplay');
+        vid.pause();
+      }
+    });
   }
 
   private async wireGlobe(): Promise<void> {

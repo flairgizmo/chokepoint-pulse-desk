@@ -1,0 +1,23 @@
+{
+  "name": "QntDesk",
+  "short_name": "QntDesk",
+  "description": "Overledger, programmable sterling, live QNT, and a twenty-part film on the Internet of Value.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050810",
+  "theme_color": "#050810",
+  "icons": [
+    {
+      "src": "/brand/qntdesk-mark.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/qntdesk-icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}

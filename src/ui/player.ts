@@ -56,7 +56,7 @@ export function playerMarkup(ep: Episode, playlist = episodesNewestFirst()): str
         <button type="button" class="player-play" data-play aria-label="Play">Play</button>
         <button type="button" class="player-skip" data-skip="15" aria-label="Forward fifteen seconds">+15</button>
         <input type="range" min="0" max="1000" value="0" data-seek aria-label="Seek" />
-        <span class="mono" data-time>0:00 / ${ep.minutes}:00</span>
+        <span class="mono" data-time>0:00 / —</span>
         <label class="player-toggle"><input type="checkbox" data-video-on checked /> Video</label>
         <label class="sr-only" for="pod-rate">Speed</label>
         <select id="pod-rate" data-rate>
@@ -67,7 +67,7 @@ export function playerMarkup(ep: Episode, playlist = episodesNewestFirst()): str
       </div>
       <p class="player-byline">
         <span class="host-tile" aria-hidden="true">${esc(hostInitial(ep.hostName))}</span>
-        <strong>${esc(ep.hostName)}</strong> · ${esc(ep.hostTitle)} · five-minute film
+        <strong>${esc(ep.hostName)}</strong> · ${esc(ep.hostTitle)} · film
       </p>
       <nav class="player-adjacent">
         ${newer ? `<a class="text-link" href="/podcast/${esc(newer.id)}">← ${esc(newer.title)}</a>` : '<span></span>'}
@@ -185,6 +185,17 @@ export function wirePlayer(root: HTMLElement): void {
     }
   });
   audio.addEventListener('loadedmetadata', paint);
+  audio.addEventListener('waiting', () => play.classList.add('is-loading'));
+  audio.addEventListener('canplay', () => play.classList.remove('is-loading'));
+  audio.addEventListener('error', () => {
+    play.classList.remove('is-loading');
+    play.disabled = true;
+    time.textContent = 'Audio unavailable';
+  });
+  video.addEventListener('error', () => {
+    videoOn.checked = false;
+    video.style.opacity = '0';
+  });
   audio.addEventListener('ended', () => {
     video.pause();
     play.textContent = 'Play';
