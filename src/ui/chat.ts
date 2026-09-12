@@ -15,7 +15,7 @@ export function chatMarkup(): string {
           <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
           <div>
             <p class="kicker">Ask Grok</p>
-            <p class="subtle">Research assistant. Answers from the record, names and titles attached.</p>
+            <p class="subtle" data-grok-status>Research assistant. Add XAI_API_KEY to speak with live Grok. Until then, answers come from the record.</p>
           </div>
         </div>
         <button type="button" class="icon-btn" data-grok-toggle aria-label="Close assistant">×</button>
@@ -45,6 +45,17 @@ export function wireChat(root: HTMLElement): void {
   if (!panel || !log || !form || !input) return;
 
   const history: ChatTurn[] = [];
+  const statusLine = root.querySelector('[data-grok-status]');
+
+  void fetch('/api/chat')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((s: { grok?: boolean } | null) => {
+      if (!statusLine) return;
+      statusLine.textContent = s?.grok
+        ? 'Grok live. Grounded in the QntDesk record, names and titles attached.'
+        : 'From the record. Add XAI_API_KEY on the host to connect live Grok.';
+    })
+    .catch(() => undefined);
 
   const toggle = () => {
     panel.hidden = !panel.hidden;
@@ -86,6 +97,9 @@ export function wireChat(root: HTMLElement): void {
         if (data.text) {
           paint('assistant', data.text, data.cites ?? local.cites);
           history.push({ role: 'assistant', content: data.text });
+          if (statusLine && (data as { mode?: string }).mode === 'live') {
+            statusLine.textContent = 'Grok live. Grounded in the QntDesk record, names and titles attached.';
+          }
           return;
         }
       }

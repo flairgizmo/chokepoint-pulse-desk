@@ -5,58 +5,55 @@ const port = Number(process.env.PORT) || 8080;
 const GNEWS =
   'https://news.google.com/rss/search?q=%22Quant+Network%22+OR+Overledger+OR+QNT&hl=en-GB&gl=GB&ceid=GB:en';
 
+function writeJson(res: ServerResponse, status: number, body: unknown): void {
+  res.statusCode = status;
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.end(JSON.stringify(body));
+}
+
 function chatDesk(): Plugin {
+  const handle = (req: IncomingMessage, res: ServerResponse, next: () => void): void => {
+    if (req.method === 'GET') {
+      void (async () => {
+        const { chatStatus } = await import('./src/modules/chatServer');
+        writeJson(res, 200, chatStatus());
+      })();
+      return;
+    }
+    if (req.method !== 'POST') {
+      next();
+      return;
+    }
+    const chunks: Buffer[] = [];
+    req.on('data', (c) => chunks.push(Buffer.from(c)));
+    req.on('end', () => {
+      void (async () => {
+        const { answerChat } = await import('./src/modules/chatServer');
+        let question = '';
+        let history: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+        try {
+          const parsed = JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}') as {
+            question?: string;
+            history?: Array<{ role: 'user' | 'assistant'; content: string }>;
+          };
+          question = String(parsed.question ?? '');
+          history = Array.isArray(parsed.history) ? parsed.history : [];
+        } catch {
+          question = '';
+        }
+        const reply = await answerChat(question, history);
+        writeJson(res, 200, reply);
+      })();
+    });
+  };
+
   return {
     name: 'qntdesk-chat',
     configureServer(server) {
-      server.middlewares.use('/api/chat', (req, res, next) => {
-        if (req.method !== 'POST') {
-          next();
-          return;
-        }
-        const chunks: Buffer[] = [];
-        req.on('data', (c) => chunks.push(Buffer.from(c)));
-        req.on('end', () => {
-          void (async () => {
-            const { answerFromDesk } = await import('./src/modules/assistant');
-            let question = '';
-            try {
-              question = String(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}').question ?? '');
-            } catch {
-              question = '';
-            }
-            const reply = answerFromDesk(question);
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.end(JSON.stringify(reply));
-          })();
-        });
-      });
+      server.middlewares.use('/api/chat', handle);
     },
     configurePreviewServer(server) {
-      server.middlewares.use('/api/chat', (req, res, next) => {
-        if (req.method !== 'POST') {
-          next();
-          return;
-        }
-        const chunks: Buffer[] = [];
-        req.on('data', (c) => chunks.push(Buffer.from(c)));
-        req.on('end', () => {
-          void (async () => {
-            const { answerFromDesk } = await import('./src/modules/assistant');
-            let question = '';
-            try {
-              question = String(JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}').question ?? '');
-            } catch {
-              question = '';
-            }
-            const reply = answerFromDesk(question);
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'application/json; charset=utf-8');
-            res.end(JSON.stringify(reply));
-          })();
-        });
-      });
+      server.middlewares.use('/api/chat', handle);
     },
   };
 }

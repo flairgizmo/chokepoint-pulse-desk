@@ -2,6 +2,13 @@
   command = "npm run build"
   publish = "dist"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[template.environment]
+  XAI_API_KEY = "Change me to your xAI key from https://console.x.ai"
+
 # Same-origin news proxy so the browser never hits Google News CORS.
 [[redirects]]
   from = "/api/gnews"
