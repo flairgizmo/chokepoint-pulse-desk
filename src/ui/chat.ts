@@ -150,6 +150,8 @@ export function wireChat(root: HTMLElement): void {
     setOpen(false);
   };
 
+  aside.dataset.idle = '1';
+
   root.querySelectorAll('[data-grok-toggle]').forEach((b) =>
     b.addEventListener('click', () => setOpen(panel.hidden)),
   );
@@ -234,4 +236,21 @@ export function wireChat(root: HTMLElement): void {
       void ask(btn.dataset.grokPrompt ?? btn.textContent ?? '');
     });
   });
+}
+
+/** Force the launcher back to first-paint idle: mark only, no transcript peek. */
+export function forceGrokIdle(): void {
+  const panel = document.querySelector<HTMLElement>('#grok-panel');
+  const grok = document.querySelector<HTMLElement>('#grok');
+  if (!panel || !grok) return;
+  panel.hidden = true;
+  grok.classList.remove('is-open', 'is-min');
+  grok.querySelectorAll('[data-grok-toggle]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  try {
+    const raw = sessionStorage.getItem(STORE);
+    const prev = raw ? (JSON.parse(raw) as ChatStore) : { open: false, turns: [] };
+    sessionStorage.setItem(STORE, JSON.stringify({ ...prev, open: false }));
+  } catch {
+    /* private mode */
+  }
 }

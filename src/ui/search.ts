@@ -7,28 +7,65 @@ import { PATENTS } from '../data/patents';
 import { INSTITUTIONS } from '../data/institutions';
 import { PROGRAMMES } from '../data/programmes';
 import { esc } from './html';
+import { isStageOpen, revealStage } from './stage';
 
 interface Hit {
-  href: string;
   kind: string;
+  stageKind: string;
+  id: string;
   title: string;
   sub: string;
 }
 
 function collect(): Hit[] {
-  const hits: Hit[] = [
-    ...PEOPLE.map((p) => ({ href: `/people#${p.id}`, kind: 'People', title: p.name, sub: p.role })),
-    ...GLOSSARY.map((t) => ({ href: `/glossary#${t.id}`, kind: 'Glossary', title: t.term, sub: t.body.slice(0, 90) })),
-    ...papers.map((p) => ({ href: `/research#${p.id}`, kind: 'Research', title: p.title, sub: `${p.year} · ${p.venue}` })),
-    ...chapters.map((c) => ({ href: `/${c.page}#${c.id}`, kind: 'Chapter', title: c.title, sub: c.kicker })),
-    ...TECH.map((t) => ({ href: `/technology#${t.id}`, kind: 'Technology', title: t.name, sub: t.purpose })),
-    ...STORY.map((e) => ({ href: `/story#${e.id}`, kind: 'Timeline', title: e.title, sub: e.date })),
-    ...PATENTS.map((p) => ({ href: `/patents#${p.id}`, kind: 'Patent', title: p.number, sub: p.title })),
-    ...INSTITUTIONS.map((i) => ({ href: `/institutions#${i.id}`, kind: 'Institution', title: i.name, sub: i.role })),
-    ...PROGRAMMES.map((p) => ({ href: `/programmes#${p.id}`, kind: 'Programme', title: p.title, sub: p.owner })),
-    ...quotes.slice(0, 40).map((q) => ({ href: `/people`, kind: 'Quote', title: q.who, sub: q.text.slice(0, 90) })),
+  return [
+    ...PEOPLE.map((p) => ({ stageKind: 'person', id: p.id, kind: 'People', title: p.name, sub: p.role })),
+    ...GLOSSARY.map((t) => ({
+      stageKind: 'term',
+      id: t.id,
+      kind: 'Glossary',
+      title: t.term,
+      sub: t.body.slice(0, 90),
+    })),
+    ...papers.map((p) => ({
+      stageKind: 'paper',
+      id: p.id,
+      kind: 'Research',
+      title: p.title,
+      sub: `${p.year} · ${p.venue}`,
+    })),
+    ...chapters.map((c) => ({
+      stageKind: 'chapter',
+      id: c.id,
+      kind: 'Chapter',
+      title: c.title,
+      sub: c.kicker,
+    })),
+    ...TECH.map((t) => ({ stageKind: 'tech', id: t.id, kind: 'Technology', title: t.name, sub: t.purpose })),
+    ...STORY.map((e) => ({ stageKind: 'event', id: e.id, kind: 'Timeline', title: e.title, sub: e.date })),
+    ...PATENTS.map((p) => ({ stageKind: 'patent', id: p.id, kind: 'Patent', title: p.number, sub: p.title })),
+    ...INSTITUTIONS.map((i) => ({
+      stageKind: 'institution',
+      id: i.id,
+      kind: 'Institution',
+      title: i.name,
+      sub: i.role,
+    })),
+    ...PROGRAMMES.map((p) => ({
+      stageKind: 'programme',
+      id: p.id,
+      kind: 'Programme',
+      title: p.title,
+      sub: p.owner,
+    })),
+    ...quotes.slice(0, 40).map((q) => ({
+      stageKind: 'quote',
+      id: q.id,
+      kind: 'Quote',
+      title: q.who,
+      sub: q.text.slice(0, 90),
+    })),
   ];
-  return hits;
 }
 
 export function searchMarkup(): string {
@@ -61,12 +98,13 @@ export function wireSearch(root: HTMLElement): void {
     list.innerHTML = hits
       .map(
         (h) =>
-          `<li><a href="${esc(h.href)}"><span class="kicker">${esc(h.kind)}</span><strong>${esc(h.title)}</strong><span>${esc(h.sub)}</span></a></li>`,
+          `<li><button type="button" data-stage="${esc(h.stageKind)}" data-stage-id="${esc(h.id)}"><span class="kicker">${esc(h.kind)}</span><strong>${esc(h.title)}</strong><span>${esc(h.sub)}</span></button></li>`,
       )
       .join('');
   };
 
   const setOpen = (open: boolean): void => {
+    if (open && isStageOpen()) return;
     wrap.hidden = !open;
     if (open) {
       paint();
@@ -81,11 +119,39 @@ export function wireSearch(root: HTMLElement): void {
     el.addEventListener('click', () => setOpen(false));
   });
   input.addEventListener('input', paint);
-  document.addEventListener('keydown', (ev) => {
-    if (ev.key === '/' && !['INPUT', 'TEXTAREA'].includes((ev.target as HTMLElement).tagName)) {
-      ev.preventDefault();
-      setOpen(true);
-    }
-    if (ev.key === 'Escape' && !wrap.hidden) setOpen(false);
+  list.addEventListener('click', (ev) => {
+    const hit = (ev.target as HTMLElement).closest<HTMLElement>('[data-stage]');
+    if (!hit) return;
+    ev.preventDefault();
+    const kind = hit.dataset.stage;
+    const id = hit.dataset.stageId;
+    if (!kind || !id) return;
+    setOpen(false);
+    revealStage(kind, id);
   });
+
+  if (!document.body.dataset.searchKeys) {
+    document.body.dataset.searchKeys = '1';
+    document.addEventListener('keydown', (ev) => {
+      const tag = (ev.target as HTMLElement).tagName;
+      const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+      const metaK = (ev.key === 'k' || ev.key === 'K') && (ev.metaKey || ev.ctrlKey);
+      if (metaK) {
+        ev.preventDefault();
+        const panel = document.querySelector<HTMLElement>('#desk-search');
+        if (panel && !panel.hidden) panel.hidden = true;
+        else document.querySelector<HTMLButtonElement>('[data-open-search]')?.click();
+        return;
+      }
+      if (ev.key === '/' && !typing) {
+        ev.preventDefault();
+        document.querySelector<HTMLButtonElement>('[data-open-search]')?.click();
+      }
+      const live = document.querySelector<HTMLElement>('#desk-search');
+      if (ev.key === 'Escape' && live && !live.hidden) {
+        ev.preventDefault();
+        live.hidden = true;
+      }
+    });
+  }
 }

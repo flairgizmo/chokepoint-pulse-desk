@@ -34,7 +34,7 @@ import {
   renderTechnology,
   renderVision,
 } from './views';
-import { stageMarkup, wireStages } from './stage';
+import { setStageNavigator, stageMarkup, syncStageFromLocation, wireStages } from './stage';
 import { searchMarkup, wireSearch } from './search';
 import { resolveStage } from './resolve';
 import { matchProgrammes } from '../data/programmes';
@@ -54,6 +54,7 @@ export class QntDesk {
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
   private lastHoverId: string | undefined;
+  private lastPath = '';
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -67,7 +68,8 @@ export class QntDesk {
   }
 
   private bindNav(): void {
-    window.addEventListener('popstate', () => this.render());
+    setStageNavigator((path) => this.go(path));
+    window.addEventListener('popstate', () => this.onPop());
     window.addEventListener('hashchange', () => {
       if (location.hash.startsWith('#mission/')) this.go('/', true);
     });
@@ -88,6 +90,17 @@ export class QntDesk {
       if (ev.key === 'Escape') this.closeMenu();
     });
     this.syncLegacyHash();
+    this.bindStoryKeys();
+  }
+
+  private onPop(): void {
+    const path = location.pathname.replace(/\/+$/, '') || '/';
+    if (path === this.lastPath) {
+      syncStageFromLocation(this.root);
+      return;
+    }
+    this.lastPath = path;
+    this.render();
   }
 
   private syncLegacyHash(): void {
@@ -136,6 +149,7 @@ export class QntDesk {
     const route = this.parse();
     const body = this.body(route);
     this.root.innerHTML = this.shell(body, route);
+    this.lastPath = location.pathname.replace(/\/+$/, '') || '/';
     this.wire(route);
   }
 
@@ -264,41 +278,13 @@ export class QntDesk {
           <a href="/podcast">Podcast</a>
         </div>
         <main>${body}</main>
-        <footer class="foot">
-          <div class="foot-grid">
-            <div class="foot-col">
-              <span class="word">Qnt<span>Desk</span></span>
-              <p>The Internet of Value. Overledger, programmable money, and the people building it.</p>
-            </div>
-            <nav class="foot-col" aria-label="Live">
-              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Live</p>
-              <a href="/news">News</a>
-              <a href="/markets">Markets</a>
-              <a href="/podcast">Podcast</a>
-              <a href="/donate">Donate</a>
-            </nav>
-            <nav class="foot-col" aria-label="Encyclopedia">
-              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Encyclopedia</p>
-              <a href="/vision">Vision</a>
-              <a href="/story">Story</a>
-              <a href="/technology">Technology</a>
-              <a href="/stack">Stack</a>
-              <a href="/programmes">Programmes</a>
-              <a href="/cbdc">CBDC</a>
-            </nav>
-            <nav class="foot-col" aria-label="Research">
-              <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Research</p>
-              <a href="/research">Library</a>
-              <a href="/people">People</a>
-              <a href="/institutions">Institutions</a>
-              <a href="/patents">Patents</a>
-              <a href="/standards">Standards</a>
-              <a href="/glossary">Glossary</a>
-            </nav>
-          </div>
+        <footer class="foot colophon">
           <div class="foot-legal">
+            <p class="word">Qnt<span>Desk</span></p>
+            <p>Independent educational brief. Not Quant Network Ltd. Sources: official Quant surfaces, Overledger docs, IETF SATP, public filings. Ingest about every thirty minutes. Markets via cached CoinGecko with as-of shown.</p>
             <p>${esc(DISCLAIMER)}</p>
             <p class="voices-inline">
+              <a href="/donate">Donate</a>
               <a href="https://x.com/quantnetwork" rel="noopener noreferrer" target="_blank">@quantnetwork</a>
               <a href="https://x.com/OverledgerDev" rel="noopener noreferrer" target="_blank">@OverledgerDev</a>
               <a href="https://x.com/gverdian" rel="noopener noreferrer" target="_blank">@gverdian</a>
@@ -328,7 +314,7 @@ export class QntDesk {
     this.wireMotionBeds();
     this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
-    if (route.name === 'home') void this.wireGlobe();
+    if (this.root.querySelector('#earth-stage')) void this.wireGlobe();
     if (route.name === 'markets') this.hydrateMarkets();
     if (route.name === 'news') {
       if (this.news) this.hydrateNews();
@@ -798,6 +784,30 @@ export class QntDesk {
         return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">${esc(h.title)}</button>`;
       })
       .join(' · ')}`;
+  }
+
+  private bindStoryKeys(): void {
+    if (document.body.dataset.storyKeys === '1') return;
+    document.body.dataset.storyKeys = '1';
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key !== 'j' && ev.key !== 'k') return;
+      const tag = (ev.target as HTMLElement).tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      const rail = document.querySelector('#story-rail');
+      const stage = document.querySelector<HTMLElement>('#desk-stage');
+      const search = document.querySelector<HTMLElement>('#desk-search');
+      if (!rail || (stage && !stage.hidden) || (search && !search.hidden)) return;
+      const nodes = [...rail.querySelectorAll<HTMLElement>('.story-node')].filter((n) => !n.hidden);
+      if (!nodes.length) return;
+      ev.preventDefault();
+      const current = nodes.findIndex((n) => n.classList.contains('is-focus'));
+      const next = ev.key === 'j' ? Math.min(nodes.length - 1, current + 1) : Math.max(0, current < 0 ? 0 : current - 1);
+      nodes.forEach((n) => n.classList.remove('is-focus'));
+      const node = nodes[next];
+      node.classList.add('is-focus');
+      node.scrollIntoView({ block: 'center' });
+      node.querySelector<HTMLButtonElement>('.story-hit')?.focus();
+    });
   }
 
   private closeMenu(): void {

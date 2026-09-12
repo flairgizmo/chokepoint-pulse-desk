@@ -5,10 +5,11 @@ import { OVERLEDGER_BUILDERS, PEOPLE } from '../data/people';
 import { PATENTS } from '../data/patents';
 import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
-import { CITIES } from '../data/cities';
 import { GBTD_BANKS } from '../data/timeline';
 import { diagramFigure } from './diagrams';
 import { esc } from './html';
+import { chipsFromIds } from './relate';
+import { relatedButtons } from './stage';
 
 function kicker(text: string): string {
   return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
@@ -35,7 +36,7 @@ export function renderHome(): string {
     return `<li class="wordmark">${mark ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="56" height="56" />` : ''}<span>${esc(b)}</span></li>`;
   }).join('');
   return `
-    <section class="masthead masthead-lockup">
+    <section class="masthead masthead-lockup" data-proof="hero">
       <div class="hero-stage">
         <canvas id="gateway" class="gateway-stage" role="img" aria-label="QntDesk mark: a spatial Q of interlocking ledgers. Drag to orbit."></canvas>
         <p class="tess-hint" data-gateway-hint>Orbit the Q. A lattice of ledgers, one light path.</p>
@@ -88,25 +89,6 @@ export function renderHome(): string {
       <ul class="wordmarks">${banks}</ul>
     </section>
 
-    <section class="earth-hero" data-proof="hero">
-      <div class="earth-stage" id="earth-stage" tabindex="0" aria-label="Interactive 3D Earth. Drag to orbit, scroll to zoom, double-click to fly in, click a city."></div>
-      <div class="earth-hud">
-        <div class="hud-card">
-          <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Living system</p>
-          <p class="hud-help">Look-down · sourced programme corridors</p>
-          <label class="sr-only" for="city-select">Cities</label>
-          <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
-        </div>
-        <div class="hud-tools">
-          <button type="button" data-zoom="-0.4" aria-label="Zoom out">−</button>
-          <span id="zoom-readout" class="mono">1.0×</span>
-          <button type="button" data-zoom="0.4" aria-label="Zoom in">+</button>
-          <button type="button" data-reset-globe aria-label="Reset view">↺</button>
-        </div>
-        <div class="hud-city" id="city-hover" hidden></div>
-        <p class="isr-line mono" id="isr-line">LOOK-DOWN · sourced programme corridors</p>
-      </div>
-    </section>
   `;
 }
 
@@ -142,7 +124,8 @@ export function renderStory(): string {
     <p class="notes-count mono subtle" data-story-count>${STORY.length} events on the rail</p>
     <p class="story-suggest" data-story-suggest hidden></p>
     <ol class="story-rail" id="story-rail">${nodes}</ol>
-    <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>`;
+    <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>
+    <p class="subtle story-keys">j and k move the visible rail. Each node opens a stage — object, analogy, source.</p>`;
 }
 
 export function renderStack(): string {
@@ -193,7 +176,7 @@ export function renderTechnology(): string {
         <div><h3>What it is not</h3><p>${esc(t.isNot)}</p></div>
       </div>
       <p class="stage-analogy"><strong>In one analogy.</strong> ${esc(t.analogy)}</p>
-      <p class="stage-related">${t.related.map((r) => `<button type="button" class="text-link" data-stage="tech" data-stage-id="${esc(r)}">${esc(r)}</button>`).join(' · ')}</p>
+      <p class="stage-related">${relatedButtons(chipsFromIds(t.related))}</p>
     </article>`,
   ).join('');
   return `${hero('Technology', 'Every layer Quant built or productised.', 'Isolated ledgers were the problem. Overledger is the operating layer. The network, the standards capture, and what that unlocks for tokenised deposits in 2026–27 sit in the chapters below.', 'tech-hero')}
