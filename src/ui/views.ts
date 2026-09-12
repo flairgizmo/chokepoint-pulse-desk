@@ -870,7 +870,6 @@ export function renderMarkets(print?: MarketPrint): string {
     'QNT — the token of',
     'Overledger licences settle in QNT. That is why it trades. Live quotes from Coinbase, Kraken or Binance; market cap, supply and venues from CoinGecko. The Ethereum contract is below — check it yourself before you send anything.',
     'a network of networks.',
-    'gateway',
   )}
   ${quoteRail('markets')}
   <section class="tape" data-mk data-proof="ticker">
@@ -969,7 +968,6 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
     'Quant, as the story',
     'Official Quant feed, Overledger docs, IETF SATP, and Google News — newest first. Click a headline and you leave for the source. This month’s sourced filings stay on the page when the river is quiet.',
     'unfolds.',
-    'london',
   )}
   ${filterBox('news-filter', 'Search headlines…', filter)}
   <section class="wire">
@@ -1100,7 +1098,6 @@ export function renderPodcast(): string {
     'Twenty films on Quant,',
     'James Hale and Amelia Crowe tell the Quant story in order — from ISO and the 2018 whitepaper to live sterling. Two voices, every episode. The rooms, the rails, and the people who built the gateway.',
     'from the beginning.',
-    'future',
   )}${playerMarkup(first)}${filmRail()}`;
 }
 

@@ -2605,6 +2605,7 @@ button.chip {
 .page-hero .page-bed,
 .featured-note .visual-bed {
   width: 100%;
+  max-height: 220px;
   margin: 0 0 1.5rem;
 }
 
