@@ -112,7 +112,12 @@ export class QntDesk {
     };
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!reduced && typeof document.startViewTransition === 'function') {
-      document.startViewTransition(apply);
+      try {
+        const t = document.startViewTransition(apply);
+        void t.finished.catch(() => undefined);
+      } catch {
+        apply();
+      }
     } else {
       apply();
     }
