@@ -1,6 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="QntDesk">
-  <rect width="1024" height="1024" rx="230" fill="#071428"/>
-  <circle cx="486" cy="454" r="198" fill="none" stroke="#2F5BFF" stroke-width="112"/>
-  <path d="M586 554 L760 728" fill="none" stroke="#00D4AA" stroke-width="88" stroke-linecap="round"/>
-  <circle cx="792" cy="760" r="46" fill="#00D4AA"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="QntDesk">
+  <rect width="64" height="64" rx="14" fill="#050810"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke="#4D8DFF" stroke-width="1.7" d="M16 23 L32 14 L48 23 L48 41 L32 50 L16 41 Z"/>
+    <path stroke="#7B6CFF" stroke-width="1.45" d="M23 27 L32 22 L41 27 L41 38 L32 43 L23 38 Z"/>
+    <path stroke="#4D8DFF" stroke-width="1.15" opacity=".9" d="M16 23 L23 27 M32 14 L32 22 M48 23 L41 27 M48 41 L41 38 M32 50 L32 43 M16 41 L23 38"/>
+  </g>
+  <g fill="#9EE7FF">
+    <circle cx="32" cy="14" r="1.55"/>
+    <circle cx="16" cy="23" r="1.35"/>
+    <circle cx="48" cy="23" r="1.35"/>
+    <circle cx="16" cy="41" r="1.35"/>
+    <circle cx="48" cy="41" r="1.35"/>
+    <circle cx="32" cy="50" r="1.55"/>
+    <circle cx="32" cy="22" r="1.2"/>
+    <circle cx="23" cy="27" r="1.1"/>
+    <circle cx="41" cy="27" r="1.1"/>
+    <circle cx="23" cy="38" r="1.1"/>
+    <circle cx="41" cy="38" r="1.1"/>
+    <circle cx="32" cy="43" r="1.2"/>
+  </g>
 </svg>

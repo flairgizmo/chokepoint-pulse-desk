@@ -2,7 +2,7 @@
 
 Research desk on [Quant Network](https://quant.network), Overledger, programmable money and the Internet of Value.
 
-Latest first: notes, news, programmes, and a twenty-part podcast.
+Latest first: notes, news, programmes, and a twenty-part podcast. Dark tesseract desk — drag the mark, open the official rooms.
 
 ## Surfaces
 

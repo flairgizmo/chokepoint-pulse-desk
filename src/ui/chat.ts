@@ -6,19 +6,13 @@ const PROMPTS = ['What is GBTD?', 'What is Overledger?', 'Why does QNT exist?', 
 export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
     <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
-      <picture>
-        <source type="image/svg+xml" srcset="/brand/grok-mark.svg" />
-        <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
-      </picture>
+      <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
       <span class="grok-label">Ask Grok</span>
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
         <div class="grok-head">
-          <picture>
-            <source type="image/svg+xml" srcset="/brand/grok-mark.svg" />
-            <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
-          </picture>
+          <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
           <div>
             <p class="kicker">Ask Grok</p>
             <p class="subtle" data-grok-status>Research assistant. Add XAI_API_KEY to speak with live Grok. Until then, answers come from the record.</p>

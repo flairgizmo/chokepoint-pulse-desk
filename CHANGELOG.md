@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-12 — Tesseract brand, dark Web3 desk
+
+- The uploaded chrome tesseract lockup is the mark. Header, boot, favicon, and share card use it.
+- Interactive 4D tesseract on the home hero. Drag to turn, click to spin.
+- Dark navy / cyan / violet desk to match the lockup. Motion beds on home eras and inner pages.
+- Official constellation plus sourced film/filing cards (Riley Hyperledger talk, Overledger, GBTD, UCL, SATP).
+- Ask Grok keeps the live `/api/chat` path.
+
 ## 2026-09-12 — Professional mark and live APIs
 
 - QntDesk mark: cobalt gateway ring, mint live node. SVG in the header, PNG for share cards.

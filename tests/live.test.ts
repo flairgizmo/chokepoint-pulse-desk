@@ -6,6 +6,7 @@ import {
   SATP_ATOM,
 } from '../src/modules/liveSources';
 import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
+import { renderHome } from '../src/ui/views';
 
 describe('Live source URLs', () => {
   it('keeps the official Quant feed with a trailing slash', () => {
@@ -73,12 +74,28 @@ describe('Official and standards parsers', () => {
 });
 
 describe('Brand mark', () => {
-  it('ships a cobalt-and-mint SVG mark plus a raster logo', () => {
+  it('ships the tesseract lockup, icon, motion beds, and a dark mark', () => {
     const svg = readFileSync('public/brand/qntdesk-mark.svg', 'utf8');
-    expect(svg).toContain('#2F5BFF');
-    expect(svg).toContain('#00D4AA');
+    expect(svg).toContain('#4D8DFF');
+    expect(svg).toContain('#7B6CFF');
+    expect(svg).toContain('#050810');
+    expect(existsSync('public/brand/qntdesk-lockup.jpg')).toBe(true);
+    expect(existsSync('public/brand/qntdesk-icon.png')).toBe(true);
     expect(existsSync('public/brand/qntdesk-logo.png')).toBe(true);
-    expect(existsSync('public/brand/qntdesk-og.png')).toBe(true);
-    expect(existsSync('public/brand/grok-mark.svg')).toBe(true);
+    expect(existsSync('public/brand/qntdesk-og.jpg')).toBe(true);
+    expect(existsSync('public/visuals/beds/hero.mp4')).toBe(true);
+    expect(existsSync('public/visuals/beds/gateway.mp4')).toBe(true);
+    expect(existsSync('public/visuals/stills/sterling.jpg')).toBe(true);
+  });
+});
+
+describe('Tesseract desk', () => {
+  it('puts the interactive mark and official constellation on the home page', () => {
+    const html = renderHome();
+    expect(html).toContain('id="tesseract"');
+    expect(html).toContain('/visuals/beds/hero.mp4');
+    expect(html).toContain('docs.overledger.dev');
+    expect(html).toContain('https://www.youtube.com/watch?v=IfXSET1rEOE');
+    expect(html).not.toContain('five minutes each');
   });
 });
