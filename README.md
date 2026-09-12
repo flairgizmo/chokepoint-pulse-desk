@@ -15,7 +15,7 @@ Latest first: notes, news, programmes, and a twenty-part podcast.
 | People | Officers and authors. Faces are never generated |
 | Research | 48 documents |
 | Markets | Live QNT from public venues. Last-good cache |
-| News | Headlines that name Quant, Overledger or QNT |
+| News | Official Quant feed, Overledger docs, IETF SATP, and Google News |
 | Ask Grok | Live Grok when `XAI_API_KEY` is set; otherwise the sourced desk |
 
 ## Facts on the record

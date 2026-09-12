@@ -774,7 +774,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
   return `${pageHero(
     'Wire',
     'Quant, as the story',
-    'Live GNews, newest first. Search titles. Headlines that name Quant Network, Overledger or QNT — never invented. Official posts and this month’s sourced notes sit even when the river is empty.',
+    'Official Quant feed, Overledger docs, IETF SATP, and Google News — newest first. Headlines that name Quant Network, Overledger or QNT. Nothing invented. This month’s sourced notes stay on the page when the river is quiet.',
     'unfolds.',
   )}
   ${filterBox('news-filter', 'Search headlines…', filter)}

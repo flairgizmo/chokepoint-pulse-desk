@@ -254,23 +254,39 @@ export class EarthGlobe {
 
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin('anonymous');
-    loader.load(DAY_TEX, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      this.dayTex = tex;
-      this.applyMaps();
-    });
-    loader.load(NIGHT_TEX, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      this.nightTex = tex;
-      this.applyMaps();
-    });
-    loader.load(BUMP_TEX, (tex) => {
-      const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
-      if (!mat) return;
-      mat.bumpMap = tex;
-      mat.bumpScale = 0.04;
-      mat.needsUpdate = true;
-    });
+    const ignore = (): void => undefined;
+    loader.load(
+      DAY_TEX,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        this.dayTex = tex;
+        this.applyMaps();
+      },
+      undefined,
+      ignore,
+    );
+    loader.load(
+      NIGHT_TEX,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        this.nightTex = tex;
+        this.applyMaps();
+      },
+      undefined,
+      ignore,
+    );
+    loader.load(
+      BUMP_TEX,
+      (tex) => {
+        const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
+        if (!mat) return;
+        mat.bumpMap = tex;
+        mat.bumpScale = 0.04;
+        mat.needsUpdate = true;
+      },
+      undefined,
+      ignore,
+    );
 
     scene.add(new THREE.AmbientLight(0x6b7c8c, 0.32));
     const key = new THREE.DirectionalLight(0xfff4e5, 1.85);

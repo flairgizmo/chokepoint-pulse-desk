@@ -209,7 +209,10 @@ export class QntDesk {
         <header class="top">
           <div class="top-bar">
           <a class="brand" href="/" aria-label="QntDesk home">
-            <img class="logo" src="/brand/qntdesk-logo.png" width="36" height="36" alt="" />
+            <picture>
+              <source type="image/svg+xml" srcset="/brand/qntdesk-mark.svg" />
+              <img class="logo" src="/brand/qntdesk-logo.png" width="36" height="36" alt="" />
+            </picture>
             <span class="word">Qnt<span>Desk</span></span>
           </a>
           <nav class="nav" aria-label="Primary">

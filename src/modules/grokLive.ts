@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { ChatReply, ChatTurn } from './assistant';
 
-const XAI_URL = 'https://api.x.ai/v1/chat/completions';
+import { XAI_CHAT } from './liveSources';
 
 function hydrateDotEnv(): void {
   if (process.env.XAI_API_KEY || process.env.GROK_API_KEY) return;
@@ -65,7 +65,7 @@ export async function answerWithGrok(
     { role: 'user', content: question.trim() },
   ];
 
-  const res = await fetch(XAI_URL, {
+  const res = await fetch(XAI_CHAT, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${key}`,

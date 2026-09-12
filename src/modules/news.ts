@@ -1,3 +1,6 @@
+import { fetchText } from './liveHttp';
+import { GNEWS_URL, OVERLEDGER_CHANGELOG, QUANT_FEED, SATP_ATOM } from './liveSources';
+
 export type NewsStatus = 'live' | 'degraded' | 'EXAMPLE' | 'loading';
 export type NewsLane = 'Official' | 'Markets' | 'Industry';
 
@@ -17,12 +20,9 @@ export interface NewsRiver {
   error?: string;
 }
 
-const CACHE_KEY = 'qntdesk.news.v2';
+const CACHE_KEY = 'qntdesk.news.v3';
 const RE =
   /\b(quant network|overledger|qnt\b|gilbert verdian|gbtd|payscript|quantnet|tokenised sterling|tokenized sterling|trusted node)\b/i;
-
-const GNEWS_PATH =
-  '/api/gnews';
 
 function cached(): NewsRiver | null {
   try {
@@ -70,27 +70,20 @@ export function laneFor(title: string, source: string): NewsLane {
   return 'Industry';
 }
 
-export function parseGoogleNewsRss(xml: string): Headline[] {
-  const items: Headline[] = [];
-  const blocks = xml.match(/<item>([\s\S]*?)<\/item>/gi) ?? [];
-  for (const raw of blocks) {
-    const title = xmlTag(raw, 'title');
-    const url = xmlTag(raw, 'link');
-    const source = xmlTag(raw, 'source') || 'Google News';
-    const pub = xmlTag(raw, 'pubDate');
-    if (!title || !url) continue;
-    if (/\bquantinuum\b/i.test(`${title} ${source}`) && !/\bquant network\b/i.test(title)) continue;
-    if (!RE.test(`${title} ${source}`)) continue;
-    const ts = pub ? Date.parse(pub) : NaN;
-    items.push({
-      id: url.slice(-24) || title.slice(0, 24),
-      title,
-      url,
-      source,
-      published: Number.isFinite(ts) ? new Date(ts).toISOString() : null,
-      lane: laneFor(title, source),
-    });
-  }
+function headlineId(url: string, title: string): string {
+  return url.slice(-24) || title.slice(0, 24);
+}
+
+function publishedIso(pub: string): string | null {
+  const ts = pub ? Date.parse(pub) : NaN;
+  return Number.isFinite(ts) ? new Date(ts).toISOString() : null;
+}
+
+function isQuantinuumNoise(title: string, source: string): boolean {
+  return /\bquantinuum\b/i.test(`${title} ${source}`) && !/\bquant network\b/i.test(title);
+}
+
+export function dedupeHeadlines(items: Headline[]): Headline[] {
   const seen = new Set<string>();
   return items
     .filter((h) => {
@@ -106,20 +99,135 @@ export function parseGoogleNewsRss(xml: string): Headline[] {
     });
 }
 
+export function parseNamedRss(
+  xml: string,
+  forced?: { source?: string; lane?: NewsLane; requireMatch?: boolean },
+): Headline[] {
+  const items: Headline[] = [];
+  const blocks = xml.match(/<item>([\s\S]*?)<\/item>/gi) ?? [];
+  for (const raw of blocks) {
+    const title = xmlTag(raw, 'title');
+    const url = xmlTag(raw, 'link');
+    const source = forced?.source || xmlTag(raw, 'source') || 'RSS';
+    const pub = xmlTag(raw, 'pubDate');
+    if (!title || !url) continue;
+    if (isQuantinuumNoise(title, source)) continue;
+    if (forced?.requireMatch !== false && !RE.test(`${title} ${source}`)) continue;
+    items.push({
+      id: headlineId(url, title),
+      title,
+      url,
+      source,
+      published: publishedIso(pub),
+      lane: forced?.lane ?? laneFor(title, source),
+    });
+  }
+  return dedupeHeadlines(items);
+}
+
+export function parseGoogleNewsRss(xml: string): Headline[] {
+  return parseNamedRss(xml);
+}
+
+export function parseAtomFeed(
+  xml: string,
+  forced: { source: string; lane: NewsLane; linkBase?: string },
+): Headline[] {
+  const items: Headline[] = [];
+  const blocks = xml.match(/<entry>([\s\S]*?)<\/entry>/gi) ?? [];
+  for (const raw of blocks) {
+    const title = xmlTag(raw, 'title');
+    const href = raw.match(/<link[^>]*href="([^"]+)"/i)?.[1] ?? '';
+    const url = href.startsWith('http') ? href : `${forced.linkBase ?? ''}${href}`;
+    const pub = xmlTag(raw, 'updated') || xmlTag(raw, 'published');
+    if (!title || !url) continue;
+    if (isQuantinuumNoise(title, forced.source)) continue;
+    items.push({
+      id: headlineId(url, title),
+      title,
+      url,
+      source: forced.source,
+      published: publishedIso(pub),
+      lane: forced.lane,
+    });
+  }
+  return dedupeHeadlines(items);
+}
+
+export async function fetchGoogleNewsXml(signal?: AbortSignal): Promise<string> {
+  return fetchText(GNEWS_URL, signal);
+}
+
+export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
+  const last = cached();
+  const settled = await Promise.allSettled([
+    fetchText(GNEWS_URL, signal).then((xml) => parseGoogleNewsRss(xml)),
+    fetchText(QUANT_FEED, signal).then((xml) =>
+      parseNamedRss(xml, { source: 'Quant', lane: 'Official', requireMatch: false }),
+    ),
+    fetchText(OVERLEDGER_CHANGELOG, signal).then((xml) =>
+      parseNamedRss(xml, { source: 'Overledger docs', lane: 'Industry', requireMatch: false }),
+    ),
+    fetchText(SATP_ATOM, signal).then((xml) =>
+      parseAtomFeed(xml, {
+        source: 'IETF SATP',
+        lane: 'Industry',
+        linkBase: 'https://datatracker.ietf.org',
+      }),
+    ),
+  ]);
+  const items = dedupeHeadlines(settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))).slice(0, 32);
+  const failed = settled.filter((r) => r.status === 'rejected').length;
+  if (!items.length) {
+    if (last?.items.length) {
+      return { ...last, status: 'degraded', error: 'Using last-good headlines' };
+    }
+    return {
+      status: 'degraded',
+      items: [],
+      updated: new Date().toISOString(),
+      error:
+        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+    };
+  }
+  const river: NewsRiver = {
+    status: failed ? 'degraded' : 'live',
+    items,
+    updated: new Date().toISOString(),
+    error: failed ? `${failed} live source${failed === 1 ? '' : 's'} timed out` : undefined,
+  };
+  store(river);
+  return river;
+}
+
 export async function fetchNews(signal?: AbortSignal): Promise<NewsRiver> {
   const last = cached();
   try {
-    const res = await fetch(GNEWS_PATH, {
+    const proxied = await fetch('/api/news', {
+      signal,
+      headers: { Accept: 'application/json' },
+    });
+    if (proxied.ok) {
+      const river = (await proxied.json()) as NewsRiver;
+      if (Array.isArray(river.items)) {
+        store(river);
+        return river;
+      }
+    }
+  } catch {
+    /* fall through */
+  }
+  try {
+    const res = await fetch('/api/gnews', {
       signal,
       headers: { Accept: 'application/rss+xml, application/xml, text/xml, */*' },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const xml = await res.text();
     if (!xml.includes('<item')) throw new Error('Empty RSS');
-    const items = parseGoogleNewsRss(xml).slice(0, 24);
     const river: NewsRiver = {
       status: 'live',
-      items,
+      items: parseGoogleNewsRss(xml).slice(0, 24),
       updated: new Date().toISOString(),
     };
     store(river);

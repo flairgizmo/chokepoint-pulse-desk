@@ -8,13 +8,7 @@
 
 [template.environment]
   XAI_API_KEY = "Change me to your xAI key from https://console.x.ai"
-
-# Same-origin news proxy so the browser never hits Google News CORS.
-[[redirects]]
-  from = "/api/gnews"
-  to = "https://news.google.com/rss/search?q=%22Quant+Network%22+OR+Overledger+OR+QNT&hl=en-GB&gl=GB&ceid=GB:en"
-  status = 200
-  force = true
+  XAI_MODEL = "grok-3-mini"
 
 [[redirects]]
   from = "/*"
