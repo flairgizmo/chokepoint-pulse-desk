@@ -13,6 +13,7 @@ import { CITIES } from '../src/data/cities';
 import { GLOSSARY } from '../src/data/glossary';
 import { PEOPLE } from '../src/data/people';
 import { featuredNote, notesFromDesk, noteById } from '../src/data/notes';
+import { EPISODES, episodesNewestFirst } from '../src/data/podcast';
 import { GBTD_BANKS, THIS_MONTH } from '../src/data/timeline';
 import { laneFor, parseGoogleNewsRss } from '../src/modules/news';
 
@@ -81,7 +82,7 @@ describe('QntDesk encyclopedia contract', () => {
     expect(chapters.some((c) => c.id === 'uk-digital-markets')).toBe(true);
   });
 
-  it('publishes sourced magazine notes from DYK and this month', () => {
+  it('publishes sourced notes from DYK and this month', () => {
     const notes = notesFromDesk();
     expect(notes.length).toBeGreaterThanOrEqual(40);
     expect(noteById('not-cbdc')?.body.toLowerCase()).toContain('commercial');
@@ -90,6 +91,22 @@ describe('QntDesk encyclopedia contract', () => {
     expect(notes.some((n) => n.era === 'history')).toBe(true);
     expect(notes.some((n) => n.era === 'present')).toBe(true);
     expect(notes.some((n) => n.era === 'future')).toBe(true);
+  });
+
+  it('ships a twenty-part podcast with named hosts and sourced quotes', () => {
+    expect(EPISODES).toHaveLength(20);
+    expect(episodesNewestFirst()[0].n).toBe(20);
+    for (const ep of EPISODES) {
+      expect(ep.script.trim().length).toBeGreaterThan(400);
+      expect(ep.hostName.length).toBeGreaterThan(3);
+      expect(ep.hostTitle.length).toBeGreaterThan(3);
+      expect(ep.quotes.length).toBeGreaterThan(0);
+      for (const q of ep.quotes) {
+        expect(q.who.trim().length).toBeGreaterThan(2);
+        expect(q.role.trim().length).toBeGreaterThan(2);
+        expect(q.text.trim().length).toBeGreaterThan(8);
+      }
+    }
   });
 });
 

@@ -21,13 +21,15 @@ import { CITIES, type City } from '../data/cities';
 import { GROUP_LABEL, PEOPLE, type Person, type PersonGroup } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
 import { featuredNote, notesForEra, notesFromDesk, noteById, type NoteEra, type NotePost } from '../data/notes';
+import { episodesNewestFirst, latestEpisode, episodeById } from '../data/podcast';
 import { CALENDAR, GBTD_BANKS, MONEY_LAYERS, OFFICIAL_VOICES, SATP_STAGES, THIS_MONTH, TIMELINE } from '../data/timeline';
 import type { MarketPrint } from '../modules/markets';
 import type { NewsRiver } from '../modules/news';
 import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
+import { playerMarkup, relatedEpisodeCard } from './player';
 
 export const DISCLAIMER =
-  'QntDesk is an independent educational reference. It is not affiliated with, endorsed by, or part of Quant Network Ltd, Overledger, UK Finance, the Bank of England, the BIS, Oracle, Murex, Dentsu Soken, EY, Linklaters, LACChain, the Linux Foundation, or any person, bank, or standard body named on these pages. Names, marks and documents belong to their owners and are cited for commentary and research. Nothing here is financial advice, investment advice, an official statement, or a claim of employment or partnership. Crypto is volatile.';
+  'Educational research. Names, marks and documents belong to their owners. Nothing here is financial advice. Crypto is volatile.';
 
 export function kicker(text: string): string {
   return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
@@ -67,7 +69,7 @@ function quoteCard(q: Quote): string {
     <footer>
       <strong>${esc(q.who)}</strong>
       <span>${esc(q.role)}</span>
-      ${extLink(sourceUrl(q.href), 'Source')}
+      ${extLink(sourceUrl(q.href), 'Read the source')}
       ${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}
     </footer>
   </blockquote>`;
@@ -79,7 +81,7 @@ function quoteRail(page?: string, limit = 6): string {
   const [first, ...rest] = list;
   return `<section class="quote-rail">
     ${kicker('In their words')}
-    <h2 class="display">Sourced lines. <span class="display-mute">Not invented dialogue.</span></h2>
+    <h2 class="display">The people building the Internet of Value.</h2>
     ${quoteCard(first).replace('class="quote-card"', 'class="quote-card quote-feature"')}
     ${rest.length ? `<div class="quote-scroll">${rest.map(quoteCard).join('')}</div>` : ''}
   </section>`;
@@ -197,19 +199,19 @@ function eraStrip(): string {
       <li data-era="history">
         <p class="kicker">History</p>
         <h3>2015–2023</h3>
-        <p>Verdian proposes ISO/TC 307. The 2018 whitepaper files Overledger as a gateway OS, not an L1. Unsold QNT is burned. LACChain is announced in 2021 — graded announced, not a 2026 mandate. Rosalind concludes in 2023 as a BIS × Bank of England experiment, not a launch.</p>
+        <p>Verdian proposes ISO/TC 307. The 2018 whitepaper files Overledger as a gateway operating system. Unsold QNT is burned. LACChain is announced with IDB Lab in 2021. Rosalind, a BIS Innovation Hub London and Bank of England API experiment, concludes in 2023.</p>
         <a class="text-link" href="/notes">History notes →</a>
       </li>
       <li data-era="present">
         <p class="kicker">Present</p>
         <h3>2024–2026</h3>
-        <p>UK Finance’s RLN phase, then GBTD on 26 September 2025: Quant as technology partner with ${GBTD_BANKS.join(', ')}. 2026 adds Dentsu Soken, a simulated RT2 lab, Murex MX.3, ISO/TS 23516, and Sibos Miami stand DISL51. SATP remains IETF work.</p>
+        <p>UK Finance’s RLN phase, then GBTD on 26 September 2025: Quant as technology partner with ${GBTD_BANKS.join(', ')}. 2026 adds Dentsu Soken, the Synchronisation Lab, Murex MX.3, ISO/TS 23516, and Sibos Miami stand DISL51.</p>
         <a class="text-link" href="/programmes">Named rooms →</a>
       </li>
       <li data-era="future">
         <p class="kicker">Future</p>
         <h3>Still ahead</h3>
-        <p>HMT’s 8 September 2026 speech names a DIGIT gilt in Q1 2027. The speech does not name Quant; it is the same week’s landscape. Quant’s published claim is that programmable bank money — not another chain — is how deposits and agent payments settle.</p>
+        <p>The Economic Secretary’s 8 September 2026 speech at UK Finance names a DIGIT gilt in Q1 2027. Quant’s published claim is that programmable bank money is how deposits and agent payments settle.</p>
         <a class="text-link" href="/vision">The thesis →</a>
       </li>
     </ol>
@@ -225,13 +227,52 @@ function featuredStory(): string {
       <div class="featured-aside">
         <p class="kicker">Why this desk exists</p>
         <h2 class="display">A blogger’s map of Quant. <span class="display-mute">Primary sources only.</span></h2>
-        <p>The Internet of Value is already a banking story: six UK banks programming sterling deposits on a gateway that is not a twelfth blockchain. QNT is the utility token of that network. This magazine writes the history, the live rooms, and the published next step — without inventing a headline.</p>
+        <p>The Internet of Value is already a banking story: six UK banks programming sterling deposits on Overledger. QNT is the utility token of that network. This desk files the record — latest first — with the names and titles attached.</p>
         <div class="cta-row">
-          ${pill('/notes', 'Open the notes', 'All field notes')}
-          ${pill('/markets', 'Live QNT', 'CoinGecko print', 'ghost')}
+          ${pill('/notes', 'Latest notes', 'All field notes')}
+          ${pill('/podcast', 'Play the series', 'Twenty films', 'ghost')}
         </div>
       </div>
     </div>
+  </section>`;
+}
+
+function latestStrip(): string {
+  const month = THIS_MONTH.slice(0, 3)
+    .map((n) => {
+      const stamp = dateStamp(n.date);
+      return `<li class="month-card">
+        <time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
+        <p class="mono">${esc(n.source)}</p>
+        <h3>${esc(n.title)}</h3>
+        ${extLink(sourceUrl(n.href), 'Open the source')}
+      </li>`;
+    })
+    .join('');
+  const latest = latestEpisode();
+  return `<section class="latest-strip">
+    ${kicker('Latest')}
+    <div class="section-head">
+      <h2 class="display">On the record this month.</h2>
+      <a class="text-link" href="/notes">All notes →</a>
+    </div>
+    <ul class="month-cards">${month}</ul>
+    ${relatedEpisodeCard(latest.id)}
+  </section>`;
+}
+
+function podcastTease(): string {
+  const cards = episodesNewestFirst()
+    .slice(0, 4)
+    .map((e) => relatedEpisodeCard(e.id))
+    .join('');
+  return `<section class="pod-home">
+    ${kicker('Podcast')}
+    <div class="section-head">
+      <h2 class="display">Twenty films. The Quant story, spoken.</h2>
+      <a class="text-link" href="/podcast">Open the player →</a>
+    </div>
+    <div class="pod-tease-grid">${cards}</div>
   </section>`;
 }
 
@@ -246,7 +287,7 @@ function notesReel(): string {
     ${kicker('Field notes')}
     <div class="section-head">
       <h2 class="display">Scroll the record. <span class="display-mute">Nothing invented.</span></h2>
-      <a class="text-link" href="/notes">Full magazine →</a>
+      <a class="text-link" href="/notes">All notes →</a>
     </div>
     <div class="notes-reel" tabindex="0">${cards}</div>
   </section>`;
@@ -254,7 +295,7 @@ function notesReel(): string {
 
 export function renderHome(): string {
   const banks = GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('');
-  const beats = TIMELINE.map(
+  const beats = [...TIMELINE].reverse().map(
     (t) => `<li class="beat"><span class="year">${esc(t.year)}</span><div><h3>${esc(t.title)}</h3><p>${esc(t.body)}</p></div></li>`,
   ).join('');
   const essays = ['philosophy', 'future', 'era']
@@ -271,24 +312,27 @@ export function renderHome(): string {
     })
     .join('');
   return `
-    <section class="masthead magazine-mast">
-      ${kicker('Independent protocol magazine')}
+    <section class="masthead">
+      ${kicker('The Internet of Value')}
       <div class="hero-split">
         <h1 class="display">The future of Quant is already in the banks. <span class="display-mute">The history is why it works.</span></h1>
         <div>
-          <p class="lede">A professional research blog for the Internet of Value. Overledger is the gateway that lets money talk. QNT is the utility token of that network. GBTD is live tokenised sterling — liabilities of six UK banks, not a CBDC. History, present, and what is still ahead. Sourced. Independent. Not Quant Network.</p>
+          <p class="lede">Overledger is the gateway that lets money talk. QNT is the utility token of that network. GBTD is live tokenised sterling with Barclays, HSBC, Lloyds, NatWest, Nationwide and Santander. This desk writes the record — latest first — and plays it as a twenty-part film.</p>
           <div class="cta-row">
-            ${pill('/notes', 'Open the notes', 'The magazine')}
-            ${pill('/programmes', 'Named programmes', 'See the rooms', 'ghost')}
+            ${pill('/notes', 'Latest notes', 'All field notes')}
+            ${pill('/podcast', 'Play the series', 'Twenty films')}
             ${pill('/vision', 'Read the thesis', 'The argument', 'ghost')}
           </div>
         </div>
       </div>
     </section>
 
-    ${eraStrip()}
+    ${latestStrip()}
     ${featuredStory()}
     ${notesReel()}
+    ${podcastTease()}
+    ${quoteRail('home', 10)}
+    ${eraStrip()}
 
     <section class="earth-hero" data-proof="hero">
       <div class="earth-stage" id="earth-stage" tabindex="0" aria-label="Interactive 3D Earth. Drag to orbit, scroll to zoom, double-click to fly in, click a city."></div>
@@ -346,8 +390,6 @@ export function renderHome(): string {
       <div class="essay-grid">${essays}</div>
     </section>
 
-    ${quoteRail('home')}
-
     <section class="layers-wrap">
       ${kicker('Three layers, one horizontal gate')}
       <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
@@ -393,7 +435,7 @@ export function renderVision(): string {
   return renderChapterPage(
     'vision',
     'A network of networks,',
-    'This magazine’s thesis: the Internet of Value is a connectivity problem. Overledger’s claim is to sit above ledgers and core systems the way TCP/IP sat above physical networks — a gateway operating system, not a twelfth blockchain. The history is in the 2018 whitepaper. The present is live sterling deposits. The future is still being written in standards rooms.',
+    'The Internet of Value is a connectivity problem. Overledger sits above ledgers and core systems the way TCP/IP sat above physical networks — a gateway operating system. The history is in the 2018 whitepaper. The present is live sterling deposits. The future is being written in the standards rooms and the banks.',
     'Vision',
     `<blockquote class="pull">
       <p>This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.</p>
@@ -468,7 +510,7 @@ export function renderCbdc(): string {
     'Liability test',
     'Tokenised deposits are',
     'A central-bank digital currency is a liability of the central bank. GBTD tokens are liabilities of commercial banks. Mixing the two is the most common error on this map. AI agents, x402, Hyperledger, Oracle and Linux Foundation software change the rails — not that test.',
-    'not a CBDC.',
+    'commercial-bank money.',
   )}
   ${quoteRail('cbdc')}
   <ol class="liability-cards">
@@ -806,14 +848,13 @@ function renderLiveRail(): string {
   </section>`;
 }
 
-export function renderGone(kind: 'desk' | 'ops'): string {
-  const title = kind === 'desk' ? 'The Situation Room has left' : 'How this is built has left';
+export function renderGone(_kind: 'desk' | 'ops'): string {
   return `${pageHero(
-    'Retired',
-    title,
-    'God’s Eye View, the chokepoint desk and the architecture note are no longer part of this encyclopedia. The magazine, the globe, the papers and the sourced quotations remain.',
-    'this map.',
-  )}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')} ${pill('/notes', 'Open the notes', 'The magazine', 'ghost')}</p>`;
+    'Moved',
+    'This page now lives',
+    'The live desk is Notes, Programmes, Research and the twenty-part podcast.',
+    'with the record.',
+  )}<p class="masthead" style="padding-top:0">${pill('/notes', 'Latest notes', 'Open notes')} ${pill('/podcast', 'Play the series', 'Twenty films', 'ghost')}</p>`;
 }
 
 export function renderCity(city: City): string {
@@ -827,12 +868,12 @@ export function renderDonate(): string {
   return `${pageHero(
     'Support',
     'Donations keep the desk',
-    'Optional. Buys no tokens, no yield, and no influence over Quant Network. This encyclopedia is not official Quant. Never send funds to an address that appeared in a DM or a lookalike site.',
+    'Optional. Buys no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
     'independent.',
   )}
   <article class="chapter">
     <p>QNT token contract for verification only — this is not a donation address: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. We never ask for a seed.</p>
-    <p>Published independent-desk recipients (not Quant Network):</p>
+    <p>Published desk recipients:</p>
     <ul class="donate-list">
       <li><span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code></li>
       <li><span class="kicker">BTC</span><code>bc1qgxnzt5d2qdx8zskffejhfjnqxuwtwnn3s3tadz</code></li>
@@ -847,7 +888,28 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not', 'The encyclopedia still has Notes, Vision, Technology, Programmes, CBDC, People, Research and Standards.', 'on the globe.')}<p class="masthead" style="padding-top:0">${pill('/', 'Return to Earth', 'Back to the map')} ${pill('/notes', 'Open the notes', 'The magazine', 'ghost')}</p>`;
+  return `${pageHero('404', 'This page is not', 'Try Notes, Podcast, Vision, Programmes, Research or Markets.', 'on the map.')}<p class="masthead" style="padding-top:0">${pill('/', 'Home', 'Back')} ${pill('/notes', 'Latest notes', 'Open notes', 'ghost')}</p>`;
+}
+
+export function renderPodcast(): string {
+  const latest = latestEpisode();
+  return `${pageHero(
+    'Podcast',
+    'Twenty films on Quant,',
+    'British correspondents James Hale and Amelia Crowe tell the Internet of Value from the record — latest episode first. Video on, audio on, names and titles attached.',
+    'and the future of money.',
+  )}${playerMarkup(latest)}`;
+}
+
+export function renderEpisode(id: string): string {
+  const ep = episodeById(id);
+  if (!ep) return renderNotFound();
+  return `${pageHero(
+    `Episode ${String(ep.n).padStart(2, '0')}`,
+    ep.title,
+    ep.lede,
+    '',
+  )}${playerMarkup(ep)}`;
 }
 
 export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
@@ -863,7 +925,7 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
   return `${pageHero(
     'Notes',
     'Field notes on Quant,',
-    'A professional blog built only from facts already on this desk: Did-you-know items and September 2026 sourced notes. History, present, and the published next step. We do not invent a forty-seventh anecdote.',
+    'Did-you-know items and September 2026 notes, latest first. History, the live rooms, and what is still ahead — from the record.',
     'history to what is ahead.',
   )}
   ${filterBox('notes-search', 'Search notes…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
@@ -885,8 +947,10 @@ export function renderNote(id: string): string {
       ? `<a class="text-link" href="${esc(n.related)}">Related chapter →</a>`
       : '';
   const vt = `note-${n.id.replace(/[^a-z0-9-]/gi, '-')}`;
+  const bed = n.era === 'future' ? 'future' : n.era === 'history' ? 'london' : 'sterling';
   return `<article class="note-page">
-    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value — filed from primary sources, not invented copy.`)}
+    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`)}
+    <video class="story-bed" muted loop playsinline autoplay poster="/podcast/stills/${bed}.png" src="/podcast/beds/${bed}.mp4"></video>
     <div class="chapter note-body" style="view-transition-name:${esc(vt)}">
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
       <p>${esc(n.body)}</p>

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-09-12 — Public desk, podcast, latest first
+
+- Professional QntDesk mark and Ask Grok assistant.
+- Twenty-part podcast with British hosts, working audio/video player, latest episode first.
+- Home, notes and news lead with the newest filings. Hedging magazine copy removed.
+- Story pages carry motion beds connected to the film.
+
 ## 2026-09-12 — Protocol magazine, bright Web3
 
 - Homepage is a professional research blog: history / present / future, a featured sourced note, and a notes reel — still with the Three.js globe, GBTD banks, layers, quotes and live QNT.

@@ -4,19 +4,28 @@ import { esc } from './html';
 export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
     <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
-      <span class="grok-mark" aria-hidden="true">G</span>
+      <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
       <span class="grok-label">Ask Grok</span>
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
-        <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Ask Grok</p>
-        <p class="subtle">Sourced encyclopedia assistant. Does not invent prices, headlines or faces.</p>
+        <div class="grok-head">
+          <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
+          <div>
+            <p class="kicker">Ask Grok</p>
+            <p class="subtle">The desk’s assistant. Answers from the record.</p>
+          </div>
+        </div>
         <button type="button" class="icon-btn" data-grok-toggle aria-label="Close assistant">×</button>
       </header>
-      <ol class="grok-log" id="grok-log"></ol>
+      <ol class="grok-log" id="grok-log">
+        <li class="grok-assistant grok-welcome">
+          <p>Ask about Overledger, GBTD, QNT, SATP, Fusion, or the people who signed the papers.</p>
+        </li>
+      </ol>
       <form id="grok-form">
-        <label class="sr-only" for="grok-input">Ask the desk</label>
-        <input id="grok-input" type="text" autocomplete="off" placeholder="GBTD, SATP, Overledger, Verdian…" />
+        <label class="sr-only" for="grok-input">Ask Grok</label>
+        <input id="grok-input" type="text" autocomplete="off" placeholder="What is GBTD?" />
         <button type="submit" class="btn btn-primary">Ask</button>
       </form>
     </div>

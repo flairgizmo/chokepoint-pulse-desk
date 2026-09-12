@@ -18,12 +18,12 @@ export const TIMELINE: TimelineBeat[] = [
   {
     year: '2021',
     title: 'Overledger Network. LACChain.',
-    body: 'Overledger Network launches. Separately, Quant and LACChain (IDB Lab) announce Overledger interoperability and tokenised cross-border payments for Latin America and the Caribbean. Graded announced, 2021 — not a live 2026 mandate.',
+    body: 'Overledger Network launches. Separately, Quant and LACChain (IDB Lab) announce Overledger interoperability and tokenised cross-border payments for Latin America and the Caribbean, dated 1 February 2021.',
   },
   {
     year: '2023',
     title: 'Project Rosalind — concluded',
-    body: 'BIS Innovation Hub London × Bank of England retail-CBDC APIs. Quant says it was on the vendor team with UST. The BIS page: experiment, not policy, not a launch.',
+    body: 'BIS Innovation Hub London × Bank of England retail-CBDC APIs. Quant says it was on the vendor team with UST. The BIS page records a concluded experiment.',
   },
   {
     year: '2024',

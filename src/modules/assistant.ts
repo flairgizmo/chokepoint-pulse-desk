@@ -16,7 +16,7 @@ export interface ChatReply {
 }
 
 const HARD =
-  'QntDesk is an independent encyclopedia. Overledger is a gateway OS, not a blockchain. GBTD is tokenised commercial-bank sterling — not a CBDC. QNT is a utility token, not equity. Do not invent prices, headlines, mandates or faces.';
+  'QntDesk is a research desk on Quant, Overledger and programmable money. Overledger is a gateway operating system. GBTD is tokenised commercial-bank sterling. QNT is a utility token. Answer from the record. Do not invent prices, headlines, mandates or faces.';
 
 function score(hay: string, q: string): number {
   const words = q.toLowerCase().split(/\W+/).filter((w) => w.length > 2);

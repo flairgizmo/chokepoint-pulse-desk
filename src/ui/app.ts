@@ -7,6 +7,7 @@ import { fetchMarkets, staleCache, type MarketPrint } from '../modules/markets';
 import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
 import { chatMarkup, wireChat } from './chat';
+import { wirePlayer } from './player';
 import { esc, fmtCompact, fmtMoney, fmtPct } from './html';
 import {
   DISCLAIMER,
@@ -14,13 +15,14 @@ import {
   renderCity,
   renderDonate,
   renderGlossary,
-  renderGone,
   renderHome,
   renderMarkets,
+  renderEpisode,
   renderNews,
   renderNote,
   renderNotes,
   renderNotFound,
+  renderPodcast,
   renderPeople,
   renderProgrammes,
   renderRead,
@@ -121,10 +123,11 @@ export class QntDesk {
     const parts = path.split('/').filter(Boolean);
     if (parts.length === 0) return { name: 'home' };
     const head = parts[0];
-    if (head === 'desk') return { name: 'gone-desk' };
+    if (head === 'desk' || head === 'ops' || head === 'how') return { name: 'home' };
     if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
     if (head === 'notes' && parts[1]) return { name: 'note', id: parts[1] };
+    if (head === 'podcast' && parts[1]) return { name: 'episode', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
     return { name: head };
   }
@@ -166,23 +169,22 @@ export class QntDesk {
         return renderNotes();
       case 'note':
         return route.id ? renderNote(route.id) : renderNotFound();
+      case 'podcast':
+        return renderPodcast();
+      case 'episode':
+        return route.id ? renderEpisode(route.id) : renderNotFound();
       case 'glossary':
         return renderGlossary();
       case 'markets':
         return renderMarkets(this.markets ?? undefined);
       case 'news':
         return renderNews(this.news ?? undefined);
-      case 'gone-desk':
-        return renderGone('desk');
       case 'city': {
         const city = CITIES.find((c) => c.id === route.id);
         return city ? renderCity(city) : renderNotFound();
       }
       case 'donate':
         return renderDonate();
-      case 'ops':
-      case 'how':
-        return renderGone('ops');
       default:
         return renderNotFound();
     }
@@ -202,18 +204,19 @@ export class QntDesk {
         <header class="top">
           <div class="top-bar">
           <a class="brand" href="/" aria-label="QntDesk home">
-            <span class="mark" aria-hidden="true"></span>
+            <img class="logo" src="/brand/qntdesk-logo.png" width="36" height="36" alt="" />
             <span class="word">Qnt<span>Desk</span></span>
           </a>
           <nav class="nav" aria-label="Primary">
             <a href="/notes" ${route.name === 'notes' || route.name === 'note' ? 'aria-current="page"' : ''}>Notes</a>
+            <a href="/podcast" ${route.name === 'podcast' || route.name === 'episode' ? 'aria-current="page"' : ''}>Podcast</a>
             <a href="/vision" ${route.name === 'vision' ? 'aria-current="page"' : ''}>Vision</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
             <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
-            <a href="/people" ${route.name === 'people' || route.name === 'team' ? 'aria-current="page"' : ''}>People</a>
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
+                <a href="/people">People</a>
                 <a href="/technology">The stack</a>
                 <a href="/news">News</a>
                 <a href="/markets">Markets</a>
@@ -227,7 +230,7 @@ export class QntDesk {
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
             <button type="button" class="icon-btn" data-open-palette aria-label="Open command palette">${esc(shortcut)}</button>
-            <a class="btn btn-primary cta-nav" href="/notes"><span class="btn-swap"><span>Read the notes</span><span>Open Notes</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
+            <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Play the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
           </div>
@@ -242,8 +245,9 @@ export class QntDesk {
           <a href="/news" class="push">Live news →</a>
         </div>
         <div class="mobile-nav" id="mobile-nav">
-          <a href="/">Earth</a>
+          <a href="/">Home</a>
           <a href="/notes">Notes</a>
+          <a href="/podcast">Podcast</a>
           <a href="/news">News</a>
           <a href="/markets">Markets</a>
           <a href="/vision">Vision</a>
@@ -260,13 +264,14 @@ export class QntDesk {
           <div class="foot-grid">
             <div class="foot-col">
               <span class="word">Qnt<span>Desk</span></span>
-              <p>Independent protocol magazine of Overledger and programmable money. Not Quant Network.</p>
+              <p>The Internet of Value. Overledger, programmable money, and the people building it.</p>
             </div>
             <nav class="foot-col" aria-label="Live">
               <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Live</p>
               <a href="/news">News</a>
               <a href="/markets">Markets</a>
               <a href="/notes">Notes</a>
+              <a href="/podcast">Podcast</a>
               <a href="/donate">Donate</a>
             </nav>
             <nav class="foot-col" aria-label="Encyclopedia">
@@ -317,6 +322,15 @@ export class QntDesk {
     palIn?.addEventListener('input', () => this.paintPalette(palIn.value));
 
     wireChat(this.root);
+    if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
+    this.root.querySelectorAll<HTMLVideoElement>('.pod-tease video').forEach((vid) => {
+      const card = vid.closest('.pod-tease');
+      card?.addEventListener('mouseenter', () => void vid.play());
+      card?.addEventListener('mouseleave', () => {
+        vid.pause();
+        vid.currentTime = 0;
+      });
+    });
     if (route.name === 'home') void this.wireGlobe();
     if (route.name === 'markets') this.hydrateMarkets();
     if (route.name === 'news') {
@@ -556,7 +570,8 @@ export class QntDesk {
     const rows: Array<{ href: string; title: string; sub: string }> = [];
     const pages = [
       ['/', 'Earth', 'Home globe'],
-      ['/notes', 'Notes', 'Protocol magazine'],
+      ['/notes', 'Notes', 'Latest field notes'],
+      ['/podcast', 'Podcast', 'Twenty films'],
       ['/vision', 'Vision', 'Internet of Value'],
       ['/technology', 'The stack', 'Overledger, Fusion, PayScript'],
       ['/programmes', 'Programmes', 'GBTD, Murex, Rosalind'],
