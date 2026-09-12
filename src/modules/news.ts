@@ -45,6 +45,8 @@ function store(river: NewsRiver): void {
 function decodeXml(s: string): string {
   return s
     .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -83,6 +85,10 @@ function isQuantinuumNoise(title: string, source: string): boolean {
   return /\bquantinuum\b/i.test(`${title} ${source}`) && !/\bquant network\b/i.test(title);
 }
 
+function isFxWidgetNoise(title: string): boolean {
+  return /\bconvert\s+[\d.,]+\s+(qnt|\w+)\b/i.test(title) && /\bto\b/i.test(title);
+}
+
 export function dedupeHeadlines(items: Headline[]): Headline[] {
   const seen = new Set<string>();
   return items
@@ -112,6 +118,7 @@ export function parseNamedRss(
     const pub = xmlTag(raw, 'pubDate');
     if (!title || !url) continue;
     if (isQuantinuumNoise(title, source)) continue;
+    if (isFxWidgetNoise(title)) continue;
     if (forced?.requireMatch !== false && !RE.test(`${title} ${source}`)) continue;
     items.push({
       id: headlineId(url, title),

@@ -5,7 +5,7 @@ import {
   QUANT_FEED,
   SATP_ATOM,
 } from '../src/modules/liveSources';
-import { parseAtomFeed, parseNamedRss } from '../src/modules/news';
+import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
 
 describe('Live source URLs', () => {
   it('keeps the official Quant feed with a trailing slash', () => {
@@ -29,6 +29,27 @@ describe('Official and standards parsers', () => {
     expect(items).toHaveLength(1);
     expect(items[0].lane).toBe('Official');
     expect(items[0].source).toBe('Quant');
+    expect(items[0].title).toContain("Who's processing");
+  });
+
+  it('decodes numeric entities and drops convert-widget spam', () => {
+    const xml = `<?xml version="1.0"?>
+      <rss><channel>
+        <item>
+          <title>The Trusted Node Program: Who&#8217;s processing your transaction?</title>
+          <link>https://quant.network/perspectives/x</link>
+          <source>Quant Network</source>
+        </item>
+        <item>
+          <title>Convert 5 QNT (QNT) to CHF (Swiss Franc) - Bybit</title>
+          <link>https://example.com/fx</link>
+          <source>Bybit</source>
+        </item>
+      </channel></rss>`;
+    const items = parseGoogleNewsRss(xml);
+    expect(items).toHaveLength(1);
+    expect(items[0].title).toMatch(/Who.s processing/);
+    expect(items[0].title).not.toContain('&#8217;');
   });
 
   it('resolves relative IETF SATP Atom links', () => {
