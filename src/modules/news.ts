@@ -194,7 +194,7 @@ export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
       items: [],
       updated: new Date().toISOString(),
       error:
-        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+        'News feed blocked or empty. No invented headlines. This month’s sourced filings stay on the desk.',
     };
   }
   const river: NewsRiver = {
@@ -248,7 +248,7 @@ export async function fetchNews(signal?: AbortSignal): Promise<NewsRiver> {
       items: [],
       updated: new Date().toISOString(),
       error:
-        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+        'News feed blocked or empty. No invented headlines. This month’s sourced filings stay on the desk.',
     };
   }
 }

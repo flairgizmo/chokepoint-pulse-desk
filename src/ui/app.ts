@@ -27,9 +27,16 @@ import {
   renderRead,
   renderResearch,
   renderStandards,
+  renderStory,
+  renderStack,
+  renderPatents,
+  renderInstitutions,
   renderTechnology,
   renderVision,
 } from './views';
+import { stageMarkup, wireStages } from './stage';
+import { searchMarkup, wireSearch } from './search';
+import { resolveStage } from './resolve';
 
 interface Route {
   name: string;
@@ -53,7 +60,7 @@ export class QntDesk {
     this.bindNav();
     this.render();
     void this.refreshFeeds();
-    window.setInterval(() => void this.refreshFeeds(), 30_000);
+    window.setInterval(() => void this.refreshFeeds(), 30 * 60 * 1000);
   }
 
   private bindNav(): void {
@@ -108,6 +115,8 @@ export class QntDesk {
     if (parts.length === 0) return { name: 'home' };
     const head = parts[0];
     if (head === 'desk' || head === 'ops' || head === 'how' || head === 'notes' || head === 'note') return { name: 'news' };
+    if (head === 'timeline' || head === 'story') return { name: 'story' };
+    if (head === 'boards') return { name: 'institutions' };
     if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
     if (head === 'podcast' && parts[1]) return { name: 'episode', id: parts[1] };
@@ -135,6 +144,14 @@ export class QntDesk {
         return renderVision();
       case 'technology':
         return renderTechnology();
+      case 'story':
+        return renderStory();
+      case 'stack':
+        return renderStack();
+      case 'patents':
+        return renderPatents();
+      case 'institutions':
+        return renderInstitutions();
       case 'programmes':
       case 'institutional':
         return renderProgrammes();
@@ -189,26 +206,30 @@ export class QntDesk {
           </a>
           <nav class="nav" aria-label="Primary">
             <a href="/news" ${route.name === 'news' ? 'aria-current="page"' : ''}>News</a>
-            <a href="/podcast" ${route.name === 'podcast' || route.name === 'episode' ? 'aria-current="page"' : ''}>Podcast</a>
-            <a href="/vision" ${route.name === 'vision' ? 'aria-current="page"' : ''}>Vision</a>
+            <a href="/story" ${route.name === 'story' ? 'aria-current="page"' : ''}>Story</a>
+            <a href="/technology" ${route.name === 'technology' ? 'aria-current="page"' : ''}>Technology</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
             <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
                 <a href="/people">People</a>
-                <a href="/technology">The stack</a>
-                <a href="/news">News</a>
-                <a href="/markets">Markets</a>
-                <a href="/cbdc">CBDC</a>
+                <a href="/stack">Stack</a>
                 <a href="/standards">Standards</a>
+                <a href="/patents">Patents</a>
+                <a href="/institutions">Institutions</a>
+                <a href="/cbdc">CBDC</a>
+                <a href="/markets">Markets</a>
                 <a href="/glossary">Glossary</a>
+                <a href="/podcast">Podcast</a>
+                <a href="/vision">Vision</a>
                 <a href="/donate">Donate</a>
               </div>
             </details>
           </nav>
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
+            <button type="button" class="icon-btn" data-open-search aria-label="Search the desk">Search</button>
             <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Start the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
@@ -225,16 +246,19 @@ export class QntDesk {
         </div>
         <div class="mobile-nav" id="mobile-nav">
           <a href="/news">News</a>
-          <a href="/podcast">Podcast</a>
-          <a href="/markets">Markets</a>
-          <a href="/vision">Vision</a>
-          <a href="/technology">Stack</a>
+          <a href="/story">Story</a>
+          <a href="/technology">Technology</a>
+          <a href="/stack">Stack</a>
           <a href="/programmes">Programmes</a>
-          <a href="/cbdc">CBDC</a>
           <a href="/people">People</a>
+          <a href="/institutions">Institutions</a>
+          <a href="/patents">Patents</a>
+          <a href="/cbdc">CBDC</a>
+          <a href="/markets">Markets</a>
           <a href="/research">Research</a>
           <a href="/standards">Standards</a>
           <a href="/glossary">Glossary</a>
+          <a href="/podcast">Podcast</a>
         </div>
         <main>${body}</main>
         <footer class="foot">
@@ -253,7 +277,9 @@ export class QntDesk {
             <nav class="foot-col" aria-label="Encyclopedia">
               <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Encyclopedia</p>
               <a href="/vision">Vision</a>
-              <a href="/technology">The stack</a>
+              <a href="/story">Story</a>
+              <a href="/technology">Technology</a>
+              <a href="/stack">Stack</a>
               <a href="/programmes">Programmes</a>
               <a href="/cbdc">CBDC</a>
             </nav>
@@ -261,6 +287,8 @@ export class QntDesk {
               <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Research</p>
               <a href="/research">Library</a>
               <a href="/people">People</a>
+              <a href="/institutions">Institutions</a>
+              <a href="/patents">Patents</a>
               <a href="/standards">Standards</a>
               <a href="/glossary">Glossary</a>
             </nav>
@@ -275,6 +303,8 @@ export class QntDesk {
             </p>
           </div>
         </footer>
+        ${stageMarkup()}
+        ${searchMarkup()}
         ${chatMarkup()}
       </div>`;
   }
@@ -288,6 +318,9 @@ export class QntDesk {
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     wireChat(this.root);
+    wireStages(this.root, resolveStage);
+    wireSearch(this.root);
+    this.wireFilters(route);
     this.wireGateway();
     this.wireMotionBeds();
     this.wireFlips();
@@ -344,7 +377,72 @@ export class QntDesk {
     }
     if (route.name === 'people') {
       const id = route.id || location.hash.replace(/^#/, '');
-      if (id) document.getElementById(id)?.scrollIntoView({ block: 'start' });
+      if (id && !id.startsWith('stage/')) document.getElementById(id)?.scrollIntoView({ block: 'start' });
+    }
+  }
+
+  private wireFilters(route: Route): void {
+    const bindSearch = (inputId: string, itemSel: string, emptyId?: string): void => {
+      const input = this.root.querySelector<HTMLInputElement>(inputId);
+      if (!input) return;
+      input.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        let n = 0;
+        this.root.querySelectorAll<HTMLElement>(itemSel).forEach((el) => {
+          const hay = (el.dataset.q || el.textContent || '').toLowerCase();
+          const hit = !q || hay.includes(q);
+          el.hidden = !hit;
+          if (hit) n += 1;
+        });
+        const empty = emptyId ? this.root.querySelector<HTMLElement>(emptyId) : null;
+        if (empty) empty.hidden = n > 0;
+      });
+    };
+    if (route.name === 'story') {
+      bindSearch('#story-search', '.story-node', '#story-empty');
+      const rail = this.root.querySelector('#story-rail');
+      this.root.querySelectorAll<HTMLButtonElement>('[data-story-theme]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.root.querySelectorAll('[data-story-theme]').forEach((c) => c.classList.remove('is-on'));
+          btn.classList.add('is-on');
+          const theme = btn.dataset.storyTheme;
+          this.root.querySelectorAll<HTMLElement>('.story-node').forEach((el) => {
+            el.hidden = theme !== 'all' && el.dataset.theme !== theme;
+          });
+        });
+      });
+      this.root.querySelector<HTMLSelectElement>('#story-density')?.addEventListener('change', (ev) => {
+        rail?.setAttribute('data-density', (ev.target as HTMLSelectElement).value);
+      });
+    }
+    if (route.name === 'technology') bindSearch('#tech-search', '.tech-chapter', '#tech-empty');
+    if (route.name === 'patents') bindSearch('#patent-search', '.patent-card', '#patent-empty');
+    if (route.name === 'institutions') {
+      bindSearch('#inst-search', '.inst-card', '#inst-empty');
+      this.root.querySelectorAll<HTMLButtonElement>('[data-inst-status]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.root.querySelectorAll('[data-inst-status]').forEach((c) => c.classList.remove('is-on'));
+          btn.classList.add('is-on');
+          const st = btn.dataset.instStatus;
+          this.root.querySelectorAll<HTMLElement>('.inst-card').forEach((el) => {
+            el.hidden = st !== 'all' && el.dataset.status !== st;
+          });
+        });
+      });
+    }
+    if (route.name === 'people') bindSearch('#people-search', '.person');
+    if (route.name === 'stack') {
+      this.root.querySelectorAll<HTMLButtonElement>('[data-stack-iso]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.stackIso;
+          this.root.querySelectorAll('.stack-rungs li').forEach((el) => {
+            el.classList.toggle('is-dim', el.getAttribute('data-rung') !== id);
+          });
+        });
+      });
+      this.root.querySelector('[data-stack-all]')?.addEventListener('click', () => {
+        this.root.querySelectorAll('.stack-rungs li').forEach((el) => el.classList.remove('is-dim'));
+      });
     }
   }
 
@@ -535,29 +633,17 @@ export class QntDesk {
   }
 
   private hydrateHomeLive(): void {
-    const price = this.root.querySelector('[data-home-price]');
-    const meta = this.root.querySelector('[data-home-meta]');
-    if (price && this.markets?.priceUsd != null) {
-      price.textContent = fmtMoney(this.markets.priceUsd);
-    }
-    if (meta && this.markets) {
-      meta.textContent = `${this.markets.venue} · ${this.markets.status} · ${this.markets.change24h != null ? fmtPct(this.markets.change24h) : ''}`;
-    }
-    const news = this.root.querySelector('[data-home-news]');
-    if (news && this.news) {
-      const meta = this.root.querySelector('[data-home-news-meta]');
-      if (meta) {
-        meta.textContent = `${this.news.items.length} headlines · ${this.news.status}`;
-      }
-      news.innerHTML = this.news.items.length
+    const pulse = this.root.querySelector('[data-home-pulse]');
+    if (pulse && this.news) {
+      pulse.innerHTML = this.news.items.length
         ? this.news.items
-            .slice(0, 5)
+            .slice(0, 8)
             .map(
               (h) =>
-                `<li><span class="kicker">${esc(h.lane)}</span> <a href="${esc(h.url)}" target="_blank" rel="noopener noreferrer">${esc(h.title)}</a></li>`,
+                `<li><button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}"><span class="kicker">${esc(h.lane)}</span> ${esc(h.title)}</button></li>`,
             )
             .join('')
-        : `<li class="empty-note">${esc(this.news.error ?? 'No matching headlines yet.')}</li>`;
+        : `<li class="empty-note">${esc(this.news.error ?? 'The river is quiet. Filings stay on the news desk.')}</li>`;
     }
   }
 

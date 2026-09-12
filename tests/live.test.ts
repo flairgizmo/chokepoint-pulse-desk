@@ -6,7 +6,8 @@ import {
   SATP_ATOM,
 } from '../src/modules/liveSources';
 import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
-import { renderHome, renderPeople, renderNews } from '../src/ui/views';
+import { renderHome, renderPeople, renderNews, renderTechnology } from '../src/ui/views';
+import { renderStory } from '../src/ui/pages';
 
 describe('Live source URLs', () => {
   it('keeps the official Quant feed with a trailing slash', () => {
@@ -94,26 +95,30 @@ describe('Brand mark', () => {
 });
 
 describe('Public desk', () => {
-  it('puts the interactive mark and official constellation on the home page', () => {
+  it('puts the interactive Q mark and official bank marks on the home page', () => {
     const html = renderHome();
     expect(html).toContain('id="gateway"');
     expect(html).toContain('/marks/barclays.svg');
-    expect(html).toContain('/visuals/stories/city.jpg');
     expect(html).not.toContain('Nothing invented');
-    expect(html).toContain('/visuals/stills/hero.jpg');
-    expect(html).toContain('docs.overledger.dev');
-    expect(html).toContain('https://www.youtube.com/watch?v=IfXSET1rEOE');
     expect(html).not.toContain('five minutes each');
+    expect(html).toContain('data-home-pulse');
+    expect(html).toContain('data-stage="proof"');
   });
 
-  it('opens official people stories and sourced news in a new tab', () => {
+  it('opens people and news as in-site stages, with original as secondary', () => {
     const people = renderPeople();
     expect(people).toContain('/people/verdian.jpg');
     expect(people).toContain('https://quant.network/people/gilbert-verdian/');
     expect(people).toContain('people-rail');
     expect(people).toContain('/people/tasca.jpg');
+    expect(people).toContain('Builders of the interoperability layer');
+    expect(people).not.toContain('Highest-resolution stills from Quant’s own media library');
+    expect(people).not.toContain('People who worked on Overledger');
     const news = renderNews();
-    expect(news).toContain('Open the source');
+    expect(news).toContain('Open original');
+    expect(news).not.toContain('Click a headline and you leave for the source');
     expect(news).not.toContain('Ctrl+K');
+    expect(renderTechnology()).toContain('Overledger Platform / API');
+    expect(renderStory()).toContain('story-rail');
   });
 });
