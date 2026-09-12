@@ -10,6 +10,8 @@ import { esc, fmtCompact, fmtMoney, fmtPct, fmtQty } from './html';
 import {
   DISCLAIMER,
   newsListMarkup,
+  sparklineSvg,
+  venueBarsHtml,
   renderCbdc,
   renderCity,
   renderDonate,
@@ -469,6 +471,22 @@ export class QntDesk {
     }
     const bar = this.root.querySelector<HTMLElement>('[data-mk-bar]');
     if (bar) bar.style.width = `${pct}%`;
+    const spark = this.root.querySelector('[data-mk-spark]');
+    if (spark) spark.innerHTML = sparklineSvg(p.sparkline ?? []);
+    const bars = this.root.querySelector('[data-mk-bars]');
+    if (bars) bars.innerHTML = venueBarsHtml(p);
+    const ring = this.root.querySelector('.token-visual');
+    if (ring && circ && total) {
+      const arc = ring.querySelector('.supply-ring-arc');
+      if (arc) {
+        const r = 46;
+        const c = 2 * Math.PI * r;
+        const dash = (pct / 100) * c;
+        arc.setAttribute('stroke-dasharray', `${dash.toFixed(2)} ${c.toFixed(2)}`);
+      }
+      const label = ring.querySelector('text');
+      if (label) label.textContent = `${pct.toFixed(1)}%`;
+    }
     const err = this.root.querySelector<HTMLElement>('[data-mk-error]');
     if (err) {
       err.hidden = !p.error;

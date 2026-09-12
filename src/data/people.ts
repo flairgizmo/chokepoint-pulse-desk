@@ -147,6 +147,7 @@ export const PEOPLE: Person[] = [
     initials: 'PT',
     current: false,
     href: 'tascaSite',
+    photo: '/people/tasca.jpg',
     bio: 'Digital economist who co-founded Quant, signed the Overledger whitepaper and the ordering patent, and wrote the books that give the Internet of Value its library. UCL CBT, Bundesbank, now Exponential Science — not a current operating officer. He had left Quant by 2022; the books remain. The Internet of Value, in his telling, is a warning: moving money like packets will datafy and platformise whatever it touches.',
   },
   {
@@ -177,6 +178,7 @@ export const PEOPLE: Person[] = [
     initials: 'RB',
     current: false,
     href: 'belchior',
+    photo: '/people/belchior.jpg',
     bio: 'Wrote the ACM interoperability paper while at Quant — the footnote reads “Work done while … at Quant Network”. Hyperledger Global Forum listed him as Quant’s blockchain R&D engineer. SATP core author, Cacti maintainer, CSUR survey. Now at Técnico Lisboa. He is in this encyclopedia because he was on the payroll when the taxonomy was written, not because SATP lists him.',
   },
   {

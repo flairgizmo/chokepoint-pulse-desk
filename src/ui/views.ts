@@ -58,9 +58,8 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
 }
 
 function visualBed(id: VisualId, cls = 'visual-bed'): string {
-  const poster = id === 'hero' ? '/brand/qntdesk-og.jpg' : `/visuals/stills/${id}.jpg`;
-  const src = `/visuals/beds/${id}.mp4`;
-  return `<video class="${esc(cls)}" muted loop playsinline autoplay poster="${esc(poster)}" src="${esc(src)}"></video>`;
+  const src = `/visuals/stills/${id}.jpg`;
+  return `<img class="${esc(cls)}" src="${esc(src)}" alt="" width="1920" height="1080" decoding="async" />`;
 }
 
 function constellation(): string {
@@ -239,7 +238,7 @@ function filterBox(id: string, placeholder: string, value: string, extra = ''): 
   </div>`;
 }
 
-function sparklineSvg(values: number[]): string {
+export function sparklineSvg(values: number[]): string {
   if (values.length < 2) return '';
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -686,10 +685,28 @@ export function renderPeople(): string {
   return `${pageHero(
     'People',
     'The names who actually worked',
-    'Official Quant portraits where Quant published them. Each card opens that person’s official story — Quant’s people page, or their own site. Quotations sit under the person who said them.',
+    'Official Quant portraits where Quant published them. Each face opens that person’s official story — Quant’s people page, or their own site. Initials only when Quant has not published a picture. Quotations sit under the person who said them.',
     'on Overledger.',
-    'gateway',
-  )}${quoteRail('people')}${blocks}${dykBlock()}`;
+  )}${peopleRail()}${quoteRail('people')}${blocks}${dykBlock()}`;
+}
+
+function peopleRail(): string {
+  const faces = PEOPLE.filter((p) => p.photo)
+    .map((p) => {
+      const href = p.href ? sourceUrl(p.href) : `/people#${p.id}`;
+      const external = href.startsWith('http');
+      return `<a class="people-tile" href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>
+        <img src="${esc(p.photo ?? '')}" alt="${esc(p.name)}" width="160" height="160" />
+        <span><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
+      </a>`;
+    })
+    .join('');
+  return `<nav class="people-rail" aria-label="Official portraits">
+    ${kicker('On the record')}
+    <h2 class="display">The faces Quant published.</h2>
+    <p class="lede-sm">Highest-resolution stills from Quant’s own media library. Click a portrait for the official story.</p>
+    <div class="people-tiles">${faces}</div>
+  </nav>`;
 }
 
 function personCard(p: Person): string {
@@ -702,14 +719,18 @@ function personCard(p: Person): string {
       </blockquote>`,
     )
     .join('');
-  const official = p.href
-    ? `<p class="person-cta">${extLink(sourceUrl(p.href), 'Full official story')}</p>`
+  const officialHref = p.href ? sourceUrl(p.href) : '';
+  const official = officialHref
+    ? `<p class="person-cta">${extLink(officialHref, 'Full official story')}</p>`
     : p.id === 'lovesey'
       ? '<p class="tiny">Initials only — Quant has not published a portrait.</p>'
       : '';
-  const face = p.photo
-    ? `<img class="avatar avatar-photo avatar-${esc(p.group)}" src="${esc(p.photo)}" alt="${esc(p.name)}" width="96" height="96" />`
+  const photo = p.photo
+    ? `<img class="avatar avatar-photo avatar-${esc(p.group)}" src="${esc(p.photo)}" alt="${esc(p.name)}" width="160" height="160" />`
     : `<div class="avatar avatar-${esc(p.group)}" aria-hidden="true">${esc(p.initials)}</div>`;
+  const face = officialHref
+    ? `<a class="person-face" href="${esc(officialHref)}" target="_blank" rel="noopener noreferrer">${photo}</a>`
+    : photo;
   return `<article class="person group-${esc(p.group)}" id="${esc(p.id)}">
     ${face}
     <div>
@@ -811,6 +832,17 @@ export function renderGlossary(filter = ''): string {
     ${groups}`;
 }
 
+export function venueBarsHtml(print?: MarketPrint): string {
+  const tickers = print?.tickers ?? [];
+  if (!tickers.length) return '<p class="empty-note">Venue volumes will appear when CoinGecko lists them.</p>';
+  const maxVol = Math.max(...tickers.map((t) => t.volume), 1);
+  return tickers
+    .map(
+      (t) => `<li class="bar"><span>${esc(t.name)}</span><i style="--w:${(t.volume / maxVol) * 100}%"></i><em>${fmtMoney(t.volume, 0)}</em></li>`,
+    )
+    .join('');
+}
+
 function supplyRing(pct: number): string {
   const r = 46;
   const c = 2 * Math.PI * r;
@@ -832,15 +864,7 @@ export function renderMarkets(print?: MarketPrint): string {
   const total = p?.totalSupply ?? null;
   const outside = circ != null && total != null ? Math.max(0, total - circ) : null;
   const pct = circ && total ? Math.min(100, (circ / total) * 100) : 0;
-  const maxVol = Math.max(...(p?.tickers.map((t) => t.volume) ?? [1]), 1);
-  const bars =
-    p?.tickers.length
-      ? p.tickers
-          .map(
-            (t) => `<li class="bar"><span>${esc(t.name)}</span><i style="--w:${(t.volume / maxVol) * 100}%"></i><em>${fmtMoney(t.volume, 0)}</em></li>`,
-          )
-          .join('')
-      : '<p class="empty-note">Venue volumes will appear when CoinGecko lists them.</p>';
+  const bars = venueBarsHtml(p);
   return `${pageHero(
     'QNT',
     'QNT — the token of',
@@ -1029,7 +1053,7 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
   return `${pageHero(
     'Moved',
     'This page now lives',
-    'The live desk is Notes, Programmes, Research and the twenty-part podcast.',
+    'The live desk is News, Programmes, Research and the twenty-part podcast.',
     'with the record.',
   )}<p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
 }
@@ -1102,15 +1126,15 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
     .join('');
   const cards = list.map((n) => noteCard(n)).join('');
   return `${pageHero(
-    'Notes',
-    'Field notes on Quant,',
-    'Did-you-know items and September 2026 notes, latest first. History, the live rooms, and what is still ahead — from the record.',
+    'News',
+    'Field news on Quant,',
+    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens the source.',
     'history to what is ahead.',
     'history',
   )}
-  ${filterBox('notes-search', 'Search notes…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
-  <p class="notes-count mono subtle">${list.length} notes on the record</p>
-  <div class="notes-index">${cards || '<p class="empty-note">No note matches that filter.</p>'}</div>`;
+  ${filterBox('notes-search', 'Search news…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
+  <p class="notes-count mono subtle">${list.length} filings on the record</p>
+  <div class="notes-index">${cards || '<p class="empty-note">No filing matches that filter.</p>'}</div>`;
 }
 
 export function renderNote(id: string): string {
@@ -1126,11 +1150,10 @@ export function renderNote(id: string): string {
     : n.related
       ? `<a class="text-link" href="${esc(n.related)}">Related chapter →</a>`
       : '';
-  const vt = `note-${n.id.replace(/[^a-z0-9-]/gi, '-')}`;
   const bed: VisualId = n.era === 'future' ? 'future' : n.era === 'history' ? 'history' : 'sterling';
   return `<article class="note-page">
     ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed)}
-    <div class="chapter note-body" style="view-transition-name:${esc(vt)}">
+    <div class="chapter note-body">
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
       <p>${esc(n.body)}</p>
       <p class="source-row">${source}</p>

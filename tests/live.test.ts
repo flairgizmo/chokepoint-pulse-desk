@@ -6,7 +6,7 @@ import {
   SATP_ATOM,
 } from '../src/modules/liveSources';
 import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
-import { renderHome } from '../src/ui/views';
+import { renderHome, renderPeople, renderNews } from '../src/ui/views';
 
 describe('Live source URLs', () => {
   it('keeps the official Quant feed with a trailing slash', () => {
@@ -88,6 +88,8 @@ describe('Brand mark', () => {
     expect(existsSync('public/visuals/stills/sterling.jpg')).toBe(true);
     expect(existsSync('public/people/verdian.jpg')).toBe(true);
     expect(existsSync('public/people/hargreaves.jpg')).toBe(true);
+    expect(existsSync('public/people/riley.jpg')).toBe(true);
+    expect(existsSync('public/people/yates.jpg')).toBe(true);
   });
 });
 
@@ -95,9 +97,20 @@ describe('Public desk', () => {
   it('puts the interactive mark and official constellation on the home page', () => {
     const html = renderHome();
     expect(html).toContain('id="tesseract"');
-    expect(html).toContain('/visuals/beds/hero.mp4');
+    expect(html).toContain('/visuals/stills/hero.jpg');
     expect(html).toContain('docs.overledger.dev');
     expect(html).toContain('https://www.youtube.com/watch?v=IfXSET1rEOE');
     expect(html).not.toContain('five minutes each');
+  });
+
+  it('opens official people stories and sourced news in a new tab', () => {
+    const people = renderPeople();
+    expect(people).toContain('/people/verdian.jpg');
+    expect(people).toContain('https://quant.network/people/gilbert-verdian/');
+    expect(people).toContain('people-rail');
+    expect(people).toContain('/people/tasca.jpg');
+    const news = renderNews();
+    expect(news).toContain('Open the source');
+    expect(news).not.toContain('Ctrl+K');
   });
 });
