@@ -532,8 +532,26 @@ main {
 }
 
 .kind-legend li {
+  display: inline-flex;
+  align-items: center;
   padding: 0.25rem 0.45rem;
 }
+
+.kind-legend li::before {
+  content: '';
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-right: 0.35rem;
+  border-radius: 99px;
+  background: #e8edf2;
+}
+
+.kind-legend li[data-kind='Headquarters']::before { background: #1ec9b0; }
+.kind-legend li[data-kind='Banking']::before { background: #d4b483; }
+.kind-legend li[data-kind='Lab']::before { background: #7ab0ff; }
+.kind-legend li[data-kind='Standards']::before { background: #c4a8ff; }
+.kind-legend li[data-kind='Research']::before { background: #9ad7c2; }
+.kind-legend li[data-kind='Markets']::before { background: #e8edf2; }
 
 .hud-toggles {
   display: flex;
