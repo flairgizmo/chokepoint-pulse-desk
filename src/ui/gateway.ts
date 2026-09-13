@@ -43,12 +43,14 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-type GlassCut = 'crown' | 'bezel' | 'pav' | 'table';
+type GlassCut = 'crown' | 'pav' | 'table';
+
+const TABLE_Y = 0.82;
+const BOT_Y = -0.4;
 
 function paintPhotoGlass(
   ctx: CanvasRenderingContext2D,
   photo: HTMLImageElement | null,
-  i: number,
   w: number,
   h: number,
   on = false,
@@ -57,33 +59,25 @@ function paintPhotoGlass(
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const drift = ((i % 6) - 2.5) * 0.01;
-    const sx = photo.naturalWidth * (0.18 + drift);
-    const sy = photo.naturalHeight * 0.12;
-    const sw = Math.max(1, photo.naturalWidth * 0.64);
-    const sh = Math.max(1, photo.naturalHeight * 0.76);
+    const sx = photo.naturalWidth * 0.16;
+    const sy = photo.naturalHeight * 0.1;
+    const sw = Math.max(1, photo.naturalWidth * 0.7);
+    const sh = Math.max(1, photo.naturalHeight * 0.8);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.save();
-    ctx.globalAlpha = cut === 'table' ? 0.28 : cut === 'pav' ? 0.4 : 0.3;
+    ctx.globalAlpha = cut === 'pav' ? 0.36 : cut === 'table' ? 0.22 : 0.2;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(photo, sx, sy, sw, sh, 0, h * 0.08, w, h * 0.92);
-    ctx.restore();
-    ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.2 : 0.12;
-    ctx.translate(w / 2, h / 2);
-    ctx.rotate((i % 2) * Math.PI);
-    ctx.scale(1, -1);
-    ctx.drawImage(photo, sx, sy, sw * 0.9, sh * 0.9, -w * 0.44, -h * 0.34, w * 0.88, h * 0.68);
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
-      ? 'rgba(234, 241, 255, 0.4)'
+      ? 'rgba(234, 241, 255, 0.35)'
       : cut === 'pav'
         ? 'rgba(4, 10, 28, 0.66)'
         : cut === 'table'
           ? 'rgba(21, 87, 255, 0.12)'
-          : 'rgba(12, 28, 64, 0.18)';
+          : 'rgba(12, 28, 64, 0.16)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -94,54 +88,11 @@ function paintPhotoGlass(
     ctx.fillRect(0, 0, w, h);
   }
   ctx.globalCompositeOperation = 'screen';
-  const catchL = ctx.createLinearGradient(0, 0, w * 0.58, h * 0.42);
-  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.12)' : 'rgba(234, 241, 255, 0.28)');
-  catchL.addColorStop(0.5, 'rgba(234, 241, 255, 0)');
+  const catchL = ctx.createRadialGradient(w * 0.3, h * 0.2, 6, w * 0.3, h * 0.2, w * 0.46);
+  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.14)' : 'rgba(234, 241, 255, 0.3)');
+  catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
   ctx.fillStyle = catchL;
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(w * 0.58, 0);
-  ctx.lineTo(0, h * 0.4);
-  ctx.closePath();
-  ctx.fill();
-  const fire = ctx.createLinearGradient(w, 0, w * 0.42, h * 0.38);
-  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.28)' : 'rgba(60, 230, 255, 0.26)');
-  fire.addColorStop(0.55, i % 3 ? 'rgba(255, 196, 72, 0.1)' : 'rgba(21, 87, 255, 0.08)');
-  fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
-  ctx.fillStyle = fire;
-  ctx.beginPath();
-  ctx.moveTo(w, 0);
-  ctx.lineTo(w, h * 0.38);
-  ctx.lineTo(w * 0.42, 0);
-  ctx.closePath();
-  ctx.fill();
-  const fire2 = ctx.createLinearGradient(0, h, w * 0.48, h * 0.52);
-  fire2.addColorStop(0, i % 3 ? 'rgba(255, 196, 72, 0.3)' : 'rgba(90, 240, 255, 0.28)');
-  fire2.addColorStop(1, 'rgba(21, 87, 255, 0)');
-  ctx.fillStyle = fire2;
-  ctx.beginPath();
-  ctx.moveTo(0, h);
-  ctx.lineTo(w * 0.48, h);
-  ctx.lineTo(0, h * 0.52);
-  ctx.closePath();
-  ctx.fill();
-  const rim = ctx.createLinearGradient(0, 0, 0, h * 0.2);
-  rim.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.16)' : 'rgba(234, 241, 255, 0.3)');
-  rim.addColorStop(1, 'rgba(234, 241, 255, 0)');
-  ctx.fillStyle = rim;
-  ctx.fillRect(0, 0, w, h * 0.2);
-  const sliver = ctx.createLinearGradient(w * 0.06, h * 0.08, w * 0.82, h * 0.22);
-  sliver.addColorStop(0, i % 2 ? 'rgba(255, 92, 176, 0.2)' : 'rgba(90, 240, 255, 0.18)');
-  sliver.addColorStop(0.45, 'rgba(234, 241, 255, 0.08)');
-  sliver.addColorStop(1, 'rgba(21, 87, 255, 0)');
-  ctx.fillStyle = sliver;
-  ctx.beginPath();
-  ctx.moveTo(w * 0.04, h * 0.06);
-  ctx.lineTo(w * 0.86, h * 0.03);
-  ctx.lineTo(w * 0.78, h * 0.14);
-  ctx.lineTo(w * 0.1, h * 0.16);
-  ctx.closePath();
-  ctx.fill();
+  ctx.fillRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'source-over';
 }
 
@@ -235,33 +186,15 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   return c;
 }
 
-function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = null): HTMLCanvasElement {
+function glassCanvas(photo: HTMLImageElement | null, on: boolean, cut: GlassCut): HTMLCanvasElement {
+  const wrap = cut === 'crown';
   const c = document.createElement('canvas');
-  c.width = 512;
-  c.height = 1024;
-  const ctx = c.getContext('2d');
-  if (!ctx) return c;
-  paintPhotoGlass(ctx, photo, i, 512, 1024, on, i >= 32 || (i >= 16 && i < 24) ? 'bezel' : 'crown');
-  return c;
-}
-
-function pavCanvas(i: number, photo: HTMLImageElement | null = null): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 512;
+  c.width = wrap ? 1024 : 512;
   c.height = 512;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  paintPhotoGlass(ctx, photo, i + 8, 512, 512, false, 'pav');
-  return c;
-}
-
-function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 512;
-  c.height = 512;
-  const ctx = c.getContext('2d');
-  if (ctx) {
-    paintPhotoGlass(ctx, photo, 16, 512, 512, false, 'table');
+  paintPhotoGlass(ctx, photo, c.width, c.height, on, cut);
+  if (cut === 'table') {
     ctx.fillStyle = 'rgba(11, 31, 92, 0.28)';
     ctx.font = '600 88px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
@@ -271,17 +204,37 @@ function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
   return c;
 }
 
-function facetMaterial(
-  i: number,
-  on: boolean,
-  lite: boolean,
-  photo: HTMLImageElement | null = null,
-): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
-  const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on, photo)));
+function glassTex(photo: HTMLImageElement | null, on: boolean, cut: GlassCut): THREE.CanvasTexture {
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, cut)));
   tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
+function glassMat(
+  tex: THREE.Texture,
+  lite: boolean,
+  opts: { on?: boolean; transmission?: number; thickness?: number } = {},
+): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   return lite
     ? new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide })
-    : diamondPhysical(tex, { on, transmission: 0.7, thickness: 0.52 });
+    : diamondPhysical(tex, opts);
+}
+
+function wrapU(x: number, z: number): number {
+  return (Math.atan2(x, z) / (Math.PI * 2) + 0.875) % 1;
+}
+
+function wrapV(y: number): number {
+  return Math.min(1, Math.max(0, (y - BOT_Y) / (TABLE_Y - BOT_Y)));
+}
+
+function seamUv(us: number[]): number[] {
+  const min = Math.min(...us);
+  const max = Math.max(...us);
+  if (max - min <= 0.5) return us;
+  return us.map((u) => (u < 0.5 ? u + 1 : u));
 }
 
 function triGeo(
@@ -297,21 +250,13 @@ function triGeo(
 ): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz], 3));
-  g.setAttribute('uv', new THREE.Float32BufferAttribute([0.5, 0, 1, 1, 0, 1], 2));
+  const us = seamUv([wrapU(ax, az), wrapU(bx, bz), wrapU(cx, cz)]);
+  g.setAttribute(
+    'uv',
+    new THREE.Float32BufferAttribute([us[0], wrapV(ay), us[1], wrapV(by), us[2], wrapV(cy)], 2),
+  );
   g.computeVertexNormals();
   return g;
-}
-
-function pavMaterial(
-  i: number,
-  lite: boolean,
-  photo: HTMLImageElement | null = null,
-): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
-  const tex = hardenCanvasTex(new THREE.CanvasTexture(pavCanvas(i, photo)));
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return lite
-    ? new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide })
-    : diamondPhysical(tex, { transmission: 0.82, thickness: 0.7 });
 }
 
 function logoCanvas(
@@ -516,25 +461,24 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavs: THREE.Mesh[] = [];
   const stars: THREE.Mesh[] = [];
   const sparks: THREE.Mesh[] = [];
-  const sides = 12;
+  const sides = 16;
   const restAyFace = 0.72;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
   const tableR = 0.26;
-  const tableY = 0.82;
+  const tableY = TABLE_Y;
   const eqR = 0.5;
   const eqY = 0.36;
-  const botY = -0.4;
+  const botY = BOT_Y;
   const midR = tableR + (eqR - tableR) * 0.52;
   const midY = tableY + (eqY - tableY) * 0.48;
   const pavR = eqR * 0.42;
   const pavY = eqY + (botY - eqY) * 0.52;
-  const tableTex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas(visionStill())));
-  tableTex.colorSpace = THREE.SRGBColorSpace;
+  const photo0 = visionStill();
+  const crownMat = glassMat(glassTex(photo0, false, 'crown'), lite, { transmission: 0.7, thickness: 0.52 });
+  const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, { transmission: 0.82, thickness: 0.7 });
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
-    lite
-      ? new THREE.MeshBasicMaterial({ map: tableTex, color: 0xffffff, side: THREE.DoubleSide })
-      : diamondPhysical(tableTex, { transmission: 0.38, thickness: 0.28 }),
+    glassMat(glassTex(photo0, false, 'table'), lite, { transmission: 0.38, thickness: 0.28 }),
   );
   table.rotation.x = -Math.PI / 2;
   table.position.y = tableY;
@@ -565,20 +509,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pz0 = Math.sin(a0) * pavR;
     const px1 = Math.cos(a1) * pavR;
     const pz1 = Math.sin(a1) * pavR;
-    const photo = visionStill();
-    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1), facetMaterial(i, false, lite, photo), crowns);
-    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1), facetMaterial(i + 16, false, lite, photo), crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1), facetMaterial(i + 8, false, lite, photo), crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1), facetMaterial(i + 24, false, lite, photo), crowns);
-    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1), pavMaterial(i, lite, photo), pavs);
-    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1), pavMaterial(i + 16, lite, photo), pavs);
-    addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1), pavMaterial(i + 8, lite, photo), pavs);
+    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1), crownMat, crowns);
+    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1), crownMat, crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1), crownMat, crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1), crownMat, crowns);
+    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1), pavMat, pavs);
+    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1), pavMat, pavs);
+    addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1), pavMat, pavs);
     const amid = (a0 + a1) / 2;
     const starR = tableR + (eqR - tableR) * 0.4;
     const starY = tableY + (eqY - tableY) * 0.4;
     const sx = Math.cos(amid) * starR;
     const sz = Math.sin(amid) * starR;
-    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz), facetMaterial(i + 32, false, lite, photo), stars);
+    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz), crownMat, stars);
     if (!lite) {
       const spark = new THREE.Mesh(
         new THREE.SphereGeometry(0.016, 8, 8),
@@ -628,7 +571,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
       ? new THREE.MeshBasicMaterial({
-          map: tableTex,
+          map: (table.material as THREE.MeshBasicMaterial).map,
           color: 0xffffff,
           transparent: true,
           opacity: 0.26,
@@ -759,14 +702,24 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   };
 
   let gateLit = false;
+  const swapMap = (
+    mat: THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial,
+    next: THREE.CanvasTexture,
+  ): void => {
+    mat.map?.dispose();
+    mat.map = next;
+    mat.needsUpdate = true;
+  };
   const stampJewel = (on: boolean): void => {
     const photo = visionStill();
-    const ttex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas(photo)));
-    ttex.colorSpace = THREE.SRGBColorSpace;
     const tmat = table.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-    tmat.map?.dispose();
-    tmat.map = ttex;
-    tmat.needsUpdate = true;
+    swapMap(tmat, glassTex(photo, on, 'table'));
+    swapMap(crownMat, glassTex(photo, on, 'crown'));
+    swapMap(pavMat, glassTex(photo, false, 'pav'));
+    if (crownMat instanceof THREE.MeshPhysicalMaterial) {
+      crownMat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
+      crownMat.emissiveIntensity = on ? 0.16 : 0.035;
+    }
     const nextCaustic = hardenCanvasTex(new THREE.CanvasTexture(causticCanvas(photo)));
     nextCaustic.colorSpace = THREE.SRGBColorSpace;
     causticMat.map?.dispose();
@@ -778,24 +731,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       floor.material.map = nextFloor;
       floor.material.needsUpdate = true;
     }
-    crowns.forEach((mesh, i) => {
-      const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mesh.material = facetMaterial(i, on && i === 0, lite, photo);
-      prev.map?.dispose();
-      prev.dispose();
-    });
-    stars.forEach((mesh, i) => {
-      const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mesh.material = facetMaterial(i + 32, false, lite, photo);
-      prev.map?.dispose();
-      prev.dispose();
-    });
-    pavs.forEach((mesh, i) => {
-      const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mesh.material = pavMaterial(i, lite, photo);
-      prev.map?.dispose();
-      prev.dispose();
-    });
   };
   const paintCards = (): void => {
     BANKS.forEach((bank, i) => {
