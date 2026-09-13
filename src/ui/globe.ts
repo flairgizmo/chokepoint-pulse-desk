@@ -195,6 +195,25 @@ function sunGlintTex(): THREE.CanvasTexture {
   return tex;
 }
 
+/** Broader wet-ocean sheen. Black field + one blob — not a full-sphere day overlay. */
+function oceanSheenTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
+  const g = ctx.createRadialGradient(128, 138, 8, 128, 128, 124);
+  g.addColorStop(0, 'rgba(255, 236, 210, 0.42)');
+  g.addColorStop(0.28, 'rgba(180, 210, 255, 0.14)');
+  g.addColorStop(0.62, 'rgba(140, 170, 210, 0.04)');
+  g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 export class EarthGlobe {
   private root: HTMLElement;
   private renderer: THREE.WebGLRenderer | null = null;
@@ -236,6 +255,7 @@ export class EarthGlobe {
   private nightTex: THREE.Texture | null = null;
   private terminator: THREE.Mesh | null = null;
   private glint: THREE.Mesh | null = null;
+  private sheen: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
   private hoverId: string | undefined;
@@ -261,6 +281,7 @@ export class EarthGlobe {
     for (const s of this.labelSprites) s.visible = this.overlays.labels;
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.glint) this.glint.visible = this.overlays.day;
+    if (this.sheen) this.sheen.visible = this.overlays.day;
     this.applyMaps();
   }
 
@@ -646,6 +667,24 @@ export class EarthGlobe {
     glint.renderOrder = 4;
     scene.add(glint);
     this.glint = glint;
+    const sheen = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.78, 0.52),
+      new THREE.MeshBasicMaterial({
+        map: oceanSheenTex(),
+        color: 0xffffff,
+        transparent: true,
+        opacity: this.lite ? 0.26 : 0.32,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      }),
+    );
+    const sheenDir = latLonToVec(30, -24, 1).applyAxisAngle(Y_AXIS, this.earthSpin).normalize();
+    sheen.position.copy(sheenDir.multiplyScalar(1.015));
+    sheen.lookAt(0, 0, 0);
+    sheen.renderOrder = 4;
+    scene.add(sheen);
+    this.sheen = sheen;
 
     const paintTex = (src: string, assign: (tex: THREE.Texture) => void, cinema = false): void => {
       const img = new Image();
@@ -1015,6 +1054,7 @@ export class EarthGlobe {
     }
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.glint) this.glint.visible = this.overlays.day;
+    if (this.sheen) this.sheen.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
       const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));

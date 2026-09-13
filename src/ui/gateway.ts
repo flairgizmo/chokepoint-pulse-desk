@@ -466,7 +466,7 @@ function logoCanvas(
   if (!ctx) return c;
   ctx.clearRect(0, 0, CARD_W, CARD_H);
   if (still?.complete && still.naturalWidth) {
-    ctx.filter = 'saturate(0.95) contrast(1.18) brightness(0.56)';
+    ctx.filter = 'saturate(0.88) contrast(1.2) brightness(0.48)';
     coverDraw(ctx, still, CARD_W, CARD_H);
     ctx.filter = 'none';
   } else {
@@ -509,9 +509,9 @@ function logoCanvas(
 }
 
 function sitIssuerStill(card: THREE.Group, x: number, z: number): void {
-  card.position.set(x, -0.278, z);
+  card.position.set(x, -0.304, z);
   card.lookAt(0, 0.28, 5);
-  card.rotateX(-1.28);
+  card.rotateX(-1.46);
 }
 
 function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
@@ -609,7 +609,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     map: causticTex,
     color: 0xffffff,
     transparent: true,
-    opacity: 0.48,
+    opacity: 0.32,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
@@ -954,7 +954,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const plate = makeCinemaPlate(0.7, 0.44, lite, undefined, 0.014, true);
+    const plate = makeCinemaPlate(0.62, 0.36, lite, undefined, 0.01, true);
     applyPlateMap(plate.mat, tex);
     const [x, , z] = bankXYZ(i, 0);
     sitIssuerStill(plate.root, x, z);
@@ -963,7 +963,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     group.add(plate.root);
     cards.push(plate.root);
     cardMats.push(plate.mat);
-    const puddle = makeFloorContact(0.84, 0.58, -0.318);
+    const puddle = makeFloorContact(0.72, 0.48, -0.318);
     scene.add(puddle);
     puddles.push(puddle);
     const paintOne = (): void => {
@@ -1129,7 +1129,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       ghostRoot.rotation.y = -0.22 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 1.2) * 0.04);
     }
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
-    causticMat.opacity = reduced ? 0.3 : 0.26 + Math.abs(Math.sin((now - t0) / 1600)) * 0.22;
+    causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;
     sparks.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;
       const pulse = reduced ? 0.4 : 0.22 + Math.abs(Math.sin((now - t0) / 640 + i * 0.7)) * 0.38;
