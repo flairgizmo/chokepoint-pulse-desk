@@ -225,7 +225,7 @@ function chapterReveal(c: Chapter, open = false): string {
       ${kicker(c.kicker)}
       <h2>${esc(c.title)}</h2>
     </summary>
-    <div class="reveal-body"><p>${esc(c.body)}</p></div>
+    <div class="reveal-body">${essayParas(c.body)}</div>
   </details>`;
 }
 
@@ -1115,8 +1115,10 @@ export function renderRead(id: string): string {
   if (!p) return renderNotFound();
   const href = sources[p.hrefKey];
   return `${pageHero(p.kind, p.title, p.lede, '', undefined, 'research')}
-    <article class="chapter">
+    <article class="chapter city-essay">
+      ${photoFigure(plateFor(p.id, p.kind, p.title), 'city-essay-still')}
       <p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
+      ${essayParas(p.lede)}
       <p>The original sits with the publisher. Open it if you want the sentence in its first room.</p>
       ${href?.startsWith('http') ? `<p>${extLink(href, 'Open the original')}</p>` : '<p class="note">Held locally on the live QntDesk library when a PDF exists; this build points at the publisher URL when it is public.</p>'}
       <p><a class="text-link" href="/research">← Library</a></p>
@@ -1465,8 +1467,8 @@ export function renderDonate(): string {
     undefined,
     'donate',
   )}
-  <article class="chapter">
-    ${photoFigure(plateFor('donate', 'support'), 'markets-still')}
+  <article class="chapter city-essay">
+    ${photoFigure(plateFor('donate', 'support'), 'city-essay-still')}
     <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
     <p>Published recipients:</p>
     <ul class="donate-list">
@@ -1509,7 +1511,11 @@ export function renderEpisode(id: string): string {
     '',
     undefined,
     'podcast',
-  )}${playerMarkup(ep)}`;
+  )}${playerMarkup(ep)}
+  <article class="chapter city-essay">
+    ${photoFigure(plateFor('podcast', ep.id, ep.title), 'city-essay-still')}
+    ${essayParas(ep.lede)}
+  </article>`;
 }
 
 export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {

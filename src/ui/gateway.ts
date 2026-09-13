@@ -83,7 +83,13 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   ctx.strokeStyle = 'rgba(234, 241, 255, 0.38)';
   ctx.lineWidth = 8;
   ctx.strokeRect(8, 8, 240, 496);
-  if (i % 2 === 1) {
+  if (i === 0) {
+    ctx.fillStyle = 'rgba(244,247,251,0.96)';
+    ctx.font = '800 160px Outfit, IBM Plex Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Q', 128, 268);
+  } else if (i % 2 === 1) {
     ctx.fillStyle = 'rgba(6, 20, 51, 0.55)';
     ctx.fillRect(0, 0, 256, 512);
   }
@@ -282,6 +288,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.32;
   scene.add(floor);
+  const caustic = new THREE.Mesh(
+    new THREE.CircleGeometry(1.15, 48),
+    new THREE.MeshBasicMaterial({ color: 0x8ec0ff, transparent: true, opacity: 0.32 }),
+  );
+  caustic.rotation.x = -Math.PI / 2;
+  caustic.position.y = -0.31;
+  scene.add(caustic);
 
   const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
