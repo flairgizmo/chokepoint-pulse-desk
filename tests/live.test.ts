@@ -133,8 +133,11 @@ describe('Public desk', () => {
     expect(html).not.toContain('The scarce resource is not another chain');
     expect(html).not.toContain('Orbit the Q');
     expect(html).toContain('layer-still');
+    expect(html).toContain('beat-still');
     expect(html).toContain('/visuals/topics/payments.jpg');
     expect(html).toContain('/visuals/topics/canary.jpg');
+    expect(html).toContain('/visuals/topics/ucl.jpg');
+    expect(html).toContain('/visuals/cities/geneva.jpg');
   });
 
   it('opens people and news as in-site stages, with original as secondary', () => {

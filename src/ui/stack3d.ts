@@ -60,7 +60,7 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
       ctx.fillStyle = '#05070c';
       ctx.fillRect(-6, -6, pw + 12, ph + 12);
       if (img.complete && img.naturalWidth) {
-        ctx.filter = 'saturate(0.82) contrast(1.08) brightness(0.62)';
+        ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
         ctx.drawImage(img, 0, 0, pw, ph);
         ctx.filter = 'none';
       }
@@ -115,7 +115,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
-    ctx.filter = 'saturate(0.82) contrast(1.08) brightness(0.62)';
+    ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
     ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) / 2, dw, dh);
     ctx.filter = 'none';
     ctx.fillStyle = '#05070c';

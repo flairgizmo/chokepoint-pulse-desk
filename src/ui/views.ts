@@ -556,7 +556,8 @@ export function renderHome(): string {
     .reverse()
     .map((t) => {
       const sid = beatStage[t.year];
-      const inner = `<span class="year">${esc(t.year)}</span><div><h3>${esc(t.title)}</h3><p>${esc(t.body)}</p></div>`;
+      const still = photoFigure(plateFor(sid, t.year, t.title), 'beat-still');
+      const inner = `${still}<span class="year">${esc(t.year)}</span><div><h3>${esc(t.title)}</h3><p>${esc(t.body)}</p></div>`;
       return `<li class="beat">${
         sid
           ? `<button type="button" data-stage="event" data-stage-id="${esc(sid)}">${inner}</button>`
