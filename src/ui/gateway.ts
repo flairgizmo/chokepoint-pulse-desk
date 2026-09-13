@@ -96,7 +96,7 @@ function facetMaterial(i: number, on: boolean, lite: boolean): THREE.MeshBasicMa
   const tex = new THREE.CanvasTexture(facetCanvas(i, on));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
-    ? new THREE.MeshBasicMaterial({ map: tex })
+    ? new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
     : new THREE.MeshPhysicalMaterial({
         map: tex,
         color: 0xffffff,
@@ -107,6 +107,7 @@ function facetMaterial(i: number, on: boolean, lite: boolean): THREE.MeshBasicMa
         emissive: 0x1557ff,
         emissiveIntensity: on ? 0.38 : 0.16,
         envMapIntensity: 1.55,
+        side: THREE.DoubleSide,
       });
 }
 
@@ -288,68 +289,49 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const crystal = new THREE.Group();
   const facets: THREE.Mesh[] = [];
-  const facetH = 1.02;
-  const facetR = 0.4;
+  const eqR = 0.48;
+  const eqY = 0.5;
+  const topY = 1.16;
+  const botY = 0.08;
   const face0 = Math.PI / 2 - 0.5 + Math.PI / 6;
   for (let i = 0; i < 6; i++) {
     const a0 = (i / 6) * Math.PI * 2 + face0 - Math.PI / 6;
     const a1 = ((i + 1) / 6) * Math.PI * 2 + face0 - Math.PI / 6;
-    const mid = (a0 + a1) / 2;
-    const chord = 2 * facetR * Math.sin(Math.PI / 6);
-    const face = new THREE.Mesh(new THREE.PlaneGeometry(chord, facetH), facetMaterial(i, false, lite));
-    face.position.set(Math.cos(mid) * facetR, facetH / 2 + 0.08, Math.sin(mid) * facetR);
-    face.lookAt(Math.cos(mid) * 8, face.position.y, Math.sin(mid) * 8);
+    const x0 = Math.cos(a0) * eqR;
+    const z0 = Math.sin(a0) * eqR;
+    const x1 = Math.cos(a1) * eqR;
+    const z1 = Math.sin(a1) * eqR;
+    const upper = new THREE.BufferGeometry();
+    upper.setAttribute('position', new THREE.Float32BufferAttribute([0, topY, 0, x0, eqY, z0, x1, eqY, z1], 3));
+    upper.setAttribute('uv', new THREE.Float32BufferAttribute([0.5, 1, 0, 0, 1, 0], 2));
+    upper.computeVertexNormals();
+    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite));
     face.userData.nodeId = 6;
     crystal.add(face);
     facets.push(face);
-    const capGeo = new THREE.BufferGeometry();
-    capGeo.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(
-        [
-          0,
-          facetH + 0.22,
-          0,
-          Math.cos(a0) * facetR,
-          facetH,
-          Math.sin(a0) * facetR,
-          Math.cos(a1) * facetR,
-          facetH,
-          Math.sin(a1) * facetR,
-        ],
-        3,
-      ),
-    );
-    capGeo.computeVertexNormals();
-    const lid = new THREE.Mesh(
-      capGeo,
+    const lower = new THREE.BufferGeometry();
+    lower.setAttribute('position', new THREE.Float32BufferAttribute([0, botY, 0, x1, eqY, z1, x0, eqY, z0], 3));
+    lower.computeVertexNormals();
+    const pav = new THREE.Mesh(
+      lower,
       new THREE.MeshBasicMaterial({
-        color: i % 2 ? 0x3d7bff : 0x0d3fd4,
+        color: i % 2 ? 0x1557ff : 0x061433,
         side: THREE.DoubleSide,
       }),
     );
-    lid.position.y = 0.08;
-    lid.userData.nodeId = 6;
-    crystal.add(lid);
-    facets.push(lid);
+    pav.userData.nodeId = 6;
+    crystal.add(pav);
+    facets.push(pav);
   }
-  const body = new THREE.Mesh(
-    new THREE.CylinderGeometry(facetR * 0.62, facetR * 0.62, facetH * 0.88, 6),
-    new THREE.MeshBasicMaterial({ color: 0x061028 }),
-  );
-  body.position.y = facetH / 2 + 0.08;
-  body.rotation.y = face0;
-  body.userData.nodeId = 6;
-  crystal.add(body);
   const edgePts: number[] = [];
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2 + face0 - Math.PI / 6;
-    const x = Math.cos(a) * facetR;
-    const z = Math.sin(a) * facetR;
-    edgePts.push(x, 0.08, z, x, facetH + 0.08, z);
+    const x = Math.cos(a) * eqR;
+    const z = Math.sin(a) * eqR;
     const n = ((i + 1) / 6) * Math.PI * 2 + face0 - Math.PI / 6;
-    edgePts.push(x, facetH + 0.08, z, Math.cos(n) * facetR, facetH + 0.08, Math.sin(n) * facetR);
-    edgePts.push(x, facetH + 0.08, z, 0, facetH + 0.32, 0);
+    edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
+    edgePts.push(x, eqY, z, 0, topY, 0);
+    edgePts.push(x, eqY, z, 0, botY, 0);
   }
   const edgeGeo = new THREE.BufferGeometry();
   edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
@@ -367,7 +349,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       opacity: 0.55,
     }),
   );
-  core.position.y = 0.56;
+  core.position.y = 0.5;
   core.userData.nodeId = 6;
   crystal.add(core);
   const base = new THREE.Mesh(
@@ -387,7 +369,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 1.52, 0);
+  gateLabel.position.set(0, 1.36, 0);
   gateLabel.scale.set(1.22, 0.22, 1);
   group.add(gateLabel);
 
@@ -403,7 +385,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.78;
+  rt2.position.y = 1.62;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -417,11 +399,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.78;
+  rt2Disk.position.y = 1.62;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.78, 0);
+  rt2Label.position.set(0, 1.62, 0);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
 
@@ -480,7 +462,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 1.12, 0), new THREE.Vector3(0, 1.74, 0)]),
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 1.16, 0), new THREE.Vector3(0, 1.58, 0)]),
     new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
   );
   stem.computeLineDistances();
@@ -506,7 +488,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [...facets, body, core, base, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...facets, core, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.22 : 1.3;

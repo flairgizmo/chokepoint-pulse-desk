@@ -295,8 +295,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.save();
     ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
     ctx.shadowBlur = onGate ? 36 : 22;
-    const apexY = cy - crystalH * 0.16;
-    const waistY = cy + crystalH * 0.08;
+    const apexY = cy - crystalH * 0.18;
+    const waistY = cy + crystalH * 0.38;
     const baseY = cy + crystalH;
     ctx.beginPath();
     ctx.moveTo(cx - crystalW * 0.72, waistY);
