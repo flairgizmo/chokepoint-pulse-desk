@@ -4576,6 +4576,24 @@ body.stage-open .grok {
   line-height: 1.55;
 }
 
+.story-hit {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+  padding: 0 0 1.05rem;
+}
+
+.story-hit .mono,
+.story-hit h3,
+.story-hit p {
+  color: inherit;
+  padding-inline: 1.05rem;
+}
+
+.story-hit .photo-plate {
+  margin: 0 0 0.75rem;
+}
+
 .paper,
 .patent-card,
 .inst-card,

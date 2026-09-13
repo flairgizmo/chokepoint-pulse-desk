@@ -6,7 +6,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { cinemaFloorMap, hardenCanvasTex } from './cinemaSet';
+import { cinemaFloorMap, duskCubeMap, hardenCanvasTex } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import {
   BANKS,
@@ -150,11 +150,22 @@ function tableCanvas(): HTMLCanvasElement {
   return c;
 }
 
-function facetMaterial(i: number, on: boolean, lite: boolean): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
+function facetMaterial(
+  i: number,
+  on: boolean,
+  lite: boolean,
+  env?: THREE.CubeTexture,
+): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on)));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
-    ? new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
+    ? new THREE.MeshBasicMaterial({
+        map: tex,
+        envMap: env ?? duskCubeMap(),
+        reflectivity: 0.58,
+        combine: THREE.MixOperation,
+        side: THREE.DoubleSide,
+      })
     : new THREE.MeshPhysicalMaterial({
         map: tex,
         color: 0xffffff,
@@ -289,6 +300,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
+  const env = duskCubeMap();
   if (!lite) {
     try {
       const pmrem = new THREE.PMREMGenerator(renderer);
@@ -392,7 +404,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
-      ? new THREE.MeshBasicMaterial({ map: tableTex, side: THREE.DoubleSide })
+      ? new THREE.MeshBasicMaterial({
+          map: tableTex,
+          envMap: env,
+          reflectivity: 0.72,
+          combine: THREE.MixOperation,
+          side: THREE.DoubleSide,
+        })
       : new THREE.MeshPhysicalMaterial({
           map: tableTex,
           color: 0xffffff,
@@ -427,7 +445,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     );
     upper.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], 2));
     upper.computeVertexNormals();
-    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite));
+    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite, env));
     face.userData.nodeId = 6;
     crystal.add(face);
     facets.push(face);
@@ -441,6 +459,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       lower,
       new THREE.MeshBasicMaterial({
         map: pavTex,
+        envMap: env,
+        reflectivity: 0.7,
+        combine: THREE.MixOperation,
         side: THREE.DoubleSide,
       }),
     );
@@ -512,7 +533,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(core);
   const girdle = new THREE.Mesh(
     new THREE.TorusGeometry(eqR, 0.016, 8, 8),
-    new THREE.MeshBasicMaterial({ color: 0xeaf1ff }),
+    new THREE.MeshBasicMaterial({
+      color: 0xeaf1ff,
+      envMap: env,
+      reflectivity: 0.92,
+      combine: THREE.MixOperation,
+    }),
   );
   girdle.rotation.x = Math.PI / 2;
   girdle.position.y = eqY;
@@ -583,7 +609,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
     const mat = lite
-      ? new THREE.MeshBasicMaterial({ map: tex })
+      ? new THREE.MeshBasicMaterial({ map: tex, envMap: env, reflectivity: 0.22, combine: THREE.MixOperation })
       : new THREE.MeshPhysicalMaterial({
           map: tex,
           roughness: 0.22,
@@ -715,7 +741,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       gateLit = gateOn;
       facets.forEach((mesh, i) => {
         if (i % 2 === 1) return;
-        const next = facetMaterial(i / 2, gateOn, lite);
+        const next = facetMaterial(i / 2, gateOn, lite, env);
         const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
         prev.map?.dispose();
         mesh.material = next;

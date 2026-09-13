@@ -8,6 +8,55 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { canUseBloom } from './webgl';
 
+function paintDuskFace(kind: 'px' | 'nx' | 'py' | 'ny' | 'pz' | 'nz'): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  const g = ctx.createLinearGradient(0, 0, kind === 'px' || kind === 'nx' ? 256 : 0, 256);
+  if (kind === 'py') {
+    g.addColorStop(0, '#d7e4ff');
+    g.addColorStop(1, '#5b7aad');
+  } else if (kind === 'ny') {
+    g.addColorStop(0, '#0b1220');
+    g.addColorStop(1, '#02060f');
+  } else if (kind === 'pz' || kind === 'px') {
+    g.addColorStop(0, '#1a3a6a');
+    g.addColorStop(0.42, '#e0b56a');
+    g.addColorStop(1, '#061018');
+  } else {
+    g.addColorStop(0, '#0d2248');
+    g.addColorStop(0.55, '#1557FF');
+    g.addColorStop(1, '#02060f');
+  }
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillStyle = 'rgba(255, 228, 176, 0.42)';
+  for (let i = 0; i < 48; i++) {
+    ctx.fillRect((i * 53) % 256, 150 + ((i * 23) % 90), 2, 2);
+  }
+  return c;
+}
+
+let duskEnv: THREE.CubeTexture | null = null;
+
+/** Painted Canary-dusk cube. Works on software GL — no PMREM, no bloom. */
+export function duskCubeMap(): THREE.CubeTexture {
+  if (duskEnv) return duskEnv;
+  duskEnv = new THREE.CubeTexture([
+    paintDuskFace('px'),
+    paintDuskFace('nx'),
+    paintDuskFace('py'),
+    paintDuskFace('ny'),
+    paintDuskFace('pz'),
+    paintDuskFace('nz'),
+  ]);
+  duskEnv.colorSpace = THREE.SRGBColorSpace;
+  duskEnv.needsUpdate = true;
+  return duskEnv;
+}
+
 export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
   tex.generateMipmaps = false;
   tex.minFilter = THREE.LinearFilter;
@@ -97,7 +146,7 @@ export function plateMaterial(
   lite: boolean,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   return lite
-    ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
+    ? new THREE.MeshBasicMaterial({ color: 0x1a2438, envMap: duskCubeMap(), reflectivity: 0.28 })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
         roughness: 0.22,
