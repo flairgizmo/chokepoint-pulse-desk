@@ -40,7 +40,7 @@ export interface Mission {
 }
 
 const ETHICS =
-  'Public OSINT only. No CCTV, no classified sources, no invented live counts. Pair with local God\'s Eye View for the globe; this desk owns briefing cards and routing.';
+  'Public OSINT only. No CCTV, no classified sources, no invented live counts. Pair with local God\'s Eye View for the globe; briefing cards and routing stay here.';
 
 export const MISSIONS: Mission[] = [
   {

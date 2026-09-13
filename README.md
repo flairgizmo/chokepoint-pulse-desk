@@ -44,8 +44,12 @@ The key stays on the server. The browser only calls `/api/chat`.
 
 ## Publish the site
 
-[Deploy to Netlify](https://app.netlify.com/start/deploy?repository=https://github.com/flairgizmo/chokepoint-pulse-desk) — build `npm run build`, publish `dist`. Then add `XAI_API_KEY` and redeploy. Point `qntdesk.com` at that site in Netlify domain settings.
+This repo is a **static Vite SPA**. It is not a TanStack / Nitro server.
 
-Or enable **GitHub Pages** (Settings → Pages → GitHub Actions). That publishes the static desk; Ask Grok stays on the record until an `/api/chat` host is added.
+If `qntdesk.com` shows pretty-printed JSON `{"error":true,"status":500,"unhandled":true}`, the domain is still attached to a different Nitro app on Vercel. That crash is Nitro hiding an unhandled server error. It is not this desk.
+
+**Fix the domain:** Vercel → the *Nitro* project → Settings → Domains → remove `qntdesk.com`. Then import **this** GitHub repo as a Vite project (`npm run build`, output `dist`, `vercel.json` already pins the framework). Add `qntdesk.com` on that project. Or [Deploy to Netlify](https://app.netlify.com/start/deploy?repository=https://github.com/flairgizmo/chokepoint-pulse-desk) and attach the domain there.
+
+Ask Grok: add `XAI_API_KEY` on Netlify (or another `/api/chat` host) and redeploy. GitHub Pages is static only.
 
 MIT — see `LICENSE`.

@@ -26,6 +26,7 @@ describe('QntDesk encyclopedia contract', () => {
     expect(chapters.length).toBeGreaterThanOrEqual(40);
     expect(papers.length).toBe(48);
     expect(CITIES.length).toBe(17);
+    expect(CITIES.every((c) => Boolean(c.photo))).toBe(true);
     expect(PEOPLE.length).toBeGreaterThanOrEqual(18);
     expect(GLOSSARY.length).toBeGreaterThanOrEqual(60);
     expect(didYouKnow.length).toBeGreaterThanOrEqual(40);

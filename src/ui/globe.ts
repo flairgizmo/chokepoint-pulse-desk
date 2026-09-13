@@ -1,4 +1,11 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { canUseBloom, probeWebGL } from './webgl';
+import { latLonToVec, vecToLatLon } from './latlon';
 import {
   CITIES,
   SETTLEMENT_ROUTES,
@@ -6,6 +13,8 @@ import {
   cityById,
   type City,
 } from '../data/cities';
+
+export { latLonToVec, vecToLatLon } from './latlon';
 
 export interface GlobeHud {
   lat: number;
@@ -30,9 +39,11 @@ interface GlobeOptions {
   onHud: (hud: GlobeHud) => void;
 }
 
-const DAY_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-blue-marble.jpg';
-const NIGHT_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-night.jpg';
+const DAY_TEX = '/visuals/earth/day.jpg';
+const NIGHT_TEX = '/visuals/earth/night.jpg';
 const BUMP_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-topology.png';
+const WATER_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-water.png';
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 function makeLabelSprite(text: string): THREE.Sprite {
   const canvas = document.createElement('canvas');
@@ -41,14 +52,14 @@ function makeLabelSprite(text: string): THREE.Sprite {
   const ctx = canvas.getContext('2d');
   if (ctx) {
     ctx.clearRect(0, 0, 256, 64);
-    ctx.font = '600 28px "IBM Plex Sans", system-ui, sans-serif';
-    ctx.fillStyle = 'rgba(11, 16, 22, 0.82)';
+    ctx.font = '600 26px Outfit, "IBM Plex Sans", system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(11, 18, 32, 0.88)';
     const w = Math.min(240, ctx.measureText(text).width + 24);
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 14, w, 36, 8);
     else ctx.rect(8, 14, w, 36);
     ctx.fill();
-    ctx.fillStyle = '#f3f1ea';
+    ctx.fillStyle = '#f4f7fb';
     ctx.fillText(text, 20, 40);
   }
   const tex = new THREE.CanvasTexture(canvas);
@@ -60,26 +71,30 @@ function makeLabelSprite(text: string): THREE.Sprite {
   return sprite;
 }
 
-function latLonToVec(lat: number, lon: number, r: number): THREE.Vector3 {
-  const phi = THREE.MathUtils.degToRad(90 - lat);
-  const theta = THREE.MathUtils.degToRad(lon + 180);
-  return new THREE.Vector3().setFromSphericalCoords(r, phi, theta);
-}
-
 function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[] {
   const out: THREE.Vector3[] = [];
   const aa = a.clone().normalize();
   const bb = b.clone().normalize();
+  const omega = Math.acos(THREE.MathUtils.clamp(aa.dot(bb), -1, 1));
   const r = a.length();
   for (let i = 0; i <= n; i++) {
     const t = i / n;
-    out.push(new THREE.Vector3().lerpVectors(aa, bb, t).normalize().multiplyScalar(r * 1.018));
+    const lift = Math.sin(t * Math.PI) * 0.055;
+    let dir: THREE.Vector3;
+    if (omega < 1e-5) dir = aa.clone();
+    else {
+      const so = Math.sin(omega);
+      dir = aa
+        .clone()
+        .multiplyScalar(Math.sin((1 - t) * omega) / so)
+        .add(bb.clone().multiplyScalar(Math.sin(t * omega) / so));
+    }
+    out.push(dir.normalize().multiplyScalar(r * (1.02 + lift)));
   }
   return out;
 }
 
-function stars(): THREE.Points {
-  const count = 1800;
+function stars(count = 1800): THREE.Points {
   const pos = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 10);
@@ -91,7 +106,7 @@ function stars(): THREE.Points {
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   return new THREE.Points(
     geo,
-    new THREE.PointsMaterial({ color: 0xc9d4e4, size: 0.035, transparent: true, opacity: 0.85 }),
+    new THREE.PointsMaterial({ color: 0xe8eef8, size: 0.028, transparent: true, opacity: 0.88, sizeAttenuation: true }),
   );
 }
 
@@ -108,17 +123,21 @@ export class EarthGlobe {
   private lastY = 0;
   private startX = 0;
   private startY = 0;
-  private rotY = 0.35;
-  private rotX = 0.42;
-  private distance = 3.4;
+  private phi = 1.08;
+  private theta = 2.05;
+  private earthSpin = 0.42;
+  private distance = 2.85;
+  private velTheta = 0;
+  private velPhi = 0;
+  private followId: string | undefined;
   private overlays: GlobeOverlays = {
     routes: true,
     corridors: true,
     activity: true,
-    labels: true,
+    labels: false,
     night: true,
     day: true,
-    spin: false,
+    spin: true,
   };
   private routeLines: THREE.Line[] = [];
   private corridorLines: THREE.Line[] = [];
@@ -127,10 +146,13 @@ export class EarthGlobe {
   private labelSprites: THREE.Sprite[] = [];
   private globeMesh: THREE.Mesh | null = null;
   private lightsMesh: THREE.Mesh | null = null;
+  private composer: EffectComposer | null = null;
   private dayTex: THREE.Texture | null = null;
   private nightTex: THREE.Texture | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private hoverId: string | undefined;
+  private lastHudHover: string | undefined;
+  private hudClock = 0;
   private raycaster = new THREE.Raycaster();
   private pointer = new THREE.Vector2();
   private opts: GlobeOptions;
@@ -155,27 +177,231 @@ export class EarthGlobe {
   focusCity(id: string): void {
     const city = cityById(id);
     if (!city) return;
-    this.rotY = THREE.MathUtils.degToRad(-city.lon) + Math.PI;
-    this.rotX = THREE.MathUtils.degToRad(city.lat) * 0.65;
-    this.distance = 1.42;
+    this.followId = id;
+    this.lookAtCity(city);
+    this.distance = 1.48;
   }
 
   zoomBy(delta: number): void {
     const step = this.distance < 1.8 ? delta * 0.55 : delta;
-    this.distance = THREE.MathUtils.clamp(this.distance + step, 1.12, 8.2);
+    this.distance = THREE.MathUtils.clamp(this.distance + step, 1.12, 6);
   }
 
   reset(): void {
-    this.rotY = 0.35;
-    this.rotX = 0.42;
-    this.distance = 3.4;
+    this.followId = 'london';
+    this.earthSpin = 0.42;
+    this.velTheta = 0;
+    this.velPhi = 0;
+    this.panX = 0;
+    this.distance = 2.85;
+    const london = cityById('london');
+    if (london) this.lookAtCity(london);
   }
 
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
+    this.composer?.dispose();
     this.renderer?.dispose();
     this.root.replaceChildren();
+  }
+
+  private lookAtCity(city: City): void {
+    if (this.flat) {
+      this.panX = ((city.lon + 180) / 360) * this.flatWidth - this.flatWidth / 2;
+      return;
+    }
+    const local = latLonToVec(city.lat, city.lon, 1);
+    local.applyAxisAngle(Y_AXIS, this.earthSpin);
+    const sph = new THREE.Spherical().setFromVector3(local);
+    this.phi = THREE.MathUtils.clamp(sph.phi, 0.18, Math.PI - 0.18);
+    this.theta = sph.theta;
+  }
+
+  private flat = false;
+  private lite = false;
+  private flatDay: HTMLImageElement | null = null;
+  private flatNight: HTMLImageElement | null = null;
+  private panX = 0;
+  private flatWidth = 1;
+
+  private mountFlat(canvas: HTMLCanvasElement): void {
+    this.flat = true;
+    canvas.dataset.engine = 'canvas2d';
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      this.root.innerHTML =
+        '<p class="earth-fallback">The globe could not start. Use the city list beside the map.</p>';
+      return;
+    }
+    const load = (src: string, assign: (img: HTMLImageElement) => void): void => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        assign(img);
+      };
+      img.src = src;
+    };
+    load(DAY_TEX, (img) => {
+      this.flatDay = img;
+    });
+    load(NIGHT_TEX, (img) => {
+      this.flatNight = img;
+    });
+    const resize = (): void => {
+      const { width, height } = this.root.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      this.flatWidth = canvas.width;
+    };
+    const project = (lat: number, lon: number): [number, number] => {
+      const { width: W, height: H } = canvas;
+      const x = ((((lon + 180) / 360) * W - this.panX) % W + W) % W;
+      const y = ((90 - lat) / 180) * H;
+      return [x, y];
+    };
+    const tile = (img: HTMLImageElement): void => {
+      const { width: W, height: H } = canvas;
+      const shift = ((-this.panX % W) + W) % W;
+      ctx.drawImage(img, shift - W, 0, W, H);
+      ctx.drawImage(img, shift, 0, W, H);
+    };
+    const arc = (from: City, to: City, color: string, width: number): void => {
+      const { width: W } = canvas;
+      const [x1, y1] = project(from.lat, from.lon);
+      let [x2, y2] = project(to.lat, to.lon);
+      if (Math.abs(x2 - x1) > W / 2) x2 += x2 > x1 ? -W : W;
+      const copies = [0];
+      if (x2 < 0) copies.push(W);
+      if (x2 > W) copies.push(-W);
+      for (const dx of copies) {
+        const ax = x1 + dx;
+        const bx = x2 + dx;
+        const mx = (ax + bx) / 2;
+        const my = Math.min(y1, y2) - Math.abs(bx - ax) * 0.22;
+        ctx.beginPath();
+        ctx.moveTo(ax, y1);
+        ctx.quadraticCurveTo(mx, my, bx, y2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.stroke();
+      }
+    };
+    const paint = (): void => {
+      const { width: W, height: H } = canvas;
+      ctx.fillStyle = '#05070c';
+      ctx.fillRect(0, 0, W, H);
+      const day = this.overlays.day && this.flatDay;
+      const night = this.overlays.night && this.flatNight;
+      if (day) tile(day);
+      else if (!night) {
+        ctx.fillStyle = '#0d2233';
+        ctx.fillRect(0, H * 0.28, W, H * 0.44);
+      }
+      if (night) {
+        if (day) {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.82;
+        }
+        tile(night);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      const wash = ctx.createLinearGradient(0, 0, 0, H);
+      wash.addColorStop(0, 'rgba(5, 8, 16, 0.42)');
+      wash.addColorStop(0.45, 'rgba(5, 8, 16, 0.08)');
+      wash.addColorStop(1, 'rgba(5, 8, 16, 0.55)');
+      ctx.fillStyle = wash;
+      ctx.fillRect(0, 0, W, H);
+      const vignette = ctx.createRadialGradient(W * 0.5, H * 0.48, H * 0.12, W * 0.5, H * 0.5, Math.max(W, H) * 0.68);
+      vignette.addColorStop(0, 'rgba(21, 87, 255, 0.04)');
+      vignette.addColorStop(1, 'rgba(4, 8, 16, 0.38)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, W, H);
+      ctx.save();
+      ctx.lineCap = 'round';
+      if (this.overlays.routes) {
+        for (const [a, b] of SETTLEMENT_ROUTES) {
+          const from = cityById(a);
+          const to = cityById(b);
+          if (from && to) arc(from, to, 'rgba(186, 204, 224, 0.38)', Math.max(1.1, W / 900));
+        }
+      }
+      if (this.overlays.corridors) {
+        for (const [a, b] of TOKEN_CORRIDORS) {
+          const from = cityById(a);
+          const to = cityById(b);
+          if (from && to) arc(from, to, 'rgba(30, 201, 176, 0.72)', Math.max(1.6, W / 620));
+        }
+      }
+      ctx.restore();
+      for (const city of CITIES) {
+        const [x, y] = project(city.lat, city.lon);
+        const hq = city.kind === 'Headquarters';
+        const hex = `#${kindColor(city.kind).toString(16).padStart(6, '0')}`;
+        ctx.beginPath();
+        ctx.fillStyle = hq ? 'rgba(30, 201, 176, 0.22)' : 'rgba(212, 180, 131, 0.16)';
+        ctx.arc(x, y, hq ? 14 : 9, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = hex;
+        ctx.shadowColor = hex;
+        ctx.shadowBlur = hq ? 16 : 10;
+        ctx.arc(x, y, hq ? 6 : 4.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        if (this.overlays.labels) {
+          ctx.font = `600 ${Math.max(11, W / 92)}px Outfit, system-ui, sans-serif`;
+          ctx.fillStyle = '#f4f7fb';
+          ctx.fillText(city.name, x + 10, y + 4);
+        }
+      }
+    };
+    canvas.addEventListener('pointerdown', (e) => {
+      this.dragging = true;
+      this.followId = undefined;
+      this.lastX = e.clientX;
+      this.startX = e.clientX;
+      this.startY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!this.dragging) return;
+      this.panX -= (e.clientX - this.lastX) * (canvas.width / Math.max(1, canvas.clientWidth));
+      this.lastX = e.clientX;
+    });
+    canvas.addEventListener('pointerup', (e) => {
+      if (!this.dragging) return;
+      this.dragging = false;
+      if (Math.hypot(e.clientX - this.startX, e.clientY - this.startY) < 6) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = canvas.width / rect.width;
+        const sy = canvas.height / rect.height;
+        const px = (e.clientX - rect.left) * sx;
+        const py = (e.clientY - rect.top) * sy;
+        let best: string | undefined;
+        let dist = 18;
+        for (const city of CITIES) {
+          const [x, y] = project(city.lat, city.lon);
+          const d = Math.hypot(x - px, y - py);
+          if (d < dist) {
+            dist = d;
+            best = city.id;
+          }
+        }
+        if (best) this.opts.onCity(best);
+      }
+    });
+    window.addEventListener('resize', resize);
+    resize();
+    const loop = () => {
+      if (this.disposed) return;
+      this.frame = requestAnimationFrame(loop);
+      if (!this.reduced && !this.dragging && this.overlays.spin) this.panX += 0.55;
+      paint();
+    };
+    loop();
   }
 
   private mount(): void {
@@ -184,50 +410,73 @@ export class EarthGlobe {
     canvas.setAttribute('aria-hidden', 'true');
     this.root.appendChild(canvas);
 
+    const probe = probeWebGL();
+    if (!probe) {
+      this.mountFlat(canvas);
+      return;
+    }
+    this.lite = probe.lite;
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
-        antialias: true,
+        antialias: !this.lite,
         alpha: true,
-        powerPreference: 'high-performance',
+        powerPreference: this.lite ? 'low-power' : 'high-performance',
+        failIfMajorPerformanceCaveat: false,
       });
     } catch {
-      this.root.innerHTML =
-        '<p class="earth-fallback">WebGL could not start. The encyclopedia still reads without the globe.</p>';
+      this.mountFlat(canvas);
       return;
     }
     this.renderer = renderer;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    canvas.dataset.engine = 'webgl';
+    canvas.dataset.profile = this.lite ? 'lite' : 'unreal';
+    renderer.setPixelRatio(this.lite ? 1 : Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = this.lite ? 1.08 : 1.2;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
     this.scene = scene;
-    scene.add(stars());
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 50);
+    if (!this.lite) {
+      try {
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+        pmrem.dispose();
+      } catch {
+        // Lights-only path if RoomEnvironment stalls.
+      }
+    }
+    scene.add(stars(this.lite ? 600 : 1800));
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
 
     const group = new THREE.Group();
     this.earth = group;
     scene.add(group);
 
-    const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 128, 96),
-      new THREE.MeshStandardMaterial({
-        color: 0x0b2a32,
-        roughness: 0.62,
-        metalness: 0.12,
-        emissive: 0x031016,
-      }),
-    );
+    const segs = this.lite ? 48 : 96;
+    const rings = this.lite ? 32 : 64;
+    const globeMat = this.lite
+      ? new THREE.MeshBasicMaterial({ color: 0x0b2a32 })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x0b2a32,
+          roughness: 0.38,
+          metalness: 0.22,
+          emissive: 0x031016,
+          clearcoat: 0.42,
+          clearcoatRoughness: 0.28,
+          envMapIntensity: 1.05,
+        });
+    const globe = new THREE.Mesh(new THREE.SphereGeometry(1, segs, rings), globeMat);
     this.globeMesh = globe;
     group.add(globe);
     group.add(this.graticule());
 
     const lights = new THREE.Mesh(
-      new THREE.SphereGeometry(1.004, 128, 96),
+      new THREE.SphereGeometry(1.004, segs, rings),
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
@@ -240,55 +489,81 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.07, 96, 72),
+      new THREE.SphereGeometry(1.09, this.lite ? 32 : 64, this.lite ? 24 : 48),
       new THREE.ShaderMaterial({
-        uniforms: { color: { value: new THREE.Color(0x4c7cff) } },
-        vertexShader:
-          'varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-        fragmentShader:
-          'varying vec3 vN; uniform vec3 color; void main(){ float f = pow(1.0 - abs(vN.z), 2.35); gl_FragColor = vec4(color, f * 0.42); }',
+        uniforms: { color: { value: new THREE.Color(0x8ec0ff) } },
+        vertexShader: `
+          varying vec3 vN;
+          varying vec3 vV;
+          void main(){
+            vN = normalize(normalMatrix * normal);
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vV = normalize(-mv.xyz);
+            gl_Position = projectionMatrix * mv;
+          }`,
+        fragmentShader: `
+          varying vec3 vN;
+          varying vec3 vV;
+          uniform vec3 color;
+          void main(){
+            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.85);
+            gl_FragColor = vec4(color, fresnel * 0.72);
+          }`,
         transparent: true,
         side: THREE.BackSide,
         depthWrite: false,
+        blending: THREE.AdditiveBlending,
       }),
     );
     group.add(atmo);
 
+    const paintTex = (src: string, assign: (tex: THREE.Texture) => void): void => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        const tex = new THREE.Texture(img);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.needsUpdate = true;
+        assign(tex);
+        this.applyMaps();
+      };
+      img.src = src;
+    };
+    paintTex(DAY_TEX, (tex) => {
+      this.dayTex = tex;
+    });
+    paintTex(NIGHT_TEX, (tex) => {
+      this.nightTex = tex;
+    });
     const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin('anonymous');
     const ignore = (): void => undefined;
-    loader.load(
-      DAY_TEX,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        this.dayTex = tex;
-        this.applyMaps();
-      },
-      undefined,
-      ignore,
-    );
-    loader.load(
-      NIGHT_TEX,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        this.nightTex = tex;
-        this.applyMaps();
-      },
-      undefined,
-      ignore,
-    );
-    loader.load(
-      BUMP_TEX,
-      (tex) => {
-        const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
-        if (!mat) return;
-        mat.bumpMap = tex;
-        mat.bumpScale = 0.04;
-        mat.needsUpdate = true;
-      },
-      undefined,
-      ignore,
-    );
+    if (!this.lite) {
+      loader.load(
+        BUMP_TEX,
+        (tex) => {
+          const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+          if (!mat) return;
+          mat.bumpMap = tex;
+          mat.bumpScale = 0.055;
+          mat.needsUpdate = true;
+        },
+        undefined,
+        ignore,
+      );
+      loader.load(
+        WATER_TEX,
+        (tex) => {
+          const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+          if (!mat) return;
+          mat.metalnessMap = tex;
+          mat.metalness = 0.42;
+          mat.roughness = 0.38;
+          mat.needsUpdate = true;
+        },
+        undefined,
+        ignore,
+      );
+    }
 
     scene.add(new THREE.AmbientLight(0x6b7c8c, 0.32));
     const key = new THREE.DirectionalLight(0xfff4e5, 1.85);
@@ -302,12 +577,14 @@ export class EarthGlobe {
     for (const city of CITIES) {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, 14, 14),
-        new THREE.MeshStandardMaterial({
+        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, this.lite ? 8 : 12, this.lite ? 8 : 12),
+        new THREE.MeshPhysicalMaterial({
           color: kindColor(city.kind),
           emissive: kindColor(city.kind),
-          emissiveIntensity: 0.55,
-          roughness: 0.35,
+          emissiveIntensity: 0.85,
+          roughness: 0.22,
+          metalness: 0.35,
+          clearcoat: 0.7,
         }),
       );
       pin.position.copy(pos);
@@ -323,7 +600,8 @@ export class EarthGlobe {
       stem.userData.cityId = city.id;
       group.add(stem);
       this.pinMeshes.push(pin, stem);
-      const label = makeLabelSprite(`${city.name} · ${city.kind}`);
+      const label = makeLabelSprite(city.name);
+      label.scale.set(0.34, 0.085, 1);
       label.position.copy(latLonToVec(city.lat, city.lon, 1.09));
       label.userData.cityId = city.id;
       group.add(label);
@@ -331,6 +609,8 @@ export class EarthGlobe {
     }
 
     const london = CITIES.find((c) => c.id === 'london')!;
+    this.followId = london.id;
+    this.lookAtCity(london);
     this.pulse = new THREE.Mesh(
       new THREE.SphereGeometry(0.028, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0x1ec9b0, transparent: true, opacity: 0.32 }),
@@ -338,16 +618,18 @@ export class EarthGlobe {
     this.pulse.position.copy(latLonToVec(london.lat, london.lon, 1.03));
     group.add(this.pulse);
 
+    const arcSegs = this.lite ? 32 : 64;
     this.routeLines = SETTLEMENT_ROUTES.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, 0.32),
+      this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, 0.32, arcSegs),
     );
     this.corridorLines = TOKEN_CORRIDORS.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x1ec9b0, 0.72),
+      this.addArc(cityById(a)!, cityById(b)!, 0x1ec9b0, 0.72, arcSegs),
     );
 
     window.addEventListener('resize', () => this.resize());
     canvas.addEventListener('pointerdown', (e) => {
       this.dragging = true;
+      this.followId = undefined;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
       this.startX = e.clientX;
@@ -364,8 +646,10 @@ export class EarthGlobe {
       const dy = e.clientY - this.lastY;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
-      this.rotY += dx * 0.005;
-      this.rotX = THREE.MathUtils.clamp(this.rotX + dy * 0.004, -1.15, 1.15);
+      this.velTheta = -dx * 0.012;
+      this.velPhi = dy * 0.009;
+      this.theta += this.velTheta;
+      this.phi = THREE.MathUtils.clamp(this.phi + this.velPhi, 0.18, Math.PI - 0.18);
     });
     const endDrag = (e: PointerEvent) => {
       if (!this.dragging) return;
@@ -381,15 +665,43 @@ export class EarthGlobe {
       'wheel',
       (e) => {
         e.preventDefault();
-        this.zoomBy(e.deltaY * 0.0016);
+        this.zoomBy(e.deltaY * 0.0014);
       },
       { passive: false },
     );
     canvas.addEventListener('dblclick', () => {
-      this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 8.2);
+      this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 6);
     });
 
+    if (canUseBloom(renderer)) {
+      try {
+        const composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.42, 0.52, 0.72));
+        composer.addPass(new OutputPass());
+        this.composer = composer;
+      } catch {
+        this.composer = null;
+      }
+    }
+
     this.resize();
+    const first = performance.now();
+    this.tick();
+    if (this.lite && performance.now() - first > 2500) {
+      this.renderer.dispose();
+      this.renderer = null;
+      this.scene = null;
+      this.camera = null;
+      this.composer = null;
+      canvas.remove();
+      const flat = document.createElement('canvas');
+      flat.className = 'earth-canvas';
+      flat.setAttribute('aria-hidden', 'true');
+      this.root.appendChild(flat);
+      this.mountFlat(flat);
+      return;
+    }
     const loop = () => {
       if (this.disposed) return;
       this.frame = requestAnimationFrame(loop);
@@ -417,8 +729,8 @@ export class EarthGlobe {
     );
   }
 
-  private addArc(a: City, b: City, color: number, opacity: number): THREE.Line {
-    const pts = greatCircle(latLonToVec(a.lat, a.lon, 1), latLonToVec(b.lat, b.lon, 1));
+  private addArc(a: City, b: City, color: number, opacity: number, segs = 64): THREE.Line {
+    const pts = greatCircle(latLonToVec(a.lat, a.lon, 1), latLonToVec(b.lat, b.lon, 1), segs);
     const geo = new THREE.BufferGeometry().setFromPoints(pts);
     const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
     this.earth?.add(line);
@@ -448,45 +760,117 @@ export class EarthGlobe {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.composer?.setSize(w, h);
   }
 
-  private tick(): void {
-    if (!this.renderer || !this.scene || !this.camera || !this.earth) return;
-    if (!this.reduced && !this.dragging && this.overlays.spin) this.rotY += 0.001;
-    this.earth.rotation.y = this.rotY;
-    this.earth.rotation.x = this.rotX * 0.12;
-    this.camera.position.set(0, this.rotX * 0.32, this.distance);
-    this.camera.lookAt(0, 0, 0);
-    if (this.sun) {
-      const t = this.overlays.day ? 1.85 : 0.35;
-      this.sun.intensity = t;
-    }
-    if (this.pulse && this.overlays.activity && !this.reduced) {
-      const s = 1 + Math.sin(performance.now() / 420) * 0.55;
-      this.pulse.scale.setScalar(s);
-    }
-    this.renderer.render(this.scene, this.camera);
+  private facingLatLon(): { lat: number; lon: number } {
+    if (!this.camera) return { lat: 0, lon: 0 };
+    const world = this.camera.position.clone().normalize();
+    world.applyAxisAngle(Y_AXIS, -this.earthSpin);
+    return vecToLatLon(world);
+  }
+
+  private emitHud(): void {
+    const hover = this.hoverId ? cityById(this.hoverId) : undefined;
+    const facing = hover ? { lat: hover.lat, lon: hover.lon } : this.facingLatLon();
     const altitudeKm = Math.round((this.distance - 1.05) * 6371);
     this.opts.onHud({
-      lat: THREE.MathUtils.radToDeg(this.rotX),
-      lon: THREE.MathUtils.radToDeg(-this.rotY),
+      lat: facing.lat,
+      lon: facing.lon,
       altitudeKm: Math.max(40, altitudeKm),
-      zoom: Number((3.4 / this.distance).toFixed(1)),
+      zoom: Number((2.85 / this.distance).toFixed(1)),
       hoverId: this.hoverId,
     });
   }
 
+  private tick(): void {
+    if (!this.renderer || !this.scene || !this.camera || !this.earth) return;
+    if (!this.dragging) {
+      this.theta += this.velTheta;
+      this.phi = THREE.MathUtils.clamp(this.phi + this.velPhi, 0.18, Math.PI - 0.18);
+      this.velTheta *= 0.9;
+      this.velPhi *= 0.9;
+      if (Math.abs(this.velTheta) < 0.00008) this.velTheta = 0;
+      if (Math.abs(this.velPhi) < 0.00008) this.velPhi = 0;
+    }
+    if (!this.reduced && !this.dragging && this.overlays.spin) this.earthSpin += 0.0034;
+    this.earth.rotation.set(0, this.earthSpin, 0);
+    if (this.followId && !this.dragging) {
+      const city = cityById(this.followId);
+      if (city) this.lookAtCity(city);
+    }
+    this.camera.position.setFromSphericalCoords(this.distance, this.phi, this.theta);
+    this.camera.lookAt(0, 0, 0);
+    if (this.sun) this.sun.intensity = this.overlays.day ? 1.85 : 0.35;
+    if (this.pulse && this.overlays.activity && !this.reduced) {
+      const s = 1 + Math.sin(performance.now() / 420) * 0.55;
+      this.pulse.scale.setScalar(s);
+    }
+    this.layoutLabels();
+    if (this.composer) this.composer.render();
+    else this.renderer.render(this.scene, this.camera);
+    this.hudClock += 1;
+    if (this.hoverId !== this.lastHudHover || this.hudClock % 4 === 0) {
+      this.lastHudHover = this.hoverId;
+      this.emitHud();
+    }
+  }
+
+  private layoutLabels(): void {
+    if (!this.camera || !this.renderer) return;
+    const w = this.renderer.domElement.clientWidth;
+    const h = this.renderer.domElement.clientHeight;
+    const placed: Array<{ x: number; y: number }> = [];
+    const minDist = 110;
+    let shown = 0;
+    const cap = 4;
+    const rank = (id: string): number => {
+      if (id === this.followId || id === this.hoverId) return 0;
+      const city = cityById(id);
+      return city?.kind === 'Headquarters' ? 1 : 2;
+    };
+    const sprites = [...this.labelSprites].sort((a, b) => rank(String(a.userData.cityId)) - rank(String(b.userData.cityId)));
+    const world = new THREE.Vector3();
+    const ndc = new THREE.Vector3();
+    for (const sprite of sprites) {
+      if (!this.overlays.labels) {
+        sprite.visible = false;
+        continue;
+      }
+      sprite.getWorldPosition(world);
+      const facing = world.clone().normalize().dot(this.camera.position.clone().normalize());
+      if (facing < 0.22) {
+        sprite.visible = false;
+        continue;
+      }
+      ndc.copy(world).project(this.camera);
+      if (ndc.z > 1 || Math.abs(ndc.x) > 1.08 || Math.abs(ndc.y) > 1.08) {
+        sprite.visible = false;
+        continue;
+      }
+      const x = (ndc.x * 0.5 + 0.5) * w;
+      const y = (-ndc.y * 0.5 + 0.5) * h;
+      const forced = rank(String(sprite.userData.cityId)) < 2;
+      const hit = placed.some((p) => Math.hypot(p.x - x, p.y - y) < minDist);
+      sprite.visible = forced || (!hit && shown < cap);
+      if (sprite.visible) {
+        shown += 1;
+        placed.push({ x, y });
+      }
+    }
+  }
+
   private applyMaps(): void {
-    const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
+    const mat = this.globeMesh?.material as (THREE.MeshStandardMaterial | THREE.MeshBasicMaterial) | undefined;
     if (mat) {
       if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
         mat.color = new THREE.Color(0xffffff);
-        mat.emissive = new THREE.Color(0x0a1218);
+        if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
       } else {
         mat.map = this.overlays.night && this.nightTex ? this.nightTex : null;
         mat.color = new THREE.Color(this.nightTex && this.overlays.night ? 0xffffff : 0x0b2a32);
-        mat.emissive = new THREE.Color(0x071018);
+        if ('emissive' in mat) mat.emissive = new THREE.Color(0x071018);
       }
       mat.needsUpdate = true;
     }

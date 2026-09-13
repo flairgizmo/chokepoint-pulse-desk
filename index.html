@@ -7,7 +7,7 @@
       name="description"
       content="QntDesk — Overledger, programmable sterling, live QNT, and a twenty-part series on the Internet of Value."
     />
-    <meta name="theme-color" content="#e4edff" />
+    <meta name="theme-color" content="#ffffff" />
     <meta name="color-scheme" content="light" />
     <title>QntDesk — the Internet of Value</title>
     <link rel="icon" type="image/svg+xml" href="/brand/qntdesk-mark.svg" />
@@ -40,11 +40,11 @@
         justify-items: center;
         gap: 0.85rem;
         margin: 0;
-        font-family: 'IBM Plex Sans', Helvetica, Arial, sans-serif;
+        font-family: Outfit, Helvetica, Arial, sans-serif;
         font-weight: 700;
         letter-spacing: -0.04em;
-        color: #04101f;
-        background: #e4edff;
+        color: #0b1220;
+        background: #ffffff;
       }
       .boot img {
         width: 3.25rem;
@@ -58,11 +58,20 @@
   </head>
   <body>
     <div id="app">
-      <div class="boot" aria-busy="true">
+      <div class="boot" aria-busy="true" data-boot>
         <img src="/brand/qntdesk-icon.png" width="52" height="52" alt="QntDesk" />
         <p>QntDesk</p>
       </div>
     </div>
+    <script>
+      window.setTimeout(function () {
+        var boot = document.querySelector('#app [data-boot]');
+        if (!boot) return;
+        boot.setAttribute('aria-busy', 'false');
+        var line = boot.querySelector('p');
+        if (line) line.textContent = 'Desk is taking too long. Refresh the page.';
+      }, 12000);
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

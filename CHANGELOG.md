@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-09-13 — Apify reference brief
+
+- Filed `docs/APIFY_REFERENCE_BRIEF.md`: public-page scrape log, 15 sourced headlines, official visual motifs (redraw, never hotlink), exact UK Finance cohort strings (including the programme-page Monzo seventh name), and Bloomberg / Reuters / FT library notes from public about pages only.
+
 ## 2026-09-12 — Tesseract brand, dark Web3 desk
 
 - The uploaded chrome tesseract lockup is the mark. Header, boot, favicon, and share card use it.
