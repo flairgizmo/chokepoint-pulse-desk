@@ -61,13 +61,15 @@ function paintPhotoGlass(
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const sx = photo.naturalWidth * (cut === 'table' ? 0.28 : 0.16);
-    const sy = photo.naturalHeight * (cut === 'table' ? 0.48 : 0.1);
-    const sw = Math.max(1, photo.naturalWidth * (cut === 'table' ? 0.58 : 0.7));
-    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.4 : 0.8));
+    const sx = photo.naturalWidth * (cut === 'table' ? 0.2 : 0.16);
+    const sy = photo.naturalHeight * (cut === 'table' ? 0.3 : 0.1);
+    const sw = Math.max(1, photo.naturalWidth * (cut === 'table' ? 0.48 : 0.7));
+    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.22 : 0.8));
+    if (cut === 'table') ctx.filter = 'contrast(1.28) brightness(0.36) saturate(0.62)';
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
+    ctx.filter = 'none';
     ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.4 : cut === 'table' ? 0.16 : 0.2;
+    ctx.globalAlpha = cut === 'pav' ? 0.4 : cut === 'table' ? 0.12 : 0.2;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
@@ -78,7 +80,7 @@ function paintPhotoGlass(
       : cut === 'pav'
         ? 'rgba(4, 10, 28, 0.5)'
         : cut === 'table'
-          ? 'rgba(3, 8, 22, 0.62)'
+          ? 'rgba(3, 8, 20, 0.78)'
           : 'rgba(8, 20, 48, 0.3)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
@@ -90,15 +92,15 @@ function paintPhotoGlass(
     ctx.fillRect(0, 0, w, h);
   }
   ctx.globalCompositeOperation = 'screen';
-  const cx = cut === 'table' ? w * 0.36 : w * 0.3;
-  const cy = cut === 'table' ? h * 0.3 : h * 0.2;
-  const catchL = ctx.createRadialGradient(cx, cy, 3, cx, cy, cut === 'table' ? w * 0.18 : w * 0.46);
+  const cx = cut === 'table' ? w * 0.34 : w * 0.3;
+  const cy = cut === 'table' ? h * 0.28 : h * 0.2;
+  const catchL = ctx.createRadialGradient(cx, cy, 2, cx, cy, cut === 'table' ? w * 0.12 : w * 0.46);
   catchL.addColorStop(
     0,
     cut === 'pav'
       ? 'rgba(234, 241, 255, 0.22)'
       : cut === 'table'
-        ? 'rgba(255, 236, 210, 0.58)'
+        ? 'rgba(255, 236, 210, 0.28)'
         : 'rgba(234, 241, 255, 0.34)',
   );
   catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
@@ -229,7 +231,9 @@ function glassMat(
   opts: { on?: boolean; transmission?: number; thickness?: number; shade?: boolean } = {},
 ): CutMat | THREE.MeshBasicMaterial {
   if (lite && opts.shade === false) {
-    return new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide });
+    const mat = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide });
+    mat.toneMapped = false;
+    return mat;
   }
   return lite
     ? new THREE.MeshPhongMaterial({
@@ -477,10 +481,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const fill = new THREE.PointLight(0x6aa8ff, 0.55, 6);
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
-  const bounce = new THREE.DirectionalLight(0x9eb4d4, lite ? 0.26 : 0.14);
+  const bounce = new THREE.DirectionalLight(0x9eb4d4, lite ? 0.14 : 0.1);
   bounce.position.set(0.35, -1.15, 1.45);
   scene.add(bounce);
-  const culet = new THREE.PointLight(0x8eb0ff, lite ? 0.22 : 0.12, 1.8);
+  const culet = new THREE.PointLight(0x8eb0ff, lite ? 0.12 : 0.08, 1.8);
   culet.position.set(0.05, -0.42, 0.28);
   scene.add(culet);
 

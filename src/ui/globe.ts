@@ -637,7 +637,8 @@ export class EarthGlobe {
         side: THREE.DoubleSide,
       }),
     );
-    glint.position.copy(this.sunDir.clone().multiplyScalar(1.018));
+    const glintDir = latLonToVec(36, -16, 1).applyAxisAngle(Y_AXIS, this.earthSpin).normalize();
+    glint.position.copy(glintDir.multiplyScalar(1.018));
     glint.lookAt(0, 0, 0);
     glint.renderOrder = 4;
     scene.add(glint);
