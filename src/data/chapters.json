@@ -52,7 +52,7 @@
     "id": "not-l1",
     "kicker": "Layer",
     "title": "Not a blockchain",
-    "body": "Overledger does not mint a native L1. It maps requests onto the settlement domains it is connected to. If a flow needs Ethereum, Hyperledger Fabric, Corda, Besu, or a bank core, the gateway routes \u2014 it does not replace. The ACM DLT paper and Riley\u2019s research note put this in a taxonomy: among interoperability options, the API gateway category is the one Quant ships. If money is going to live on many ledgers, the layer that already maps between those ledgers is the object this desk files.",
+    "body": "Overledger does not mint a native L1. It maps requests onto the settlement domains it is connected to. If a flow needs Ethereum, Hyperledger Fabric, Corda, Besu, or a bank core, the gateway routes \u2014 it does not replace. The ACM DLT paper and Riley\u2019s research note put this in a taxonomy: among interoperability options, the API gateway category is the one Quant ships. If money is going to live on many ledgers, the layer that already maps between those ledgers is the object on the record.",
     "page": "technology"
   },
   {

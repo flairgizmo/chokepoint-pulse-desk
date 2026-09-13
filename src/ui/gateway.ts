@@ -2,35 +2,41 @@
 
 type NodeId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-const BANKS: Array<{ id: NodeId; name: string; note: string }> = [
+const BANKS: Array<{ id: NodeId; name: string; short: string; note: string }> = [
   {
     id: 0,
     name: 'Barclays',
+    short: 'BARC',
     note: 'Named GBTD issuer, 26 September 2025. Quant’s write-up of a remortgage lock-and-release sits with this name.',
   },
   {
     id: 1,
     name: 'HSBC',
+    short: 'HSBC',
     note: 'Named GBTD issuer. Quant’s write-up of an Orion delivery-versus-payment sits with this name.',
   },
   {
     id: 2,
     name: 'Lloyds Banking Group',
+    short: 'LLOY',
     note: 'UK Finance’s press uses Lloyds Banking Group. The public wordmark is Lloyds. Retail P2P lock-and-release is the Quant write-up.',
   },
   {
     id: 3,
     name: 'NatWest',
+    short: 'NWB',
     note: 'Named GBTD issuer. Sat on the June 2026 Digital Innovation Summit panel, in Quant’s own note.',
   },
   {
     id: 4,
     name: 'Nationwide',
+    short: 'NWID',
     note: 'Named GBTD issuer. Commercial-bank sterling. Quant is the technology partner, not the issuer.',
   },
   {
     id: 5,
     name: 'Santander',
+    short: 'SAN',
     note: 'Named GBTD issuer. UK Finance’s press also writes Santander UK in some bylines. Same issuing bank.',
   },
 ];
@@ -62,7 +68,7 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   let raf = 0;
   const restAx = 1.08;
   const restAy = 0.28;
-  const orbit = (12 * Math.PI) / 180;
+  const orbit = (16 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
   let dragging = false;
@@ -77,7 +83,7 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.max(1, Math.floor(r.width * dpr));
     canvas.height = Math.max(1, Math.floor(r.height * dpr));
   };
@@ -113,8 +119,8 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const draw = (now: number): void => {
     const { width: W, height: H } = canvas;
     ctx.clearRect(0, 0, W, H);
-    const pulse = reduced ? 0 : Math.sin(((now - t0) / 8000) * Math.PI * 2) * 0.018;
-    const travel = reduced ? 0.35 : ((now - t0) / 8000) % 1;
+    const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
+    const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -137,12 +143,24 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
       return project(Math.cos(a) * (0.42 + pulse * 0.4), 0, Math.sin(a) * (0.42 + pulse * 0.4));
     });
 
+    ctx.save();
+    ctx.strokeStyle = 'rgba(11, 31, 92, 0.06)';
+    ctx.lineWidth = 1;
+    for (const ring of [0.55, 0.9, 1.25]) {
+      const a = project(ring, 0, 0);
+      const b = project(0, 0, ring);
+      ctx.beginPath();
+      ctx.ellipse(gate[0], gate[1] + 8, Math.abs(a[0] - gate[0]), Math.abs(b[1] - gate[1]) * 0.35 + 18, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
     banks.forEach(({ p }) => {
       ctx.beginPath();
       ctx.moveTo(gate[0], gate[1]);
       ctx.lineTo(p[0], p[1]);
-      ctx.strokeStyle = 'rgba(21, 87, 255, 0.22)';
-      ctx.lineWidth = Math.max(1.2, W / 480);
+      ctx.strokeStyle = 'rgba(21, 87, 255, 0.28)';
+      ctx.lineWidth = Math.max(1.4, W / 420);
       ctx.stroke();
     });
 
@@ -195,7 +213,7 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
       ctx.shadowBlur = 0;
       ctx.fillStyle = on ? '#FFFFFF' : '#0B1F5C';
       ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.fillText(bank.name.slice(0, 3).toUpperCase(), p[0], p[1]);
+      ctx.fillText(bank.short, p[0], p[1]);
     });
 
     ctx.fillStyle = '#0B1F5C';
@@ -222,6 +240,23 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     ctx.fillStyle = '#0B1220';
     ctx.font = `500 ${Math.max(8, W / 80)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.fillText(local < 0.5 ? 'LOCK' : 'RELEASE', bead[0], bead[1] - Math.max(14, W / 50));
+
+    for (let i = 1; i <= 4; i++) {
+      const t = (travel + i * 0.12) % 1;
+      const f = Math.floor(t * 6) % 6;
+      const n = (f + 1) % 6;
+      const loc = (t * 6) % 1;
+      const pa = banks[f].p;
+      const pb = loc < 0.5 ? gate : banks[n].p;
+      const src = loc < 0.5 ? pa : gate;
+      const u = loc < 0.5 ? loc * 2 : (loc - 0.5) * 2;
+      const x = src[0] + (pb[0] - src[0]) * u;
+      const y = src[1] + (pb[1] - src[1]) * u;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(0, 168, 120, ${0.18 + i * 0.08})`;
+      ctx.arc(x, y, Math.max(1.6, W / 320), 0, Math.PI * 2);
+      ctx.fill();
+    }
   };
 
   const pick = (clientX: number, clientY: number): NodeId | null => {
@@ -269,8 +304,8 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     }
     paintHint();
     if (!dragging) return;
-    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.007));
-    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.006));
+    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.012));
+    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.01));
     lastX = ev.clientX;
     lastY = ev.clientY;
   };

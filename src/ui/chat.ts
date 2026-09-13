@@ -141,7 +141,7 @@ export function wireChat(root: HTMLElement): void {
     .then((s: { grok?: boolean } | null) => {
       if (!statusLine) return;
       statusLine.textContent = s?.grok
-        ? 'Grok is live on this desk — grounded in the record, with the live QNT print and the official wire. It keeps this conversation as you change pages.'
+        ? 'Grok is live — grounded in the record, with the live QNT print and the official wire. It keeps this conversation as you change pages.'
         : 'Answers come from the record until a host key is set. I still remember what you asked on this visit.';
     })
     .catch(() => undefined);
@@ -209,7 +209,7 @@ export function wireChat(root: HTMLElement): void {
           history.push({ role: 'assistant', content: data.text });
           if (statusLine && data.mode === 'live') {
             statusLine.textContent =
-              'Grok is live on this desk — grounded in the record, names and titles attached. It remembers this thread.';
+              'Grok is live — grounded in the record, names and titles attached. It remembers this thread.';
           }
           return;
         }

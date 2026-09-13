@@ -1,5 +1,5 @@
 import { QNT_CONTRACT } from '../data/catalog';
-import { CITIES } from '../data/cities';
+import { CITIES, cityVisual } from '../data/cities';
 import { fetchMarkets, staleCache, type MarketPrint } from '../modules/markets';
 import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
@@ -34,7 +34,7 @@ import {
   renderTechnology,
   renderVision,
 } from './views';
-import { setStageNavigator, stageMarkup, syncStageFromLocation, wireStages } from './stage';
+import { revealStage, setStageNavigator, stageMarkup, syncStageFromLocation, wireStages } from './stage';
 import { searchMarkup, wireSearch } from './search';
 import { resolveStage } from './resolve';
 import { matchProgrammes } from '../data/programmes';
@@ -535,13 +535,18 @@ export class QntDesk {
     const { EarthGlobe } = await import('./globe');
     if (!this.root.contains(stage)) return;
     this.globe = new EarthGlobe(stage, {
-      onCity: (id) => this.go(`/city/${id}`),
+      onCity: (id) => {
+        this.globe?.focusCity(id);
+        const sel = this.root.querySelector<HTMLSelectElement>('#city-select');
+        if (sel) sel.value = id;
+        revealStage('city', id);
+      },
       onHud: (hud) => {
         const line = this.root.querySelector('#isr-line');
         const zoom = this.root.querySelector('#zoom-readout');
         const hover = this.root.querySelector<HTMLElement>('#city-hover');
         if (line) {
-          line.textContent = `LOOK-DOWN  ALT ${hud.altitudeKm.toLocaleString()} km  ${hud.lat.toFixed(3)}° ${hud.lon.toFixed(3)}°  ZOOM ${hud.zoom.toFixed(1)}×  SRC corridors`;
+          line.textContent = `ORBIT  ALT ${hud.altitudeKm.toLocaleString()} km  ${hud.lat.toFixed(3)}° ${hud.lon.toFixed(3)}°  ZOOM ${hud.zoom.toFixed(1)}×  SRC corridors`;
         }
         if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
         if (hover && hud.hoverId !== this.lastHoverId) {
@@ -549,7 +554,8 @@ export class QntDesk {
           const city = hud.hoverId ? CITIES.find((c) => c.id === hud.hoverId) : undefined;
           if (city) {
             hover.hidden = false;
-            hover.innerHTML = `<p class="kicker">${esc(city.kind)}</p><strong>${esc(city.name)}</strong><p>${esc(city.lede)}</p>`;
+            const photo = `<img class="hud-photo" src="${esc(cityVisual(city).src)}" alt="" width="220" height="140" />`;
+            hover.innerHTML = `${photo}<p class="kicker">${esc(city.kind)}</p><strong>${esc(city.name)}</strong><p>${esc(city.lede)}</p>`;
           } else {
             hover.hidden = true;
             hover.innerHTML = '';
@@ -579,6 +585,7 @@ export class QntDesk {
     this.root.querySelector<HTMLSelectElement>('#city-select')?.addEventListener('change', (ev) => {
       const id = (ev.target as HTMLSelectElement).value;
       this.globe?.focusCity(id);
+      revealStage('city', id);
     });
   }
 

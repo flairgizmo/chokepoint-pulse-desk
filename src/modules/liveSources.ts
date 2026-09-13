@@ -12,6 +12,14 @@ export const OVERLEDGER_CHANGELOG = 'https://docs.overledger.dev/changelog.rss';
 
 export const SATP_ATOM = 'https://datatracker.ietf.org/group/satp/documents/feed/';
 
+/** GBTD / tokenised-deposit query — avoids a bare QNT ticker that pulls Quantinuum. */
+export const GNEWS_GBTD =
+  'https://news.google.com/rss/search?q=%22tokenised+deposits%22+OR+GBTD+%22UK+Finance%22+OR+Overledger&hl=en-GB&gl=GB&ceid=GB:en';
+
+export const BOE_NEWS_RSS = 'https://www.bankofengland.co.uk/rss/news';
+
+export const IETF_BLOG_RSS = 'https://www.ietf.org/blog/feed/';
+
 export const COINGECKO_QNT =
   'https://api.coingecko.com/api/v3/coins/quant-network?localization=false&tickers=true&market_data=true&community_data=false&developer_data=false&sparkline=true';
 

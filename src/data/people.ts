@@ -23,7 +23,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'verdianPeople',
     photo: '/people/verdian.jpg',
-    bio: 'Left the CISO chair at Vocalink — Mastercard’s UK payments infrastructure — to build a gateway OS instead of another chain. Two decades securing government and bank rails; the person who put blockchain on the ISO agenda. CISO of the Year in 2017. Left that chair in May 2018. ISO/TC 307 is that refusal written as a standard. Quant is that refusal written as a company.',
+    bio: 'Former CISO at Vocalink, Mastercard’s UK payments infrastructure. Founded Quant in 2018 after leaving that chair in May 2018. Two decades securing government and bank rails. Put blockchain on the ISO agenda; CISO of the Year in 2017. Convenes ISO/TC 307 WG7.',
   },
   {
     id: 'hargreaves',
@@ -34,7 +34,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'hargreavesPeople',
     photo: '/people/hargreaves.jpg',
-    bio: 'CPO for financial services. Thirteen years of Vocalink / Mastercard product, two payments patents, and a named author of IETF SATP — the gateway protocol, not a Quant SKU. SATP is a two-phase commit because payments people already know what atomic settlement has to feel like.',
+    bio: 'CPO for financial services. Thirteen years of Vocalink / Mastercard product, two payments patents, and a named author of IETF SATP — the gateway protocol, not a Quant SKU. SATP uses two-phase commit for atomic settlement.',
   },
   {
     id: 'russ',
@@ -45,7 +45,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'russPeople',
     photo: '/people/russ.jpg',
-    bio: 'Joined Quant in 2024. Sales, marketing and product development. Previously CRO at Tradeteq — private debt and trade finance, not a DLT native.',
+    bio: 'Joined Quant in 2024. Sales, marketing and product development. Previously CRO at Tradeteq — private debt and trade finance.',
   },
   {
     id: 'ashton',
@@ -55,7 +55,8 @@ export const PEOPLE: Person[] = [
     initials: 'PA',
     current: true,
     href: 'ashtonPeople',
-    bio: 'Joined Quant in 2022. People, employer brand and talent. Nearly thirty years in international HR.',
+    photo: '/people/ashton.jpg',
+    bio: 'Joined Quant in 2022. People, employer brand and talent. Nearly thirty years in international HR. Portrait from Quant’s people page.',
   },
   {
     id: 'riley',
@@ -66,7 +67,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'rileyPeople',
     photo: '/people/riley.jpg',
-    bio: 'Joined from King’s College London in September 2019 to run Quant Labs and Overledger R&D. The ACM interoperability paper, the 2021 options note, Flow Applications for AI agents — his name is on the research the product sits on. Academia had taxonomies; Quant needed one a procurement team could use.',
+    bio: 'Joined from King’s College London in September 2019 to run Quant Labs and Overledger R&D. Named on the ACM interoperability paper, the 2021 options note, and Flow Applications for AI agents.',
   },
   {
     id: 'sentelidis',
@@ -76,7 +77,8 @@ export const PEOPLE: Person[] = [
     initials: 'TS',
     current: true,
     href: 'sentelidisPeople',
-    bio: 'Leads Quant’s engineering organisation. Public about-us title; joined 2020. Not a whitepaper-era author. His official story lives on Quant’s people page.',
+    photo: '/people/sentelidis.jpg',
+    bio: 'Leads Quant’s engineering organisation. Public about-us title; joined 2020. Not a whitepaper-era author. Portrait from Quant’s people page.',
   },
   {
     id: 'facer',
@@ -87,7 +89,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'facerPeople',
     photo: '/people/facer.png',
-    bio: 'Quant product manager and co-chair of the IETF SATP working group. The protocol is standardised at the IETF; Quant contributes, it does not own it. A standard dies in a drawer if nobody chairs the call.',
+    bio: 'Quant product manager and co-chair of the IETF SATP working group. The protocol is standardised at the IETF; Quant contributes and does not own it.',
   },
   {
     id: 'chiriac',
@@ -97,7 +99,8 @@ export const PEOPLE: Person[] = [
     initials: 'AC',
     current: true,
     href: 'chiriacPeople',
-    bio: 'Overledger architect since 2018. Named SATP core author. Public bio lists connectors including Hyperledger Fabric, Corda, Polkadot and the XRP Ledger. Quant credits him with RLN delivery and vendor work on Project Rosalind — a concluded experiment, not a standing Basel mandate.',
+    photo: '/people/chiriac.jpg',
+    bio: 'Overledger architect since 2018. Named SATP core author. Public bio lists connectors including Hyperledger Fabric, Corda, Polkadot and the XRP Ledger. Quant credits him with RLN delivery and vendor work on Project Rosalind — a concluded experiment, not a standing Basel mandate. Portrait from Quant’s people page.',
   },
   {
     id: 'rawel',
@@ -107,7 +110,8 @@ export const PEOPLE: Person[] = [
     initials: 'KR',
     current: true,
     href: 'rawelPeople',
-    bio: 'Joined 2023 from Finastra, Santander UK, Accenture, Citi and Google. Leads Quant’s sales organisation.',
+    photo: '/people/rawel.jpg',
+    bio: 'Joined 2023 from Finastra, Santander UK, Accenture, Citi and Google. Leads Quant’s sales organisation. Portrait from Quant’s people page.',
   },
   {
     id: 'alves',
@@ -117,7 +121,8 @@ export const PEOPLE: Person[] = [
     initials: 'JA',
     current: true,
     href: 'alvesPeople',
-    bio: 'Listed on Quant’s about page as Lead Sales Engineer — the technical counterpart to the sales organisation.',
+    photo: '/people/alves.jpg',
+    bio: 'Listed on Quant’s about page as Lead Sales Engineer — the technical counterpart to the sales organisation. Portrait from Quant’s people page.',
   },
   {
     id: 'baugh',
@@ -137,7 +142,7 @@ export const PEOPLE: Person[] = [
     initials: 'CL',
     current: true,
     note: 'Identified by a 2026 community thread as Technical Lead. Previously Engineering Manager at Vocalink. Not on Quant’s about page. Initials only until Quant publishes a portrait.',
-    bio: 'Technical Lead as identified by a 2026 community thread — previously Engineering Manager at Vocalink. Not on Quant’s public about page. This encyclopedia files the thread as a sourced gap, not as an official title.',
+    bio: 'Named Technical Lead in a 2026 community thread. Previously Engineering Manager at Vocalink. Not listed on Quant’s public about page. No official portrait has been published.',
   },
   {
     id: 'tasca',
@@ -148,7 +153,7 @@ export const PEOPLE: Person[] = [
     current: false,
     href: 'tascaSite',
     photo: '/people/tasca.jpg',
-    bio: 'Digital economist who co-founded Quant, signed the Overledger whitepaper and the ordering patent, and wrote the books that give the Internet of Value its library. UCL CBT, Bundesbank, now Exponential Science — not a current operating officer. He had left Quant by 2022; the books remain. The Internet of Value, in his telling, is a warning: moving money like packets will datafy and platformise whatever it touches.',
+    bio: 'Digital economist who co-founded Quant, signed the Overledger whitepaper and the ordering patent, and wrote the books that name the Internet of Value. UCL CBT, Bundesbank, now Exponential Science. He had left Quant by 2022. The books remain.',
   },
   {
     id: 'paterson',
@@ -157,7 +162,7 @@ export const PEOPLE: Person[] = [
     group: 'founders',
     initials: 'CP',
     current: false,
-    bio: 'Quant’s first CTO. Cybersecurity and AI across health, defence, finance and utilities — Deutsche Bank and Vocalink in the round-ups — then the whitepaper and the ordering patent. The first CTO’s job was to make the philosophy compile: if an asset is going to live on more than one chain, time has to mean the same thing on both sides. No longer with the company; the engineering argument remains.',
+    bio: 'Quant’s first CTO. Cybersecurity and AI across health, defence, finance and utilities — Deutsche Bank and Vocalink appear in the public round-ups — then the whitepaper and the ordering patent. No longer with the company. Quant has not published a portrait.',
   },
   {
     id: 'mondelli',
@@ -167,8 +172,9 @@ export const PEOPLE: Person[] = [
     initials: 'GM',
     current: false,
     href: 'mondelliSite',
-    note: 'Fourth author of the 2018 whitepaper and co-inventor on the US ordering patent. GitHub currently lists Amazon, London — not a current Quant officer. 2017 PoliTo / UCL CBT thesis record is in the library (full text secretated).',
-    bio: 'Fourth author of the 2018 whitepaper and co-inventor on the US ordering patent. His own site: he invented Overledger. Documentary role is inventor; this page does not invent a current staff title. The 2017 PoliTo / UCL CBT master’s thesis is a bibliographic record only.',
+    photo: '/people/mondelli.jpg',
+    note: 'Fourth author of the 2018 whitepaper and co-inventor on the US ordering patent. GitHub currently lists Amazon, London — not a current Quant officer. 2017 PoliTo / UCL CBT thesis record is in the library (full text secretated). Portrait is his published GitHub identity.',
+    bio: 'Fourth author of the 2018 whitepaper and co-inventor on the US ordering patent. His own site states he invented Overledger. Documentary role is inventor, not a current staff title. The 2017 PoliTo / UCL CBT master’s thesis is a bibliographic record only.',
   },
   {
     id: 'belchior',
@@ -179,7 +185,7 @@ export const PEOPLE: Person[] = [
     current: false,
     href: 'belchior',
     photo: '/people/belchior.jpg',
-    bio: 'Wrote the ACM interoperability paper while at Quant — the footnote reads “Work done while … at Quant Network”. Hyperledger Global Forum listed him as Quant’s blockchain R&D engineer. SATP core author, Cacti maintainer, CSUR survey. Now at Técnico Lisboa. He is in this encyclopedia because he was on the payroll when the taxonomy was written, not because SATP lists him.',
+    bio: 'Wrote the ACM interoperability paper while at Quant — the footnote reads “Work done while … at Quant Network”. Hyperledger Global Forum listed him as Quant’s blockchain R&D engineer. SATP core author, Cacti maintainer, CSUR survey. Now at Técnico Lisboa.',
   },
   {
     id: 'dietrich',
@@ -217,8 +223,8 @@ export const PEOPLE: Person[] = [
 ];
 
 export const GROUP_LABEL: Record<PersonGroup, string> = {
-  'c-suite': 'The public C-suite, in the order Quant lists them: founder, product, commercial, people.',
-  heads: 'Heads and architects who ship Overledger, Fusion, Flow and the IETF SATP contributions.',
+  'c-suite': 'Public C-suite, in the order Quant lists them: founder, product, commercial, people.',
+  heads: 'Heads and architects on Overledger, Fusion, Flow and the IETF SATP contributions.',
   founders:
     'Co-founders, the first CTO, the Overledger inventors, and the research engineer who wrote the ACM paper while at Quant. Some have since left. The documents remain.',
   board: 'Documented directors. Not operating owners of the technology thesis.',

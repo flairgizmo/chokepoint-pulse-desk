@@ -76,7 +76,7 @@ export function searchMarkup(): string {
       <label class="sr-only" for="desk-search-input">Search</label>
       <input id="desk-search-input" type="search" placeholder="Search people, patents, terms, programmes…" />
       <ul id="desk-search-hits"></ul>
-      <p class="empty-note" id="desk-search-empty" hidden>Nothing on this desk matches. Try Overledger, SATP, GBTD, or a surname.</p>
+      <p class="empty-note" id="desk-search-empty" hidden>Nothing matches. Try Overledger, SATP, GBTD, or a surname.</p>
     </div>
   </div>`;
 }

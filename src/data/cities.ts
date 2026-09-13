@@ -17,6 +17,8 @@ export interface City {
   lede: string;
   body: string;
   href: string;
+  photo?: string;
+  photoCredit?: string;
 }
 
 export const CITIES: City[] = [
@@ -31,6 +33,8 @@ export const CITIES: City[] = [
     lede: 'Quant Network is the operating company. GBTD, the Synchronisation Lab, and ISO/IETF staffing all sit here — graded separately.',
     body: 'London is three programmes sharing a postcode. Quant Network is the operating company and the technology partner UK Finance selected, on 26 September 2025, to provide Overledger and PayScript for live tokenised-sterling-deposit (GBTD) transactions with Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide and Santander, supported by EY and Linklaters. That is commercial-bank money, not a Bank of England CBDC. Separately, in February 2026 Quant was selected for the Bank of England Synchronisation Lab — a simulated RT2 environment; Quant’s own note says this is not endorsement or a live RTGS hook-up. A third thread is ISO and IETF work that happens to be staffed from here (Verdian, Hargreaves, Riley, Facer, Chiriac). Click through to each programme’s sources rather than collapsing them into one mandate.',
     href: '/programmes#gbtd',
+    photo: '/visuals/cities/london.jpg',
+    photoCredit: 'Wikimedia Commons — Bank of England',
   },
   {
     id: 'paris',
@@ -65,7 +69,7 @@ export const CITIES: City[] = [
     kind: 'Research',
     kicker: 'MIT SERC · Hardjono',
     lede: 'Ethics of computing and authenticated AI agents — landscape next to SATP, not a Quant–MIT joint programme.',
-    body: 'MIT’s Social and Ethical Responsibilities of Computing (SERC) is why Boston sits on this globe next to SATP. Hardjono co-authored Authenticated Delegation and Authorized AI Agents (arXiv 2501.09674) — the documentary join to Flow/MCP and x402. None of this is a Quant–MIT ethics joint programme. It is the academic corridor the encyclopedia files beside the IETF work.',
+    body: 'MIT’s Social and Ethical Responsibilities of Computing (SERC) is why Boston sits on this globe next to SATP. Hardjono co-authored Authenticated Delegation and Authorized AI Agents (arXiv 2501.09674) — the documentary join to Flow/MCP and x402. None of this is a Quant–MIT ethics joint programme. It is the academic corridor beside the IETF work.',
     href: '/standards#mit-ethics',
   },
   {
@@ -89,7 +93,7 @@ export const CITIES: City[] = [
     kind: 'Markets',
     kicker: 'Policy adjacency',
     lede: 'US policy and institutional adjacency — not a claimed Quant office or a digital-dollar mandate.',
-    body: 'Washington is corridor geography for US institutional conversation around digital assets and payments policy. This encyclopedia does not invent a Quant–Fed programme. If a named US official-sector credit is published with a URL, it will be added with a grade.',
+    body: 'Washington is corridor geography for US institutional conversation around digital assets and payments policy. No Quant–Fed programme is on the public record. A named US official-sector credit will be added with a grade when a URL exists.',
     href: '/programmes',
   },
   {
@@ -139,6 +143,8 @@ export const CITIES: City[] = [
     lede: 'The room where DLT interoperability vocabulary is written down. Verdian proposed the committee in 2015.',
     body: 'ISO/TC 307 — Blockchain and distributed ledger technologies. Verdian convenes WG7 (interoperability). ISO/TS 23516:2026 (project 82098) is the DLT interoperability framework. ISO 22739 is the vocabulary companion. Standards are slow on purpose. Quant’s product bet is that the gateway layer can ship while the vocabulary is still being written in Geneva.',
     href: '/standards#iso',
+    photo: '/visuals/cities/geneva.jpg',
+    photoCredit: 'Wikimedia Commons — Palace of Nations, Geneva',
   },
   {
     id: 'basel',
@@ -163,6 +169,8 @@ export const CITIES: City[] = [
     lede: 'International Association for Trusted Blockchain Applications — a policy room, not a product SKU.',
     body: 'INATBA is the International Association for Trusted Blockchain Applications. Policy room, not a Quant product. Filed here so “Brussels” on the globe is a standards pin rather than a rumour.',
     href: '/standards#inatba',
+    photo: '/visuals/cities/brussels.jpg',
+    photoCredit: 'Wikimedia Commons — Berlaymont, Brussels',
   },
   {
     id: 'lisbon',
@@ -199,6 +207,8 @@ export const CITIES: City[] = [
     lede: '14 January 2026 partnership on tokenised deposits and programmable settlement. StreamR is BOJ-NET compatible. Announced.',
     body: 'Japanese systems integrator Dentsu Soken partnered with Quant on 14 January 2026 on tokenised deposits and programmable settlement. StreamR is BOJ-NET compatible. Announced vendor work — not a Bank of Japan CBDC, and not GBTD. A 2026 Japanese patent, Quant says, protects the multi-DLT token method behind Fusion.',
     href: '/programmes#dentsu',
+    photo: '/visuals/cities/tokyo.jpg',
+    photoCredit: 'Wikimedia Commons — Bank of Japan',
   },
   {
     id: 'hong-kong',
@@ -226,8 +236,29 @@ export const CITIES: City[] = [
   },
 ];
 
+const CITY_STILL: Record<string, string> = {
+  paris: '/visuals/stills/gateway.jpg',
+  'new-york': '/visuals/stories/city.jpg',
+  boston: '/visuals/stories/exchange.jpg',
+  cambridge: '/visuals/stills/history.jpg',
+  washington: '/visuals/stories/canary.jpg',
+  miami: '/visuals/stills/sterling.jpg',
+  frankfurt: '/visuals/stories/exchange.jpg',
+  zurich: '/visuals/stills/future.jpg',
+  basel: '/visuals/stories/bis.jpg',
+  lisbon: '/visuals/stills/london.jpg',
+  singapore: '/visuals/stills/sterling.jpg',
+  'hong-kong': '/visuals/stories/city.jpg',
+  sydney: '/visuals/stills/hero.jpg',
+};
+
 export function cityById(id: string): City | undefined {
   return CITIES.find((c) => c.id === id);
+}
+
+export function cityVisual(city: City): { src: string; credit?: string } {
+  if (city.photo) return { src: city.photo, credit: city.photoCredit };
+  return { src: CITY_STILL[city.id] ?? '/visuals/stills/london.jpg' };
 }
 
 /** Sourced programme arcs — not live SWIFT. */

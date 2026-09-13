@@ -16,7 +16,7 @@ import {
   type Paper,
   type Quote,
 } from '../data/catalog';
-import { CITIES, type City } from '../data/cities';
+import { CITIES, cityVisual, type City } from '../data/cities';
 import { GROUP_LABEL, PEOPLE, type Person, type PersonGroup } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
 import { featuredNote, notesForEra, notesFromDesk, noteById, type NoteEra, type NotePost } from '../data/notes';
@@ -181,7 +181,7 @@ function filmRail(): string {
     ${kicker('Watch and read')}
     <div class="section-head">
       <h2 class="display">Interviews, conferences, the original pages.</h2>
-      <p class="lede-sm">Each card opens a briefing on this desk. Open original is secondary.</p>
+      <p class="lede-sm">Each card opens a briefing. The original filing is one click further.</p>
     </div>
     <ul class="film-grid">${films
       .map(
@@ -281,9 +281,13 @@ function wordmarkLi(label: string, href: string): string {
   const caption = bankDisplay(label);
   const mark = markFor(label);
   const tile = mark
-    ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="128" height="52" />`
+    ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="160" height="48" />`
     : `<span class="wm" aria-hidden="true">${esc(caption[0] ?? '?')}</span>`;
-  return `<li class="wordmark">${tile}<a href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${esc(caption)}</a></li>`;
+  return `<li class="wordmark">${tile}<a href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}><span class="wordmark-caption">${esc(caption)}</span></a></li>`;
+}
+
+function fold(title: string, inner: string, open = false): string {
+  return `<details class="fold"${open ? ' open' : ''}><summary>${esc(title)}</summary><div class="fold-body">${inner}</div></details>`;
 }
 
 export function storyArt(id: string, era: NoteEra): string {
@@ -410,9 +414,9 @@ export function featuredStory(): string {
     <div class="featured-grid">
       ${noteCard(n, true)}
       <div class="featured-aside">
-        <p class="kicker">Why this desk exists</p>
+        <p class="kicker">On the record</p>
         <h2 class="display">What most coverage skips. <span class="display-mute">The rails, not the ticker.</span></h2>
-        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. This desk files the whitepaper, the IETF drafts, and the bank names — latest first, titles on every quote.</p>
+        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The 2018 whitepaper, the IETF drafts, and the bank names sit here — latest first, titles on every quote.</p>
         <div class="cta-row">
           ${pill('/news', 'Open the news', 'Official wire')}
           ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
@@ -521,11 +525,11 @@ export function renderHome(): string {
         <canvas id="gateway" class="gateway-stage" role="img" aria-label="Sterling corridor: six UK commercial banks around an Overledger plane. Click a bank. Drag to orbit."></canvas>
         <p class="tess-hint" data-gateway-hint>Six commercial banks. One gateway plane. Click a node.</p>
       </div>
-      ${kicker('QntDesk · independent desk')}
+      ${kicker('QntDesk · independent research')}
       <div class="hero-split">
         <h1 class="display">Six UK banks already issue tokenised sterling. Overledger is the gate they hired.</h1>
         <div>
-          <p class="lede">QntDesk files Quant Network from the public record: the 2018 Overledger whitepaper, IETF SATP, ISO/TC 307, and UK Finance’s live tokenised-deposit pilot. Independent research. Not Quant’s corporate site. The part most people miss is already running — commercial-bank sterling that can lock and release.</p>
+          <p class="lede">Quant Network from the public record: the 2018 Overledger whitepaper, IETF SATP, ISO/TC 307, and UK Finance’s live tokenised-deposit pilot. Independent research. Not Quant’s corporate site. Commercial-bank sterling that can lock and release is already running.</p>
           <div class="cta-row">
             ${pill('/technology', 'Enter the stack', 'Product theatre')}
             ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')}
@@ -571,8 +575,8 @@ export function renderHome(): string {
       <div class="earth-stage" id="earth-stage" tabindex="0" aria-label="Interactive 3D Earth. Drag to orbit, scroll to zoom, double-click to fly in, click a city."></div>
       <div class="earth-hud">
         <div class="hud-card">
-          <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · look-down</p>
-          <p class="hud-help">The rooms on a globe — headquarters, banks, labs, standards. Scroll to zoom. Double-click to drop altitude.</p>
+          <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · orbit</p>
+          <p class="hud-help">Pins stay on published lat/lon. Drag to orbit. Scroll to zoom. Click a city for the filing.</p>
           <label class="sr-only" for="city-select">Cities</label>
           <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
         </div>
@@ -586,7 +590,7 @@ export function renderHome(): string {
           <summary>Overlays</summary>
           <fieldset class="hud-toggles">
             <legend class="sr-only">Globe overlays</legend>
-            <label><input type="checkbox" data-globe-opt="spin" /> Slow rotate</label>
+            <label><input type="checkbox" data-globe-opt="spin" checked /> Auto-spin</label>
             <label><input type="checkbox" data-globe-opt="labels" checked /> City labels</label>
             <label><input type="checkbox" data-globe-opt="day" checked /> Day marble</label>
             <label><input type="checkbox" data-globe-opt="night" checked /> Night lights</label>
@@ -596,17 +600,17 @@ export function renderHome(): string {
           </fieldset>
         </details>
         <div class="hud-city" id="city-hover" hidden></div>
-        <p class="isr-line mono" id="isr-line">LOOK-DOWN · sourced programme corridors</p>
+        <p class="isr-line mono" id="isr-line">ORBIT · sourced programme corridors</p>
       </div>
     </section>
 
-    <section class="strip">
+    <section class="strip partner-strip">
       ${kicker('GBTD cohort — names as UK Finance printed them, 26 September 2025')}
-      <ul class="wordmarks">${banks}</ul>
+      <ul class="wordmarks wordmarks-banks">${banks}</ul>
       <figure class="beat-figure plate-figure"><img src="/visuals/plates/corridor.svg" alt="Six-bank sterling corridor around Overledger" width="640" height="360" /></figure>
-      <p class="cohort-note">Captions follow the press list: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, Santander. Marks are each bank’s public wordmark, filed locally. Quant, EY and Linklaters are named as support, not as issuers.</p>
-      ${kicker('The institutions around that cohort')}
-      <ul class="wordmarks muted">
+      <p class="cohort-note">Captions follow the press list: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, Santander. Marks are each bank’s public wordmark. Quant, EY and Linklaters are named as support, not as issuers.</p>
+      ${kicker('Institutions around that cohort')}
+      <ul class="wordmarks wordmarks-inst muted">
         ${wordmarkLi('Quant', sources.about)}
         ${wordmarkLi('UK Finance', sources.ukFinanceHome)}
         ${wordmarkLi('Bank of England', sources.boeHome)}
@@ -618,47 +622,45 @@ export function renderHome(): string {
       </ul>
     </section>
 
-    ${constellation()}
     ${latestStrip()}
-    ${featuredStory()}
-    ${notesReel()}
-    ${podcastTease()}
-    ${quoteRail('home', 10)}
-    ${eraStrip()}
 
-    <section class="essays">
+    ${fold(
+      'Essays, layers, and the scored timeline',
+      `<section class="essays">
       ${kicker('Essays')}
       <h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>
       <div class="essay-grid">${essays}</div>
     </section>
-
     <section class="layers-wrap">
       ${kicker('Three layers, one horizontal gate')}
       <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
       ${layerBands()}
     </section>
-
     <section class="timeline-wrap">
       ${kicker('Then and now')}
       <h2 class="display">From ISO in 2015 <span class="display-mute">to live sterling in 2025.</span></h2>
       <ol class="timeline">${beats}</ol>
       <p><a class="text-link" href="/story">Open the scored rail →</a></p>
-    </section>
+    </section>`,
+    )}
 
-    ${renderThisMonth(true)}
-    ${renderCalendar(true)}
-    ${renderVoices()}
-
+    ${fold(
+      'This month, the calendar, and six briefs',
+      `${renderThisMonth(true)}${renderCalendar(true)}${renderVoices()}
     <section class="triptych hex">
       <article class="panel"><span class="panel-n">01</span>${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Overledger connects DLT domains and legacy cores without minting a native settlement chain. The 2018 whitepaper’s problem is single-ledger dependency. Tasca called interoperability a risky necessity. Verdian incorporated a company to ship the gate.</p><a class="text-link" href="/vision">Vision →</a></article>
       <article class="panel"><span class="panel-n">02</span>${kicker('SATP')}<h2 class="display">How an asset leaves one network</h2><p>Secure Asset Transfer Protocol is IETF work. Quant authors appear on the drafts; Facer is a co-chair. Stage 3 is burn-and-mint under two-phase commit, so the asset exists in one network when the transfer ends. SATP is not a Quant SKU.</p><a class="text-link" href="/standards">Standards →</a></article>
       <article class="panel"><span class="panel-n">03</span>${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>On 26 September 2025 UK Finance selected Quant as technology partner for tokenised deposits with six commercial banks. The banks owe the holder. Overledger and PayScript are the named foundation. GBTD is not a CBDC.</p><a class="text-link" href="/cbdc">The distinction →</a></article>
       <article class="panel"><span class="panel-n">04</span>${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>QNT is an ERC-20 at 0x4a220E6096B25EADb88358cb44068A3248254675. Unsold allocation was burned in 2018. Overledger licences settle in it. Live circulating comes from CoinGecko. Utility token, not equity in Quant Network.</p><a class="text-link" href="/markets#tokenomics">Markets →</a></article>
       <article class="panel"><span class="panel-n">05</span>${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, Layer 2.5 rollup (Fusion mainnet, 2 June 2026), programmability on the deposit. Oracle and Murex are named vendors sitting on that stack, not on a new chain.</p><a class="text-link" href="/technology">The stack →</a></article>
-      <article class="panel"><span class="panel-n">06</span>${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2><p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source on this desk.</p><a class="text-link" href="/programmes">Programmes →</a></article>
-    </section>
+      <article class="panel"><span class="panel-n">06</span>${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2><p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source.</p><a class="text-link" href="/programmes">Programmes →</a></article>
+    </section>`,
+    )}
 
-    ${dykBlock()}
+    ${fold(
+      'Voices, the series, and the wire',
+      `${constellation()}${featuredStory()}${notesReel()}${podcastTease()}${quoteRail('home', 10)}${eraStrip()}${dykBlock()}`,
+    )}
   `;
 }
 
@@ -739,11 +741,11 @@ export function renderProgrammes(): string {
         <p class="kicker"><span class="chip status-${esc(p.status)}">${esc(p.status)}</span> ${esc(p.kicker)}</p>
         <h2>${esc(p.title)}</h2>
         <p class="lede-sm">${esc(p.owner)}</p>
-        <p>${esc(p.body)}</p>
         <p class="mono subtle">Next: ${esc(p.milestone)}</p>
         <p class="prog-tech">${p.tech.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</p>
         <div class="prog-marks">${marks}</div>
       </button>
+      <details class="card-more"><summary>Filing</summary><p>${esc(p.body)}</p></details>
       <p class="prog-mentions" data-prog-mentions="${esc(p.id)}" hidden></p>
     </article>`;
   }).join('');
@@ -756,7 +758,7 @@ export function renderProgrammes(): string {
     <div class="cohort-marks">
       ${kicker('The six commercial banks named by UK Finance, 26 September 2025')}
       <ul class="wordmarks">${GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('')}</ul>
-      <p class="cohort-note">UK Finance’s press: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters. The GBTD programme page fetched 13 September 2026 also lists Monzo as a seventh participant and states GBTD was accepted into the Bank of England Synchronisation Lab. No join date is printed. This desk does not invent one. ${extLink(sources.ukFinanceRln, 'Programme page')}</p>
+      <p class="cohort-note">UK Finance’s press: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters. The GBTD programme page fetched 13 September 2026 also lists Monzo as a seventh participant and states GBTD was accepted into the Bank of England Synchronisation Lab. No join date is printed. ${extLink(sources.ukFinanceRln, 'Programme page')}</p>
     </div>
     ${quoteRail('programmes', 24)}
     <div class="toolbar filter-bar">
@@ -769,7 +771,7 @@ export function renderProgrammes(): string {
         <button type="button" class="chip" data-prog-status="upcoming">Upcoming</button>
       </div>
     </div>
-    <p class="empty-note" id="prog-empty" hidden>No programme on this desk matches. Try GBTD, Murex, or Sibos.</p>
+    <p class="empty-note" id="prog-empty" hidden>No programme matches. Try GBTD, Murex, or Sibos.</p>
     <div class="prog-grid" id="prog-grid">${cards}</div>
     ${renderThisMonth()}
     ${renderCalendar()}
@@ -876,7 +878,7 @@ export function renderPeople(): string {
   return `${pageHero(
     'People',
     'The names on the papers,',
-    'Verdian left Vocalink to build a gateway OS. The others wrote the taxonomy, the ordering claim, the SATP drafts. Official portraits where Quant published them; a monogram when they did not.',
+    'Verdian left Vocalink to build a gateway OS. The others wrote the taxonomy, the ordering claim, the SATP drafts. Official portraits where Quant or the person published them; a monogram when they did not.',
     'and in the rooms.',
   )}
   <div class="toolbar filter-bar">
@@ -896,8 +898,8 @@ function peopleRail(): string {
     .join('');
   return `<nav class="people-rail" aria-label="Official portraits">
     ${kicker('On the record')}
-    <h2 class="display">Official portraits Quant published.</h2>
-    <p class="lede-sm">Filed from Quant people pages and, for Tasca, his own site. A monogram means no public portrait was available.</p>
+    <h2 class="display">Official portraits on the public record.</h2>
+    <p class="lede-sm">Quant people pages, Tasca’s site, and Mondelli’s published GitHub identity. A monogram means no public portrait was available. Paterson and Lovesey remain initials.</p>
     <div class="people-tiles">${faces}</div>
   </nav>`;
 }
@@ -927,10 +929,13 @@ function personCard(p: Person): string {
     <div>
       <h2>${esc(p.name)}</h2>
       <p class="role">${esc(p.role)}${p.current ? '' : ' · <span class="chip">left / documentary</span>'}</p>
-      <p>${esc(p.bio)}</p>
-      ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
-      ${official}
-      ${spoken ? `<details class="person-quotes"><summary>In their words</summary>${spoken}</details>` : ''}
+      <details class="person-more">
+        <summary>Record</summary>
+        <p>${esc(p.bio)}</p>
+        ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
+        ${official}
+        ${spoken ? `<div class="person-quotes">${spoken}</div>` : ''}
+      </details>
     </div>
   </article>`;
 }
@@ -939,7 +944,7 @@ const RESEARCH_LANES: Array<{ id: string; title: string; lede: string }> = [
   { id: 'primary', title: 'Primary sources', lede: 'Whitepapers, official-sector announcements, and company filings that start the record.' },
   { id: 'standards', title: 'Standards drafts', lede: 'IETF SATP and ISO documents. A draft is not a Quant product SKU.' },
   { id: 'patent', title: 'Patents', lede: 'Sequence and method claims. A grant is not a deployment.' },
-  { id: 'book', title: 'Books', lede: 'Long-form work cited on this desk.' },
+  { id: 'book', title: 'Books', lede: 'Long-form work cited on the record.' },
   { id: 'survey', title: 'Surveys', lede: 'Taxonomies that place the gateway among other interoperability options.' },
   { id: 'note', title: 'Desk notes', lede: 'Sourced briefs filed here. A note is not a press-release copy.' },
 ];
@@ -1011,7 +1016,7 @@ function paperCard(p: Paper): string {
       <summary>What the document says</summary>
       <p>${esc(p.lede)}</p>
     </details>
-    <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read on this desk →</button>
+    <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read the brief →</button>
   </article>`;
 }
 
@@ -1055,7 +1060,7 @@ export function renderGlossary(filter = ''): string {
       <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
       <p class="mono subtle">${terms.length} terms</p>
     </div>
-    ${groups || '<p class="empty-note">No term on this desk matches. Try SATP, GBTD, or Herstatt.</p>'}`;
+    ${groups || '<p class="empty-note">No term matches. Try SATP, GBTD, or Herstatt.</p>'}`;
 }
 
 export function venueBarsHtml(print?: MarketPrint): string {
@@ -1312,22 +1317,27 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
 }
 
 export function renderCity(city: City): string {
+  const vis = cityVisual(city);
   return `${pageHero(city.kind, city.name, city.lede)}
+    <figure class="city-plate">
+      <img src="${esc(vis.src)}" alt="${esc(city.name)}" width="960" height="540" />
+      ${vis.credit ? `<figcaption class="tiny">${esc(vis.credit)}</figcaption>` : ''}
+    </figure>
     <p class="mono subtle">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
-    <article class="chapter"><p>${esc(city.body)}</p><p><a class="text-link" href="${esc(city.href)}">Open the related chapter →</a></p></article>
+    <article class="chapter"><p>${esc(city.body)}</p><p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p></article>
     <p><a class="text-link" href="/">← Earth</a></p>`;
 }
 
 export function renderDonate(): string {
   return `${pageHero(
     'Support',
-    'Donations keep the desk',
+    'Donations keep the research',
     'Optional. Buys no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
     'on the air.',
   )}
   <article class="chapter">
-    <p>QNT token contract for verification only — a separate address from the desk recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. We never ask for a seed.</p>
-    <p>Published desk recipients:</p>
+    <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
+    <p>Published recipients:</p>
     <ul class="donate-list">
       <li><span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code></li>
       <li><span class="kicker">BTC</span><code>bc1qgxnzt5d2qdx8zskffejhfjnqxuwtwnn3s3tadz</code></li>
@@ -1380,7 +1390,7 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
   return `${pageHero(
     'News',
     'Field news on Quant,',
-    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens a briefing on this desk.',
+    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens a briefing.',
     'history to what is ahead.',
     'history',
   )}

@@ -59,6 +59,7 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
+  overflow-x: clip;
   font-family: var(--sans);
   font-size: 1.125rem;
   background:
@@ -800,30 +801,37 @@ main {
 
 .wordmarks {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-  gap: 0.55rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.75rem;
   list-style: none;
   padding: 0;
   margin: 0.7rem 0 1.6rem;
 }
 
+.wordmarks-inst {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .wordmark {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  min-height: 3.6rem;
-  padding: 0.55rem 0.8rem;
-  border-radius: 14px;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 6.4rem;
+  padding: 0.95rem 0.7rem 0.8rem;
+  border-radius: 16px;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(11, 31, 92, 0.04);
 }
 
 .wordmark a {
   color: inherit;
   text-decoration: none;
+  display: block;
 }
 
 .wm {
@@ -2900,18 +2908,81 @@ button.chip {
 
 .wm-logo {
   flex: 0 0 auto;
-  width: 6.4rem;
-  height: 2.6rem;
+  width: 7.4rem;
+  height: 2.35rem;
   object-fit: contain;
   object-position: center;
   background: #fff;
-  border-radius: 8px;
-  padding: 0.28rem 0.45rem;
+  border-radius: 0;
+  padding: 0;
 }
 
 .wordmarks .wordmark {
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.55rem;
+}
+
+.wordmark-caption {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+  color: var(--navy);
+}
+
+.fold {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  margin: 1.1rem 0 1.6rem;
+}
+
+.fold > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1rem 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.fold-body {
+  padding: 0 1.15rem 1.25rem;
+}
+
+.card-more,
+.person-more {
+  margin-top: 0.65rem;
+}
+
+.card-more > summary,
+.person-more > summary {
+  cursor: pointer;
+  font-weight: 650;
+  font-size: 0.86rem;
+  color: var(--accent-ink);
+}
+
+.stage-photo,
+.city-plate img,
+.hud-photo {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--accent-soft);
+}
+
+.city-plate {
+  margin: 0 0 1rem;
+}
+
+.earth-canvas {
+  contain: strict;
 }
 
 .note-art {
@@ -3716,4 +3787,26 @@ body.stage-open .grok {
 .stack-rungs em,
 .stage-analogy {
   display: none;
+}
+
+@media (max-width: 959px) {
+  .wordmarks,
+  .wordmarks-banks,
+  .wordmarks-inst {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wordmark {
+    min-height: 5.6rem;
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1199px) {
+  .wordmarks-banks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .wordmarks-inst {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

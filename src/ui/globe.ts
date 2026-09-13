@@ -33,6 +33,7 @@ interface GlobeOptions {
 const DAY_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-blue-marble.jpg';
 const NIGHT_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-night.jpg';
 const BUMP_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-topology.png';
+const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 function makeLabelSprite(text: string): THREE.Sprite {
   const canvas = document.createElement('canvas');
@@ -41,14 +42,14 @@ function makeLabelSprite(text: string): THREE.Sprite {
   const ctx = canvas.getContext('2d');
   if (ctx) {
     ctx.clearRect(0, 0, 256, 64);
-    ctx.font = '600 28px "IBM Plex Sans", system-ui, sans-serif';
-    ctx.fillStyle = 'rgba(11, 16, 22, 0.82)';
+    ctx.font = '600 26px Outfit, "IBM Plex Sans", system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(11, 18, 32, 0.88)';
     const w = Math.min(240, ctx.measureText(text).width + 24);
     ctx.beginPath();
     if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 14, w, 36, 8);
     else ctx.rect(8, 14, w, 36);
     ctx.fill();
-    ctx.fillStyle = '#f3f1ea';
+    ctx.fillStyle = '#f4f7fb';
     ctx.fillText(text, 20, 40);
   }
   const tex = new THREE.CanvasTexture(canvas);
@@ -66,20 +67,38 @@ function latLonToVec(lat: number, lon: number, r: number): THREE.Vector3 {
   return new THREE.Vector3().setFromSphericalCoords(r, phi, theta);
 }
 
+function vecToLatLon(v: THREE.Vector3): { lat: number; lon: number } {
+  const n = v.clone().normalize();
+  const lat = 90 - THREE.MathUtils.radToDeg(Math.acos(THREE.MathUtils.clamp(n.y, -1, 1)));
+  const lon = THREE.MathUtils.radToDeg(Math.atan2(n.x, n.z)) - 180;
+  return { lat, lon };
+}
+
 function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[] {
   const out: THREE.Vector3[] = [];
   const aa = a.clone().normalize();
   const bb = b.clone().normalize();
+  const omega = Math.acos(THREE.MathUtils.clamp(aa.dot(bb), -1, 1));
   const r = a.length();
   for (let i = 0; i <= n; i++) {
     const t = i / n;
-    out.push(new THREE.Vector3().lerpVectors(aa, bb, t).normalize().multiplyScalar(r * 1.018));
+    const lift = Math.sin(t * Math.PI) * 0.055;
+    let dir: THREE.Vector3;
+    if (omega < 1e-5) dir = aa.clone();
+    else {
+      const so = Math.sin(omega);
+      dir = aa
+        .clone()
+        .multiplyScalar(Math.sin((1 - t) * omega) / so)
+        .add(bb.clone().multiplyScalar(Math.sin(t * omega) / so));
+    }
+    out.push(dir.normalize().multiplyScalar(r * (1.02 + lift)));
   }
   return out;
 }
 
 function stars(): THREE.Points {
-  const count = 1800;
+  const count = 900;
   const pos = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 10);
@@ -91,7 +110,7 @@ function stars(): THREE.Points {
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   return new THREE.Points(
     geo,
-    new THREE.PointsMaterial({ color: 0xc9d4e4, size: 0.035, transparent: true, opacity: 0.85 }),
+    new THREE.PointsMaterial({ color: 0xc9d4e4, size: 0.032, transparent: true, opacity: 0.8 }),
   );
 }
 
@@ -108,9 +127,11 @@ export class EarthGlobe {
   private lastY = 0;
   private startX = 0;
   private startY = 0;
-  private rotY = 0.35;
-  private rotX = 0.42;
-  private distance = 3.4;
+  private phi = 1.08;
+  private theta = 2.05;
+  private earthSpin = 0.42;
+  private distance = 2.85;
+  private followId: string | undefined;
   private overlays: GlobeOverlays = {
     routes: true,
     corridors: true,
@@ -118,7 +139,7 @@ export class EarthGlobe {
     labels: true,
     night: true,
     day: true,
-    spin: false,
+    spin: true,
   };
   private routeLines: THREE.Line[] = [];
   private corridorLines: THREE.Line[] = [];
@@ -131,6 +152,8 @@ export class EarthGlobe {
   private nightTex: THREE.Texture | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private hoverId: string | undefined;
+  private lastHudHover: string | undefined;
+  private hudClock = 0;
   private raycaster = new THREE.Raycaster();
   private pointer = new THREE.Vector2();
   private opts: GlobeOptions;
@@ -155,20 +178,22 @@ export class EarthGlobe {
   focusCity(id: string): void {
     const city = cityById(id);
     if (!city) return;
-    this.rotY = THREE.MathUtils.degToRad(-city.lon) + Math.PI;
-    this.rotX = THREE.MathUtils.degToRad(city.lat) * 0.65;
-    this.distance = 1.42;
+    this.followId = id;
+    this.lookAtCity(city);
+    this.distance = 1.48;
   }
 
   zoomBy(delta: number): void {
     const step = this.distance < 1.8 ? delta * 0.55 : delta;
-    this.distance = THREE.MathUtils.clamp(this.distance + step, 1.12, 8.2);
+    this.distance = THREE.MathUtils.clamp(this.distance + step, 1.12, 6);
   }
 
   reset(): void {
-    this.rotY = 0.35;
-    this.rotX = 0.42;
-    this.distance = 3.4;
+    this.followId = undefined;
+    this.phi = 1.08;
+    this.theta = 2.05;
+    this.distance = 2.85;
+    this.earthSpin = 0.42;
   }
 
   dispose(): void {
@@ -176,6 +201,14 @@ export class EarthGlobe {
     cancelAnimationFrame(this.frame);
     this.renderer?.dispose();
     this.root.replaceChildren();
+  }
+
+  private lookAtCity(city: City): void {
+    const local = latLonToVec(city.lat, city.lon, 1);
+    local.applyAxisAngle(Y_AXIS, this.earthSpin);
+    const sph = new THREE.Spherical().setFromVector3(local);
+    this.phi = THREE.MathUtils.clamp(sph.phi, 0.18, Math.PI - 0.18);
+    this.theta = sph.theta;
   }
 
   private mount(): void {
@@ -194,11 +227,11 @@ export class EarthGlobe {
       });
     } catch {
       this.root.innerHTML =
-        '<p class="earth-fallback">WebGL could not start. The encyclopedia still reads without the globe.</p>';
+        '<p class="earth-fallback">WebGL could not start. The sourced city list still reads without the globe.</p>';
       return;
     }
     this.renderer = renderer;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;
@@ -206,7 +239,7 @@ export class EarthGlobe {
     const scene = new THREE.Scene();
     this.scene = scene;
     scene.add(stars());
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 50);
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
 
     const group = new THREE.Group();
@@ -214,7 +247,7 @@ export class EarthGlobe {
     scene.add(group);
 
     const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 128, 96),
+      new THREE.SphereGeometry(1, 96, 64),
       new THREE.MeshStandardMaterial({
         color: 0x0b2a32,
         roughness: 0.62,
@@ -227,7 +260,7 @@ export class EarthGlobe {
     group.add(this.graticule());
 
     const lights = new THREE.Mesh(
-      new THREE.SphereGeometry(1.004, 128, 96),
+      new THREE.SphereGeometry(1.004, 96, 64),
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
@@ -240,7 +273,7 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.07, 96, 72),
+      new THREE.SphereGeometry(1.07, 64, 48),
       new THREE.ShaderMaterial({
         uniforms: { color: { value: new THREE.Color(0x4c7cff) } },
         vertexShader:
@@ -302,7 +335,7 @@ export class EarthGlobe {
     for (const city of CITIES) {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, 14, 14),
+        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, 12, 12),
         new THREE.MeshStandardMaterial({
           color: kindColor(city.kind),
           emissive: kindColor(city.kind),
@@ -348,6 +381,7 @@ export class EarthGlobe {
     window.addEventListener('resize', () => this.resize());
     canvas.addEventListener('pointerdown', (e) => {
       this.dragging = true;
+      this.followId = undefined;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
       this.startX = e.clientX;
@@ -364,8 +398,8 @@ export class EarthGlobe {
       const dy = e.clientY - this.lastY;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
-      this.rotY += dx * 0.005;
-      this.rotX = THREE.MathUtils.clamp(this.rotX + dy * 0.004, -1.15, 1.15);
+      this.theta -= dx * 0.0088;
+      this.phi = THREE.MathUtils.clamp(this.phi + dy * 0.0066, 0.18, Math.PI - 0.18);
     });
     const endDrag = (e: PointerEvent) => {
       if (!this.dragging) return;
@@ -381,12 +415,12 @@ export class EarthGlobe {
       'wheel',
       (e) => {
         e.preventDefault();
-        this.zoomBy(e.deltaY * 0.0016);
+        this.zoomBy(e.deltaY * 0.0014);
       },
       { passive: false },
     );
     canvas.addEventListener('dblclick', () => {
-      this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 8.2);
+      this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 6);
     });
 
     this.resize();
@@ -450,30 +484,47 @@ export class EarthGlobe {
     this.camera.updateProjectionMatrix();
   }
 
+  private facingLatLon(): { lat: number; lon: number } {
+    if (!this.camera) return { lat: 0, lon: 0 };
+    const world = this.camera.position.clone().normalize();
+    world.applyAxisAngle(Y_AXIS, -this.earthSpin);
+    return vecToLatLon(world);
+  }
+
+  private emitHud(): void {
+    const hover = this.hoverId ? cityById(this.hoverId) : undefined;
+    const facing = hover ? { lat: hover.lat, lon: hover.lon } : this.facingLatLon();
+    const altitudeKm = Math.round((this.distance - 1.05) * 6371);
+    this.opts.onHud({
+      lat: facing.lat,
+      lon: facing.lon,
+      altitudeKm: Math.max(40, altitudeKm),
+      zoom: Number((2.85 / this.distance).toFixed(1)),
+      hoverId: this.hoverId,
+    });
+  }
+
   private tick(): void {
     if (!this.renderer || !this.scene || !this.camera || !this.earth) return;
-    if (!this.reduced && !this.dragging && this.overlays.spin) this.rotY += 0.001;
-    this.earth.rotation.y = this.rotY;
-    this.earth.rotation.x = this.rotX * 0.12;
-    this.camera.position.set(0, this.rotX * 0.32, this.distance);
-    this.camera.lookAt(0, 0, 0);
-    if (this.sun) {
-      const t = this.overlays.day ? 1.85 : 0.35;
-      this.sun.intensity = t;
+    if (!this.reduced && !this.dragging && this.overlays.spin) this.earthSpin += 0.0026;
+    this.earth.rotation.set(0, this.earthSpin, 0);
+    if (this.followId && !this.dragging) {
+      const city = cityById(this.followId);
+      if (city) this.lookAtCity(city);
     }
+    this.camera.position.setFromSphericalCoords(this.distance, this.phi, this.theta);
+    this.camera.lookAt(0, 0, 0);
+    if (this.sun) this.sun.intensity = this.overlays.day ? 1.85 : 0.35;
     if (this.pulse && this.overlays.activity && !this.reduced) {
       const s = 1 + Math.sin(performance.now() / 420) * 0.55;
       this.pulse.scale.setScalar(s);
     }
     this.renderer.render(this.scene, this.camera);
-    const altitudeKm = Math.round((this.distance - 1.05) * 6371);
-    this.opts.onHud({
-      lat: THREE.MathUtils.radToDeg(this.rotX),
-      lon: THREE.MathUtils.radToDeg(-this.rotY),
-      altitudeKm: Math.max(40, altitudeKm),
-      zoom: Number((3.4 / this.distance).toFixed(1)),
-      hoverId: this.hoverId,
-    });
+    this.hudClock += 1;
+    if (this.hoverId !== this.lastHudHover || this.hudClock % 4 === 0) {
+      this.lastHudHover = this.hoverId;
+      this.emitHud();
+    }
   }
 
   private applyMaps(): void {

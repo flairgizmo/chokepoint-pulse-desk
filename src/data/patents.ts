@@ -44,7 +44,7 @@ export const PATENTS: PatentCard[] = [
     granted: '2026 (Quant’s published acceptance note)',
     inventors: [],
     assignee: 'Quant (as reported)',
-    claim: 'Quant’s news note: Japanese acceptance covering updates across two or more ledgers — the Fusion rollup claim. Read Quant’s page for the company’s wording; this desk does not invent a Japanese publication number that is not on that page.',
+    claim: 'Quant’s news note: Japanese acceptance covering updates across two or more ledgers — the Fusion rollup claim. Read Quant’s page for the company’s wording; no Japanese publication number is printed that is not on that page.',
     why: 'Fusion is marketed as Layer 2.5: one execution environment that can write into more than one ledger. The Japanese filing is how Quant describes protection of that method. A company note, not a USPTO grant.',
     hrefKey: 'patentJp',
     related: ['fusion', 'overledger'],

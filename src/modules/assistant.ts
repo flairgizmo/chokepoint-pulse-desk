@@ -71,7 +71,7 @@ export function answerFromDesk(question: string): ChatReply {
   }
   if (/\bqnt\b|tokenomics|contract/.test(lower)) {
     return {
-      text: 'QNT is an ERC-20 utility token. Overledger licences settle in it. Live price on this desk comes from Coinbase, Kraken or Binance. Check the Ethereum contract on Markets before sending anything.',
+      text: 'QNT is an ERC-20 utility token. Overledger licences settle in it. Live price comes from Coinbase, Kraken or Binance. Check the Ethereum contract on Markets before sending anything.',
       cites: [{ label: 'Markets', href: '/markets' }],
       mode: 'sourced',
     };

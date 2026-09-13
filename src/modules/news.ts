@@ -1,5 +1,13 @@
 import { fetchText } from './liveHttp';
-import { GNEWS_URL, OVERLEDGER_CHANGELOG, QUANT_FEED, SATP_ATOM } from './liveSources';
+import {
+  BOE_NEWS_RSS,
+  GNEWS_GBTD,
+  GNEWS_URL,
+  IETF_BLOG_RSS,
+  OVERLEDGER_CHANGELOG,
+  QUANT_FEED,
+  SATP_ATOM,
+} from './liveSources';
 
 export type NewsStatus = 'live' | 'degraded' | 'EXAMPLE' | 'loading';
 export type NewsLane = 'Official' | 'Markets' | 'Industry';
@@ -20,7 +28,7 @@ export interface NewsRiver {
   error?: string;
 }
 
-const CACHE_KEY = 'qntdesk.news.v3';
+const CACHE_KEY = 'qntdesk.news.v4';
 const RE =
   /\b(quant network|overledger|qnt\b|gilbert verdian|gbtd|payscript|quantnet|tokenised sterling|tokenized sterling|trusted node)\b/i;
 
@@ -182,8 +190,15 @@ export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
         linkBase: 'https://datatracker.ietf.org',
       }),
     ),
+    fetchText(GNEWS_GBTD, signal).then((xml) => parseGoogleNewsRss(xml)),
+    fetchText(BOE_NEWS_RSS, signal).then((xml) =>
+      parseNamedRss(xml, { source: 'Bank of England', lane: 'Industry', requireMatch: true }),
+    ),
+    fetchText(IETF_BLOG_RSS, signal).then((xml) =>
+      parseNamedRss(xml, { source: 'IETF', lane: 'Industry', requireMatch: true }),
+    ),
   ]);
-  const items = dedupeHeadlines(settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))).slice(0, 32);
+  const items = dedupeHeadlines(settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))).slice(0, 40);
   const failed = settled.filter((r) => r.status === 'rejected').length;
   if (!items.length) {
     if (last?.items.length) {

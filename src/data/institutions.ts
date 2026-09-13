@@ -121,7 +121,7 @@ export const INSTITUTIONS: Institution[] = [
     role: 'working-group',
     status: 'current',
     dates: 'Proposed 2015 · ISO/TS 23516:2026 · WG7',
-    body: 'Verdian proposed the committee in 2015 and convenes WG7 (interoperability). ISO/TS 23516:2026 is the DLT interoperability framework. ISO 22739 is the vocabulary companion. Catalogue records; paid full text. Wordmark — this desk does not ship a substitute ISO logo.',
+    body: 'Verdian proposed the committee in 2015 and convenes WG7 (interoperability). ISO/TS 23516:2026 is the DLT interoperability framework. ISO 22739 is the vocabulary companion. Catalogue records; paid full text. No substitute ISO logo is shipped.',
     hrefKey: 'isoTc307',
   },
   {
@@ -201,7 +201,7 @@ export const INSTITUTIONS: Institution[] = [
     role: 'partner',
     status: 'current',
     dates: '14 January 2026',
-    body: 'Tokyo / London announcement on tokenised deposits, bank-issued stablecoins and programmable settlement. StreamR is BOJ-NET compatible. Announced go-to-market. Wordmark — no licensed mark on this desk.',
+    body: 'Tokyo / London announcement on tokenised deposits, bank-issued stablecoins and programmable settlement. StreamR is BOJ-NET compatible. Announced go-to-market. No licensed mark is on file.',
     hrefKey: 'dentsuSoken',
   },
   {
@@ -251,7 +251,7 @@ export const INSTITUTIONS: Institution[] = [
     role: 'partner',
     status: 'current',
     dates: 'Operating company',
-    body: 'The operating company. Technology partner on GBTD. Contributor in IETF SATP and ISO/TC 307 WG7. This desk is independent research about that company — not Quant’s corporate site.',
+    body: 'The operating company. Technology partner on GBTD. Contributor in IETF SATP and ISO/TC 307 WG7. QntDesk is independent research about that company — not Quant’s corporate site.',
     hrefKey: 'about',
   },
 ];

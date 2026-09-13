@@ -1,4 +1,5 @@
 import { paperById, quotes, sourceUrl, chapters } from '../data/catalog';
+import { cityById, cityVisual } from '../data/cities';
 import { bankDisplay } from '../data/marks';
 import { INSTITUTIONS, institutionById } from '../data/institutions';
 import { patentById } from '../data/patents';
@@ -19,16 +20,16 @@ function factLine(label: string, value: string): string {
 
 function newsWhy(title: string, lane: string): string {
   const t = title.toLowerCase();
-  if (/satp|ietf|odap/.test(t)) return 'This pulse sits next to the IETF SATP desk: a protocol room, not a Quant SKU.';
-  if (/gbtd|tokenis|tokeniz|deposit|sterling/.test(t)) return 'This pulse sits next to GBTD: commercial-bank sterling, not a CBDC.';
-  if (/overledger|quantnet/.test(t)) return 'This pulse sits next to the gateway OS — a mapping layer, not a twelfth chain.';
-  if (/fusion|trusted node/.test(t)) return 'This pulse sits next to Fusion operations. Quant’s sentence, not a supervisor’s finding.';
-  if (/payscript|flow application/.test(t)) return 'This pulse sits next to programmability at the account, named in the GBTD stack.';
+  if (/satp|ietf|odap/.test(t)) return 'IETF SATP: a protocol room, not a Quant SKU.';
+  if (/gbtd|tokenis|tokeniz|deposit|sterling/.test(t)) return 'GBTD: commercial-bank sterling, not a CBDC.';
+  if (/overledger|quantnet/.test(t)) return 'Gateway OS — a mapping layer, not a twelfth chain.';
+  if (/fusion|trusted node/.test(t)) return 'Fusion operations. Quant’s sentence, not a supervisor’s finding.';
+  if (/payscript|flow application/.test(t)) return 'Programmability at the account, named in the GBTD stack.';
   if (/bank of england|synchronis|rtgs|rt2/.test(t)) {
     return 'Bank of England language is adjacency unless the source names a contract. The Synchronisation Lab is simulated RT2.';
   }
-  if (/\bqnt\b|token price/.test(t)) return 'A utility-token mention. QNT is not equity. This desk does not treat price as the story.';
-  return `Grade this as ${lane.toLowerCase()} wire. It is a pulse, not a timeline fact until an editor places it.`;
+  if (/\bqnt\b|token price/.test(t)) return 'A utility-token mention. QNT is not equity. Price is not the story.';
+  return `Grade this as ${lane.toLowerCase()} wire. A pulse, not a timeline fact until it is placed.`;
 }
 
 function newsConnects(title: string): RelatedChip[] {
@@ -51,8 +52,8 @@ function personStage(id: string): StageDoc | null {
   if (!p) return null;
   const spoken = quotes.find((q) => q.personId === p.id);
   const extra = p.current
-    ? 'The desk files them as current: a named role, not a composite, and not a yearbook caption.'
-    : 'The desk files them as documentary: the work remains after the title left the about page.';
+    ? 'Filed as current: a named role, not a composite.'
+    : 'Filed as documentary: the work remains after the title left the about page.';
   const line = spoken ? ` A sourced line sits under this name: “${spoken.text}”` : '';
   return {
     id: p.id,
@@ -60,10 +61,10 @@ function personStage(id: string): StageDoc | null {
     title: p.name,
     kicker: `${p.role} · ${p.current ? 'current' : 'documentary'}`,
     stake: `${p.name} — ${p.role}.`,
-    body: `${p.bio}${p.note ? ` ${p.note}` : ''} ${extra}${line} Related chips open the patents, chapters, or programmes their name actually touches.`,
+    body: `${p.bio}${p.note ? ` ${p.note}` : ''} ${extra}${line}`,
     analogy: spoken
-      ? `A sourced line is a door, not a pull-quote decoration: “${spoken.text}” — ${spoken.who}.`
-      : `${p.name} is a documented name on this desk. Initials appear only when Quant published no still.`,
+      ? `“${spoken.text}” — ${spoken.who}.`
+      : `${p.name} is a documented name. Initials appear only when no official still was published.`,
     fact: spoken
       ? factLine('Sourced line', `${spoken.who}, ${spoken.role}`)
       : factLine('Status', p.current ? 'Current / documented' : 'Left / documentary'),
@@ -82,6 +83,27 @@ function personStage(id: string): StageDoc | null {
 }
 
 export function resolveStage(kind: string, id: string, el?: HTMLElement): StageDoc | null {
+  if (kind === 'city') {
+    const c = cityById(id);
+    if (!c) return null;
+    const vis = cityVisual(c);
+    const hash = c.href.includes('#') ? c.href.split('#')[1] : '';
+    return {
+      id: c.id,
+      kind: 'city',
+      title: c.name,
+      kicker: `${c.kind} · ${c.country}`,
+      stake: c.lede,
+      body: `${c.body}${vis.credit ? ` Photograph: ${vis.credit}.` : ''}`,
+      fact: factLine('Coordinates', `${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}`),
+      facts: [
+        { label: 'Coordinates', value: `${c.lat.toFixed(4)}, ${c.lon.toFixed(4)}` },
+        { label: 'Kind', value: c.kind },
+      ],
+      related: chipsFromIds([hash, 'overledger', 'gbtd'].filter(Boolean)),
+      visual: `<img class="stage-photo" src="${vis.src}" alt="${c.name}" />`,
+    };
+  }
   if (kind === 'person') return personStage(id);
   if (kind === 'quote') {
     const q = quotes.find((x) => x.id === id);
@@ -109,7 +131,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       title: e.title,
       kicker: `${e.date} · ${e.theme}`,
       stake: e.stake,
-      body: `${e.body} This beat is dated ${e.date}. Quiet months are omitted on purpose — the rail does not invent holes. The year is a room: what changed, who signed, which standard or product it unlocked.`,
+      body: `${e.body} Dated ${e.date}. Quiet months are omitted — the rail does not invent holes.`,
       analogy: e.analogy,
       fact: e.hrefKey ? factLine('Primary source', e.hrefKey) : factLine('Date', e.date),
       related: chipsFromIds(e.related),
@@ -143,7 +165,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       title: p.number,
       kicker: p.title,
       stake: 'A claim about sequence or method — not a live rail.',
-      body: `${p.claim} ${p.why} Numbers on this desk match the public file. A Japanese acceptance is filed only as Quant’s news note; this stage does not invent a JPO number that is not on that page.`,
+      body: `${p.claim} ${p.why} Numbers match the public file. A Japanese acceptance is filed only as Quant’s news note; no JPO number is printed that is not on that page.`,
       analogy: 'A patent is a claim about sequence or method. It is not a deployment, and it is not SATP.',
       fact: factLine('Granted / filed', p.granted || p.filed || 'See source'),
       facts: [
@@ -169,7 +191,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
           : i.status === 'historical'
             ? 'A finished room. The document remains.'
             : 'Still in the room, with the role named.',
-      body: `${i.body} Role on this desk: ${i.role}. Status: ${i.status}${i.dates ? ` (${i.dates})` : ''}. Current versus former is labelled so a seating plan is not read as a sponsorship reel.`,
+      body: `${i.body} Role: ${i.role}. Status: ${i.status}${i.dates ? ` (${i.dates})` : ''}. Current versus former is labelled so a seating plan is not read as a sponsorship reel.`,
       analogy:
         i.status === 'adjacency'
           ? 'Adjacency is a neighbouring room, not a contract.'
@@ -194,7 +216,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       stake: `A working definition for ${t.term}.`,
       body: t.body,
       analogy: t.analogy ?? `Think of ${t.term} as a labelled drawer: the definition is what you find inside, not a slogan on the front.`,
-      fact: factLine('Desk', 'Glossary'),
+      fact: factLine('Source', 'Glossary'),
       related: chipsFromIds([t.id === 'synthorus' ? 'synchronisation' : t.id, 'satp', 'overledger', 'gbtd']),
       visual: diagramSvg(t.id, 'term', t.term),
     };
@@ -207,15 +229,15 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       kind: 'paper',
       title: p.title,
       kicker: `${p.kind} · ${p.year}`,
-      stake: p.id === 'synchro' ? 'A neighbouring research thread, with a verification chip.' : 'Read the publisher. This stage is the desk’s brief.',
+      stake: p.id === 'synchro' ? 'A neighbouring research thread, with a verification chip.' : 'Read the publisher. This stage is the brief.',
       body:
         p.id === 'synchro'
           ? `${p.lede} Distinct from Quant’s February 2026 Synchronisation Lab note (simulated RT2). Bank of England pages describe synchronisation as locking an RTGS movement to an external event. This file is not a BoE publication naming Quant as operator of “Synthorus.”`
-          : `${p.lede} Venue: ${p.year}, ${p.venue}. Authors as filed: ${p.authors.join(', ') || 'see source'}. The reader stays on this desk; the publisher remains one click further.`,
+          : `${p.lede} Venue: ${p.year}, ${p.venue}. Authors as filed: ${p.authors.join(', ') || 'see source'}. The publisher remains one click further.`,
       analogy:
         p.id === 'synchro'
           ? 'A neighbouring research thread, not the 2026 Synchronisation Lab press note.'
-          : 'Read the publisher. This stage is the desk’s brief.',
+          : 'Read the publisher. This stage is the brief.',
       fact: factLine('Venue', `${p.year} · ${p.venue}`),
       facts: [
         { label: 'Venue', value: p.venue },
@@ -235,7 +257,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       title: c.title,
       kicker: c.kicker,
       stake: c.kicker,
-      body: `${c.body} Filed on the ${c.page} route of this desk.`,
+      body: `${c.body} Filed on the ${c.page} route.`,
       analogy: 'A chapter is a shelf mark, not a second home page.',
       related: chipsFromIds([c.id, 'overledger']),
       visual: diagramSvg(c.id, 'chapter', c.kicker),
@@ -256,7 +278,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       title,
       kicker: `${source} · ${lane}${published ? ` · ${published}` : ''}`,
       stake: why,
-      body: `A sourced headline on the desk. ${source}${published ? `, ${published}` : ''}. ${why} This brief stays here so you do not have to leave to understand the item. The original remains one click further. Never auto-file a rumour onto the timeline as fact.`,
+      body: `A sourced headline brief. ${source}${published ? `, ${published}` : ''}. ${why} The original remains one click further. A rumour is never auto-filed onto the timeline as fact.`,
       analogy: 'A wire story is a pulse, not a verdict. The original is one click further.',
       fact: factLine('Published', published || 'as fetched'),
       facts: [
@@ -301,7 +323,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       stake: 'The day the core draft is an RFC, a bank can write a gateway-to-gateway transfer without buying a brand.',
       body: `${s.body} ${s.tags}. SATP is IETF work. Overledger can implement it. That still does not make SATP a Quant SKU. Stages: 0 verify, 1 initiate, 2 lock-assertion, 3 two-phase commit. Crash recovery is a separate Belchior draft.`,
       analogy: 'SWIFT for the moment an asset must leave one network and arrive in exactly one other.',
-      fact: factLine('Desk', 'IETF SATP — not a Quant SKU'),
+      fact: factLine('Room', 'IETF SATP — not a Quant SKU'),
       related: chipsFromIds(['satp', 'hargreaves', 'chiriac', 'facer', 'overledger']),
       original: { href: sourceUrl('satpCore'), label: 'Open original' },
       visual: diagramSvg(`satp-${s.n}`, 'satp', s.title),
@@ -357,8 +379,8 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       kind: 'source',
       title,
       kicker: who || 'On the record',
-      stake: 'The publisher keeps the original. This desk keeps the brief.',
-      body: `${who}. The citation is filed here so the sentence can be read next to the rest of the record. Open original if you want the first room. A cited neighbour is not an endorsement.`,
+      stake: 'The publisher keeps the original. The brief stays here.',
+      body: `${who}. The citation is filed so the sentence can be read next to the rest of the record. Open original for the first room. A cited neighbour is not an endorsement.`,
       analogy: 'A doorway, not a redirect.',
       original: href ? { href, label: 'Open original' } : undefined,
       visual: diagramSvg(id, 'source', title),

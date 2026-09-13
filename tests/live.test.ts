@@ -4,6 +4,8 @@ import {
   OVERLEDGER_CHANGELOG,
   QUANT_FEED,
   SATP_ATOM,
+  GNEWS_GBTD,
+  BOE_NEWS_RSS,
 } from '../src/modules/liveSources';
 import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
 import { renderHome, renderPeople, renderNews, renderTechnology, renderProgrammes, renderStandards, renderCbdc } from '../src/ui/views';
@@ -16,6 +18,8 @@ describe('Live source URLs', () => {
     expect(QUANT_FEED).toBe('https://quant.network/feed/');
     expect(OVERLEDGER_CHANGELOG).toContain('docs.overledger.dev');
     expect(SATP_ATOM).toContain('datatracker.ietf.org/group/satp');
+    expect(GNEWS_GBTD).toContain('tokenised');
+    expect(BOE_NEWS_RSS).toContain('bankofengland.co.uk');
   });
 });
 
@@ -93,6 +97,12 @@ describe('Brand mark', () => {
     expect(existsSync('public/people/hargreaves.jpg')).toBe(true);
     expect(existsSync('public/people/riley.jpg')).toBe(true);
     expect(existsSync('public/people/yates.jpg')).toBe(true);
+    expect(existsSync('public/people/ashton.jpg')).toBe(true);
+    expect(existsSync('public/people/sentelidis.jpg')).toBe(true);
+    expect(existsSync('public/people/chiriac.jpg')).toBe(true);
+    expect(existsSync('public/people/rawel.jpg')).toBe(true);
+    expect(existsSync('public/people/alves.jpg')).toBe(true);
+    expect(existsSync('public/visuals/cities/london.jpg')).toBe(true);
   });
 });
 
@@ -118,6 +128,8 @@ describe('Public desk', () => {
     expect(people).toContain('https://quant.network/people/gilbert-verdian/');
     expect(people).toContain('people-rail');
     expect(people).toContain('/people/tasca.jpg');
+    expect(people).toContain('/people/ashton.jpg');
+    expect(people).toContain('/people/sentelidis.jpg');
     expect(people).toContain('Builders of the interoperability layer');
     expect(people).not.toContain('Highest-resolution stills from Quant’s own media library');
     expect(people).not.toContain('People who worked on Overledger');

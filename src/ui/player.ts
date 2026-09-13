@@ -80,7 +80,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
       <p class="player-byline">
         <span class="host-tile james" aria-hidden="true">JH</span>
         <span class="host-tile amelia" aria-hidden="true">AC</span>
-        <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · correspondents · series ${String(ep.n).padStart(2, '0')} of 20
+        <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · hosts · series ${String(ep.n).padStart(2, '0')} of 20
       </p>
       <nav class="series-dots" aria-label="Series">${dots}</nav>
       <nav class="player-adjacent">

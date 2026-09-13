@@ -6,6 +6,7 @@ import { PEOPLE } from '../data/people';
 import { PROGRAMMES } from '../data/programmes';
 import { STORY } from '../data/story';
 import { TECH } from '../data/tech';
+import { CITIES } from '../data/cities';
 
 export interface RelatedChip {
   label: string;
@@ -29,6 +30,7 @@ const STAGE_ROUTE: Record<string, string> = {
   source: '/news',
   proof: '/',
   chapter: '/vision',
+  city: '/',
 };
 
 export function stageRoute(kind: string): string {
@@ -64,6 +66,9 @@ export function chipFromId(raw: string): RelatedChip | null {
 
   const programme = PROGRAMMES.find((p) => p.id === id);
   if (programme) return { kind: 'programme', id: programme.id, label: programme.title };
+
+  const city = CITIES.find((c) => c.id === id);
+  if (city) return { kind: 'city', id: city.id, label: city.name };
 
   const institution = INSTITUTIONS.find((i) => i.id === id);
   if (institution) return { kind: 'institution', id: institution.id, label: institution.name };

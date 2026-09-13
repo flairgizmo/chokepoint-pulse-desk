@@ -34,7 +34,7 @@ export function renderHome(): string {
   const banks = GBTD_BANKS.map((b) => {
     const mark = markFor(b);
     const caption = bankDisplay(b);
-    return `<li class="wordmark">${mark ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="128" height="52" />` : ''}<span>${esc(caption)}</span></li>`;
+    return `<li class="wordmark">${mark ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="160" height="48" />` : ''}<span class="wordmark-caption">${esc(caption)}</span></li>`;
   }).join('');
   return `
     <section class="masthead masthead-lockup" data-proof="hero">
@@ -169,13 +169,16 @@ export function renderTechnology(): string {
       <p class="kicker">${esc(t.era)}</p>
       <h2>${esc(t.name)}</h2>
       <p class="lede-sm">${esc(t.purpose)}</p>
-      <div class="tech-grid">
-        <div><h3>What it does</h3><p>${esc(t.does)}</p></div>
-        <div><h3>Why it exists</h3><p>${esc(t.why)}</p></div>
-        <div><h3>Standards</h3><p>${esc(t.standards)}</p></div>
-        <div><h3>What it is not</h3><p>${esc(t.isNot)}</p></div>
-      </div>
-      <p class="stage-related">${relatedButtons(chipsFromIds(t.related))}</p>
+      <details class="card-more">
+        <summary>Chapter</summary>
+        <div class="tech-grid">
+          <div><h3>What it does</h3><p>${esc(t.does)}</p></div>
+          <div><h3>Why it exists</h3><p>${esc(t.why)}</p></div>
+          <div><h3>Standards</h3><p>${esc(t.standards)}</p></div>
+          <div><h3>What it is not</h3><p>${esc(t.isNot)}</p></div>
+        </div>
+        <p class="stage-related">${relatedButtons(chipsFromIds(t.related))}</p>
+      </details>
     </article>`,
   ).join('');
   return `${hero('Technology', 'Every layer Quant built or productised.', 'Isolated ledgers were the problem. Overledger is the operating layer. The network, the standards capture, and what that unlocks for tokenised deposits in 2026–27 sit in the chapters below.', 'tech-hero')}
@@ -205,7 +208,7 @@ export function renderPatents(): string {
       <input type="search" id="patent-search" placeholder="Search numbers, inventors, claims…" />
     </div>
     <div class="patent-grid" id="patent-grid">${cards}</div>
-    <p class="empty-note" id="patent-empty" hidden>No filing on this desk matches. Try US11842335B2 or Hargreaves.</p>`;
+    <p class="empty-note" id="patent-empty" hidden>No filing matches. Try US11842335B2 or Hargreaves.</p>`;
 }
 
 export function renderInstitutions(): string {
@@ -222,11 +225,11 @@ export function renderInstitutions(): string {
         <p class="kicker">${esc(i.role)} · ${esc(i.status)}</p>
         <h2>${esc(caption)}</h2>
         <p class="mono subtle">${esc(i.dates ?? '')}</p>
-        <p>${esc(i.body)}</p>
+        <p>${esc(i.body.length > 160 ? `${i.body.slice(0, 160).trim()}…` : i.body)}</p>
       </button>
     </article>`;
   }).join('');
-  return `${hero('Institutions & boards', 'Who they still sit with.', 'Current, historical, and adjacency — labelled. Real marks where we have them. A typeset wordmark, labelled as a wordmark, where we do not.', 'inst-hero')}
+  return `${hero('Institutions & boards', 'Who they still sit with.', 'Current, historical, and adjacency — labelled. Official marks where they are on file. A typeset caption where they are not.', 'inst-hero')}
     <div class="toolbar filter-bar">
       <input type="search" id="inst-search" placeholder="Search institutions…" />
       <div class="chip-row" id="inst-status">

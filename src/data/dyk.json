@@ -155,7 +155,7 @@
     "id": "belchior-while",
     "category": "People",
     "q": "Did you know Belchior\u2019s ACM interoperability paper was written while at Quant?",
-    "a": "The 2023 ACM Distributed Ledger Technologies paper \u2014 modes \u00d7 infrastructure \u2014 carries the footnote \u2018Work done while \u2026 at Quant Network\u2019. Belchior is now at T\u00e9cnico Lisboa; he is in this encyclopedia because he was on the payroll when the taxonomy was written, not because SATP lists him.",
+    "a": "The 2023 ACM Distributed Ledger Technologies paper \u2014 modes \u00d7 infrastructure \u2014 carries the footnote \u2018Work done while \u2026 at Quant Network\u2019. Belchior is now at T\u00e9cnico Lisboa; he is on the record because he was on the payroll when the taxonomy was written, not because SATP lists him.",
     "cta": "",
     "to": "/team/belchior"
   },
@@ -347,7 +347,7 @@
     "id": "qnt-burn",
     "category": "Vision",
     "q": "Did you know Quant burned unsold QNT on 14 September 2018?",
-    "a": "Their own post: total supply 14,612,493.080826178, sent to the contract itself. Bitstamp\u2019s May 2026 MiCA filing cites a slightly different maximum (14,881,364) and a 68.19 / 31.81 TGE split. This desk reports both and takes today\u2019s circulating from CoinGecko. QNT is a utility token, not equity.",
+    "a": "Their own post: total supply 14,612,493.080826178, sent to the contract itself. Bitstamp\u2019s May 2026 MiCA filing cites a slightly different maximum (14,881,364) and a 68.19 / 31.81 TGE split. Both figures are reported; today\u2019s circulating comes from CoinGecko. QNT is a utility token, not equity.",
     "cta": "",
     "to": "/markets#tokenomics"
   },
