@@ -53,6 +53,7 @@
 html {
   color-scheme: light;
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -3614,6 +3615,10 @@ body.stage-open .grok {
   .prog-grid {
     grid-template-columns: 1fr;
   }
+
+  .research-lane .lane-head {
+    grid-template-columns: 1fr;
+  }
 }
 
 .research-lane {
@@ -3667,11 +3672,16 @@ body.stage-open .grok {
   margin: 0 0 1.2rem;
   background: #fff;
   border: 1px solid var(--line);
+  max-width: 100%;
+  overflow: hidden;
 }
 
-.plate-figure img {
+.plate-figure img,
+.beat-figure svg,
+.beat-figure img {
   display: block;
   width: 100%;
+  max-width: 100%;
   height: auto;
 }
 
