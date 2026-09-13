@@ -251,7 +251,7 @@ function mountFilm3D(
     mesh.userData.slide = slide;
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(portrait ? 1.14 : 2.24, portrait ? 1.48 : 1.3, 0.02),
-      duskSheen({ color: 0xd7e4ff, reflectivity: 0.62, envSrc: backdrop }),
+      duskSheen({ color: 0xd7e4ff, reflectivity: 0.74, envSrc: backdrop }),
     );
     chrome.position.z = -0.04;
     mesh.add(chrome);

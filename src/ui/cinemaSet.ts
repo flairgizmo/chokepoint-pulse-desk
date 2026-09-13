@@ -182,7 +182,7 @@ export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
   return tex;
 }
 
-export function cinemaFloorMap(): THREE.CanvasTexture {
+export function cinemaFloorMap(photo: HTMLImageElement | null = visionStill()): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 512;
   c.height = 512;
@@ -190,14 +190,30 @@ export function cinemaFloorMap(): THREE.CanvasTexture {
   if (ctx) {
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, 512, 512);
-    const g = ctx.createRadialGradient(256, 256, 12, 256, 256, 248);
-    g.addColorStop(0, 'rgba(210, 224, 255, 0.42)');
-    g.addColorStop(0.28, 'rgba(21, 87, 255, 0.16)');
-    g.addColorStop(0.62, 'rgba(10, 18, 32, 0.55)');
-    g.addColorStop(1, 'rgba(7, 11, 20, 0)');
+    if (photo?.naturalWidth) {
+      ctx.filter = 'saturate(0.88) brightness(0.42)';
+      ctx.drawImage(
+        photo,
+        photo.naturalWidth * 0.18,
+        photo.naturalHeight * 0.42,
+        photo.naturalWidth * 0.64,
+        photo.naturalHeight * 0.42,
+        0,
+        0,
+        512,
+        512,
+      );
+      ctx.filter = 'none';
+    }
+    const g = ctx.createRadialGradient(256, 256, 10, 256, 256, 248);
+    g.addColorStop(0, 'rgba(234, 241, 255, 0.52)');
+    g.addColorStop(0.22, 'rgba(90, 240, 255, 0.2)');
+    g.addColorStop(0.48, 'rgba(21, 87, 255, 0.14)');
+    g.addColorStop(0.72, 'rgba(10, 18, 32, 0.62)');
+    g.addColorStop(1, 'rgba(7, 11, 20, 0.92)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 512, 512);
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.08)';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.1)';
     ctx.lineWidth = 2;
     for (const r of [70, 130, 190, 250]) {
       ctx.beginPath();
@@ -243,12 +259,15 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
           envSrc: backdropSrc,
         })
       : new THREE.MeshPhysicalMaterial({
-          color: 0x101826,
-          roughness: 0.08,
-          metalness: 0.55,
-          clearcoat: 0.9,
-          clearcoatRoughness: 0.06,
-          envMapIntensity: 1.35,
+          map: cinemaFloorMap(),
+          color: 0xffffff,
+          roughness: 0.06,
+          metalness: 0.42,
+          clearcoat: 1,
+          clearcoatRoughness: 0.04,
+          transparent: true,
+          opacity: 0.9,
+          envMapIntensity: 1.65,
         }),
   );
   floor.rotation.x = -Math.PI / 2;
@@ -295,11 +314,12 @@ export function plateMaterial(
     ? duskSheen({ color: 0x1a2438, reflectivity: 0.62, envSrc })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
-        roughness: 0.18,
-        metalness: 0.12,
-        clearcoat: 0.72,
-        clearcoatRoughness: 0.16,
-        envMapIntensity: 1.45,
+        roughness: 0.1,
+        metalness: 0.08,
+        clearcoat: 1,
+        clearcoatRoughness: 0.08,
+        ior: 1.52,
+        envMapIntensity: 1.7,
       });
 }
 
@@ -325,7 +345,7 @@ export function addUnrealLook(
   try {
     const composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.4, 0.46, 0.8));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.56, 0.4, 0.72));
     composer.addPass(new OutputPass());
     return composer;
   } catch {

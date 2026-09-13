@@ -5070,3 +5070,77 @@ body.stage-open .grok {
     min-height: 22rem;
   }
 }
+
+.quote-card.quote-feature,
+.note-card.is-feature {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--coral) 18%, #122038), #0b1220 70%);
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.quote-card.quote-feature .qmark,
+.quote-card.quote-feature p,
+.quote-card.quote-feature footer,
+.note-card.is-feature .kicker,
+.note-card.is-feature h3,
+.note-card.is-feature p {
+  color: inherit;
+}
+
+.stack-visual .cinema-rungs li[data-rung='gate'],
+.stack-rungs.cinema-rungs li[data-rung='gate'] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 22%, #0b1220), #0b1220);
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.stack-visual .cinema-rungs li[data-rung='gate'] span,
+.stack-rungs.cinema-rungs li[data-rung='gate'] span,
+.stack-visual .cinema-rungs li[data-rung='gate'] strong,
+.stack-rungs.cinema-rungs li[data-rung='gate'] strong {
+  color: inherit;
+}
+
+.grok-panel {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: rgba(234, 241, 255, 0.12);
+  box-shadow: 0 24px 64px rgba(7, 11, 20, 0.45);
+}
+
+.grok-panel .kicker,
+.grok-panel .subtle,
+.grok-user {
+  color: #8aa3c8;
+}
+
+.grok-assistant {
+  background: #122038;
+  color: #f4f7fb;
+}
+
+.grok-welcome {
+  background: linear-gradient(135deg, #1a2744, #0b1220);
+}
+
+.grok-chip {
+  background: #122038;
+  color: #eaf1ff;
+  border-color: rgba(234, 241, 255, 0.16);
+}
+
+.grok-panel .icon-btn {
+  color: #eaf1ff;
+  background: #122038;
+  border-color: rgba(234, 241, 255, 0.16);
+}
+
+#grok-form input {
+  background: #122038;
+  color: #eaf1ff;
+  border-color: rgba(234, 241, 255, 0.16);
+}
+
+#grok-form input::placeholder {
+  color: #8aa3c8;
+}

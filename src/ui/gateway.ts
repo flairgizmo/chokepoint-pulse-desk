@@ -44,13 +44,15 @@ function containDraw(
 }
 
 const GLASS_TINT = [
-  'rgba(21, 87, 255, 0.42)',
-  'rgba(196, 58, 134, 0.38)',
-  'rgba(18, 153, 180, 0.4)',
-  'rgba(61, 114, 224, 0.4)',
-  'rgba(143, 46, 212, 0.36)',
-  'rgba(10, 168, 136, 0.38)',
+  'rgba(21, 87, 255, 0.36)',
+  'rgba(196, 58, 134, 0.32)',
+  'rgba(18, 153, 180, 0.34)',
+  'rgba(61, 114, 224, 0.34)',
+  'rgba(143, 46, 212, 0.3)',
+  'rgba(10, 168, 136, 0.32)',
 ];
+
+type GlassCut = 'crown' | 'bezel' | 'pav' | 'table';
 
 function paintPhotoGlass(
   ctx: CanvasRenderingContext2D,
@@ -59,6 +61,7 @@ function paintPhotoGlass(
   w: number,
   h: number,
   on = false,
+  cut: GlassCut = 'crown',
 ): void {
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
@@ -71,8 +74,22 @@ function paintPhotoGlass(
     const sw = Math.max(1, photo.naturalWidth * 0.5);
     const sh = Math.max(1, photo.naturalHeight * 0.62);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
+    const bx = ((fx + 0.28) % 1) * photo.naturalWidth;
+    const by = ((fy + 0.18) % 0.7) * photo.naturalHeight;
+    ctx.save();
+    ctx.globalAlpha = cut === 'table' ? 0.26 : cut === 'pav' ? 0.4 : 0.3;
+    ctx.translate(w, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(photo, bx, by, sw * 0.72, sh * 0.72, 0, h * 0.1, w, h * 0.9);
+    ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
-    ctx.fillStyle = on ? 'rgba(234, 241, 255, 0.55)' : GLASS_TINT[i % GLASS_TINT.length];
+    ctx.fillStyle = on
+      ? 'rgba(234, 241, 255, 0.4)'
+      : cut === 'pav'
+        ? 'rgba(6, 14, 36, 0.52)'
+        : cut === 'table'
+          ? 'rgba(21, 87, 255, 0.2)'
+          : GLASS_TINT[i % GLASS_TINT.length];
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -83,15 +100,102 @@ function paintPhotoGlass(
     ctx.fillRect(0, 0, w, h);
   }
   ctx.globalCompositeOperation = 'screen';
+  const catchL = ctx.createLinearGradient(0, 0, w * 0.58, h * 0.42);
+  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.16)' : 'rgba(234, 241, 255, 0.36)');
+  catchL.addColorStop(0.5, 'rgba(234, 241, 255, 0)');
+  ctx.fillStyle = catchL;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(w * 0.58, 0);
+  ctx.lineTo(0, h * 0.4);
+  ctx.closePath();
+  ctx.fill();
   const fire = ctx.createLinearGradient(w, 0, 0, h);
-  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.32)' : 'rgba(60, 230, 255, 0.28)');
-  fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
+  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.2)' : 'rgba(60, 230, 255, 0.18)');
+  fire.addColorStop(0.38, 'rgba(21, 87, 255, 0)');
   ctx.fillStyle = fire;
   ctx.fillRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'source-over';
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.42)';
-  ctx.lineWidth = Math.max(4, w / 48);
-  ctx.strokeRect(6, 6, w - 12, h - 12);
+  ctx.strokeStyle = i % 2 ? 'rgba(255, 92, 176, 0.52)' : 'rgba(90, 240, 255, 0.48)';
+  ctx.lineWidth = Math.max(3, w / 64);
+  ctx.strokeRect(5, 5, w - 10, h - 10);
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.26)';
+  ctx.lineWidth = Math.max(2, w / 80);
+  ctx.strokeRect(12, 12, w - 24, h - 24);
+}
+
+function diamondPhysical(
+  map: THREE.Texture | null,
+  opts: { on?: boolean; transmission?: number; thickness?: number } = {},
+): THREE.MeshPhysicalMaterial {
+  return new THREE.MeshPhysicalMaterial({
+    map,
+    color: 0xffffff,
+    metalness: 0,
+    roughness: 0.04,
+    transmission: opts.transmission ?? 0.74,
+    ior: 2.417,
+    thickness: opts.thickness ?? 0.55,
+    attenuationColor: new THREE.Color(0x8ec4ff),
+    attenuationDistance: 0.82,
+    iridescence: 1,
+    iridescenceIOR: 1.3,
+    iridescenceThicknessRange: [120, 420],
+    clearcoat: 1,
+    clearcoatRoughness: 0.035,
+    specularIntensity: 1,
+    specularColor: new THREE.Color(0xeaf1ff),
+    envMapIntensity: 2.15,
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.97,
+    emissive: opts.on ? 0xeaf1ff : 0x1557ff,
+    emissiveIntensity: opts.on ? 0.16 : 0.035,
+  });
+}
+
+function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  ctx.fillStyle = '#02060f';
+  ctx.fillRect(0, 0, 512, 512);
+  if (photo?.naturalWidth) {
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(
+      photo,
+      photo.naturalWidth * 0.26,
+      photo.naturalHeight * 0.18,
+      photo.naturalWidth * 0.5,
+      photo.naturalHeight * 0.5,
+      0,
+      0,
+      512,
+      512,
+    );
+    ctx.globalAlpha = 1;
+  }
+  ctx.globalCompositeOperation = 'screen';
+  const g = ctx.createRadialGradient(256, 256, 8, 256, 256, 244);
+  g.addColorStop(0, 'rgba(234, 241, 255, 0.72)');
+  g.addColorStop(0.2, 'rgba(90, 240, 255, 0.34)');
+  g.addColorStop(0.48, 'rgba(255, 72, 168, 0.16)');
+  g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 512);
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.2)';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 8; i++) {
+    const a = (i / 8) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(256, 256);
+    ctx.lineTo(256 + Math.cos(a) * 220, 256 + Math.sin(a) * 220);
+    ctx.stroke();
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  return c;
 }
 
 function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = null): HTMLCanvasElement {
@@ -100,7 +204,7 @@ function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = nul
   c.height = 1024;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  paintPhotoGlass(ctx, photo, i, 512, 1024, on);
+  paintPhotoGlass(ctx, photo, i, 512, 1024, on, i < 8 ? 'crown' : 'bezel');
   if (i === 0) {
     ctx.fillStyle = 'rgba(244,247,251,0.96)';
     ctx.font = '800 260px Outfit, IBM Plex Sans, sans-serif';
@@ -117,7 +221,7 @@ function pavCanvas(i: number, photo: HTMLImageElement | null = null): HTMLCanvas
   c.height = 512;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  paintPhotoGlass(ctx, photo, i + 8, 512, 512);
+  paintPhotoGlass(ctx, photo, i + 8, 512, 512, false, 'pav');
   return c;
 }
 
@@ -127,7 +231,7 @@ function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
   c.height = 512;
   const ctx = c.getContext('2d');
   if (ctx) {
-    paintPhotoGlass(ctx, photo, 16, 512, 512);
+    paintPhotoGlass(ctx, photo, 16, 512, 512, false, 'table');
     ctx.fillStyle = '#0B1F5C';
     ctx.font = '800 236px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
@@ -152,18 +256,7 @@ function facetMaterial(
         combine: THREE.MixOperation,
         side: THREE.DoubleSide,
       })
-    : new THREE.MeshPhysicalMaterial({
-        map: tex,
-        color: 0xffffff,
-        metalness: 0.55,
-        roughness: 0.08,
-        iridescence: 1,
-        clearcoat: 1,
-        emissive: 0x1557ff,
-        emissiveIntensity: on ? 0.32 : 0.12,
-        envMapIntensity: 1.85,
-        side: THREE.DoubleSide,
-      });
+    : diamondPhysical(tex, { on, transmission: 0.7, thickness: 0.52 });
 }
 
 function quadGeo(
@@ -222,16 +315,7 @@ function pavMaterial(
         combine: THREE.MixOperation,
         side: THREE.DoubleSide,
       })
-    : new THREE.MeshPhysicalMaterial({
-        map: tex,
-        color: 0xffffff,
-        metalness: 0.22,
-        roughness: 0.06,
-        iridescence: 1,
-        clearcoat: 1,
-        envMapIntensity: 1.75,
-        side: THREE.DoubleSide,
-      });
+    : diamondPhysical(tex, { transmission: 0.82, thickness: 0.7 });
 }
 
 function logoCanvas(
@@ -350,7 +434,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.06 : 1.28;
+  renderer.toneMappingExposure = lite ? 1.06 : 1.34;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -364,23 +448,27 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     lite
       ? duskSheen({ map: cinemaFloorMap(), reflectivity: 0.42, transparent: true, opacity: 0.94 })
       : new THREE.MeshPhysicalMaterial({
-          color: 0x1b2a44,
+          map: cinemaFloorMap(),
+          color: 0xffffff,
           roughness: 0.05,
-          metalness: 0.58,
+          metalness: 0.4,
           clearcoat: 1,
           clearcoatRoughness: 0.04,
           transparent: true,
-          opacity: 0.52,
-          envMapIntensity: 1.45,
+          opacity: 0.86,
+          envMapIntensity: 1.65,
         }),
   );
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.32;
   scene.add(floor);
+  const causticTex = hardenCanvasTex(new THREE.CanvasTexture(causticCanvas(visionStill())));
+  causticTex.colorSpace = THREE.SRGBColorSpace;
   const causticMat = new THREE.MeshBasicMaterial({
-    color: 0x8ec0ff,
+    map: causticTex,
+    color: 0xffffff,
     transparent: true,
-    opacity: 0.32,
+    opacity: 0.42,
     depthWrite: false,
   });
   const caustic = new THREE.Mesh(new THREE.CircleGeometry(1.15, 48), causticMat);
@@ -460,15 +548,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           combine: THREE.MixOperation,
           side: THREE.DoubleSide,
         })
-      : new THREE.MeshPhysicalMaterial({
-          map: tableTex,
-          color: 0xffffff,
-          metalness: 0.18,
-          roughness: 0.06,
-          clearcoat: 1,
-          envMapIntensity: 1.7,
-          side: THREE.DoubleSide,
-        }),
+      : diamondPhysical(tableTex, { transmission: 0.38, thickness: 0.28 }),
   );
   table.rotation.x = -Math.PI / 2;
   table.position.y = tableY;
@@ -576,17 +656,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           transparent: true,
           opacity: 0.58,
         })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0x9cc4ff,
-          metalness: 0.35,
-          roughness: 0.08,
-          transmission: 0.42,
-          thickness: 0.35,
-          clearcoat: 1,
-          envMapIntensity: 1.8,
-          transparent: true,
-          opacity: 0.7,
-        }),
+      : diamondPhysical(null, { transmission: 0.88, thickness: 0.42 }),
   );
   core.position.y = 0.5;
   core.userData.nodeId = 6;
@@ -800,6 +870,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tmat.map?.dispose();
     tmat.map = ttex;
     tmat.needsUpdate = true;
+    const nextCaustic = hardenCanvasTex(new THREE.CanvasTexture(causticCanvas(photo)));
+    nextCaustic.colorSpace = THREE.SRGBColorSpace;
+    causticMat.map?.dispose();
+    causticMat.map = nextCaustic;
+    causticMat.needsUpdate = true;
+    if (floor.material instanceof THREE.MeshPhysicalMaterial || floor.material instanceof THREE.MeshBasicMaterial) {
+      const nextFloor = cinemaFloorMap(photo);
+      floor.material.map?.dispose();
+      floor.material.map = nextFloor;
+      floor.material.needsUpdate = true;
+    }
     crowns.forEach((mesh, i) => {
       const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
       mesh.material = facetMaterial(i, on && i === 0, lite, photo);

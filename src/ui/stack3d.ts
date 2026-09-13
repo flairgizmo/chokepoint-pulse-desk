@@ -173,7 +173,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     mesh.userData.stage = layer.stage;
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(2.48, 1.22, 0.02),
-      duskSheen({ color: 0xd7e4ff, reflectivity: 0.58, envSrc: '/visuals/topics/canary.jpg' }),
+      duskSheen({ color: 0xd7e4ff, reflectivity: 0.72, envSrc: '/visuals/topics/canary.jpg' }),
     );
     chrome.position.z = -0.04;
     mesh.add(chrome);

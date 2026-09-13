@@ -464,12 +464,13 @@ export class EarthGlobe {
       ? duskSheen({ color: 0x16384a, reflectivity: 0.38 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x16384a,
-          roughness: 0.38,
-          metalness: 0.22,
+          roughness: 0.28,
+          metalness: 0.18,
           emissive: 0x031016,
-          clearcoat: 0.42,
-          clearcoatRoughness: 0.28,
-          envMapIntensity: 1.05,
+          clearcoat: 0.85,
+          clearcoatRoughness: 0.12,
+          ior: 1.33,
+          envMapIntensity: 1.4,
         });
     const globe = new THREE.Mesh(new THREE.SphereGeometry(1, segs, rings), globeMat);
     this.globeMesh = globe;

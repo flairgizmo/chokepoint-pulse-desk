@@ -52,20 +52,22 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   const plate = new THREE.Mesh(
     new THREE.BoxGeometry(2.42, 1.04, 0.045),
     probe.lite
-      ? duskSheen({ map: tex, reflectivity: 0.38 })
+      ? duskSheen({ map: tex, reflectivity: 0.38, envSrc: src })
       : new THREE.MeshPhysicalMaterial({
           map: tex,
-          roughness: 0.3,
+          roughness: 0.12,
           metalness: 0.06,
-          clearcoat: 0.35,
-          clearcoatRoughness: 0.4,
+          clearcoat: 0.92,
+          clearcoatRoughness: 0.1,
+          ior: 1.52,
+          envMapIntensity: 1.55,
         }),
   );
   scene.add(plate);
 
   const frame = new THREE.Mesh(
     new THREE.BoxGeometry(2.52, 1.14, 0.03),
-    duskSheen({ color: 0xd7e4ff, reflectivity: 0.55 }),
+    duskSheen({ color: 0xd7e4ff, reflectivity: 0.62, envSrc: src }),
   );
   frame.position.z = -0.028;
   scene.add(frame);
@@ -74,7 +76,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 0.35 : 1.35);
   key.position.set(0.55, 0.7, 1.8);
   scene.add(key);
-  const composer = addUnrealLook(renderer, scene, camera, probe.lite);
+  const composer = addUnrealLook(renderer, scene, camera, probe.lite, src);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
