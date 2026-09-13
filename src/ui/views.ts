@@ -736,7 +736,7 @@ export function renderChapterPage(
 ): string {
   const body = chaptersFor(page).map(chapterCard).join('');
   const bed: VisualId = page === 'vision' ? 'future' : page === 'technology' ? 'gateway' : page === 'cbdc' ? 'sterling' : 'london';
-  return `${pageHero(k, title, lede, mute, bed, FILM_SETS[page] ? page : undefined)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
+  return `${pageHero(k, title, lede, mute, bed, FILM_SETS[page] ? page : undefined)}${quoteRail(page)}${extra}<div class="chapter-stack cinema-room">${body}</div>${dykBlock()}`;
 }
 
 export function renderVision(): string {
@@ -785,7 +785,7 @@ export function renderVision(): string {
     'the operating system, not another chain.',
     'future',
     'vision',
-  )}${stillStrip('vision', 'Photographs in the argument')}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
+  )}${stillStrip('vision', 'Photographs in the argument')}${quoteRail('vision')}${extra}<div class="chapter-stack cinema-room">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
 }
 
 export function renderProgrammes(): string {
@@ -893,7 +893,7 @@ export function renderCbdc(): string {
     <h2 class="display">Issuance, wholesale, tokenised deposits.</h2>
     <ol class="model-grid">${models}</ol>
   </section>
-  <div class="chapter-stack">${chaptersFor('cbdc').map((c) => chapterCard(c)).join('')}</div>
+  <div class="chapter-stack cinema-room">${chaptersFor('cbdc').map((c) => chapterCard(c)).join('')}</div>
   ${dykBlock()}`;
 }
 
@@ -935,7 +935,7 @@ export function renderStandards(): string {
       <li><strong>Durability</strong> Once committed, a gateway crash does not undo it.</li>
     </ul>
   </section>
-  <div class="chapter-stack">${chaptersFor('standards').map(chapterCard).join('')}</div>
+  <div class="chapter-stack cinema-room">${chaptersFor('standards').map(chapterCard).join('')}</div>
   ${dykBlock()}`;
 }
 
@@ -944,7 +944,7 @@ export function renderPeople(): string {
   const blocks = groups
     .map((g) => {
       const people = PEOPLE.filter((p) => p.group === g).map(personCard).join('');
-      return `<section class="people-group"><p class="lede-sm">${esc(GROUP_LABEL[g])}</p>${people}</section>`;
+      return `<section class="people-group cinema-room"><p class="lede-sm">${esc(GROUP_LABEL[g])}</p>${people}</section>`;
     })
     .join('');
   return `${pageHero(

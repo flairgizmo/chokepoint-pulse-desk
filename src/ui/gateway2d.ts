@@ -74,8 +74,8 @@ export const RTGS: { id: NodeId; name: string; note: string } = {
 
 export function bankXYZ(i: number, pulse: number): [number, number, number] {
   const a = (i / 6) * Math.PI * 2 - Math.PI / 2 + Math.PI / 6;
-  const r = 1.24 + pulse;
-  return [Math.cos(a) * r * 1.52, Math.sin(a) * 0.02, Math.sin(a) * r * 0.34];
+  const r = 1.48 + pulse;
+  return [Math.cos(a) * r * 1.52, Math.sin(a) * 0.02 - 0.08, Math.sin(a) * r * 0.34];
 }
 
 export function paintHint(canvas: HTMLCanvasElement, selected: NodeId | null, hover: NodeId | null): void {
@@ -204,7 +204,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
     const gate = project(0, 0, 0);
     projected.push({ id: 6, x: gate[0], y: gate[1], z: gate[2] });
-    const rt2 = project(0, -1.12, 0);
+    const rt2 = project(0, -1.32, 0);
     projected.push({ id: 7, x: rt2[0], y: rt2[1], z: rt2[2] });
 
     if (plateDirty || plate.width !== W || plate.height !== H) {
@@ -278,8 +278,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const onGate = selected === 6 || hover === 6;
     const cx = gate[0];
     const cy = gate[1] - Math.max(28, H * 0.05);
-    const crystalW = Math.max(52, W * 0.07);
-    const crystalH = Math.max(96, H * 0.26);
+    const crystalW = Math.max(78, W * 0.11);
+    const crystalH = Math.max(148, H * 0.36);
     ctx.save();
     ctx.fillStyle = 'rgba(142, 192, 255, 0.22)';
     ctx.beginPath();
@@ -413,10 +413,10 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.fillText('Q', cx, (tableY + waistY) / 2);
     ctx.shadowBlur = 0;
     ctx.restore();
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.72)';
-    ctx.font = `700 ${Math.max(11, W / 52)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.42)';
+    ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('OVERLEDGER', cx, cy - crystalH * 0.2);
+    ctx.fillText('OVERLEDGER', cx, cy + crystalH + 22);
 
     ctx.beginPath();
     ctx.moveTo(gate[0], gate[1]);
@@ -444,8 +444,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
       const depth = 0.82 + Math.max(0, p[2] + 0.55) * 0.22;
-      const rw = Math.max(132, W / 6.1) * depth;
-      const rh = Math.max(92, W / 9.4) * depth;
+      const rw = Math.max(96, W / 8.2) * depth;
+      const rh = Math.max(68, W / 12.2) * depth;
       const yaw = (p[0] - W / 2) / Math.max(1, W * 0.62);
       ctx.save();
       if (reflect) {

@@ -705,14 +705,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
-  crystal.scale.setScalar(1.14);
+  crystal.scale.setScalar(1.36);
   group.add(base);
   group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#EAF1FF');
-  gateLabel.position.set(0, 1.18, 0.1);
-  gateLabel.scale.set(0.86, 0.15, 1);
-  gateLabel.material.opacity = 0.72;
+  gateLabel.position.set(0, -0.22, 0.68);
+  gateLabel.scale.set(0.58, 0.1, 1);
+  gateLabel.material.opacity = 0.38;
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
@@ -729,7 +729,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.52;
+  rt2.position.y = 1.72;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -746,13 +746,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.52;
+  rt2Disk.position.y = 1.72;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.52, 0.12);
-  rt2Label.scale.set(0.48, 0.12, 1);
-  rt2Label.material.opacity = 0.62;
+  rt2Label.position.set(0, 1.72, 0.12);
+  rt2Label.scale.set(0.42, 0.1, 1);
+  rt2Label.material.opacity = 0.48;
   group.add(rt2Label);
 
   const logos = BANKS.map((b) => {
@@ -771,16 +771,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const plate = makeCinemaPlate(0.98, 0.64, lite, undefined, 0.016, true);
+    const plate = makeCinemaPlate(0.74, 0.48, lite, undefined, 0.016, true);
     applyPlateMap(plate.mat, tex);
     const [x, y, z] = bankXYZ(i, 0);
-    plate.root.position.set(x, y + 0.2, z);
+    plate.root.position.set(x, y + 0.08, z);
     plate.root.userData.nodeId = bank.id;
     plate.face.userData.nodeId = bank.id;
     group.add(plate.root);
     cards.push(plate.root);
     cardMats.push(plate.mat);
-    const puddle = makeFloorContact(1.18, 0.86, -0.318);
+    const puddle = makeFloorContact(0.88, 0.64, -0.318);
     scene.add(puddle);
     puddles.push(puddle);
     const paintOne = (): void => {
@@ -920,11 +920,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 4.12 : 3.95, ax, ay);
-    camera.lookAt(0, lite ? 0.46 : 0.5, 0);
+    camera.lookAt(0, lite ? 0.52 : 0.56, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x, y + 0.18, z);
-      cards[i].lookAt(camera.position.x, y + 0.28, camera.position.z);
+      cards[i].position.set(x, y + 0.08, z);
+      cards[i].lookAt(camera.position.x, y + 0.16, camera.position.z);
       puddles[i].position.x = x;
       puddles[i].position.z = z;
     });

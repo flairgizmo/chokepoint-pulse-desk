@@ -97,6 +97,29 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
   return out;
 }
 
+/** Uniform cinema crush for the NASA day still. Not a terminator — that stays a scene mesh. */
+function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, img.naturalWidth || img.width);
+  c.height = Math.max(1, img.naturalHeight || img.height);
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  ctx.filter = 'contrast(1.22) saturate(0.68) brightness(0.74)';
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  ctx.filter = 'none';
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = 'rgba(36, 46, 68, 0.48)';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'source-over';
+  return c;
+}
+
+function cinemaDayTexture(img: HTMLImageElement): THREE.CanvasTexture {
+  const tex = new THREE.CanvasTexture(gradeCinemaDay(img));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return hardenCanvasTex(tex);
+}
+
 /** Sun-locked dusk wedge. Night is a dusk veil; day stays a clear hole so the still reads. */
 function terminatorTex(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
@@ -253,7 +276,7 @@ export class EarthGlobe {
 
   private flat = false;
   private lite = false;
-  private flatDay: HTMLImageElement | null = null;
+  private flatDay: CanvasImageSource | null = null;
   private flatNight: HTMLImageElement | null = null;
   private panX = 0;
   private flatWidth = 1;
@@ -276,7 +299,7 @@ export class EarthGlobe {
       img.src = src;
     };
     load(DAY_TEX, (img) => {
-      this.flatDay = img;
+      this.flatDay = this.lite ? gradeCinemaDay(img) : img;
     });
     load(NIGHT_TEX, (img) => {
       this.flatNight = img;
@@ -294,7 +317,7 @@ export class EarthGlobe {
       const y = ((90 - lat) / 180) * H;
       return [x, y];
     };
-    const tile = (img: HTMLImageElement): void => {
+    const tile = (img: CanvasImageSource): void => {
       const { width: W, height: H } = canvas;
       const shift = ((-this.panX % W) + W) % W;
       ctx.drawImage(img, shift - W, 0, W, H);
@@ -445,6 +468,7 @@ export class EarthGlobe {
 
     const probe = probeWebGL();
     if (!probe) {
+      this.lite = true;
       this.mountFlat(canvas);
       return;
     }
@@ -571,11 +595,11 @@ export class EarthGlobe {
       this.terminator = term;
     }
 
-    const paintTex = (src: string, assign: (tex: THREE.Texture) => void): void => {
+    const paintTex = (src: string, assign: (tex: THREE.Texture) => void, cinema = false): void => {
       const img = new Image();
       img.decoding = 'async';
       img.onload = () => {
-        const tex = new THREE.Texture(img);
+        const tex = cinema ? cinemaDayTexture(img) : new THREE.Texture(img);
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.needsUpdate = true;
         assign(tex);
@@ -583,9 +607,13 @@ export class EarthGlobe {
       };
       img.src = src;
     };
-    paintTex(DAY_TEX, (tex) => {
-      this.dayTex = tex;
-    });
+    paintTex(
+      DAY_TEX,
+      (tex) => {
+        this.dayTex = tex;
+      },
+      this.lite,
+    );
     paintTex(NIGHT_TEX, (tex) => {
       this.nightTex = tex;
     });
