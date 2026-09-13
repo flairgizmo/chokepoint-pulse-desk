@@ -2036,7 +2036,8 @@ main {
   display: grid;
   grid-template-columns: 4.4rem 1fr;
   gap: 1rem;
-  padding: 1.25rem 1.35rem;
+  padding: 0 0 1.15rem;
+  overflow: hidden;
   border-radius: 18px;
   border: 1px solid transparent;
   background: #0b1220;
@@ -2048,6 +2049,11 @@ main {
   font-size: 2rem;
   letter-spacing: -0.05em;
   line-height: 1;
+  padding-left: 1.35rem;
+}
+
+.layer-bands div {
+  padding-right: 1.35rem;
 }
 
 .layer-bands h3 {
@@ -5859,4 +5865,19 @@ section.block .kicker {
 
 .satp-lab .satp-title {
   padding-right: 1rem;
+}
+
+.satp-lab .stage[data-satp-n="1"] .satp-still img {
+  object-position: 12% 48%;
+}
+
+.layer-bands .layer-still {
+  grid-column: 1 / -1;
+  margin: 0 0 0.15rem;
+}
+
+.layer-bands .layer-still img {
+  aspect-ratio: 21 / 9;
+  max-height: 9.5rem;
+  filter: saturate(0.78) contrast(1.12) brightness(0.58);
 }

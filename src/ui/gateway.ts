@@ -701,14 +701,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.7,
     tint: 0x8a9cb4,
     vertexColors: lite,
-    window: lite ? 0.86 : undefined,
+    window: lite ? 0.68 : undefined,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
     tint: 0x6a7c94,
     vertexColors: lite,
-    window: lite ? 0.86 : undefined,
+    window: lite ? 0.68 : undefined,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
@@ -834,7 +834,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       tint: 0xffffff,
     });
     const heart = new THREE.Group();
-    heart.scale.setScalar(0.86);
+    heart.scale.setScalar(0.82);
+    heart.rotation.set(0.08, 0.26, 0);
     const heartTable = new THREE.Mesh(tableFan(tableR, sides), heartTableMat);
     heartTable.position.y = tableY;
     heartTable.userData.nodeId = 6;
@@ -1098,6 +1099,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
+    if (heartRoot) {
+      heartRoot.rotation.y = 0.26 + (reduced ? 0 : Math.sin((now - t0) / 2600) * 0.05);
+    }
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.3 : 0.26 + Math.abs(Math.sin((now - t0) / 1600)) * 0.22;
     sparks.forEach((mesh, i) => {

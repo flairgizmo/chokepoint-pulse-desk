@@ -132,6 +132,9 @@ describe('Public desk', () => {
     expect(html).not.toContain('This chip is a stage');
     expect(html).not.toContain('The scarce resource is not another chain');
     expect(html).not.toContain('Orbit the Q');
+    expect(html).toContain('layer-still');
+    expect(html).toContain('/visuals/topics/payments.jpg');
+    expect(html).toContain('/visuals/topics/canary.jpg');
   });
 
   it('opens people and news as in-site stages, with original as secondary', () => {

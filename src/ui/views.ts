@@ -274,9 +274,10 @@ export function stackVisual(): string {
 }
 
 export function layerBands(): string {
+  const layerStills = [PLATES.payments, PLATES.canary, PLATES.city, PLATES.datacenter] as const;
   return `<ol class="layer-bands">${MONEY_LAYERS.map(
-    (l) =>
-      `<li data-band="${esc(l.n)}"><span class="n">${esc(l.n)}</span><div><h3>${esc(l.title)}</h3><p>${esc(l.body)}</p></div></li>`,
+    (l, i) =>
+      `<li data-band="${esc(l.n)}">${photoFigure(layerStills[i] ?? PLATES.canary, 'layer-still')}<span class="n">${esc(l.n)}</span><div><h3>${esc(l.title)}</h3><p>${esc(l.body)}</p></div></li>`,
   ).join('')}</ol>`;
 }
 
