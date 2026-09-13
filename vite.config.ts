@@ -1,4 +1,6 @@
+import { copyFileSync, existsSync } from 'node:fs';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { join } from 'node:path';
 import { defineConfig, type Plugin } from 'vitest/config';
 
 const port = Number(process.env.PORT) || 8080;
@@ -149,11 +151,21 @@ function securityHeaders(): Plugin {
   };
 }
 
+function spaFallback(): Plugin {
+  return {
+    name: 'qntdesk-spa-fallback',
+    closeBundle() {
+      const index = join(process.cwd(), 'dist', 'index.html');
+      if (existsSync(index)) copyFileSync(index, join(process.cwd(), 'dist', '404.html'));
+    },
+  };
+}
+
 export default defineConfig({
   root: '.',
   publicDir: 'public',
   appType: 'spa',
-  plugins: [securityHeaders(), liveApis(), chatDesk()],
+  plugins: [securityHeaders(), liveApis(), chatDesk(), spaFallback()],
   server: {
     port,
     host: true,
