@@ -5,7 +5,6 @@ import { fetchNews, type NewsRiver } from '../modules/news';
 import type { EarthGlobe } from './globe';
 import { chatMarkup, wireChat } from './chat';
 import { wirePlayer } from './player';
-import { mountGateway } from './gateway';
 import { esc, fmtCompact, fmtMoney, fmtPct, fmtQty } from './html';
 import {
   DISCLAIMER,
@@ -147,10 +146,18 @@ export class QntDesk {
     this.tessDispose = null;
     this.lastHoverId = undefined;
     const route = this.parse();
-    const body = this.body(route);
-    this.root.innerHTML = this.shell(body, route);
-    this.lastPath = location.pathname.replace(/\/+$/, '') || '/';
-    this.wire(route);
+    try {
+      const body = this.body(route);
+      this.root.innerHTML = this.shell(body, route);
+      this.lastPath = location.pathname.replace(/\/+$/, '') || '/';
+      this.wire(route);
+    } catch (err) {
+      console.error(err);
+      this.root.innerHTML = this.shell(
+        '<p class="empty-note">This page failed to render. Open News or Vision from the nav.</p>',
+        route,
+      );
+    }
   }
 
   private body(route: Route): string {
@@ -310,11 +317,19 @@ export class QntDesk {
     wireStages(this.root, resolveStage);
     wireSearch(this.root);
     this.wireFilters(route);
-    this.wireGateway();
+    try {
+      this.wireGateway();
+    } catch {
+      /* corridor is optional */
+    }
     this.wireMotionBeds();
     this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
-    if (this.root.querySelector('#earth-stage')) void this.wireGlobe();
+    if (this.root.querySelector('#earth-stage')) {
+      void this.wireGlobe().catch((err) => {
+        console.error(err);
+      });
+    }
     if (route.name === 'markets') this.hydrateMarkets();
     if (route.name === 'news') {
       if (this.news) this.hydrateNews();
@@ -503,7 +518,12 @@ export class QntDesk {
   private wireGateway(): void {
     const canvas = this.root.querySelector<HTMLCanvasElement>('#gateway');
     if (!canvas) return;
-    this.tessDispose = mountGateway(canvas);
+    void import('./gateway')
+      .then(({ mountGateway }) => {
+        if (!this.root.contains(canvas)) return;
+        this.tessDispose = mountGateway(canvas);
+      })
+      .catch(() => undefined);
   }
 
   private wireFlips(): void {
@@ -532,61 +552,71 @@ export class QntDesk {
   private async wireGlobe(): Promise<void> {
     const stage = this.root.querySelector<HTMLElement>('#earth-stage');
     if (!stage) return;
-    const { EarthGlobe } = await import('./globe');
-    if (!this.root.contains(stage)) return;
-    this.globe = new EarthGlobe(stage, {
-      onCity: (id) => {
-        this.globe?.focusCity(id);
-        const sel = this.root.querySelector<HTMLSelectElement>('#city-select');
-        if (sel) sel.value = id;
-        revealStage('city', id);
-      },
-      onHud: (hud) => {
-        const line = this.root.querySelector('#isr-line');
-        const zoom = this.root.querySelector('#zoom-readout');
-        const hover = this.root.querySelector<HTMLElement>('#city-hover');
-        if (line) {
-          line.textContent = `ORBIT  ALT ${hud.altitudeKm.toLocaleString()} km  ${hud.lat.toFixed(3)}° ${hud.lon.toFixed(3)}°  ZOOM ${hud.zoom.toFixed(1)}×  SRC corridors`;
-        }
-        if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
-        if (hover && hud.hoverId !== this.lastHoverId) {
-          this.lastHoverId = hud.hoverId;
-          const city = hud.hoverId ? CITIES.find((c) => c.id === hud.hoverId) : undefined;
-          if (city) {
-            hover.hidden = false;
-            const photo = `<img class="hud-photo" src="${esc(cityVisual(city).src)}" alt="" width="220" height="140" />`;
-            hover.innerHTML = `${photo}<p class="kicker">${esc(city.kind)}</p><strong>${esc(city.name)}</strong><p>${esc(city.lede)}</p>`;
-          } else {
-            hover.hidden = true;
-            hover.innerHTML = '';
-          }
-        }
-      },
-    });
-    this.root.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) => {
-      b.addEventListener('click', () => this.globe?.zoomBy(Number(b.dataset.zoom)));
-    });
-    this.root.querySelector('[data-reset-globe]')?.addEventListener('click', () => this.globe?.reset());
-    if (window.matchMedia('(max-width: 959px)').matches) {
-      const labels = this.root.querySelector<HTMLInputElement>('[data-globe-opt="labels"]');
-      if (labels) labels.checked = false;
+    let EarthGlobe: typeof import('./globe').EarthGlobe;
+    try {
+      ({ EarthGlobe } = await import('./globe'));
+    } catch (err) {
+      console.error(err);
+      return;
     }
-    this.root.querySelectorAll<HTMLInputElement>('[data-globe-opt]').forEach((input) => {
-      const apply = () => {
-        const key = input.dataset.globeOpt;
-        const on = input.checked;
-        if (key === 'spin' || key === 'labels' || key === 'day' || key === 'night' || key === 'routes' || key === 'corridors' || key === 'activity') {
-          this.globe?.setOverlays({ [key]: on });
-        }
-      };
-      input.addEventListener('change', apply);
-      apply();
-    });
-    this.root.querySelector<HTMLSelectElement>('#city-select')?.addEventListener('change', (ev) => {
-      const id = (ev.target as HTMLSelectElement).value;
-      this.globe?.focusCity(id);
-      revealStage('city', id);
-    });
+    if (!this.root.contains(stage)) return;
+    try {
+      this.globe = new EarthGlobe(stage, {
+        onCity: (id) => {
+          this.globe?.focusCity(id);
+          const sel = this.root.querySelector<HTMLSelectElement>('#city-select');
+          if (sel) sel.value = id;
+          revealStage('city', id);
+        },
+        onHud: (hud) => {
+          const line = this.root.querySelector('#isr-line');
+          const zoom = this.root.querySelector('#zoom-readout');
+          const hover = this.root.querySelector<HTMLElement>('#city-hover');
+          if (line) {
+            line.textContent = `ORBIT  ALT ${hud.altitudeKm.toLocaleString()} km  ${hud.lat.toFixed(3)}° ${hud.lon.toFixed(3)}°  ZOOM ${hud.zoom.toFixed(1)}×  SRC corridors`;
+          }
+          if (zoom) zoom.textContent = `${hud.zoom.toFixed(1)}×`;
+          if (hover && hud.hoverId !== this.lastHoverId) {
+            this.lastHoverId = hud.hoverId;
+            const city = hud.hoverId ? CITIES.find((c) => c.id === hud.hoverId) : undefined;
+            if (city) {
+              hover.hidden = false;
+              const photo = `<img class="hud-photo" src="${esc(cityVisual(city).src)}" alt="" width="220" height="140" />`;
+              hover.innerHTML = `${photo}<p class="kicker">${esc(city.kind)}</p><strong>${esc(city.name)}</strong><p>${esc(city.lede)}</p>`;
+            } else {
+              hover.hidden = true;
+              hover.innerHTML = '';
+            }
+          }
+        },
+      });
+      this.root.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((b) => {
+        b.addEventListener('click', () => this.globe?.zoomBy(Number(b.dataset.zoom)));
+      });
+      this.root.querySelector('[data-reset-globe]')?.addEventListener('click', () => this.globe?.reset());
+      if (window.matchMedia('(max-width: 959px)').matches) {
+        const labels = this.root.querySelector<HTMLInputElement>('[data-globe-opt="labels"]');
+        if (labels) labels.checked = false;
+      }
+      this.root.querySelectorAll<HTMLInputElement>('[data-globe-opt]').forEach((input) => {
+        const apply = () => {
+          const key = input.dataset.globeOpt;
+          const on = input.checked;
+          if (key === 'spin' || key === 'labels' || key === 'day' || key === 'night' || key === 'routes' || key === 'corridors' || key === 'activity') {
+            this.globe?.setOverlays({ [key]: on });
+          }
+        };
+        input.addEventListener('change', apply);
+        apply();
+      });
+      this.root.querySelector<HTMLSelectElement>('#city-select')?.addEventListener('change', (ev) => {
+        const id = (ev.target as HTMLSelectElement).value;
+        this.globe?.focusCity(id);
+        revealStage('city', id);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   private hydrateMarkets(): void {

@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { canUseBloom } from './webgl';
 import {
   CITIES,
   SETTLEMENT_ROUTES,
@@ -234,6 +235,7 @@ export class EarthGlobe {
 
   private mountFlat(canvas: HTMLCanvasElement): void {
     this.flat = true;
+    canvas.dataset.engine = 'canvas2d';
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       this.root.innerHTML =
@@ -343,13 +345,14 @@ export class EarthGlobe {
         antialias: true,
         alpha: true,
         powerPreference: 'high-performance',
-        failIfMajorPerformanceCaveat: false,
+        failIfMajorPerformanceCaveat: true,
       });
     } catch {
       this.mountFlat(canvas);
       return;
     }
     this.renderer = renderer;
+    canvas.dataset.engine = 'webgl';
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -575,14 +578,16 @@ export class EarthGlobe {
       this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 6);
     });
 
-    try {
-      const composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.32, 0.46, 0.78));
-      composer.addPass(new OutputPass());
-      this.composer = composer;
-    } catch {
-      this.composer = null;
+    if (canUseBloom(renderer)) {
+      try {
+        const composer = new EffectComposer(renderer);
+        composer.addPass(new RenderPass(scene, camera));
+        composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.32, 0.46, 0.78));
+        composer.addPass(new OutputPass());
+        this.composer = composer;
+      } catch {
+        this.composer = null;
+      }
     }
 
     this.resize();

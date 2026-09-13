@@ -5,6 +5,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { canUseBloom } from './webgl';
 
 type NodeId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -181,12 +182,13 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       antialias: true,
       alpha: true,
       powerPreference: 'high-performance',
-      failIfMajorPerformanceCaveat: false,
+      failIfMajorPerformanceCaveat: true,
     });
   } catch {
     return mountGateway2D(remountCanvas(canvas));
   }
 
+  canvas.dataset.engine = 'webgl';
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setClearColor(0xeef2f8, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -241,7 +243,6 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       roughness: 0.16,
       iridescence: 1,
       iridescenceIOR: 1.28,
-      iridescenceThicknessRange: [120, 420],
       clearcoat: 1,
       clearcoatRoughness: 0.12,
       emissive: 0x0b1f5c,
@@ -374,14 +375,15 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   let raf = 0;
   let composer: EffectComposer | null = null;
 
-  try {
-    composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(8, 8), 0.38, 0.42, 0.84);
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-  } catch {
-    composer = null;
+  if (canUseBloom(renderer)) {
+    try {
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.38, 0.42, 0.84));
+      composer.addPass(new OutputPass());
+    } catch {
+      composer = null;
+    }
   }
 
   const resize = (): void => {
@@ -526,6 +528,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
 }
 
 function mountGateway2D(canvas: HTMLCanvasElement): () => void {
+  canvas.dataset.engine = 'canvas2d';
   const ctx = canvas.getContext('2d');
   if (!ctx) return () => undefined;
 
