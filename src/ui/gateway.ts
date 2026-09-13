@@ -125,7 +125,7 @@ function paintPhotoGlass(
   }
   ctx.globalCompositeOperation = 'screen';
   const catchL = ctx.createLinearGradient(0, 0, w * 0.58, h * 0.42);
-  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.2)' : 'rgba(234, 241, 255, 0.5)');
+  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.12)' : 'rgba(234, 241, 255, 0.28)');
   catchL.addColorStop(0.5, 'rgba(234, 241, 255, 0)');
   ctx.fillStyle = catchL;
   ctx.beginPath();
@@ -156,13 +156,13 @@ function paintPhotoGlass(
   ctx.closePath();
   ctx.fill();
   const rim = ctx.createLinearGradient(0, 0, 0, h * 0.2);
-  rim.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.28)' : 'rgba(234, 241, 255, 0.62)');
+  rim.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.16)' : 'rgba(234, 241, 255, 0.3)');
   rim.addColorStop(1, 'rgba(234, 241, 255, 0)');
   ctx.fillStyle = rim;
   ctx.fillRect(0, 0, w, h * 0.2);
   const sliver = ctx.createLinearGradient(w * 0.06, h * 0.08, w * 0.82, h * 0.22);
-  sliver.addColorStop(0, i % 2 ? 'rgba(255, 92, 176, 0.42)' : 'rgba(90, 240, 255, 0.4)');
-  sliver.addColorStop(0.45, 'rgba(234, 241, 255, 0.18)');
+  sliver.addColorStop(0, i % 2 ? 'rgba(255, 92, 176, 0.2)' : 'rgba(90, 240, 255, 0.18)');
+  sliver.addColorStop(0.45, 'rgba(234, 241, 255, 0.08)');
   sliver.addColorStop(1, 'rgba(21, 87, 255, 0)');
   ctx.fillStyle = sliver;
   ctx.beginPath();
@@ -547,7 +547,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const stars: THREE.Mesh[] = [];
   const sparks: THREE.Mesh[] = [];
   const sides = 12;
-  const restAyFace = 0.5;
+  const restAyFace = 0.72;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
   const tableR = 0.26;
   const tableY = 0.82;
@@ -722,7 +722,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const plate = makeCinemaPlate(0.56, 0.36, lite, undefined, 0.014, true);
+    const plate = makeCinemaPlate(0.7, 0.44, lite, undefined, 0.014, true);
     applyPlateMap(plate.mat, tex);
     const [x, , z] = bankXYZ(i, 0);
     sitIssuerStill(plate.root, x, z);
@@ -731,7 +731,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     group.add(plate.root);
     cards.push(plate.root);
     cardMats.push(plate.mat);
-    const puddle = makeFloorContact(0.68, 0.48, -0.318);
+    const puddle = makeFloorContact(0.84, 0.58, -0.318);
     scene.add(puddle);
     puddles.push(puddle);
     const paintOne = (): void => {
@@ -752,8 +752,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.48 : 1.5;
-  const restAy = 0.5;
+  const restAx = lite ? 1.38 : 1.4;
+  const restAy = 0.72;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
