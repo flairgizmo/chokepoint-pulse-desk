@@ -5179,3 +5179,52 @@ body.stage-open .grok {
 .research-lane .kicker {
   color: inherit;
 }
+
+.tech-chapter {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
+}
+
+.tech-chapter .kicker,
+.tech-chapter h2,
+.tech-chapter .lede-sm,
+.tech-chapter .card-more,
+.tech-chapter .card-more summary,
+.tech-chapter h3,
+.tech-chapter p,
+.tech-chapter .text-link {
+  color: inherit;
+}
+
+.tech-chapter .card-more summary {
+  color: #eaf1ff;
+}
+
+.chapter.city-essay {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-radius: 22px;
+  overflow: hidden;
+  padding: 0 0 1.8rem;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
+}
+
+.chapter.city-essay > p,
+.chapter.city-essay > .meta,
+.chapter.city-essay > .note,
+.chapter.city-essay > .source-row,
+.chapter.city-essay > .subtle {
+  padding-inline: 1.25rem;
+  color: inherit;
+}
+
+.chapter.city-essay .text-link {
+  color: #eaf1ff;
+}
+
+.chapter.city-essay .donate-list,
+.chapter.city-essay .city-neighbors {
+  margin-inline: 1.25rem;
+}

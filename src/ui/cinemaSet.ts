@@ -397,6 +397,17 @@ export function makeCinemaPlate(
     new THREE.MeshBasicMaterial({ color: 0x05070c }),
   );
   root.add(stock);
+  const contact = new THREE.Mesh(
+    new THREE.PlaneGeometry(w * 1.06, h * 1.08),
+    new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0.32,
+      depthWrite: false,
+    }),
+  );
+  contact.position.z = -(depth / 2 + 0.05);
+  root.add(contact);
   if (!flush) {
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(w + 0.04, h + 0.06, 0.02),
