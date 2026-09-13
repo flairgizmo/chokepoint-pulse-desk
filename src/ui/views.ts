@@ -261,10 +261,10 @@ export function stackVisual(): string {
   return `<section class="stack-visual">
     ${kicker('The stack')}
     <h2 class="display">How the products sit. <span class="display-mute">One gate, many ledgers.</span></h2>
-    <ol class="stack-rungs">${rungs
+    <ol class="stack-rungs cinema-rungs">${rungs
       .map(
         ([id, title, body]) =>
-          `<li data-rung="${esc(id)}"><strong>${esc(title)}</strong><span>${esc(body)}</span></li>`,
+          `<li data-rung="${esc(id)}">${diagramFigure(`stack-${id}`, 'stack', title)}<strong>${esc(title)}</strong><span>${esc(body)}</span></li>`,
       )
       .join('')}</ol>
   </section>`;
@@ -651,6 +651,7 @@ export function renderHome(): string {
       <h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>
       <div class="essay-grid">${essays}</div>
     </section>
+    ${stackVisual()}
     <section class="layers-wrap">
       ${kicker('Three layers, one horizontal gate')}
       <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
@@ -910,13 +911,17 @@ export function renderPeople(): string {
 function peopleRail(): string {
   const faces = PEOPLE.filter((p) => p.photo)
     .map((p) => {
-      const bed = plateFor(p.group, 'people', p.id);
-      return `<button type="button" class="people-tile" data-stage="person" data-stage-id="${esc(p.id)}">
-        <span class="people-still-wrap">
+      const bed = plateFor(p.id, p.group, 'people');
+      return `<button type="button" class="people-tile cinema-poster" data-stage="person" data-stage-id="${esc(p.id)}">
+        <span class="people-still-wrap cinema-frame">
+          <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+          <span class="cinema-grain" aria-hidden="true"></span>
           <img class="people-bed" src="${esc(bed.src)}" alt="" width="640" height="800" />
+          <span class="people-wash" aria-hidden="true"></span>
           <img class="people-face" src="${esc(p.photo ?? '')}" alt="${esc(p.name)}" width="160" height="160" />
+          <span class="people-credit"><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
+          <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
         </span>
-        <span><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
       </button>`;
     })
     .join('');

@@ -2327,22 +2327,23 @@ button.chip {
 
 .people-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
   gap: 1.1rem;
   width: 100%;
 }
 
-.people-tile {
+.people-tile,
+.people-tile.cinema-poster {
   display: grid;
   gap: 0;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 22px;
-  background: var(--surface);
+  background: #0b1220;
   text-decoration: none;
-  color: inherit;
-  box-shadow: 0 16px 36px rgba(47, 91, 255, 0.08);
+  color: #f4f7fb;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
 }
 
 .people-still-wrap {
@@ -2354,30 +2355,54 @@ button.chip {
 }
 
 .people-tile .people-bed {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  filter: saturate(1.08) contrast(1.08) brightness(0.52);
+  object-position: center 35%;
+  filter: saturate(1.22) contrast(1.16) brightness(1.12);
   animation: ken-burns 42s ease-in-out infinite alternate;
+}
+
+.people-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(8, 12, 22, 0.08) 0%, transparent 32%, rgba(8, 12, 22, 0.72) 100%);
 }
 
 .people-tile .people-face {
   position: absolute;
   left: 50%;
-  bottom: 11%;
-  width: 58%;
+  bottom: 22%;
+  z-index: 6;
+  width: 26%;
   aspect-ratio: 1;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 12%;
   border-radius: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 18px 36px rgba(5, 10, 20, 0.5);
-  background: transparent;
+  border: 2px solid rgba(234, 241, 255, 0.88);
+  box-shadow: 0 12px 28px rgba(5, 10, 20, 0.55);
+  background: #111827;
+  filter: contrast(1.06) saturate(0.92);
+}
+
+.people-credit {
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 1.05rem;
+  z-index: 6;
+  padding: 0;
+  text-align: center;
 }
 
 .people-tile span {
-  padding: 0.8rem 0.9rem 1rem;
+  padding: 0;
 }
 
 .people-tile strong,
@@ -2387,13 +2412,15 @@ button.chip {
 
 .people-tile strong {
   font-family: var(--display);
-  font-size: 0.92rem;
+  font-size: 0.98rem;
+  letter-spacing: -0.04em;
+  color: #f4f7fb;
 }
 
 .people-tile em {
   font-style: normal;
-  color: var(--muted);
-  font-size: 0.72rem;
+  color: rgba(234, 241, 255, 0.78);
+  font-size: 0.7rem;
 }
 
 .people-tile:hover {
@@ -3381,6 +3408,52 @@ button.chip {
   opacity: 0.28;
 }
 
+.stack-visual .cinema-rungs,
+.stack-rungs.cinema-rungs {
+  display: grid;
+  gap: 1rem;
+}
+
+.stack-visual .cinema-rungs li,
+.stack-rungs.cinema-rungs li {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  padding: 0 0 1.05rem;
+  overflow: hidden;
+  border-radius: 22px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  color: inherit;
+}
+
+.stack-visual .cinema-rungs li[data-rung='gate'],
+.stack-rungs.cinema-rungs li[data-rung='gate'] {
+  background: var(--surface);
+  color: inherit;
+  border-color: var(--line);
+}
+
+.stack-visual .cinema-rungs li[data-rung='gate'] span,
+.stack-rungs.cinema-rungs li[data-rung='gate'] span {
+  color: var(--muted);
+}
+
+.stack-visual .cinema-rungs .photo-plate,
+.stack-rungs.cinema-rungs .photo-plate {
+  margin: 0 0 0.15rem;
+}
+
+.stack-visual .cinema-rungs strong,
+.stack-rungs.cinema-rungs strong {
+  padding: 0 1rem;
+}
+
+.stack-visual .cinema-rungs span,
+.stack-rungs.cinema-rungs span {
+  padding: 0 1rem 0.15rem;
+}
+
 .tech-stack {
   display: grid;
   gap: 1.35rem;
@@ -3811,7 +3884,6 @@ body.stage-open .grok {
 
 .people-tile .people-face {
   object-position: center 12%;
-  filter: contrast(1.06) saturate(0.86);
 }
 
 .status-active {
@@ -4156,10 +4228,17 @@ body.stage-open .grok {
 .tech-chapter .photo-plate img,
 .inst-card .photo-plate img,
 .cbdc-model .photo-plate img,
-.stack-rungs .photo-plate img {
+.stack-rungs .photo-plate img,
+.triptych .photo-plate img {
   aspect-ratio: 16 / 9;
-  max-height: 18.5rem;
+  max-height: 22rem;
   animation: ken-burns 42s ease-in-out infinite alternate;
+}
+
+.tech-chapter .photo-plate img,
+.stack-rungs.exploded .photo-plate img,
+.stack-rungs.cinema-rungs .photo-plate img {
+  max-height: 26rem;
 }
 
 .photo-plate::after,
@@ -4277,12 +4356,12 @@ body.stage-open .grok {
   max-height: 9.5rem;
 }
 
-.people-tile {
-  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.12);
-}
-
-.people-tile .people-face {
-  filter: saturate(1.04) contrast(1.05);
+.people-tile,
+.people-tile.cinema-poster {
+  padding: 0;
+  background: #0b1220;
+  color: #f4f7fb;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
 }
 
 .tech-chapter,

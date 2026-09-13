@@ -17,34 +17,72 @@ import {
   remountCanvas,
 } from './gateway2d';
 
+const CARD_W = 1024;
+const CARD_H = 300;
+const duskPlate = new Image();
+duskPlate.src = '/visuals/topics/canary.jpg';
+
+function coverDraw(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  w: number,
+  h: number,
+): void {
+  const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+  const dw = img.naturalWidth * scale;
+  const dh = img.naturalHeight * scale;
+  ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+}
+
+function containDraw(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): void {
+  const scale = Math.min(w / img.naturalWidth, h / img.naturalHeight);
+  const dw = img.naturalWidth * scale;
+  const dh = img.naturalHeight * scale;
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
+}
+
 function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  c.width = 768;
-  c.height = 220;
+  c.width = CARD_W;
+  c.height = CARD_H;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.clearRect(0, 0, 768, 220);
-  ctx.fillStyle = '#ffffff';
+  ctx.clearRect(0, 0, CARD_W, CARD_H);
+  if (duskPlate.complete && duskPlate.naturalWidth) {
+    ctx.filter = 'saturate(1.18) contrast(1.12) brightness(0.62)';
+    coverDraw(ctx, duskPlate, CARD_W, CARD_H);
+    ctx.filter = 'none';
+  } else {
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0, 0, CARD_W, CARD_H);
+  }
+  const bw = 860;
+  const bh = 168;
+  const bx = (CARD_W - bw) / 2;
+  const by = (CARD_H - bh) / 2;
+  ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.94)';
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(10, 10, 748, 200, 28);
-  else ctx.rect(10, 10, 748, 200);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 22);
+  else ctx.rect(bx, by, bw, bh);
   ctx.fill();
   ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
-  ctx.lineWidth = on ? 8 : 3;
+  ctx.lineWidth = on ? 7 : 2;
   ctx.stroke();
-  if (img?.complete && img.naturalWidth) {
-    const maxW = 700;
-    const maxH = 96;
-    const scale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight);
-    const dw = img.naturalWidth * scale;
-    const dh = img.naturalHeight * scale;
-    ctx.drawImage(img, (768 - dw) / 2, (220 - dh) / 2, dw, dh);
+  if (img?.complete && img.naturalWidth && img.naturalHeight) {
+    containDraw(ctx, img, bx + 36, by + 28, bw - 72, bh - 56);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '700 56px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '700 54px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(short, 384, 110);
+    ctx.fillText(short, CARD_W / 2, CARD_H / 2);
   }
   return c;
 }
@@ -261,7 +299,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       clearcoatRoughness: 0.18,
       transparent: true,
     });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.26, 0.05), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.287, 0.048), mat);
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.18, z);
     mesh.userData.nodeId = bank.id;
@@ -312,8 +350,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.22 : 1.12;
-  const restAy = lite ? 0.46 : 0.38;
+  const restAx = lite ? 1.18 : 1.1;
+  const restAy = lite ? 0.58 : 0.48;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -373,14 +411,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const rtMat = rt2.material as THREE.MeshPhysicalMaterial;
     rtMat.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
   };
+  if (!duskPlate.complete) duskPlate.onload = () => paintCards();
+  else paintCards();
 
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x, y + 0.18, z);
-      cards[i].lookAt(0, y + 0.18, 0);
+      cards[i].position.set(x * 1.14, y + 0.2, z * 1.14);
+      cards[i].lookAt(0, y + 0.2, 0);
       cards[i].rotateY(Math.PI);
     });
     hex.rotation.z = reduced ? 0 : now / 18000;
@@ -401,7 +441,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     releaseLabel.visible = !lockOn;
     lockLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
     releaseLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
-    camera.position.setFromSphericalCoords(lite ? 4.35 : 3.55, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 4.55 : 3.7, ax, ay);
     camera.lookAt(0, lite ? 0.14 : 0.12, 0);
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);

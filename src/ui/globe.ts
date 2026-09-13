@@ -610,7 +610,8 @@ export class EarthGlobe {
       stem.userData.cityId = city.id;
       group.add(stem);
       this.pinMeshes.push(pin, stem);
-      const label = makeLabelSprite(`${city.name} · ${city.kind}`);
+      const label = makeLabelSprite(city.name);
+      label.scale.set(0.34, 0.085, 1);
       label.position.copy(latLonToVec(city.lat, city.lon, 1.09));
       label.userData.cityId = city.id;
       group.add(label);
@@ -814,12 +815,52 @@ export class EarthGlobe {
       const s = 1 + Math.sin(performance.now() / 420) * 0.55;
       this.pulse.scale.setScalar(s);
     }
+    this.layoutLabels();
     if (this.composer) this.composer.render();
     else this.renderer.render(this.scene, this.camera);
     this.hudClock += 1;
     if (this.hoverId !== this.lastHudHover || this.hudClock % 4 === 0) {
       this.lastHudHover = this.hoverId;
       this.emitHud();
+    }
+  }
+
+  private layoutLabels(): void {
+    if (!this.camera || !this.renderer) return;
+    const w = this.renderer.domElement.clientWidth;
+    const h = this.renderer.domElement.clientHeight;
+    const placed: Array<{ x: number; y: number }> = [];
+    const minDist = 56;
+    const rank = (id: string): number => {
+      if (id === this.followId || id === this.hoverId) return 0;
+      const city = cityById(id);
+      return city?.kind === 'Headquarters' ? 1 : 2;
+    };
+    const sprites = [...this.labelSprites].sort((a, b) => rank(String(a.userData.cityId)) - rank(String(b.userData.cityId)));
+    const world = new THREE.Vector3();
+    const ndc = new THREE.Vector3();
+    for (const sprite of sprites) {
+      if (!this.overlays.labels) {
+        sprite.visible = false;
+        continue;
+      }
+      sprite.getWorldPosition(world);
+      const facing = world.clone().normalize().dot(this.camera.position.clone().normalize());
+      if (facing < 0.22) {
+        sprite.visible = false;
+        continue;
+      }
+      ndc.copy(world).project(this.camera);
+      if (ndc.z > 1 || Math.abs(ndc.x) > 1.08 || Math.abs(ndc.y) > 1.08) {
+        sprite.visible = false;
+        continue;
+      }
+      const x = (ndc.x * 0.5 + 0.5) * w;
+      const y = (-ndc.y * 0.5 + 0.5) * h;
+      const forced = rank(String(sprite.userData.cityId)) === 0;
+      const hit = placed.some((p) => Math.hypot(p.x - x, p.y - y) < minDist);
+      sprite.visible = forced || !hit;
+      if (sprite.visible) placed.push({ x, y });
     }
   }
 

@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { diagramFigure } from '../src/ui/diagrams';
 import { renderPatents } from '../src/ui/pages';
-import { renderCity, renderVision } from '../src/ui/views';
+import { renderCity, renderPeople, renderVision } from '../src/ui/views';
 import { cityById } from '../src/data/cities';
 
 describe('Topic plates', () => {
@@ -46,6 +46,16 @@ describe('Topic plates', () => {
     expect(plateFor('gbtd-2025').src).toBe(PLATES.canary.src);
     expect(plateFor('murex-2026').src).toBe(PLATES.paris.src);
     expect(plateFor('x402').src).toBe(PLATES.fiber.src);
+    expect(plateFor('fusion').src).toBe(PLATES.cityDay.src);
+    expect(plateFor('quantnet').src).toBe(PLATES.city.src);
+    expect(plateFor('overledger-network').src).toBe(PLATES.cable.src);
+  });
+
+  it('sits official portraits on distinct dusk stills, not one shared CERN floor', () => {
+    expect(plateFor('verdian').src).toBe(PLATES.ucl.src);
+    expect(plateFor('tasca').src).toBe(PLATES.boston.src);
+    expect(plateFor('heads').src).toBe(PLATES.canaryDay.src);
+    expect(plateFor('board').src).toBe(PLATES.cityDay.src);
   });
 
   it('maps each city id to that city’s Wikimedia still', () => {
@@ -77,6 +87,16 @@ describe('Topic plates', () => {
     const cityHtml = renderCity(geneva!);
     expect(cityHtml).toContain('/visuals/cities/geneva.jpg');
     expect(cityHtml).not.toContain('hero-bed');
+  });
+
+  it('prints official portraits as cinema posters on real stills', () => {
+    const html = renderPeople();
+    expect(html).toContain('cinema-poster');
+    expect(html).toContain('people-bed');
+    expect(html).toContain('cinema-letterbox');
+    expect(html).toContain('/visuals/topics/ucl.jpg');
+    expect(html).toContain('/visuals/stories/canary.jpg');
+    expect(html).not.toContain('hero-bed');
   });
 
   it('keeps the patent claim SVG and adds a hall photograph above it', () => {
