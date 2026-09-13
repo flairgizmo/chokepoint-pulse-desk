@@ -235,7 +235,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 4.38 : 4.28, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 4.88 : 4.72, ax, ay);
     camera.lookAt(0.04, 0.72, 0.04);
     if (composer) composer.render();
     else renderer.render(scene, camera);
