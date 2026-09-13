@@ -150,11 +150,11 @@ function punchStudioWhite(img: HTMLImageElement, dw: number, dh: number): HTMLCa
 function drawPortrait(ctx: CanvasRenderingContext2D, img: HTMLImageElement, w: number, h: number): void {
   ctx.fillStyle = '#101828';
   ctx.fillRect(0, 0, w, h);
-  const scale = Math.min((w * 0.88) / img.naturalWidth, (h * 0.8) / img.naturalHeight);
+  const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight) * 1.18;
   const dw = img.naturalWidth * scale;
   const dh = img.naturalHeight * scale;
   const cut = punchStudioWhite(img, dw, dh);
-  ctx.drawImage(cut, (w - dw) / 2, (h - dh) * 0.2);
+  ctx.drawImage(cut, (w - dw) / 2, (h - dh) * 0.22);
 }
 
 function plateTexture(

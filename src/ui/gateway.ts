@@ -126,33 +126,46 @@ function paintPhotoGlass(
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
-    scoreCut(ctx, w, h, 16, lane);
+    scoreWindow(ctx, w, h, lane);
   }
 }
 
-function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: number, lane: GlassLane = 0): void {
-  const bw = w / sides;
-  for (let i = 0; i < sides; i++) {
-    const x0 = i * bw;
-    if (i % 2) {
-      ctx.fillStyle = lane === 0 ? 'rgba(2, 6, 14, 0.12)' : 'rgba(2, 6, 14, 0.28)';
-      ctx.fillRect(x0, 0, bw, h);
-    }
-    ctx.fillStyle = lane === 0 ? 'rgba(234, 241, 255, 0.1)' : 'rgba(234, 241, 255, 0.05)';
-    ctx.fillRect(x0, 0, 1.25, h);
-    ctx.fillStyle = 'rgba(2, 6, 14, 0.36)';
-    ctx.fillRect(x0 + bw - 1.25, 0, 1.25, h);
-  }
+/** Edge falloff + one fire streak per shared window. Not a 16-stripe barcode — each kite shows this whole still. */
+function scoreWindow(ctx: CanvasRenderingContext2D, w: number, h: number, lane: GlassLane = 0): void {
+  const edge = ctx.createLinearGradient(0, 0, w, 0);
+  edge.addColorStop(0, 'rgba(2, 6, 14, 0.5)');
+  edge.addColorStop(0.1, 'rgba(2, 6, 14, 0)');
+  edge.addColorStop(0.9, 'rgba(2, 6, 14, 0)');
+  edge.addColorStop(1, 'rgba(2, 6, 14, 0.5)');
+  ctx.fillStyle = edge;
+  ctx.fillRect(0, 0, w, h);
+  const vert = ctx.createLinearGradient(0, 0, 0, h);
+  vert.addColorStop(0, 'rgba(2, 6, 14, 0.18)');
+  vert.addColorStop(0.45, 'rgba(2, 6, 14, 0)');
+  vert.addColorStop(1, 'rgba(2, 6, 14, 0.28)');
+  ctx.fillStyle = vert;
+  ctx.fillRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'screen';
-  for (let i = 0; i < sides; i++) {
-    const cx = (i + 0.38) * bw;
-    const cy = 36 + (i % 5) * 78;
-    const g = ctx.createRadialGradient(cx, cy, 1, cx, cy, lane === 0 ? 32 : 20);
-    g.addColorStop(0, i % 3 === 0 ? 'rgba(255, 236, 210, 0.42)' : 'rgba(170, 200, 255, 0.22)');
-    g.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(cx - 32, cy - 32, 64, 64);
+  const fire = ctx.createLinearGradient(w * 0.08, h * 0.12, w * 0.78, h * 0.92);
+  if (lane === 0) {
+    fire.addColorStop(0, 'rgba(255, 236, 210, 0)');
+    fire.addColorStop(0.42, 'rgba(255, 236, 210, 0.16)');
+    fire.addColorStop(0.5, 'rgba(210, 228, 255, 0.34)');
+    fire.addColorStop(0.58, 'rgba(255, 220, 180, 0.18)');
+    fire.addColorStop(1, 'rgba(255, 236, 210, 0)');
+  } else {
+    fire.addColorStop(0, 'rgba(140, 170, 220, 0)');
+    fire.addColorStop(0.48, 'rgba(140, 170, 220, 0.1)');
+    fire.addColorStop(0.52, 'rgba(200, 216, 255, 0.16)');
+    fire.addColorStop(1, 'rgba(140, 170, 220, 0)');
   }
+  ctx.fillStyle = fire;
+  ctx.fillRect(0, 0, w, h);
+  const catchL = ctx.createRadialGradient(w * 0.28, h * 0.22, 2, w * 0.28, h * 0.22, w * (lane === 0 ? 0.16 : 0.1));
+  catchL.addColorStop(0, lane === 0 ? 'rgba(255, 236, 210, 0.4)' : 'rgba(170, 200, 255, 0.18)');
+  catchL.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = catchL;
+  ctx.fillRect(0, 0, w, h);
   ctx.globalCompositeOperation = 'source-over';
 }
 
@@ -299,20 +312,9 @@ function glassMat(
   return diamondPhysical(tex, opts);
 }
 
-function wrapU(x: number, z: number): number {
-  return (Math.atan2(x, z) / (Math.PI * 2) + 0.875) % 1;
-}
-
 function wrapV(y: number, band: 'crown' | 'pav' = 'crown'): number {
   if (band === 'pav') return Math.min(1, Math.max(0, (y - BOT_Y) / (EQ_Y - BOT_Y)));
   return Math.min(1, Math.max(0, (y - EQ_Y) / (TABLE_Y - EQ_Y)));
-}
-
-function seamUv(us: number[]): number[] {
-  const min = Math.min(...us);
-  const max = Math.max(...us);
-  if (max - min <= 0.5) return us;
-  return us.map((u) => (u < 0.5 ? u + 1 : u));
 }
 
 function tableFan(r: number, sides: number): THREE.BufferGeometry {
@@ -342,24 +344,22 @@ function triGeo(
   ax: number,
   ay: number,
   az: number,
+  ua: number,
+  va: number,
   bx: number,
   by: number,
   bz: number,
+  ub: number,
+  vb: number,
   cx: number,
   cy: number,
   cz: number,
-  band: 'crown' | 'pav' = 'crown',
+  uc: number,
+  vc: number,
 ): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz], 3));
-  const us = seamUv([wrapU(ax, az), wrapU(bx, bz), wrapU(cx, cz)]);
-  g.setAttribute(
-    'uv',
-    new THREE.Float32BufferAttribute(
-      [us[0], wrapV(ay, band), us[1], wrapV(by, band), us[2], wrapV(cy, band)],
-      2,
-    ),
-  );
+  g.setAttribute('uv', new THREE.Float32BufferAttribute([ua, va, ub, vb, uc, vc], 2));
   g.computeVertexNormals();
   return g;
 }
@@ -644,19 +644,25 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pz1 = Math.sin(a1) * pavR;
     const crown = i % 2 ? crownB : crownA;
     const pav = i % 2 ? pavB : pavA;
-    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, 'crown'), crown, crowns);
-    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1, 'crown'), crown, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns);
-    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
-    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav, pavs);
-    addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav, pavs);
+    const vMid = wrapV(midY, 'crown');
+    const vPav = wrapV(pavY, 'pav');
+    addCut(triGeo(mx0, midY, mz0, 0, vMid, x0, eqY, z0, 0, 0, x1, eqY, z1, 1, 0), crown, crowns);
+    addCut(triGeo(mx0, midY, mz0, 0, vMid, x1, eqY, z1, 1, 0, mx1, midY, mz1, 1, vMid), crown, crowns);
+    addCut(triGeo(tx0, tableY, tz0, 0, 1, mx0, midY, mz0, 0, vMid, mx1, midY, mz1, 1, vMid), crown, crowns);
+    addCut(triGeo(tx0, tableY, tz0, 0, 1, mx1, midY, mz1, 1, vMid, tx1, tableY, tz1, 1, 1), crown, crowns);
+    addCut(triGeo(x0, eqY, z0, 0, 1, px0, pavY, pz0, 0, vPav, px1, pavY, pz1, 1, vPav), pav, pavs);
+    addCut(triGeo(x0, eqY, z0, 0, 1, px1, pavY, pz1, 1, vPav, x1, eqY, z1, 1, 1), pav, pavs);
+    addCut(triGeo(px0, pavY, pz0, 0, vPav, 0, botY, 0, 0.5, 0, px1, pavY, pz1, 1, vPav), pav, pavs);
     const amid = (a0 + a1) / 2;
     const starR = tableR + (eqR - tableR) * 0.4;
     const starY = tableY + (eqY - tableY) * 0.4;
     const sx = Math.cos(amid) * starR;
     const sz = Math.sin(amid) * starR;
-    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz, 'crown'), crownA, stars);
+    addCut(
+      triGeo(tx0, tableY, tz0, 0, 1, tx1, tableY, tz1, 1, 1, sx, starY, sz, 0.5, wrapV(starY, 'crown')),
+      crownA,
+      stars,
+    );
     if (!lite) {
       const spark = new THREE.Mesh(
         new THREE.SphereGeometry(0.016, 8, 8),
@@ -717,12 +723,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   core.userData.nodeId = 6;
   crystal.add(core);
   const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.08, 0.04, sides),
+    new THREE.CylinderGeometry(0.028, 0.046, 0.028, sides),
     cinemaChrome(lite),
   );
   crystal.position.y = 0.2;
-  crystal.scale.setScalar(1.46);
-  base.position.y = -0.26;
+  crystal.scale.setScalar(1.52);
+  base.position.y = -0.24;
   base.userData.nodeId = 6;
   group.add(base);
   group.add(crystal);

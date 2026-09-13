@@ -208,7 +208,7 @@ export class EarthGlobe {
   private phi = 1.08;
   private theta = 2.05;
   private earthSpin = 0.42;
-  private distance = 2.32;
+  private distance = 2.18;
   private velTheta = 0;
   private velPhi = 0;
   private followId: string | undefined;
@@ -280,7 +280,7 @@ export class EarthGlobe {
     this.velTheta = 0;
     this.velPhi = 0;
     this.panX = 0;
-    this.distance = 2.32;
+    this.distance = 2.18;
     const london = cityById('london');
     if (london) this.lookAtCity(london);
   }
@@ -631,7 +631,7 @@ export class EarthGlobe {
         map: sunGlintTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.72 : 0.84,
+        opacity: this.lite ? 0.8 : 0.9,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
