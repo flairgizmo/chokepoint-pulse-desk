@@ -644,7 +644,6 @@ export function renderHome(): string {
       <div class="earth-hud">
         <div class="hud-card">
           <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · orbit</p>
-          <p class="hud-help">Pins stay on published lat/lon. Drag to orbit. Scroll to zoom. Click a city for the still.</p>
           <label class="sr-only" for="city-select">Cities</label>
           <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
         </div>
@@ -662,9 +661,9 @@ export function renderHome(): string {
             <label><input type="checkbox" data-globe-opt="labels" /> City labels</label>
             <label><input type="checkbox" data-globe-opt="day" checked /> Day marble</label>
             <label><input type="checkbox" data-globe-opt="night" checked /> Night lights</label>
-            <label><input type="checkbox" data-globe-opt="routes" checked /> Settlement routes</label>
-            <label><input type="checkbox" data-globe-opt="corridors" checked /> Token corridors</label>
-            <label><input type="checkbox" data-globe-opt="activity" checked /> Activity</label>
+            <label><input type="checkbox" data-globe-opt="routes" /> Settlement routes</label>
+            <label><input type="checkbox" data-globe-opt="corridors" /> Token corridors</label>
+            <label><input type="checkbox" data-globe-opt="activity" /> Activity</label>
           </fieldset>
         </details>
         <div class="hud-city" id="city-hover" hidden></div>

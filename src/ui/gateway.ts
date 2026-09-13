@@ -672,9 +672,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(base);
   group.add(crystal);
 
-  const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 1.22, 0.1);
-  gateLabel.scale.set(1.18, 0.2, 1);
+  const gateLabel = labelSprite('OVERLEDGER', '#EAF1FF');
+  gateLabel.position.set(0, 1.18, 0.1);
+  gateLabel.scale.set(0.86, 0.15, 1);
+  gateLabel.material.opacity = 0.72;
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
@@ -713,7 +714,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
   rt2Label.position.set(0, 1.52, 0.12);
-  rt2Label.scale.set(0.62, 0.16, 1);
+  rt2Label.scale.set(0.48, 0.12, 1);
+  rt2Label.material.opacity = 0.62;
   group.add(rt2Label);
 
   const logos = BANKS.map((b) => {

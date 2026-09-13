@@ -161,9 +161,9 @@ export class EarthGlobe {
   private velPhi = 0;
   private followId: string | undefined;
   private overlays: GlobeOverlays = {
-    routes: true,
-    corridors: true,
-    activity: true,
+    routes: false,
+    corridors: false,
+    activity: false,
     labels: false,
     night: true,
     day: true,
@@ -631,7 +631,7 @@ export class EarthGlobe {
     for (const city of CITIES) {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, this.lite ? 8 : 12, this.lite ? 8 : 12),
+        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.012 : 0.008, this.lite ? 8 : 12, this.lite ? 8 : 12),
         this.lite
           ? new THREE.MeshBasicMaterial({ color: kindColor(city.kind) })
           : new THREE.MeshPhysicalMaterial({

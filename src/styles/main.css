@@ -5276,6 +5276,11 @@ body.stage-open .grok {
   box-shadow: 0 32px 90px rgba(7, 11, 20, 0.28);
 }
 
+.earth-hud .hud-help,
+.earth-hud .isr-line {
+  display: none;
+}
+
 .earth-hud .hud-card,
 .earth-hud .hud-tools,
 .earth-hud .hud-more,
@@ -5308,7 +5313,8 @@ body.stage-open .grok {
 
 @media (max-width: 720px) {
   .earth-hud .hud-help,
-  .earth-hud .hud-card .kicker {
+  .earth-hud .hud-card .kicker,
+  .earth-hud .isr-line {
     display: none;
   }
 

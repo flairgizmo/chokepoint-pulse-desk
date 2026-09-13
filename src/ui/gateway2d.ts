@@ -420,8 +420,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.fillText('Q', cx, (tableY + waistY) / 2);
     ctx.shadowBlur = 0;
     ctx.restore();
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = `800 ${Math.max(12, W / 46)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.72)';
+    ctx.font = `700 ${Math.max(11, W / 52)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText('OVERLEDGER', cx, cy - crystalH * 0.2);
 
