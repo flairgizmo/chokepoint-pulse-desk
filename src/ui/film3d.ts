@@ -43,15 +43,26 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
       const d = i - mid;
       const mag = Math.abs(d);
       const scale = mag === 0 ? 1 : mag === 1 ? 0.62 : 0.42;
-      const pw = w * 0.42 * scale;
-      const ph = h * 0.72 * scale;
-      const x = w / 2 + d * (w * 0.22) - pw / 2;
-      const y = h * 0.14 + mag * 18;
+      const portrait = (canvas.dataset.filmSet ?? '') === 'people';
+      const pw = w * (portrait ? 0.22 : 0.42) * scale;
+      const ph = h * (portrait ? 0.78 : 0.72) * scale;
+      const x = w / 2 + d * (w * (portrait ? 0.16 : 0.22)) - pw / 2;
+      const y = h * 0.12 + mag * 18;
       ctx.save();
       ctx.fillStyle = '#05070c';
       ctx.fillRect(x - 6, y - 6, pw + 12, ph + 12);
       const img = imgs[i];
-      if (img.complete && img.naturalWidth) ctx.drawImage(img, x, y, pw, ph);
+      if (img.complete && img.naturalWidth) {
+        const scaleImg = Math.max(pw / img.naturalWidth, ph / img.naturalHeight);
+        const dw = img.naturalWidth * scaleImg;
+        const dh = img.naturalHeight * scaleImg;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, pw, ph);
+        ctx.clip();
+        ctx.drawImage(img, x + (pw - dw) / 2, y + (ph - dh) * 0.18, dw, dh);
+        ctx.restore();
+      }
       ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
       ctx.fillRect(x, y + ph - 38, pw, 38);
       ctx.fillStyle = '#EAF1FF';
@@ -79,23 +90,30 @@ export function upgradeFilm3D(canvas: HTMLCanvasElement): Film3DHandle | null {
   const next = remountCanvas(canvas);
   next.dataset.filmSet = set;
   try {
-    return mountFilm3D(next, slides, filmBackdrop(set), probe.lite);
+    return mountFilm3D(next, slides, filmBackdrop(set), probe.lite, set === 'people');
   } catch {
     return null;
   }
 }
 
-function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTexture) => void): THREE.CanvasTexture {
+function plateTexture(
+  src: string,
+  title: string,
+  portrait: boolean,
+  onReady: (tex: THREE.CanvasTexture) => void,
+): THREE.CanvasTexture {
+  const w = portrait ? 720 : 1280;
+  const h = portrait ? 960 : 720;
   const c = document.createElement('canvas');
-  c.width = 1280;
-  c.height = 720;
+  c.width = w;
+  c.height = h;
   const ctx = c.getContext('2d');
   if (ctx) {
     ctx.fillStyle = '#0b1220';
-    ctx.fillRect(0, 0, 1280, 720);
+    ctx.fillRect(0, 0, w, h);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 40px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 680);
+    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 28, h - 28);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -103,17 +121,17 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   img.onload = () => {
     if (!ctx) return;
     if (img.naturalWidth && img.naturalHeight) {
-      const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
+      const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
       const dw = img.naturalWidth * scale;
       const dh = img.naturalHeight * scale;
-      const faceBias = img.naturalHeight > img.naturalWidth ? 0.18 : 0.5;
-      ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) * faceBias, dw, dh);
+      const faceBias = img.naturalHeight >= img.naturalWidth ? 0.16 : 0.42;
+      ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
     }
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.52)';
-    ctx.fillRect(0, 632, 1280, 88);
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
+    ctx.fillRect(0, h - 92, w, 92);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 40px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 690);
+    ctx.font = `700 ${portrait ? 34 : 40}px Outfit, IBM Plex Sans, sans-serif`;
+    ctx.fillText(title, 28, h - 34);
     tex.needsUpdate = true;
     onReady(tex);
   };
@@ -126,6 +144,7 @@ function mountFilm3D(
   slides: FilmSlide[],
   backdrop: string,
   lite: boolean,
+  portrait = false,
 ): Film3DHandle {
   let renderer: THREE.WebGLRenderer;
   try {
@@ -161,17 +180,20 @@ function mountFilm3D(
 
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.92, 1.08, 0.045), mat);
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(portrait ? 0.92 : 1.92, portrait ? 1.22 : 1.08, 0.045),
+      mat,
+    );
     mesh.userData.slide = slide;
     const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(2.0, 1.16, 0.03),
+      new THREE.BoxGeometry(portrait ? 1.0 : 2.0, portrait ? 1.3 : 1.16, 0.03),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
     frame.position.z = -0.03;
     mesh.add(frame);
     group.add(mesh);
     plates.push(mesh);
-    plateTexture(slide.src, slide.title, (tex) => applyPlateMap(mat, tex));
+    plateTexture(slide.src, slide.title, portrait, (tex) => applyPlateMap(mat, tex));
   });
 
   const raycaster = new THREE.Raycaster();
@@ -187,7 +209,7 @@ function mountFilm3D(
       const d = i - featured;
       const mag = Math.abs(d);
       const scale = mag === 0 ? 1 : mag === 1 ? 0.7 : 0.46;
-      mesh.position.set(d * 1.58, -0.1 - mag * 0.03, mag * 0.5);
+      mesh.position.set(d * (portrait ? 1.08 : 1.58), -0.1 - mag * 0.03, mag * 0.5);
       mesh.rotation.set(-0.08, -d * 0.2, 0);
       mesh.scale.setScalar(scale);
     });

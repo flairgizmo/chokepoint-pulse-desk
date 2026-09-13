@@ -51,7 +51,7 @@ function displayTitle(title: string, mute = ''): string {
 export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId, film?: string): string {
   return `<header class="page-hero enterprise-hero cinema-hero">
     ${film ? filmStageMarkup(film, title) : ''}
-    ${heroPlate(k, title, mute, bed)}
+    ${film === 'people' ? '' : heroPlate(k, title, mute, bed)}
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${displayTitle(title, mute)}</h1>
@@ -586,7 +586,7 @@ export function renderHome(): string {
       </div>
       ${kicker('QntDesk · independent research')}
       <div class="hero-split">
-        <h1 class="display">The ledgers were never the hard part. Making them talk is.</h1>
+        <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
         <div>
           <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. This desk walks that story in order, from the public record. Independent research. Not Quant’s corporate site.</p>
           <div class="cta-row">

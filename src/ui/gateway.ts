@@ -63,37 +63,37 @@ function logoCanvas(img: HTMLImageElement | null, short: string, name: string, o
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
-  ctx.fillRect(0, CARD_H - 196, CARD_W, 196);
-  const bw = 520;
-  const bh = 148;
+  ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
+  ctx.fillRect(0, CARD_H - 168, CARD_W, 168);
+  const bw = 400;
+  const bh = 78;
   const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 176;
-  ctx.fillStyle = on ? '#ffffff' : '#f7f9fc';
-  ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
-  ctx.shadowBlur = 16;
-  ctx.shadowOffsetY = 6;
+  const by = CARD_H - 148;
+  ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
+  ctx.shadowColor = 'rgba(7, 11, 20, 0.4)';
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetY = 5;
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 22);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 18);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
   ctx.shadowColor = 'transparent';
   ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.2)';
-  ctx.lineWidth = on ? 5 : 2;
+  ctx.lineWidth = on ? 4 : 2;
   ctx.stroke();
   const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
-    containDraw(ctx, img, bx + 36, by + 22, bw - 72, 72);
+    containDraw(ctx, img, bx + 28, by + 16, bw - 56, bh - 32);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '800 42px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(wide ? 'Lloyds' : short, CARD_W / 2, by + 56);
+    ctx.font = '800 34px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(wide ? 'Lloyds' : short, CARD_W / 2, by + bh / 2);
   }
-  ctx.fillStyle = '#0B1F5C';
-  ctx.font = '700 26px Outfit, IBM Plex Sans, sans-serif';
-  ctx.fillText(name, CARD_W / 2, by + 118);
+  ctx.fillStyle = '#F4F7FB';
+  ctx.font = '700 28px Outfit, IBM Plex Sans, sans-serif';
+  ctx.fillText(name, CARD_W / 2, CARD_H - 38);
   return c;
 }
 
