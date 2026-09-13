@@ -8,12 +8,34 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { canUseBloom } from './webgl';
 
-function paintDuskFace(kind: 'px' | 'nx' | 'py' | 'ny' | 'pz' | 'nz'): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = 256;
-  c.height = 256;
-  const ctx = c.getContext('2d');
-  if (!ctx) return c;
+type CubeFace = 'px' | 'nx' | 'py' | 'ny' | 'pz' | 'nz';
+
+const CUBE_FACES: CubeFace[] = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];
+
+/** Unique Canary crops so each cube face reflects a different slice of the still. */
+const CANARY_CROP: Record<CubeFace, readonly [number, number, number, number]> = {
+  px: [0.52, 0.1, 0.48, 0.7],
+  nx: [0.0, 0.12, 0.46, 0.68],
+  py: [0.2, 0.0, 0.6, 0.36],
+  ny: [0.12, 0.58, 0.76, 0.42],
+  pz: [0.24, 0.14, 0.52, 0.68],
+  nz: [0.42, 0.22, 0.48, 0.6],
+};
+
+const CANARY_WASH: Record<CubeFace, string> = {
+  px: 'rgba(10, 22, 48, 0.28)',
+  nx: 'rgba(8, 16, 36, 0.36)',
+  py: 'rgba(8, 14, 28, 0.58)',
+  ny: 'rgba(2, 6, 15, 0.64)',
+  pz: 'rgba(12, 24, 52, 0.22)',
+  nz: 'rgba(6, 18, 44, 0.34)',
+};
+
+function paintDuskFace(kind: CubeFace, canvas = document.createElement('canvas')): HTMLCanvasElement {
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
   const g = ctx.createLinearGradient(0, 0, kind === 'px' || kind === 'nx' ? 256 : 0, 256);
   if (kind === 'py') {
     g.addColorStop(0, '#8aa3c8');
@@ -36,24 +58,52 @@ function paintDuskFace(kind: 'px' | 'nx' | 'py' | 'ny' | 'pz' | 'nz'): HTMLCanva
   for (let i = 0; i < 48; i++) {
     ctx.fillRect((i * 53) % 256, 150 + ((i * 23) % 90), 2, 2);
   }
-  return c;
+  return canvas;
 }
 
-let duskEnv: THREE.CubeTexture | null = null;
+function stampCanaryFace(ctx: CanvasRenderingContext2D, img: HTMLImageElement, kind: CubeFace): void {
+  const [fx, fy, fw, fh] = CANARY_CROP[kind];
+  const sx = fx * img.width;
+  const sy = fy * img.height;
+  const sw = Math.max(1, fw * img.width);
+  const sh = Math.max(1, fh * img.height);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 256, 256);
+  ctx.fillStyle = CANARY_WASH[kind];
+  ctx.fillRect(0, 0, 256, 256);
+  if (kind === 'py' || kind === 'ny') return;
+  ctx.fillStyle = 'rgba(255, 228, 176, 0.46)';
+  for (let i = 0; i < 36; i++) {
+    ctx.fillRect((i * 53) % 256, 142 + ((i * 23) % 78), 2, 2);
+  }
+}
 
-/** Painted Canary-dusk cube. Works on software GL — no PMREM, no bloom. */
+const duskFaces = CUBE_FACES.map((kind) => paintDuskFace(kind));
+let duskEnv: THREE.CubeTexture | null = null;
+let canaryStampStarted = false;
+
+/** Stamp the live Canary still onto the painted cube. Painted faces stay if the JPEG fails. */
+function stampCanaryOntoDusk(): void {
+  if (canaryStampStarted || typeof Image === 'undefined') return;
+  canaryStampStarted = true;
+  const img = new Image();
+  img.decoding = 'async';
+  img.onload = () => {
+    CUBE_FACES.forEach((kind, i) => {
+      const ctx = duskFaces[i]?.getContext('2d');
+      if (ctx) stampCanaryFace(ctx, img, kind);
+    });
+    if (duskEnv) duskEnv.needsUpdate = true;
+  };
+  img.src = '/visuals/topics/canary.jpg';
+}
+
+/** Canary-dusk cube. Painted sync fallback; Vision photograph stamped after load. No PMREM. */
 export function duskCubeMap(): THREE.CubeTexture {
   if (duskEnv) return duskEnv;
-  duskEnv = new THREE.CubeTexture([
-    paintDuskFace('px'),
-    paintDuskFace('nx'),
-    paintDuskFace('py'),
-    paintDuskFace('ny'),
-    paintDuskFace('pz'),
-    paintDuskFace('nz'),
-  ]);
+  duskEnv = new THREE.CubeTexture(duskFaces);
   duskEnv.colorSpace = THREE.SRGBColorSpace;
   duskEnv.needsUpdate = true;
+  stampCanaryOntoDusk();
   return duskEnv;
 }
 

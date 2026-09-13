@@ -11,7 +11,7 @@ import { diagramFigure } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
-import { filmStageMarkup } from './filmSets';
+import { filmStageMarkup, stillStrip } from './filmSets';
 
 function kicker(text: string): string {
   return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
@@ -126,12 +126,7 @@ export function renderStory(): string {
     )
     .join('');
   return `${hero('Story / Timeline', 'First the committee. Then the operating system. Then the sterling.', 'Quiet months collapse. There are no empty holes. Each node opens the stake, the filing, and the source. Start at ISO 2015. End at live tokenised sterling.', 'story-hero', 'story')}
-    <section class="still-strip" aria-label="Photographs on this rail">
-      ${photoFigure(plateFor('iso-2015', 'ISO 2015'), 'strip-still')}
-      ${photoFigure(plateFor('whitepaper-2018', '2018 paper'), 'strip-still')}
-      ${photoFigure(plateFor('gbtd-2025', 'GBTD live'), 'strip-still')}
-      ${photoFigure(plateFor('boe-lab-2026', 'Synchronisation Lab'), 'strip-still')}
-    </section>
+    ${stillStrip('story', 'Photographs on this rail')}
     <div class="toolbar filter-bar">
       <input type="search" id="story-search" placeholder="Search the rail…" />
       <div class="chip-row" id="story-themes">${chips}</div>
@@ -209,13 +204,7 @@ export function renderTechnology(): string {
     </article>`,
   ).join('');
   return `${hero('Technology', 'Not another chain. The layer that makes the others usable.', 'The books already exist. Isolated ledgers were the 2018 problem. Overledger was filed as the operating layer. Then the network, the standards, and the sterling that is already live.', 'tech-hero', 'technology')}
-    <section class="still-strip" aria-label="Photographs in the stack">
-      ${photoFigure(plateFor('overledger', 'Overledger'), 'strip-still')}
-      ${photoFigure(plateFor('satp', 'SATP'), 'strip-still')}
-      ${photoFigure(plateFor('fusion', 'Fusion'), 'strip-still')}
-      ${photoFigure(plateFor('payscript', 'PayScript'), 'strip-still')}
-      ${photoFigure(plateFor('connectors', 'Rails'), 'strip-still')}
-    </section>
+    ${stillStrip('technology', 'Photographs in the stack', 5)}
     <div class="toolbar filter-bar">
       <input type="search" id="tech-search" placeholder="Search chapters…" />
     </div>
@@ -238,6 +227,7 @@ export function renderPatents(): string {
     </article>`,
   ).join('');
   return `${hero('Patents', 'A grant is a method. Not a deployment.', 'Numbers match the public file. Each card opens why the claim matters to Overledger, SATP, or Fusion — and where it still sits on paper.', 'patents-hero', 'patents')}
+    ${stillStrip('patents', 'Photographs of the claims')}
     <div class="toolbar filter-bar">
       <input type="search" id="patent-search" placeholder="Search numbers, inventors, claims…" />
     </div>
@@ -264,6 +254,7 @@ export function renderInstitutions(): string {
     </article>`;
   }).join('');
   return `${hero('Institutions & boards', 'Who is in the room — and who is only next to it.', 'Current, historical, adjacency: labelled. Official marks where they are on file. A typeset name where they are not. Mixing those up is how a lab becomes a mandate in someone else’s recap.', 'inst-hero', 'institutions')}
+    ${stillStrip('institutions', 'Photographs of the rooms')}
     <div class="toolbar filter-bar">
       <input type="search" id="inst-search" placeholder="Search institutions…" />
       <div class="chip-row" id="inst-status">

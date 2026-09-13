@@ -1,7 +1,7 @@
 /** Film-stage stills for inner pages. Markup only — no Three.js. */
 
 import { CITIES } from '../data/cities';
-import { PLATES } from '../data/plates';
+import { plateFor, PLATES } from '../data/plates';
 import { esc } from './html';
 
 export type FilmSlide = {
@@ -179,5 +179,22 @@ export function filmStageMarkup(set: string, label: string): string {
     <span class="cinema-grain" aria-hidden="true"></span>
     <canvas id="film-stage" class="film-stage" data-film-set="${esc(set)}" role="img" aria-label="${esc(label)}"></canvas>
     <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+  </section>`;
+}
+
+/** First Vision stills from a film set, as a readable strip under the rail. */
+export function stillStrip(set: string, label = 'Photographs on this rail', count = 4): string {
+  const slides = (FILM_SETS[set] ?? []).slice(0, count);
+  if (!slides.length) return '';
+  return `<section class="still-strip" aria-label="${esc(label)}">
+    ${slides
+      .map((s) => {
+        const plate = plateFor(s.id, s.title, set);
+        return `<figure class="photo-plate cinema-frame strip-still">
+          <img src="${esc(s.src)}" alt="${esc(plate.alt)}" width="1280" height="720" loading="lazy" decoding="async" />
+          <figcaption>${esc(plate.credit)}</figcaption>
+        </figure>`;
+      })
+      .join('')}
   </section>`;
 }

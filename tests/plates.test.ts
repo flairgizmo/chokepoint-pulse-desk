@@ -3,8 +3,21 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { diagramFigure } from '../src/ui/diagrams';
-import { renderPatents, renderStack, renderStory } from '../src/ui/pages';
-import { renderCity, renderPeople, renderProgrammes, renderResearch, renderVision } from '../src/ui/views';
+import { renderInstitutions, renderPatents, renderStack, renderStory } from '../src/ui/pages';
+import {
+  renderCbdc,
+  renderCity,
+  renderDonate,
+  renderGlossary,
+  renderMarkets,
+  renderNews,
+  renderPeople,
+  renderPodcast,
+  renderProgrammes,
+  renderResearch,
+  renderStandards,
+  renderVision,
+} from '../src/ui/views';
 import { FILM_BACKDROPS, FILM_SETS } from '../src/ui/filmSets';
 import { cityById } from '../src/data/cities';
 
@@ -134,6 +147,25 @@ describe('Topic plates', () => {
     const html = renderPatents();
     expect(html).toContain('/visuals/topics/patents-hall.jpg');
     expect(html).toContain('CLAIM SEQUENCE');
+    expect(html).toContain('still-strip');
     expect(html).not.toContain('hero-bed');
+  });
+
+  it('puts a Vision still-strip on the remaining film pages', () => {
+    expect(renderInstitutions()).toContain('still-strip');
+    expect(renderInstitutions()).toContain('/visuals/cities/geneva.jpg');
+    expect(renderGlossary()).toContain('still-strip');
+    expect(renderGlossary()).toContain('/visuals/topics/ucl.jpg');
+    expect(renderMarkets()).toContain('still-strip');
+    expect(renderMarkets()).toContain('/visuals/topics/exchange.jpg');
+    expect(renderNews()).toContain('still-strip');
+    expect(renderNews()).toContain('briefing');
+    expect(renderDonate()).toContain('still-strip');
+    expect(renderDonate()).toContain('/visuals/topics/fiber.jpg');
+    expect(renderPodcast()).toContain('still-strip');
+    expect(renderPodcast()).toContain('/visuals/topics/radio.jpg');
+    expect(renderCbdc()).toContain('still-strip');
+    expect(renderStandards()).toContain('still-strip');
+    expect(renderProgrammes()).toContain('still-strip');
   });
 });

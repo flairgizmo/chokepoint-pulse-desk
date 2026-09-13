@@ -30,7 +30,7 @@ import { playerMarkup, relatedEpisodeCard } from './player';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
-import { FILM_SETS, filmStageMarkup } from './filmSets';
+import { FILM_SETS, filmStageMarkup, stillStrip } from './filmSets';
 import { PROGRAMMES } from '../data/programmes';
 import { rememberHeadline } from './newsCache';
 
@@ -347,8 +347,8 @@ export function sparklineSvg(values: number[]): string {
     })
     .join(' ');
   const up = values[values.length - 1] >= values[0];
-  const stroke = up ? '#0f7a4a' : '#c62828';
-  const fill = up ? 'rgba(15,122,74,0.14)' : 'rgba(198,40,40,0.12)';
+  const stroke = up ? '#00D4AA' : '#ff6b7a';
+  const fill = up ? 'rgba(0,212,170,0.18)' : 'rgba(255,107,122,0.16)';
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Seven-day CoinGecko sparkline"><polygon fill="${fill}" points="${pts} ${w},${h} 0,${h}"/><polyline fill="none" stroke="${stroke}" stroke-width="3" points="${pts}"/></svg>`;
 }
 
@@ -501,6 +501,7 @@ function essayOrder(): string {
   return `<section class="essay-order" aria-labelledby="essay-order-title">
     ${kicker('In order')}
     <h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2>
+    ${photoFigure(plateFor('canary', 'gbtd'), 'essay-order-still')}
     <div class="essay-flow">
       <p>We’ve gotten used to seeing a new rail arrive before anyone can trust it.</p>
       <p>It happened with the internet. First the thrill of being connected. Then the patches: passwords everywhere, data moving without a clear owner. The network won anyway. We filled it with workarounds.</p>
@@ -785,7 +786,7 @@ export function renderVision(): string {
     'the operating system, not another chain.',
     'future',
     'vision',
-  )}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
+  )}${stillStrip('vision', 'Photographs in the argument')}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
 }
 
 export function renderProgrammes(): string {
@@ -821,6 +822,7 @@ export function renderProgrammes(): string {
     undefined,
     'programmes',
   )}
+    ${stillStrip('programmes', 'Photographs of the rooms')}
     <div class="cohort-marks">
       ${kicker('The six commercial banks named by UK Finance, 26 September 2025')}
       <ul class="wordmarks">${GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('')}</ul>
@@ -879,6 +881,7 @@ export function renderCbdc(): string {
     undefined,
     'cbdc',
   )}
+  ${stillStrip('cbdc', 'Photographs of the liabilities')}
   ${quoteRail('cbdc')}
   ${cinemaDiagram('liability', '/visuals/plates/liability-line.svg', 'Three liabilities: central-bank, commercial-bank deposit, private stablecoin')}
   <ol class="liability-cards">
@@ -910,6 +913,7 @@ export function renderStandards(): string {
     undefined,
     'standards',
   )}
+  ${stillStrip('standards', 'Photographs of the treaty')}
   ${quoteRail('standards')}
   ${cinemaDiagram('standards', '/visuals/plates/satp-stages.svg', 'SATP stages 0 verify, 1 init, 2 lock, 3 two-phase commit')}
   <section class="treaty-table">
@@ -1069,12 +1073,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     'london',
     'research',
   )}
-    <section class="still-strip" aria-label="Photographs in the library">
-      ${photoFigure(plateFor('overledger-2018', '2018 paper'), 'strip-still')}
-      ${photoFigure(plateFor('satp-core', 'SATP'), 'strip-still')}
-      ${photoFigure(plateFor('patent-us', 'US patent'), 'strip-still')}
-      ${photoFigure(plateFor('gbtd-ukf', 'UK Finance'), 'strip-still')}
-    </section>
+    ${stillStrip('research', 'Photographs in the library')}
   ${quoteRail('research')}
   <div class="toolbar filter-bar">
     <input type="search" id="lib-search" placeholder="Search titles, authors, venues" value="${esc(filter)}" />
@@ -1146,6 +1145,7 @@ export function renderGlossary(filter = ''): string {
     })
     .join('');
   return `${pageHero('Language', 'Say the objects by their names.', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition. Mixing them up is how the sector stayed noisy.', '', undefined, 'glossary')}
+    ${stillStrip('glossary', 'Photographs of the objects')}
     <div class="toolbar">
       <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
       <p class="mono subtle">${terms.length} terms</p>
@@ -1169,10 +1169,10 @@ function supplyRing(pct: number): string {
   const c = 2 * Math.PI * r;
   const dash = ((Number.isFinite(pct) ? pct : 0) / 100) * c;
   return `<svg class="supply-ring" viewBox="0 0 120 120" role="img" aria-label="Circulating share of total supply">
-    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#d7deeb" stroke-width="12"/>
+    <circle cx="60" cy="60" r="${r}" fill="none" stroke="#1a2a44" stroke-width="12"/>
     <circle class="supply-ring-arc" cx="60" cy="60" r="${r}" fill="none" stroke="#1557FF" stroke-width="12" stroke-linecap="round" stroke-dasharray="${dash.toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 60 60)"/>
-    <text x="60" y="56" text-anchor="middle" fill="#0B1220" font-size="18" font-family="Outfit, sans-serif" font-weight="700">${pct ? `${pct.toFixed(1)}%` : '—'}</text>
-    <text x="60" y="74" text-anchor="middle" fill="#9aa3b5" font-size="8">circulating</text>
+    <text x="60" y="56" text-anchor="middle" fill="#eaf1ff" font-size="18" font-family="Outfit, sans-serif" font-weight="700">${pct ? `${pct.toFixed(1)}%` : '—'}</text>
+    <text x="60" y="74" text-anchor="middle" fill="#8aa3c8" font-size="8">circulating</text>
   </svg>`;
 }
 
@@ -1194,6 +1194,7 @@ export function renderMarkets(print?: MarketPrint): string {
     undefined,
     'markets',
   )}
+  ${stillStrip('markets', 'Photographs of the meter')}
   ${quoteRail('markets')}
   <section class="tape cinema-tape" data-mk data-proof="ticker">
     ${photoFigure(plateFor('markets', 'qnt'), 'markets-still')}
@@ -1325,6 +1326,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
     undefined,
     'news',
   )}
+  ${stillStrip('news', 'Photographs on the wire')}
   ${filterBox('news-filter', 'Search headlines…', filter)}
   <section class="wire cinema-wire">
     <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
@@ -1464,6 +1466,7 @@ export function renderDonate(): string {
     undefined,
     'donate',
   )}
+  ${stillStrip('donate', 'Photographs of the desk')}
   <article class="chapter city-essay">
     ${photoFigure(plateFor('donate', 'support'), 'city-essay-still')}
     <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
@@ -1495,7 +1498,7 @@ export function renderPodcast(): string {
     '',
     undefined,
     'podcast',
-  )}${playerMarkup(first)}${filmRail()}`;
+  )}${stillStrip('podcast', 'Photographs of the series')}${playerMarkup(first)}${filmRail()}`;
 }
 
 export function renderEpisode(id: string): string {
@@ -1533,6 +1536,7 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
     'history',
     'notes',
   )}
+  ${stillStrip('notes', 'Photographs in the notes')}
   ${filterBox('notes-search', 'Search news…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
   <p class="notes-count mono subtle">${list.length} filings on the record</p>
   <div class="notes-index">${cards || '<p class="empty-note">No filing matches that filter.</p>'}</div>`;

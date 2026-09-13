@@ -3054,6 +3054,21 @@ button.chip {
   margin: 2.2rem auto 3rem;
 }
 
+.essay-order-still {
+  margin: 0 0 1.5rem;
+  background: #0b1220;
+  border-radius: 18px;
+  overflow: hidden;
+  color: #f4f7fb;
+}
+
+.essay-order-still img {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  max-height: 22rem;
+  object-fit: cover;
+}
+
 .essay-flow p {
   font-family: var(--serif);
   font-size: 1.2rem;
@@ -4798,7 +4813,19 @@ body.stage-open .grok {
 .triptych.hex .panel,
 .dyk-card,
 .cbdc-model,
-.liability-cards li {
+.liability-cards li,
+.live-rail .panel,
+.beat,
+.tape,
+.token-board,
+.cinema-wire,
+.satp-lab .stage,
+.acid li,
+.treaty-row li,
+.donate-list li,
+.term,
+.voice,
+.float-grid li {
   background: #0b1220;
   color: #f4f7fb;
   border-color: transparent;
@@ -4820,8 +4847,110 @@ body.stage-open .grok {
 .cbdc-model h3,
 .cbdc-model p,
 .liability-cards h3,
-.liability-cards p {
+.liability-cards p,
+.live-rail .stat,
+.live-rail .subtle,
+.live-rail .kicker,
+.beat h3,
+.beat p,
+.tape .stat,
+.tape .kicker,
+.token-board h2,
+.token-board p,
+.cinema-wire .headline button,
+.cinema-wire .meta,
+.satp-lab .stage-btn,
+.satp-lab .stage-body,
+.acid li,
+.treaty-row strong,
+.treaty-row em,
+.donate-list .kicker,
+.term h2,
+.term p,
+.voice h3,
+.voice p,
+.float-grid strong,
+.float-grid span {
   color: inherit;
+}
+
+.beat {
+  display: block;
+  padding: 1rem 1.15rem;
+  border: 0;
+  border-radius: 16px;
+}
+
+.beat:not(:has(> button)) {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1rem;
+}
+
+.beat button {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 1rem;
+  width: 100%;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.beat .year {
+  color: #8eb0ff;
+}
+
+.tape,
+.token-board,
+.cinema-wire {
+  border-radius: 22px;
+  padding: 1.35rem 1.45rem 1.7rem;
+}
+
+.treaty-row li,
+.donate-list li,
+.acid li {
+  border-radius: 16px;
+  padding: 0.95rem 1.1rem;
+}
+
+.treaty-row em,
+.cinema-wire .meta,
+.float-grid span:last-child,
+.satp-lab .stage-body {
+  color: #b7c4d8;
+}
+
+.donate-list code,
+.contract {
+  color: #8eb0ff;
+}
+
+.live-rail .text-link,
+.token-board .text-link,
+.voice a {
+  color: #eaf1ff;
+}
+
+.scarcity {
+  background: #122038;
+}
+
+.cinema-wire .headline,
+.bars li {
+  border-color: rgba(234, 241, 255, 0.08);
+}
+
+.bars {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-radius: 18px;
+  padding: 0.85rem 1.05rem 1rem;
 }
 
 .constellation-grid a:hover,
