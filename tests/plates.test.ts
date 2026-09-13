@@ -186,5 +186,10 @@ describe('Topic plates', () => {
     expect(renderStandards()).toContain('/visuals/topics/canary.jpg');
     expect(renderStandards()).toContain('/visuals/topics/ucl.jpg');
     expect(renderProgrammes()).toContain('still-strip');
+    expect(renderVision()).toContain('dyk-still');
+    expect(renderVision()).toContain('/visuals/topics/payments.jpg');
+    expect(renderVision()).toContain('/visuals/topics/datacenter.jpg');
+    expect(renderVision()).toContain('/visuals/topics/fiber.jpg');
+    expect(renderVision()).toContain('/visuals/topics/ucl.jpg');
   });
 });

@@ -353,6 +353,17 @@ export function sparklineSvg(values: number[]): string {
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Seven-day CoinGecko sparkline"><polygon fill="${fill}" points="${pts} ${w},${h} 0,${h}"/><polyline fill="none" stroke="${stroke}" stroke-width="3" points="${pts}"/></svg>`;
 }
 
+function dykPlate(category: string) {
+  if (category === 'CBDC') return PLATES.payments;
+  if (category === 'AI agents') return PLATES.datacenter;
+  if (category === 'Technology') return PLATES.fiber;
+  if (category === 'Research') return PLATES.ucl;
+  if (category === 'Standards') return PLATES.geneva;
+  if (category === 'Vision') return PLATES.future;
+  if (category === 'Programmes') return PLATES.canary;
+  return PLATES.ucl;
+}
+
 function dykBlock(): string {
   const items = didYouKnow.slice(0, 4);
   const list = items
@@ -360,7 +371,7 @@ function dykBlock(): string {
       (d) => `<li class="dyk-card">
         <p class="kicker">${esc(d.category)}</p>
         <details>
-          <summary class="dyk-q">${esc(d.q)}</summary>
+          <summary class="dyk-q">${photoFigure(dykPlate(d.category), 'dyk-still')}<span class="dyk-q-label">${esc(d.q)}</span></summary>
           <p>${esc(d.a)}</p>
         </details>
         <a class="text-link" href="${esc(d.to || '/')}">${esc(d.cta || 'Open')} →</a>

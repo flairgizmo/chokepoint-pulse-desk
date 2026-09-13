@@ -5995,3 +5995,76 @@ section.block .kicker {
 .token-still img {
   max-height: 7.2rem;
 }
+
+.dyk-card {
+  padding: 0 0 1rem;
+  overflow: hidden;
+}
+
+.dyk-card .kicker,
+.dyk-card details,
+.dyk-card .text-link {
+  padding-inline: 1.15rem;
+}
+
+.dyk-card .kicker {
+  padding-top: 0.85rem;
+}
+
+.dyk-card details {
+  margin: 0.15rem 0 0.35rem;
+}
+
+.dyk-q {
+  display: grid;
+  gap: 0.45rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dyk-q::-webkit-details-marker {
+  display: none;
+}
+
+.dyk-q-label {
+  display: block;
+  padding-bottom: 0.15rem;
+}
+
+.dyk-still {
+  margin: 0 -1.15rem;
+  border-radius: 0;
+}
+
+.dyk-still figcaption {
+  display: none;
+}
+
+.dyk-still img {
+  aspect-ratio: 21 / 9;
+  max-height: 7.6rem;
+  object-fit: cover;
+  filter: saturate(0.84) contrast(1.14) brightness(0.72);
+}
+
+.desk-stage-sheet .desk-stage-stake,
+.desk-stage-sheet .stage-fact,
+.desk-stage-sheet .stage-facts,
+.desk-stage-sheet .stage-original,
+.desk-stage-sheet .meta {
+  color: #b7c4d8;
+}
+
+.desk-stage-sheet .desk-stage-close,
+.desk-stage-sheet .stage-chip,
+.desk-stage-sheet .stage-crumb {
+  color: #eaf1ff;
+  background: #122038;
+  border-color: rgba(234, 241, 255, 0.12);
+}
+
+.desk-stage-sheet h1,
+.desk-stage-sheet h2,
+.desk-stage-sheet h3 {
+  color: #f4f7fb;
+}

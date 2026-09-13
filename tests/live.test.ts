@@ -134,6 +134,7 @@ describe('Public desk', () => {
     expect(html).not.toContain('Orbit the Q');
     expect(html).toContain('layer-still');
     expect(html).toContain('beat-still');
+    expect(html).toContain('dyk-still');
     expect(html).toContain('/visuals/topics/payments.jpg');
     expect(html).toContain('/visuals/topics/canary.jpg');
     expect(html).toContain('/visuals/topics/ucl.jpg');

@@ -67,7 +67,7 @@ type GlassGrade = {
 function glassGrade(cut: GlassCut, lane: GlassLane, heart = false): GlassGrade {
   const base =
     cut === 'table'
-      ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.92, contrast: 1.18, saturate: 0.74, multiply: 0.08 }
+      ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.98, contrast: 1.16, saturate: 0.7, multiply: 0.05 }
       : cut === 'crown'
         ? lane === 0
           ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.88, contrast: 1.16, saturate: 0.84, multiply: 0.1 }
@@ -711,8 +711,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       transmission: 0.38,
       thickness: 0.28,
       shade: false,
-      tint: 0xd0dcec,
-      window: lite ? 0.36 : undefined,
+      tint: 0xe4eef8,
+      window: lite ? 0.4 : undefined,
     }),
   );
   table.position.y = tableY;
@@ -821,22 +821,26 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
   if (lite) {
-    const heartCrownA = glassMat(glassTex(photo0, false, 'crown', 0, true), true, { tint: 0xffffff });
-    const heartCrownB = glassMat(glassTex(photo0, false, 'crown', 1, true), true, { tint: 0xffffff });
-    const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, { tint: 0xffffff });
-    const heartPavB = glassMat(glassTex(photo0, false, 'pav', 1, true), true, { tint: 0xffffff });
-    const heartTableMat = glassMat(glassTex(photo0, false, 'table', 0, true), true, {
-      shade: false,
+    const heartCrownA = glassMat(glassTex(photo0, false, 'crown', 0, true), true, {
       tint: 0xffffff,
+      vertexColors: true,
+    });
+    const heartCrownB = glassMat(glassTex(photo0, false, 'crown', 1, true), true, {
+      tint: 0xffffff,
+      vertexColors: true,
+    });
+    const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
+      tint: 0xffffff,
+      vertexColors: true,
+    });
+    const heartPavB = glassMat(glassTex(photo0, false, 'pav', 1, true), true, {
+      tint: 0xffffff,
+      vertexColors: true,
     });
     const heart = new THREE.Group();
     heart.scale.setScalar(0.86);
     heart.rotation.set(0.1, 0.34, 0.05);
     heart.position.set(0.04, -0.012, 0.022);
-    const heartTable = new THREE.Mesh(tableFan(tableR, sides), heartTableMat);
-    heartTable.position.y = tableY;
-    heartTable.userData.nodeId = 6;
-    heart.add(heartTable);
     const addHeart = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial): void => {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.userData.nodeId = 6;
@@ -874,7 +878,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(heart);
     heartRoot = heart;
     core.visible = false;
-    heartStamp.push(heartTableMat, heartCrownA, heartCrownB, heartPavA, heartPavB);
+    heartStamp.push(heartCrownA, heartCrownB, heartPavA, heartPavB);
     const ghost = heart.clone(true);
     ghost.scale.setScalar(0.76);
     ghost.rotation.set(0.16, -0.22, -0.06);
@@ -1046,16 +1050,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
-    if (heartStamp.length >= 5) {
+    if (heartStamp.length >= 4) {
       const kinds = [
-        ['table', 0, on],
         ['crown', 0, on],
         ['crown', 1, on],
         ['pav', 0, false],
         ['pav', 1, false],
       ] as const;
       heartStamp.forEach((mat, i) => {
-        const [cut, lane, lit] = kinds[i % 5];
+        const [cut, lane, lit] = kinds[i % 4];
         swapMap(mat, glassTex(photo, lit, cut, lane, true));
       });
     }
