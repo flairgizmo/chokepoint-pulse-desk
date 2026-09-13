@@ -189,7 +189,7 @@ describe('Topic plates', () => {
     expect(renderVision()).toContain('dyk-still');
     expect(renderVision()).toContain('/visuals/topics/payments.jpg');
     expect(renderVision()).toContain('/visuals/topics/datacenter.jpg');
-    expect(renderVision()).toContain('/visuals/topics/fiber.jpg');
+    expect(renderVision()).toContain('/visuals/topics/city.jpg');
     expect(renderVision()).toContain('/visuals/topics/ucl.jpg');
   });
 });

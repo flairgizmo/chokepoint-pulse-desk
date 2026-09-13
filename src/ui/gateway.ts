@@ -67,7 +67,7 @@ type GlassGrade = {
 function glassGrade(cut: GlassCut, lane: GlassLane, heart = false): GlassGrade {
   const base =
     cut === 'table'
-      ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.98, contrast: 1.16, saturate: 0.7, multiply: 0.05 }
+      ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 1.08, contrast: 1.12, saturate: 0.62, multiply: 0.03 }
       : cut === 'crown'
         ? lane === 0
           ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.88, contrast: 1.16, saturate: 0.84, multiply: 0.1 }
@@ -711,8 +711,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       transmission: 0.38,
       thickness: 0.28,
       shade: false,
-      tint: 0xe4eef8,
-      window: lite ? 0.4 : undefined,
+      tint: 0xf2f6fc,
+      window: lite ? 0.22 : undefined,
     }),
   );
   table.position.y = tableY;
@@ -838,9 +838,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       vertexColors: true,
     });
     const heart = new THREE.Group();
-    heart.scale.setScalar(0.86);
-    heart.rotation.set(0.1, 0.34, 0.05);
-    heart.position.set(0.04, -0.012, 0.022);
+    heart.scale.setScalar(0.94);
+    heart.rotation.set(0.08, 0.28, 0.04);
+    heart.position.set(0.016, 0.004, 0.01);
     const addHeart = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial): void => {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.userData.nodeId = 6;
@@ -1126,7 +1126,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
     if (heartRoot) {
-      heartRoot.rotation.y = 0.34 + (reduced ? 0 : Math.sin((now - t0) / 2600) * 0.05);
+      heartRoot.rotation.y = 0.28 + (reduced ? 0 : Math.sin((now - t0) / 2600) * 0.05);
     }
     if (ghostRoot) {
       ghostRoot.rotation.y = -0.22 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 1.2) * 0.04);

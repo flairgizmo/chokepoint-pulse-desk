@@ -356,7 +356,7 @@ export function sparklineSvg(values: number[]): string {
 function dykPlate(category: string) {
   if (category === 'CBDC') return PLATES.payments;
   if (category === 'AI agents') return PLATES.datacenter;
-  if (category === 'Technology') return PLATES.fiber;
+  if (category === 'Technology') return PLATES.city;
   if (category === 'Research') return PLATES.ucl;
   if (category === 'Standards') return PLATES.geneva;
   if (category === 'Vision') return PLATES.future;
