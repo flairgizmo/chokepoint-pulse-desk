@@ -336,7 +336,7 @@ export function plateFor(...keys: Array<string | undefined | null>): Plate {
 }
 
 export function photoFigure(plate: Plate, extraClass = ''): string {
-  return `<figure class="photo-plate ${extraClass}">
+  return `<figure class="photo-plate cinema-frame ${extraClass}">
     <img src="${plate.src}" alt="${plate.alt}" width="1280" height="720" loading="lazy" decoding="async" />
     <figcaption>${plate.credit}</figcaption>
   </figure>`

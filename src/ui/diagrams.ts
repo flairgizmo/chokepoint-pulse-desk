@@ -375,7 +375,7 @@ export function diagramSvg(seed: string, kind: string, title = ''): string {
 export function diagramFigure(seed: string, kind: string, title: string): string {
   if (PHOTO_KINDS.has(kind) || kind.startsWith('paper-')) {
     const plate = plateFor(seed, kind, title);
-    return `<figure class="beat-figure photo-plate" data-beat="${esc(seed)}" data-kind="${esc(kind)}">
+    return `<figure class="beat-figure photo-plate cinema-frame" data-beat="${esc(seed)}" data-kind="${esc(kind)}">
       <img src="${plate.src}" alt="${plate.alt}" width="1280" height="720" loading="lazy" decoding="async" />
       <figcaption>${plate.credit}</figcaption>
     </figure>`;

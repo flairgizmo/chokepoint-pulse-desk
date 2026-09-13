@@ -180,7 +180,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   scene.add(fill);
 
   const hex = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(hexShape(0.44), {
+    new THREE.ExtrudeGeometry(hexShape(0.52), {
       depth: 0.07,
       bevelEnabled: true,
       bevelThickness: 0.014,
@@ -261,7 +261,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       clearcoatRoughness: 0.18,
       transparent: true,
     });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.34, 0.05), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.74, 0.26, 0.05), mat);
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.18, z);
     mesh.userData.nodeId = bank.id;
@@ -312,8 +312,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.26 : 1.12;
-  const restAy = lite ? 0.16 : 0.38;
+  const restAx = lite ? 1.22 : 1.12;
+  const restAy = lite ? 0.46 : 0.38;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -401,8 +401,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     releaseLabel.visible = !lockOn;
     lockLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
     releaseLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
-    camera.position.setFromSphericalCoords(lite ? 4.05 : 3.55, ax, ay);
-    camera.lookAt(0, lite ? 0.2 : 0.12, 0);
+    camera.position.setFromSphericalCoords(lite ? 4.35 : 3.55, ax, ay);
+    camera.lookAt(0, lite ? 0.14 : 0.12, 0);
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
     lockLabel.lookAt(camera.position);

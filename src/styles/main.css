@@ -3324,8 +3324,56 @@ button.chip {
   grid-template-columns: 1fr 1fr;
 }
 
+.stack-rungs.exploded {
+  gap: 1rem;
+}
+
+.stack-rungs.exploded li {
+  display: block;
+  grid-template-columns: none;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.stack-rungs.exploded li:first-child,
+.stack-rungs.exploded li:last-child {
+  border-radius: 22px;
+}
+
+.stack-rungs.exploded li button {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0 1rem 1.15rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
 .stack-rungs.exploded li.is-dim {
   opacity: 0.28;
+}
+
+.tech-stack {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.tech-chapter {
+  overflow: hidden;
+  padding: 0 0 1.25rem;
+}
+
+.tech-chapter .kicker,
+.tech-chapter h2,
+.tech-chapter .lede-sm,
+.tech-chapter .card-more {
+  padding-inline: 1.1rem;
 }
 
 .desk-stage,
@@ -3387,9 +3435,25 @@ button.chip {
 }
 
 .desk-stage-object {
-  background: var(--bg-2);
+  background: #0b1220;
   border: 1px solid var(--line);
-  min-height: 14rem;
+  min-height: 16rem;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.desk-stage-object .photo-plate,
+.desk-stage-object .cinema-frame {
+  margin: 0;
+  border-radius: 18px;
+}
+
+.desk-stage-object .stage-photo,
+.desk-stage-object .photo-plate img {
+  aspect-ratio: 16 / 9;
+  max-height: 22rem;
+  width: 100%;
+  object-fit: cover;
 }
 
 .desk-stage-story {
@@ -3795,9 +3859,14 @@ body.stage-open .grok {
 
 .research-lane .lane-head {
   display: grid;
-  grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  gap: 1.1rem;
   align-items: center;
+}
+
+.research-lane .lane-head .photo-plate img {
+  aspect-ratio: 16 / 9;
+  max-height: 12.5rem;
 }
 
 .research-lane .lane-head h2 {
@@ -3892,10 +3961,10 @@ body.stage-open .grok {
 .page-hero.cinema-hero .hero-plate {
   width: 100%;
   aspect-ratio: 21 / 9;
-  min-height: 240px;
-  max-height: 520px;
+  min-height: 280px;
+  max-height: min(72dvh, 680px);
   margin: 0 0 1.8rem;
-  box-shadow: 0 28px 72px rgba(11, 31, 92, 0.16);
+  box-shadow: 0 32px 80px rgba(11, 31, 92, 0.18);
 }
 
 .hero-plate img,
@@ -4065,20 +4134,27 @@ body.stage-open .grok {
 .story-hit .photo-plate img,
 .tech-chapter .photo-plate img,
 .inst-card .photo-plate img,
-.cbdc-model .photo-plate img {
+.cbdc-model .photo-plate img,
+.stack-rungs .photo-plate img {
   aspect-ratio: 16 / 9;
-  max-height: 16.5rem;
+  max-height: 18.5rem;
   animation: ken-burns 42s ease-in-out infinite alternate;
 }
 
 .photo-plate::after,
-.beat-figure.photo-plate::after {
+.beat-figure.photo-plate::after,
+.hero-plate.cinema-frame::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
-  box-shadow: inset 0 0 0 1px rgba(234, 241, 255, 0.08), inset 0 0 48px rgba(7, 11, 20, 0.28);
+  box-shadow:
+    inset 0 0.48rem 0 #05070c,
+    inset 0 -0.48rem 0 #05070c,
+    inset 0 0 0 1px rgba(234, 241, 255, 0.08),
+    inset 0 0 48px rgba(7, 11, 20, 0.28);
   border-radius: inherit;
+  z-index: 3;
 }
 
 .triptych .photo-plate img,

@@ -13,7 +13,7 @@ import { photoImg, plateFor } from '../data/plates';
 import { diagramSvg } from './diagrams';
 
 function plateVisual(...keys: Array<string | undefined>): string {
-  return photoImg(plateFor(...keys));
+  return `<figure class="photo-plate cinema-frame stage-still">${photoImg(plateFor(...keys), 'stage-photo')}</figure>`;
 }
 import { headlineById, rememberHeadline } from './newsCache';
 import { chipsFromIds, type RelatedChip } from './relate';

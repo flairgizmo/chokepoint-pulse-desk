@@ -22,9 +22,12 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
 
 export function heroPlate(k: string, title: string, mute = '', bed?: VisualId): string {
   const plate = plateFor(k, bed, title, mute);
-  return `<figure class="hero-plate">
+  return `<figure class="hero-plate cinema-frame">
+    <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+    <span class="cinema-grain" aria-hidden="true"></span>
     <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
     <span class="hero-wash" aria-hidden="true"></span>
+    <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     <figcaption>${esc(plate.credit)}</figcaption>
   </figure>`;
 }

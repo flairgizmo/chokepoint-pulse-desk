@@ -64,6 +64,8 @@ describe('Topic plates', () => {
     expect(html).toContain('hero-plate');
     expect(html).toContain('hero-still');
     expect(html).toContain('hero-wash');
+    expect(html).toContain('cinema-letterbox');
+    expect(html).toContain('cinema-grain');
     expect(html).not.toContain('hero-bed');
   });
 
