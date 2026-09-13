@@ -546,7 +546,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tableY = 0.92;
   const eqR = 0.48;
   const eqY = 0.48;
-  const botY = -0.16;
+  const botY = -0.22;
   const midR = tableR + (eqR - tableR) * 0.52;
   const midY = tableY + (eqY - tableY) * 0.48;
   const pavR = eqR * 0.42;
@@ -645,17 +645,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(
     new THREE.LineSegments(
       edgeGeo,
-      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.14 }),
+      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.06 }),
     ),
   );
   const core = new THREE.Mesh(
-    new THREE.SphereGeometry(0.16, lite ? 12 : 20, lite ? 10 : 16),
+    new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
       ? duskSheen({
-          color: 0x9cc4ff,
-          reflectivity: 0.56,
+          map: tableTex,
+          reflectivity: 0.22,
           transparent: true,
-          opacity: 0.58,
+          opacity: 0.26,
         })
       : diamondPhysical(null, { transmission: 0.88, thickness: 0.42 }),
   );

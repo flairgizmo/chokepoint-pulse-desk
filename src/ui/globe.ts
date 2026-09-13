@@ -3,7 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { applyPhotoEnv, duskSheen } from './cinemaSet';
+import { applyPhotoEnv, duskSheen, hardenCanvasTex } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import { latLonToVec, vecToLatLon } from './latlon';
 import {
@@ -97,6 +97,54 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
   return out;
 }
 
+/** Software GL has no lighting on MeshBasic. Bake a dusk terminator + night cities into the day still. */
+function paintLitEarth(day: HTMLImageElement, night: HTMLImageElement | null): HTMLCanvasElement {
+  const w = Math.min(2048, day.naturalWidth || 2048);
+  const h = Math.min(1024, day.naturalHeight || 1024);
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  ctx.drawImage(day, 0, 0, w, h);
+  ctx.globalCompositeOperation = 'multiply';
+  const term = ctx.createLinearGradient(0, 0, w, 0);
+  term.addColorStop(0, '#141018');
+  term.addColorStop(0.32, '#2a1c12');
+  term.addColorStop(0.46, '#c4a070');
+  term.addColorStop(0.56, '#ffffff');
+  term.addColorStop(1, '#ffffff');
+  ctx.fillStyle = term;
+  ctx.fillRect(0, 0, w, h);
+  const poles = ctx.createLinearGradient(0, 0, 0, h);
+  poles.addColorStop(0, 'rgba(8, 14, 28, 0.46)');
+  poles.addColorStop(0.2, 'rgba(255, 255, 255, 0)');
+  poles.addColorStop(0.8, 'rgba(255, 255, 255, 0)');
+  poles.addColorStop(1, 'rgba(8, 14, 28, 0.5)');
+  ctx.fillStyle = poles;
+  ctx.fillRect(0, 0, w, h);
+  if (night?.naturalWidth) {
+    const n = document.createElement('canvas');
+    n.width = w;
+    n.height = h;
+    const nctx = n.getContext('2d');
+    if (nctx) {
+      nctx.drawImage(night, 0, 0, w, h);
+      nctx.globalCompositeOperation = 'destination-in';
+      const mask = nctx.createLinearGradient(0, 0, w, 0);
+      mask.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
+      mask.addColorStop(0.38, 'rgba(255, 255, 255, 0.28)');
+      mask.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
+      nctx.fillStyle = mask;
+      nctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'screen';
+      ctx.drawImage(n, 0, 0);
+    }
+  }
+  ctx.globalCompositeOperation = 'source-over';
+  return c;
+}
+
 function stars(count = 1800): THREE.Points {
   const pos = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
@@ -152,6 +200,7 @@ export class EarthGlobe {
   private composer: EffectComposer | null = null;
   private dayTex: THREE.Texture | null = null;
   private nightTex: THREE.Texture | null = null;
+  private litTex: THREE.Texture | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private hoverId: string | undefined;
   private lastHudHover: string | undefined;
@@ -204,6 +253,7 @@ export class EarthGlobe {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
+    this.litTex?.dispose();
     this.composer?.dispose();
     this.renderer?.dispose();
     this.root.replaceChildren();
@@ -478,7 +528,7 @@ export class EarthGlobe {
     const globe = new THREE.Mesh(new THREE.SphereGeometry(1, segs, rings), globeMat);
     this.globeMesh = globe;
     group.add(globe);
-    group.add(this.graticule());
+    if (!this.lite) group.add(this.graticule());
 
     const lights = new THREE.Mesh(
       new THREE.SphereGeometry(1.004, segs, rings),
@@ -584,7 +634,7 @@ export class EarthGlobe {
       const pin = new THREE.Mesh(
         new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, this.lite ? 8 : 12, this.lite ? 8 : 12),
         this.lite
-          ? duskSheen({ color: kindColor(city.kind), reflectivity: 0.48 })
+          ? new THREE.MeshBasicMaterial({ color: kindColor(city.kind) })
           : new THREE.MeshPhysicalMaterial({
               color: kindColor(city.kind),
               emissive: kindColor(city.kind),
@@ -597,16 +647,19 @@ export class EarthGlobe {
       pin.position.copy(pos);
       pin.userData.cityId = city.id;
       group.add(pin);
-      const stem = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.0024, 0.0024, 0.06, 6),
-        new THREE.MeshBasicMaterial({ color: kindColor(city.kind) }),
-      );
-      stem.position.copy(latLonToVec(city.lat, city.lon, 1.04));
-      stem.lookAt(0, 0, 0);
-      stem.rotateX(Math.PI / 2);
-      stem.userData.cityId = city.id;
-      group.add(stem);
-      this.pinMeshes.push(pin, stem);
+      this.pinMeshes.push(pin);
+      if (!this.lite) {
+        const stem = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.0024, 0.0024, 0.06, 6),
+          new THREE.MeshBasicMaterial({ color: kindColor(city.kind) }),
+        );
+        stem.position.copy(latLonToVec(city.lat, city.lon, 1.04));
+        stem.lookAt(0, 0, 0);
+        stem.rotateX(Math.PI / 2);
+        stem.userData.cityId = city.id;
+        group.add(stem);
+        this.pinMeshes.push(stem);
+      }
       const label = makeLabelSprite(city.name);
       label.scale.set(0.34, 0.085, 1);
       label.position.copy(latLonToVec(city.lat, city.lon, 1.09));
@@ -869,8 +922,16 @@ export class EarthGlobe {
 
   private applyMaps(): void {
     const mat = this.globeMesh?.material as (THREE.MeshStandardMaterial | THREE.MeshBasicMaterial) | undefined;
+    const dayImg = this.dayTex?.image instanceof HTMLImageElement ? this.dayTex.image : null;
+    const nightImg = this.nightTex?.image instanceof HTMLImageElement ? this.nightTex.image : null;
     if (mat) {
-      if (this.overlays.day && this.dayTex) {
+      if (this.lite && this.overlays.day && dayImg?.naturalWidth) {
+        this.litTex?.dispose();
+        this.litTex = hardenCanvasTex(new THREE.CanvasTexture(paintLitEarth(dayImg, this.overlays.night ? nightImg : null)));
+        this.litTex.colorSpace = THREE.SRGBColorSpace;
+        mat.map = this.litTex;
+        mat.color = new THREE.Color(0xffffff);
+      } else if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
         mat.color = new THREE.Color(0xffffff);
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
@@ -883,7 +944,7 @@ export class EarthGlobe {
     }
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
-      if (this.overlays.night && this.nightTex) {
+      if (!this.lite && this.overlays.night && this.nightTex) {
         lm.map = this.nightTex;
         this.lightsMesh.visible = true;
         lm.opacity = this.overlays.day ? 0.72 : 1;

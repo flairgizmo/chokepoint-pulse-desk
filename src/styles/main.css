@@ -2805,9 +2805,9 @@ button.chip {
   margin: 0;
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  border: 1px solid var(--line);
-  color: var(--ink);
+  background: rgba(8, 12, 22, 0.72);
+  border: 1px solid rgba(234, 241, 255, 0.16);
+  color: #eaf1ff;
   font-family: var(--mono);
   font-size: 0.68rem;
   letter-spacing: 0.04em;
@@ -5354,6 +5354,10 @@ body.stage-open .grok {
 .host-tile.amelia {
   background: #122038;
   color: #eaf1ff;
+}
+
+.toolbar .subtle {
+  color: #8aa3c8;
 }
 
 .mission-card,
