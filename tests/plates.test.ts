@@ -5,7 +5,7 @@ import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { diagramFigure } from '../src/ui/diagrams';
 import { renderPatents, renderStack, renderStory } from '../src/ui/pages';
 import { renderCity, renderPeople, renderProgrammes, renderResearch, renderVision } from '../src/ui/views';
-import { FILM_SETS } from '../src/ui/filmSets';
+import { FILM_BACKDROPS, FILM_SETS } from '../src/ui/filmSets';
 import { cityById } from '../src/data/cities';
 
 describe('Topic plates', () => {
@@ -117,6 +117,7 @@ describe('Topic plates', () => {
     expect(renderResearch()).toContain('id="film-stage"');
     expect(renderResearch()).toContain('data-film-set="research"');
     expect(renderStory()).not.toContain('hero-bed');
+    expect(FILM_BACKDROPS.story).toBe(PLATES.history.src);
     expect(FILM_SETS.story.map((s) => s.src)).toEqual([
       PLATES.geneva.src,
       PLATES.ucl.src,

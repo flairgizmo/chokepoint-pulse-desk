@@ -1,9 +1,10 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { probeWebGL } from './webgl';
+import { addCinemaSet, applyPlateMap, plateMaterial } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
+import { probeWebGL } from './webgl';
 
 export const STACK_SLABS = [
   { id: 'apps', title: 'FLOW APPLICATIONS', src: '/visuals/topics/fiber.jpg', stage: 'quant-connect' },
@@ -129,37 +130,23 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.08, 30);
+  addCinemaSet(scene, lite, '/visuals/topics/datacenter.jpg');
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
-  scene.add(new THREE.AmbientLight(0xffffff, lite ? 1 : 0.5));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 0.4 : 1.4);
-  key.position.set(1.4, 2.2, 2.6);
-  scene.add(key);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const slabs: THREE.Mesh[] = [];
   let isolated: string | null = null;
 
   STACK_SLABS.forEach((layer) => {
-    const mat = lite
-      ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0x1a2438,
-          roughness: 0.32,
-          metalness: 0.08,
-          clearcoat: 0.4,
-        });
+    const mat = plateMaterial(lite);
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.03, 0.96), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     group.add(mesh);
     slabs.push(mesh);
-    plateTexture(layer.src, layer.title, (tex) => {
-      mat.map = tex;
-      mat.color = new THREE.Color(0xffffff);
-      mat.needsUpdate = true;
-    });
+    plateTexture(layer.src, layer.title, (tex) => applyPlateMap(mat, tex));
   });
 
   const place = (now: number): void => {

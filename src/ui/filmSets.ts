@@ -119,8 +119,30 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
   ],
 };
 
+export const FILM_BACKDROPS: Record<string, string> = {
+  story: PLATES.history.src,
+  programmes: PLATES.canary.src,
+  research: PLATES.library.src,
+  vision: PLATES.ucl.src,
+  technology: PLATES.fiber.src,
+  patents: PLATES.patentsHall.src,
+  institutions: PLATES.royal.src,
+  people: PLATES.ucl.src,
+  cbdc: PLATES.sterling.src,
+  standards: PLATES.geneva.src,
+  glossary: PLATES.library.src,
+  news: PLATES.newsroom.src,
+  markets: PLATES.exchange.src,
+  donate: PLATES.fiber.src,
+  podcast: PLATES.radio.src,
+};
+
 export function filmSetSlides(set: string): FilmSlide[] {
   return FILM_SETS[set] ?? [];
+}
+
+export function filmBackdrop(set: string): string {
+  return FILM_BACKDROPS[set] ?? FILM_SETS[set]?.[0]?.src ?? PLATES.canary.src;
 }
 
 export function filmStageMarkup(set: string, label: string): string {

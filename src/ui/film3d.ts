@@ -1,7 +1,8 @@
-/** Standing film gallery — five stills in a shallow arc. */
+/** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { filmSetSlides, type FilmSlide } from './filmSets';
+import { addCinemaSet, applyPlateMap, plateMaterial } from './cinemaSet';
+import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -14,6 +15,8 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
   canvas.dataset.engine = 'canvas2d';
   const ctx = canvas.getContext('2d');
   if (!ctx) return () => undefined;
+  const bed = new Image();
+  bed.src = filmBackdrop(canvas.dataset.filmSet ?? '');
   const imgs = slides.map((s) => {
     const img = new Image();
     img.src = s.src;
@@ -29,26 +32,35 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
     }
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, w, h);
+    if (bed.complete && bed.naturalWidth) {
+      ctx.filter = 'brightness(0.38) saturate(0.85)';
+      ctx.drawImage(bed, 0, 0, w, h);
+      ctx.filter = 'none';
+    }
     const n = Math.max(1, slides.length);
-    const pw = w * 0.22;
-    const ph = h * 0.58;
+    const mid = (n - 1) / 2;
     slides.forEach((slide, i) => {
-      const t = i - (n - 1) / 2;
-      const x = w / 2 + t * (pw * 0.92) - pw / 2;
-      const y = h * 0.18 + Math.abs(t) * 10;
+      const d = i - mid;
+      const mag = Math.abs(d);
+      const scale = mag === 0 ? 1 : mag === 1 ? 0.62 : 0.42;
+      const pw = w * 0.42 * scale;
+      const ph = h * 0.72 * scale;
+      const x = w / 2 + d * (w * 0.22) - pw / 2;
+      const y = h * 0.14 + mag * 18;
       ctx.save();
       ctx.fillStyle = '#05070c';
-      ctx.fillRect(x - 5, y - 5, pw + 10, ph + 10);
+      ctx.fillRect(x - 6, y - 6, pw + 12, ph + 12);
       const img = imgs[i];
       if (img.complete && img.naturalWidth) ctx.drawImage(img, x, y, pw, ph);
-      ctx.fillStyle = 'rgba(7, 11, 20, 0.52)';
-      ctx.fillRect(x, y + ph - 40, pw, 40);
+      ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
+      ctx.fillRect(x, y + ph - 38, pw, 38);
       ctx.fillStyle = '#EAF1FF';
-      ctx.font = '700 14px Outfit, IBM Plex Sans, sans-serif';
-      ctx.fillText(slide.title, x + 12, y + ph - 16);
+      ctx.font = '700 15px Outfit, IBM Plex Sans, sans-serif';
+      ctx.fillText(slide.title, x + 14, y + ph - 14);
       ctx.restore();
     });
   };
+  bed.onload = paint;
   imgs.forEach((img) => {
     img.onload = paint;
   });
@@ -67,7 +79,7 @@ export function upgradeFilm3D(canvas: HTMLCanvasElement): Film3DHandle | null {
   const next = remountCanvas(canvas);
   next.dataset.filmSet = set;
   try {
-    return mountFilm3D(next, slides, probe.lite);
+    return mountFilm3D(next, slides, filmBackdrop(set), probe.lite);
   } catch {
     return null;
   }
@@ -75,27 +87,27 @@ export function upgradeFilm3D(canvas: HTMLCanvasElement): Film3DHandle | null {
 
 function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTexture) => void): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = 1024;
-  c.height = 576;
+  c.width = 1280;
+  c.height = 720;
   const ctx = c.getContext('2d');
   if (ctx) {
     ctx.fillStyle = '#0b1220';
-    ctx.fillRect(0, 0, 1024, 576);
+    ctx.fillRect(0, 0, 1280, 720);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 34px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 28, 540);
+    ctx.font = '700 40px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 36, 680);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image();
   img.onload = () => {
     if (!ctx) return;
-    ctx.drawImage(img, 0, 0, 1024, 576);
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.5)';
-    ctx.fillRect(0, 500, 1024, 76);
+    ctx.drawImage(img, 0, 0, 1280, 720);
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.52)';
+    ctx.fillRect(0, 632, 1280, 88);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 34px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 28, 550);
+    ctx.font = '700 40px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 36, 690);
     tex.needsUpdate = true;
     onReady(tex);
   };
@@ -103,7 +115,12 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   return tex;
 }
 
-function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boolean): Film3DHandle {
+function mountFilm3D(
+  canvas: HTMLCanvasElement,
+  slides: FilmSlide[],
+  backdrop: string,
+  lite: boolean,
+): Film3DHandle {
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = new THREE.WebGLRenderer({
@@ -122,52 +139,53 @@ function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boole
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.08 : 1.18;
+  renderer.toneMappingExposure = lite ? 1.1 : 1.22;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 40);
+  addCinemaSet(scene, lite, backdrop);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
-  scene.add(new THREE.AmbientLight(0xffffff, lite ? 1 : 0.5));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 0.4 : 1.35);
-  key.position.set(0.8, 1.6, 2.4);
-  scene.add(key);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const plates: THREE.Mesh[] = [];
   const mid = (slides.length - 1) / 2;
+  let featured = mid;
 
-  slides.forEach((slide, i) => {
-    const mat = lite
-      ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0x1a2438,
-          roughness: 0.3,
-          metalness: 0.06,
-          clearcoat: 0.35,
-        });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.38, 0.78, 0.04), mat);
+  slides.forEach((slide) => {
+    const mat = plateMaterial(lite);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.05, 1.16, 0.045), mat);
     mesh.userData.slide = slide;
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(2.14, 1.25, 0.03),
+      new THREE.MeshBasicMaterial({ color: 0x05070c }),
+    );
+    frame.position.z = -0.03;
+    mesh.add(frame);
     group.add(mesh);
     plates.push(mesh);
-    plateTexture(slide.src, slide.title, (tex) => {
-      mat.map = tex;
-      mat.color = new THREE.Color(0xffffff);
-      mat.needsUpdate = true;
-    });
-    const t = i - mid;
-    mesh.position.set(t * 1.56, -Math.abs(t) * 0.02, Math.abs(t) * 0.12);
-    mesh.rotation.set(-0.04, -t * 0.08, 0);
+    plateTexture(slide.src, slide.title, (tex) => applyPlateMap(mat, tex));
   });
 
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let raf = 0;
-  let ax = 1.12;
+  let ax = 1.18;
   let ay = 0;
-  let tx = 1.12;
+  let tx = 1.18;
   let ty = 0;
+
+  const layout = (): void => {
+    plates.forEach((mesh, i) => {
+      const d = i - featured;
+      const mag = Math.abs(d);
+      const scale = mag === 0 ? 1.12 : mag === 1 ? 0.72 : 0.48;
+      mesh.position.set(d * 1.55, -0.02 - mag * 0.04, mag * 0.55);
+      mesh.rotation.set(-0.08, -d * 0.2, 0);
+      mesh.scale.setScalar(scale);
+    });
+  };
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -190,10 +208,10 @@ function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boole
   const tick = (now: number): void => {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
-    const drift = reduced ? 0 : Math.sin(now / 3800) * 0.04;
-    group.rotation.y = drift;
-    camera.position.setFromSphericalCoords(lite ? 5.2 : 4.75, ax, ay);
-    camera.lookAt(0, 0.02, 0.08);
+    layout();
+    group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
+    camera.position.setFromSphericalCoords(lite ? 3.85 : 3.45, ax, ay);
+    camera.lookAt(0, 0.02, 0.12);
     renderer.render(scene, camera);
   };
 
@@ -201,8 +219,9 @@ function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boole
     const rect = canvas.getBoundingClientRect();
     const nx = (ev.clientX - rect.left) / rect.width - 0.5;
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
-    ty = nx * 0.28;
-    tx = 1.12 + ny * 0.14;
+    ty = nx * 0.22;
+    tx = 1.18 + ny * 0.1;
+    featured = Math.max(0, Math.min(slides.length - 1, mid + nx * 2.2));
     canvas.style.cursor = pick(ev.clientX, ev.clientY) ? 'pointer' : 'grab';
   };
 

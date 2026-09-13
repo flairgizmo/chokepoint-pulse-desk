@@ -65,8 +65,8 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
   }
   ctx.fillStyle = 'rgba(7, 11, 20, 0.38)';
   ctx.fillRect(0, CARD_H - 150, CARD_W, 150);
-  const bw = 400;
-  const bh = 78;
+  const bw = 360;
+  const bh = 68;
   const bx = (CARD_W - bw) / 2;
   const by = CARD_H - 108;
   ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
@@ -359,8 +359,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 0.96 : 0.9;
-  const restAy = lite ? 0.26 : 0.2;
+  const restAx = lite ? 1.06 : 0.98;
+  const restAy = lite ? 0.32 : 0.24;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
