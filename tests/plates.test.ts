@@ -90,13 +90,14 @@ describe('Topic plates', () => {
     expect(cityHtml).not.toContain('hero-bed');
   });
 
-  it('prints official portraits as cinema posters on real stills', () => {
+  it('prints official portraits as full-bleed cinema posters', () => {
     const html = renderPeople();
     expect(html).toContain('cinema-poster');
-    expect(html).toContain('people-bed');
+    expect(html).toContain('people-face');
+    expect(html).toContain('/people/verdian.jpg');
+    expect(html).toContain('/people/tasca.jpg');
     expect(html).toContain('cinema-letterbox');
-    expect(html).toContain('/visuals/topics/ucl.jpg');
-    expect(html).toContain('/visuals/stories/canary.jpg');
+    expect(html).not.toContain('people-bed');
     expect(html).not.toContain('hero-bed');
   });
 

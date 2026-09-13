@@ -223,11 +223,11 @@ export const PEOPLE: Person[] = [
 ];
 
 export const GROUP_LABEL: Record<PersonGroup, string> = {
-  'c-suite': 'Public C-suite, in the order Quant lists them: founder, product, commercial, people.',
-  heads: 'Heads and architects on Overledger, Fusion, Flow and the IETF SATP contributions.',
+  'c-suite': 'The public C-suite, in the order Quant lists them: the founder, then product, commercial, people.',
+  heads: 'The heads and architects who made Overledger, Fusion, Flow and the IETF SATP contributions speak.',
   founders:
-    'Co-founders, the first CTO, the Overledger inventors, and the research engineer who wrote the ACM paper while at Quant. Some have since left. The documents remain.',
-  board: 'Documented directors. Not operating owners of the technology thesis.',
+    'The co-founders, the first CTO, the Overledger inventors, and the research engineer who wrote the ACM paper while at Quant. Some have left. The documents remain.',
+  board: 'Documented directors. They sit with the company. They do not operate the technology thesis.',
 };
 
 export interface OverledgerBuilder {

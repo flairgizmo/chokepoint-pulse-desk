@@ -331,8 +331,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
       const depth = 0.8 + Math.max(0, p[2] + 0.55) * 0.2;
-      const rw = Math.max(78, W / 10.4) * depth;
-      const rh = Math.max(34, W / 24) * depth;
+      const rw = Math.max(92, W / 9.2) * depth;
+      const rh = Math.max(52, W / 17) * depth;
       const yaw = (p[0] - W / 2) / Math.max(1, W * 0.62);
       ctx.save();
       if (reflect) {
@@ -359,19 +359,25 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
       ctx.lineWidth = on ? 2.2 : 1.1;
       ctx.stroke();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       const logo = logos[i];
-      if (logo?.complete && logo.naturalWidth) {
-        const maxW = rw - 18;
-        const maxH = rh - 12;
+      const wide = Boolean(logo && logo.naturalWidth / Math.max(1, logo.naturalHeight) > 6);
+      if (logo?.complete && logo.naturalWidth && !wide) {
+        const maxW = rw - 22;
+        const maxH = rh * 0.42;
         const scale = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight);
         const dw = logo.naturalWidth * scale;
         const dh = logo.naturalHeight * scale;
-        ctx.drawImage(logo, -dw / 2, -dh / 2, dw, dh);
+        ctx.drawImage(logo, -dw / 2, -rh * 0.22 - dh / 2, dw, dh);
       } else {
         ctx.fillStyle = '#0B1F5C';
-        ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-        ctx.fillText(bank.short, 0, 0);
+        ctx.font = `800 ${Math.max(12, W / 52)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+        ctx.fillText(wide ? 'Lloyds' : bank.short, 0, -rh * 0.16);
       }
+      ctx.fillStyle = '#0B1F5C';
+      ctx.font = `700 ${Math.max(9, W / 78)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+      ctx.fillText(bank.name, 0, rh * 0.28);
       ctx.restore();
     };
     const ordered = banks

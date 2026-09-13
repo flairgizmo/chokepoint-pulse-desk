@@ -240,12 +240,16 @@ export class QntDesk {
           <div class="top-bar">
           <a class="brand" href="/" aria-label="QntDesk home">
             <img class="logo" src="/brand/qntdesk-icon.png" width="36" height="36" alt="" />
-            <span class="word">Qnt<span>Desk</span></span>
+            <span class="brand-lockup">
+              <span class="word">Qnt<span>Desk</span></span>
+              <em class="brand-tag">Independent research</em>
+            </span>
           </a>
           <nav class="nav" aria-label="Primary">
             <a href="/news" ${route.name === 'news' ? 'aria-current="page"' : ''}>News</a>
             <a href="/story" ${route.name === 'story' ? 'aria-current="page"' : ''}>Story</a>
             <a href="/technology" ${route.name === 'technology' ? 'aria-current="page"' : ''}>Technology</a>
+            <a href="/people" ${route.name === 'people' ? 'aria-current="page"' : ''}>People</a>
             <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
             <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
             <details class="more">
@@ -286,9 +290,9 @@ export class QntDesk {
           <a href="/news">News</a>
           <a href="/story">Story</a>
           <a href="/technology">Technology</a>
+          <a href="/people">People</a>
           <a href="/stack">Stack</a>
           <a href="/programmes">Programmes</a>
-          <a href="/people">People</a>
           <a href="/institutions">Institutions</a>
           <a href="/patents">Patents</a>
           <a href="/cbdc">CBDC</a>
@@ -302,7 +306,7 @@ export class QntDesk {
         <footer class="foot colophon">
           <div class="foot-legal">
             <p class="word">Qnt<span>Desk</span></p>
-            <p>Independent educational brief. Not Quant Network Ltd. Sources: official Quant surfaces, Overledger docs, IETF SATP, public filings. Ingest about every thirty minutes. Markets via cached CoinGecko with as-of shown.</p>
+            <p>Independent educational research. Not Quant Network Ltd. The story in order: official Quant surfaces, Overledger docs, IETF SATP, public filings. Ingest about every thirty minutes. Markets via cached CoinGecko with as-of shown.</p>
             <p>${esc(DISCLAIMER)}</p>
             <p class="voices-inline">
               <a href="/donate">Donate</a>

@@ -97,8 +97,8 @@ export function constellation(): string {
   return `<section class="constellation">
     ${kicker('Open the sources')}
     <div class="section-head">
-      <h2 class="display">The network, as links.</h2>
-      <p class="lede-sm">Official pages, the 2018 paper, and the rooms this story actually sits in.</p>
+      <h2 class="display">The original pages. Not a recap.</h2>
+      <p class="lede-sm">If a sentence on this desk matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. Click through.</p>
     </div>
     <ul class="constellation-grid">${nodes
       .map(
@@ -246,7 +246,7 @@ function quoteRail(page?: string, limit = 6): string {
   const [first, ...rest] = list;
   return `<section class="quote-rail">
     ${kicker('In their words')}
-    <h2 class="display">The people building the Internet of Value.</h2>
+    <h2 class="display">In their own words. Titles attached.</h2>
     ${quoteCard(first).replace('class="quote-card"', 'class="quote-card quote-feature"')}
     ${rest.length ? `<div class="quote-scroll">${rest.map(quoteCard).join('')}</div>` : ''}
   </section>`;
@@ -262,7 +262,7 @@ export function stackVisual(): string {
   ];
   return `<section class="stack-visual">
     ${kicker('The stack')}
-    <h2 class="display">How the products sit. <span class="display-mute">One gate, many ledgers.</span></h2>
+    <h2 class="display">One gate. The books stay themselves.</h2>
     <ol class="stack-rungs cinema-rungs">${rungs
       .map(
         ([id, title, body]) =>
@@ -394,7 +394,7 @@ export function eraStrip(): string {
         <div class="era-copy">
         <p class="kicker">History</p>
         <h3>2015–2023</h3>
-        <p>Verdian proposes ISO/TC 307. The 2018 whitepaper files Overledger as a gateway operating system. Unsold QNT is burned. LACChain is announced with IDB Lab in 2021. Rosalind, a BIS Innovation Hub London and Bank of England API experiment, concludes in 2023.</p>
+        <p>First the committee, then the operating system. Verdian puts blockchain on the ISO agenda. The 2018 whitepaper files Overledger as a gateway — not a twelfth chain. Unsold QNT is burned. LACChain is announced with IDB Lab. Rosalind, a BIS × Bank of England API lab, concludes in 2023. Experiments. Then the record stops calling them experiments.</p>
         <a class="text-link" href="/news">The wire →</a>
         </div>
       </li>
@@ -403,7 +403,7 @@ export function eraStrip(): string {
         <div class="era-copy">
         <p class="kicker">Present</p>
         <h3>2024–2026</h3>
-        <p>UK Finance’s RLN phase, then GBTD on 26 September 2025: Quant as technology partner with ${GBTD_BANKS.map(bankDisplay).join(', ')}. 2026 adds Dentsu Soken, the Synchronisation Lab, Murex MX.3, ISO/TS 23516, and Sibos Miami stand DISL51.</p>
+        <p>UK Finance’s RLN phase, then the sentence that makes the thesis concrete. On 26 September 2025 Quant is named technology partner for live tokenised sterling with ${GBTD_BANKS.map(bankDisplay).join(', ')}. 2026 adds Dentsu Soken, the Synchronisation Lab, Murex MX.3, ISO/TS 23516, and Sibos Miami stand DISL51.</p>
         <a class="text-link" href="/programmes">Named rooms →</a>
         </div>
       </li>
@@ -412,7 +412,7 @@ export function eraStrip(): string {
         <div class="era-copy">
         <p class="kicker">Future</p>
         <h3>Still ahead</h3>
-        <p>The Economic Secretary’s 8 September 2026 speech at UK Finance names a DIGIT gilt in Q1 2027. Quant’s published claim is that programmable bank money is how deposits and agent payments settle.</p>
+        <p>The Economic Secretary’s 8 September 2026 speech at UK Finance names a DIGIT gilt in Q1 2027. The speech does not name Quant. What Quant does publish is simpler: programmable bank money is how deposits and agent payments are supposed to settle — once the rails can talk.</p>
         <a class="text-link" href="/vision">The thesis →</a>
         </div>
       </li>
@@ -429,8 +429,8 @@ export function featuredStory(): string {
       ${noteCard(n, true)}
       <div class="featured-aside">
         <p class="kicker">On the record</p>
-        <h2 class="display">What most coverage skips. <span class="display-mute">The rails, not the ticker.</span></h2>
-        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The 2018 whitepaper, the IETF drafts, and the bank names sit here — latest first, titles on every quote.</p>
+        <h2 class="display">What most coverage skips.</h2>
+        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order of the story: the 2018 paper, the IETF drafts, the bank names — latest first, titles on every quote.</p>
         <div class="cta-row">
           ${pill('/news', 'Open the news', 'Official wire')}
           ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
@@ -496,6 +496,48 @@ export function notesReel(): string {
   </section>`;
 }
 
+function essayOrder(): string {
+  return `<section class="essay-order" aria-labelledby="essay-order-title">
+    ${kicker('In order')}
+    <h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2>
+    <div class="essay-flow">
+      <p>We’ve gotten used to seeing a new rail arrive before anyone can trust it.</p>
+      <p>It happened with the internet. First the thrill of being connected. Then the patches: passwords everywhere, data moving without a clear owner. The network won anyway. We filled it with workarounds.</p>
+      <p>Digital finance is having the same argument. Only this time the payload is not a photo. It is a pound, a contract, a market.</p>
+      <p>Blockchains arrived as the next big thing: decentralised, transparent, programmable. On paper, perfect. In the rooms that actually issue sterling, something else was missing.</p>
+      <p><strong>Shared rules. Clear liability. A way for systems that were never born to talk to actually talk.</strong></p>
+      <p>For years the industry assumed the technology was enough — as if code alone could convince a bank, a supervisor, a treasurer. It did not work that way. Institutions watched. They ran labs. They mostly stayed on the sidelines. Not because they failed to understand a chain. Because a bank cannot put customer deposits on a jungle of wallets, bridges and gas tokens.</p>
+      <p>Meanwhile the objects got real. Tokenised deposits. On-chain collateral. Cross-border payments that settle in minutes instead of days. Public networks became too large to ignore.</p>
+      <p>The question changed. It is no longer whether finance will use these networks. It is how. With which rules. On top of what kind of infrastructure.</p>
+      <p>There are moments when a field is full of power and poor in simplicity. Personal computers in the 1980s were like that, until the question stopped being “how fast” and became “how easy”. Smartphones were like that, until a thousand keyboards collapsed into a gesture.</p>
+      <p>If there is a moment like that in this sector, it will not come from another chain. It will come from coordination. From order. From a layer you stop noticing.</p>
+      <p><strong>Overledger was filed that way in 2018. Not a blockchain. An operating system for applications that have to live on more than one book.</strong></p>
+      <p>Think of the ledgers as an archipelago. Ethereum on one island. Hyperledger Fabric on another. Corda with its own grammar. A bank core that will not be rewritten. Every time you try to connect them with a one-off bridge, the workaround looks temporary from day one.</p>
+      <p>A gateway OS is the softer transition the enterprise world will actually buy. No leap into the void. No twelfth settlement chain. The books stay themselves. The application stops caring which wire settled.</p>
+      <p>Then the example that makes the sentence concrete.</p>
+      <p>On 26 September 2025, UK Finance named Quant as technology partner for live tokenised sterling deposits. The issuers are commercial banks: ${GBTD_BANKS.map(bankDisplay).join(', ')}. They owe the holder. Overledger and PayScript are the named foundation. GBTD is not a CBDC.</p>
+      <p>Standards ran in parallel — the way the internet became permanent. HTTP, TCP/IP, TLS: nobody asks who wrote them anymore. Verdian proposed the ISO blockchain committee. Hargreaves is a named author of IETF SATP, the gateway protocol for moving an asset from one network to exactly one other. Facer co-chairs the working group. SATP is not a Quant SKU. The product is already in a production pilot while those drafts mature.</p>
+      <p>That is the story, in order. The problem. The operating system. The sterling. The treaty. The people who signed the papers.</p>
+    </div>
+  </section>`;
+}
+
+function homeFaces(): string {
+  const faces = PEOPLE.filter((p) => p.photo)
+    .slice(0, 8)
+    .map(peoplePoster)
+    .join('');
+  return `<section class="people-rail home-faces" aria-label="Official portraits">
+    ${kicker('The people')}
+    <div class="section-head">
+      <h2 class="display">The faces on the record. Not stock stills.</h2>
+      <a class="text-link" href="/people">Everyone →</a>
+    </div>
+    <p class="lede-sm">Official portraits Quant or the person published. Click a face for the filing. Two names still sit as initials: Quant has not published Chris Lovesey or Colin Paterson.</p>
+    <div class="people-tiles">${faces}</div>
+  </section>`;
+}
+
 export function renderHome(): string {
   const banks = GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('');
   const beatStage: Record<string, string> = {
@@ -544,11 +586,11 @@ export function renderHome(): string {
       </div>
       ${kicker('QntDesk · independent research')}
       <div class="hero-split">
-        <h1 class="display">Six UK banks already issue tokenised sterling. Overledger is the gate they hired.</h1>
+        <h1 class="display">The ledgers were never the hard part. Making them talk is.</h1>
         <div>
-          <p class="lede">Quant Network from the public record: the 2018 Overledger whitepaper, IETF SATP, ISO/TC 307, and UK Finance’s live tokenised-deposit pilot. Independent research. Not Quant’s corporate site. Commercial-bank sterling that can lock and release is already running.</p>
+          <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. This desk walks that story in order, from the public record. Independent research. Not Quant’s corporate site.</p>
           <div class="cta-row">
-            ${pill('/technology', 'Enter the stack', 'Product theatre')}
+            ${pill('/technology', 'See how the gate works', 'Product theatre')}
             ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')}
             ${pill('/podcast', 'Start the series', 'Twenty conversations')}
           </div>
@@ -556,23 +598,25 @@ export function renderHome(): string {
       </div>
     </section>
 
+    ${essayOrder()}
+
     <section class="proof-row">
       ${kicker('Three proofs')}
       <div class="proof-grid">
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="interop">
           ${diagramFigure('home-interop', 'proof', 'Interop')}
           <strong>Interoperability</strong>
-          <span>Overledger maps one request onto more than one ledger. 2018 whitepaper, UCL Discovery.</span>
+          <span>One request. More than one book. Overledger maps; it does not replace. 2018 whitepaper, UCL Discovery.</span>
         </button>
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="standards">
           ${diagramFigure('home-standards', 'proof', 'Standards')}
           <strong>Standards</strong>
-          <span>IETF SATP drafts and ISO/TS 23516:2026. Quant authors; not Quant SKUs.</span>
+          <span>ISO for the rooms that regulate. IETF SATP for the rooms that implement. Quant authors; not Quant SKUs.</span>
         </button>
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="institutions">
           ${diagramFigure('home-institutions', 'proof', 'Rooms')}
           <strong>Institutions</strong>
-          <span>UK Finance convenes. Six commercial banks issue. Quant supplies the technology.</span>
+          <span>UK Finance convenes. Six commercial banks issue the sterling. Quant supplies the technology.</span>
         </button>
       </div>
     </section>
@@ -645,6 +689,8 @@ export function renderHome(): string {
         ${wordmarkLi('Dentsu Soken', sources.dentsuSoken)}
       </ul>
     </section>
+
+    ${homeFaces()}
 
     ${latestStrip()}
 
@@ -742,9 +788,9 @@ export function renderVision(): string {
     </section>`;
   return `${pageHero(
     'Vision',
-    'A network of networks,',
-    'The 2018 whitepaper calls Overledger a technology for multi-ledger applications. The live programme is UK Finance’s tokenised sterling deposits. The next public dates sit in IETF SATP drafts, ISO/TS 23516:2026, and the Bank of England Synchronisation Lab — simulated RT2, not a live digital pound.',
-    'the gateway OS.',
+    'A network of networks —',
+    'The ledgers already exist. The missing piece is how they talk. The 2018 whitepaper calls Overledger a technology for multi-ledger applications. The live programme is UK Finance’s tokenised sterling. The next public dates sit in IETF SATP, ISO/TS 23516:2026, and the Bank of England Synchronisation Lab — simulated RT2, not a live digital pound.',
+    'the operating system, not another chain.',
     'future',
     'vision',
   )}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
@@ -777,8 +823,8 @@ export function renderProgrammes(): string {
   }).join('');
   return `${pageHero(
     'Programme cockpit',
-    'Where Quant is already',
-    'Status, owner, institutions, related tech. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never added as a timeline fact without a source.',
+    'Where the gate is already',
+    'Look at the rooms before the slogans. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never added as a timeline fact without a source.',
     'in the room.',
     undefined,
     'programmes',
@@ -835,8 +881,8 @@ export function renderCbdc(): string {
     .join('');
   return `${pageHero(
     'Liability test',
-    'What a CBDC rail needs that isolated chains do not.',
-    'Issuance, wholesale finality, and a way for commercial-bank tokens to meet that finality without becoming a new money. Overledger, SATP and identity sit as adjacency — never as a fake central-bank endorsement.',
+    'Who owes the pound — and which rail settles it.',
+    'A CBDC, a tokenised deposit and a stablecoin are not the same object. Isolated chains cannot give you that sorting. Overledger, SATP and identity sit as adjacency — never as a fake central-bank endorsement.',
     '',
     undefined,
     'cbdc',
@@ -866,8 +912,8 @@ export function renderStandards(): string {
   ).join('');
   return `${pageHero(
     'Standards',
-    'Treat the treaty as product.',
-    'IETF SATP and the rooms Quant has actually touched. Status chips, editors, dates. The day SATP is an RFC, a bank can implement a gateway-to-gateway transfer without buying a brand. Adjacent ISO, INATBA and MIT work only where sourced.',
+    'This is how a rail becomes permanent.',
+    'HTTP, TCP/IP, TLS — nobody asks who wrote them anymore. IETF SATP and ISO are that kind of work. Status chips, editors, dates. The day SATP is an RFC, a bank can implement a gateway-to-gateway transfer without buying a brand. Adjacent rooms only where sourced.',
     '',
     undefined,
     'standards',
@@ -908,8 +954,8 @@ export function renderPeople(): string {
     .join('');
   return `${pageHero(
     'People',
-    'The names on the papers,',
-    'Verdian left Vocalink to build a gateway OS. The others wrote the taxonomy, the ordering claim, the SATP drafts. Official portraits where Quant or the person published them; a monogram when they did not.',
+    'The names on the papers —',
+    'Verdian left Vocalink to build a gateway OS. The others wrote the taxonomy, the ordering claim, the SATP drafts. Their professional portraits fill the frame. A monogram means Quant has not published a face.',
     'and in the rooms.',
     undefined,
     'people',
@@ -920,27 +966,28 @@ export function renderPeople(): string {
   ${peopleRail()}${overledgerRoster()}${quoteRail('people')}${fold('Full records by role', blocks)}${dykBlock()}`;
 }
 
+function peoplePoster(p: Person): string {
+  const face = p.photo
+    ? `<img class="people-face" src="${esc(p.photo)}" alt="${esc(p.name)}" width="640" height="800" decoding="async" />`
+    : `<span class="people-mono" aria-hidden="true">${esc(p.initials)}</span>`;
+  return `<button type="button" class="people-tile cinema-poster${p.photo ? '' : ' is-mono'}" data-stage="person" data-stage-id="${esc(p.id)}">
+    <span class="people-still-wrap cinema-frame">
+      <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+      <span class="cinema-grain" aria-hidden="true"></span>
+      ${face}
+      <span class="people-wash" aria-hidden="true"></span>
+      <span class="people-credit"><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
+      <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+    </span>
+  </button>`;
+}
+
 function peopleRail(): string {
-  const faces = PEOPLE.filter((p) => p.photo)
-    .map((p) => {
-      const bed = plateFor(p.id, p.group, 'people');
-      return `<button type="button" class="people-tile cinema-poster" data-stage="person" data-stage-id="${esc(p.id)}">
-        <span class="people-still-wrap cinema-frame">
-          <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
-          <span class="cinema-grain" aria-hidden="true"></span>
-          <img class="people-bed" src="${esc(bed.src)}" alt="" width="640" height="800" />
-          <span class="people-wash" aria-hidden="true"></span>
-          <img class="people-face" src="${esc(p.photo ?? '')}" alt="${esc(p.name)}" width="160" height="160" />
-          <span class="people-credit"><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
-          <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
-        </span>
-      </button>`;
-    })
-    .join('');
+  const faces = PEOPLE.map(peoplePoster).join('');
   return `<nav class="people-rail" aria-label="Official portraits">
     ${kicker('On the record')}
-    <h2 class="display">Official portraits on the public record.</h2>
-    <p class="lede-sm">Quant people pages, Tasca’s site, and Mondelli’s published GitHub identity. A monogram means no public portrait was available. Paterson and Lovesey remain initials.</p>
+    <h2 class="display">Their professional portraits. The whole picture.</h2>
+    <p class="lede-sm">Quant people pages, Tasca’s site, Mondelli’s published GitHub identity. Chris Lovesey and Colin Paterson stay as initials until an official portrait is published. We do not invent faces.</p>
     <div class="people-tiles">${faces}</div>
   </nav>`;
 }
@@ -1024,8 +1071,8 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     .join('');
   return `${pageHero(
     'Library',
-    'Forty-eight documents,',
-    'Primary sources, standards drafts, patents, books, surveys, and briefs — each lane uses a different plate. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
+    'Forty-eight documents —',
+    'Read the filings, not the recap. Primary sources, standards drafts, patents, books, surveys, briefs. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
     'grouped by what they are.',
     'london',
     'research',
@@ -1098,7 +1145,7 @@ export function renderGlossary(filter = ''): string {
       return `<section class="letter"><h3>${esc(L)}</h3>${items}</section>`;
     })
     .join('');
-  return `${pageHero('Language', 'The language of', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition stage.', 'programmable money.', undefined, 'glossary')}
+  return `${pageHero('Language', 'Say the objects by their names.', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition. Mixing them up is how the sector stayed noisy.', '', undefined, 'glossary')}
     <div class="toolbar">
       <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
       <p class="mono subtle">${terms.length} terms</p>
@@ -1141,9 +1188,9 @@ export function renderMarkets(print?: MarketPrint): string {
   const bars = venueBarsHtml(p);
   return `${pageHero(
     'QNT',
-    'QNT — the token of',
-    'Research presentation, not advice. Overledger licences settle in QNT — that is why it trades. Live quotes from Coinbase, Kraken or Binance; market cap, supply and venues from CoinGecko. As-of timestamps on every print. Utility token, not equity.',
-    'a network of networks.',
+    'QNT licences the network.',
+    'Research presentation, not advice. Overledger licences settle in QNT — that is why it trades. Live quotes from Coinbase, Kraken or Binance; market cap, supply and venues from CoinGecko. As-of timestamps on every print. Utility token, not equity in Quant Network.',
+    'Not the story. The meter.',
     undefined,
     'markets',
   )}
@@ -1272,9 +1319,9 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
   const list = newsListMarkup(river, filter);
   return `${pageHero(
     'Wire',
-    'Quant, as the story',
-    'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. Each headline is a briefing. Quiet weeks keep this month’s sourced notes on the page.',
-    'unfolds.',
+    'The story, as it unfolds.',
+    'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. Each headline is a briefing you can stay with. Quiet weeks keep this month’s sourced notes on the page.',
+    '',
     undefined,
     'news',
   )}
@@ -1382,9 +1429,9 @@ export function renderCity(city: City): string {
 export function renderDonate(): string {
   return `${pageHero(
     'Support',
-    'Donations keep the research',
-    'Optional. Buys no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
-    'on the air.',
+    'Optional. The desk stays free.',
+    'Donations buy no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
+    '',
     undefined,
     'donate',
   )}
@@ -1414,9 +1461,9 @@ export function renderPodcast(): string {
   if (!first) return renderNotFound();
   return `${pageHero(
     'Podcast',
-    'Twenty conversations on Quant,',
-    'Twenty sourced conversations, in order. James Hale and Amelia Crowe walk ISO, the 2018 whitepaper, SATP, QNT, and the six banks that already issue tokenised sterling. Quotes keep their titles. Dates stay on the page.',
-    'from the beginning.',
+    'Twenty conversations. Start at the beginning.',
+    'James Hale and Amelia Crowe walk the same order as the desk: ISO, the 2018 whitepaper, SATP, QNT, and the six banks that already issue tokenised sterling. Quotes keep their titles. Dates stay on the page.',
+    '',
     undefined,
     'podcast',
   )}${playerMarkup(first)}${filmRail()}`;
@@ -1445,9 +1492,9 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
   const cards = list.map((n) => noteCard(n)).join('');
   return `${pageHero(
     'News',
-    'Field news on Quant,',
-    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens a briefing.',
-    'history to what is ahead.',
+    'Field notes, in the order they landed.',
+    'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens a briefing you can stay with.',
+    '',
     'history',
   )}
   ${filterBox('notes-search', 'Search news…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}

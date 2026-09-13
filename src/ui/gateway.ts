@@ -48,7 +48,7 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HTMLCanvasElement {
+function logoCanvas(img: HTMLImageElement | null, short: string, name: string, on = false): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = CARD_W;
   c.height = CARD_H;
@@ -63,34 +63,37 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  ctx.fillStyle = 'rgba(7, 11, 20, 0.38)';
-  ctx.fillRect(0, CARD_H - 150, CARD_W, 150);
-  const bw = 360;
-  const bh = 68;
+  ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
+  ctx.fillRect(0, CARD_H - 196, CARD_W, 196);
+  const bw = 520;
+  const bh = 148;
   const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 108;
-  ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
-  ctx.shadowColor = 'rgba(7, 11, 20, 0.4)';
-  ctx.shadowBlur = 14;
-  ctx.shadowOffsetY = 5;
+  const by = CARD_H - 176;
+  ctx.fillStyle = on ? '#ffffff' : '#f7f9fc';
+  ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
+  ctx.shadowBlur = 16;
+  ctx.shadowOffsetY = 6;
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 16);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 22);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
   ctx.shadowColor = 'transparent';
-  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.22)';
+  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.2)';
   ctx.lineWidth = on ? 5 : 2;
   ctx.stroke();
   const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
   if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
-    containDraw(ctx, img, bx + 22, by + 14, bw - 44, bh - 28);
+    containDraw(ctx, img, bx + 36, by + 22, bw - 72, 72);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(wide ? 'LLOYDS' : short, CARD_W / 2, by + bh / 2);
+    ctx.font = '800 42px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(wide ? 'Lloyds' : short, CARD_W / 2, by + 56);
   }
+  ctx.fillStyle = '#0B1F5C';
+  ctx.font = '700 26px Outfit, IBM Plex Sans, sans-serif';
+  ctx.fillText(name, CARD_W / 2, by + 118);
   return c;
 }
 
@@ -296,7 +299,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const cards: THREE.Mesh[] = [];
   const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
   BANKS.forEach((bank, i) => {
-    const tex = new THREE.CanvasTexture(logoCanvas(null, bank.short, false));
+    const tex = new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false));
     tex.colorSpace = THREE.SRGBColorSpace;
     const mat = lite
       ? new THREE.MeshBasicMaterial({ map: tex })
@@ -316,7 +319,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     cards.push(mesh);
     cardMats.push(mat);
     logos[i].onload = () => {
-      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, false));
+      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false));
       next.colorSpace = THREE.SRGBColorSpace;
       mat.map?.dispose();
       mat.map = next;
@@ -407,7 +410,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const paintCards = (): void => {
     BANKS.forEach((bank, i) => {
       const on = selected === bank.id || hover === bank.id;
-      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, on));
+      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, on));
       next.colorSpace = THREE.SRGBColorSpace;
       cardMats[i].map?.dispose();
       cardMats[i].map = next;

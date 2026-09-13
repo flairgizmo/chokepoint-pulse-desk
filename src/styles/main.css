@@ -199,6 +199,21 @@ h2.display {
   view-transition-name: brand;
 }
 
+.brand-lockup {
+  display: grid;
+  gap: 0.14rem;
+}
+
+.brand-tag {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .boot {
   min-height: 100dvh;
   display: grid;
@@ -827,14 +842,14 @@ main {
 
 .wordmark {
   display: flex;
-  min-height: 6.4rem;
+  min-height: 7.6rem;
   padding: 0;
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
   text-align: center;
-  box-shadow: 0 8px 20px rgba(11, 31, 92, 0.04);
+  box-shadow: 0 10px 24px rgba(11, 31, 92, 0.05);
   overflow: hidden;
 }
 
@@ -848,8 +863,8 @@ main {
   justify-content: center;
   gap: 0.55rem;
   width: 100%;
-  min-height: 6.4rem;
-  padding: 0.95rem 0.7rem 0.8rem;
+  min-height: 7.6rem;
+  padding: 1.05rem 0.8rem 0.9rem;
 }
 
 .wm {
@@ -2359,40 +2374,49 @@ button.chip {
 }
 
 .people-tile .people-bed {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 35%;
-  filter: saturate(1.22) contrast(1.16) brightness(1.12);
-  animation: ken-burns 42s ease-in-out infinite alternate;
+  display: none;
 }
 
 .people-wash {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 3;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(8, 12, 22, 0.08) 0%, transparent 32%, rgba(8, 12, 22, 0.72) 100%);
+    linear-gradient(180deg, rgba(8, 12, 22, 0.12) 0%, transparent 28%, rgba(8, 12, 22, 0.78) 100%);
 }
 
 .people-tile .people-face {
   position: absolute;
-  left: 50%;
-  bottom: 22%;
-  z-index: 6;
-  width: 26%;
-  aspect-ratio: 1;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  object-position: center 12%;
-  border-radius: 50%;
-  transform: translateX(-50%);
-  border: 2px solid rgba(234, 241, 255, 0.88);
-  box-shadow: 0 12px 28px rgba(5, 10, 20, 0.55);
-  background: #111827;
-  filter: contrast(1.06) saturate(0.92);
+  object-position: center 16%;
+  border: 0;
+  border-radius: 0;
+  transform: none;
+  box-shadow: none;
+  background: #0b1220;
+  filter: contrast(1.06) saturate(0.94) brightness(1.02);
+  animation: ken-burns 42s ease-in-out infinite alternate;
+}
+
+.people-mono {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: clamp(3.2rem, 8vw, 5.4rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  color: #eaf1ff;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(47, 91, 255, 0.38), transparent 52%),
+    linear-gradient(160deg, #1a2744, #0b1220 72%);
 }
 
 .people-credit {
@@ -2999,8 +3023,8 @@ button.chip {
 
 .wm-logo {
   flex: 0 0 auto;
-  width: 8.2rem;
-  height: 2.55rem;
+  width: 9.6rem;
+  height: 3rem;
   object-fit: contain;
   object-position: center;
   background: transparent;
@@ -3015,11 +3039,32 @@ button.chip {
 
 .wordmark-caption {
   display: block;
-  font-size: 0.72rem;
-  font-weight: 650;
-  letter-spacing: 0.01em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   line-height: 1.25;
   color: var(--navy);
+}
+
+.essay-order {
+  width: min(44rem, calc(100% - 2.5rem));
+  margin: 2.2rem auto 3rem;
+}
+
+.essay-flow p {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  line-height: 1.58;
+  margin: 0 0 0.9rem;
+  max-width: none;
+}
+
+.essay-flow p strong {
+  font-weight: 650;
+}
+
+.home-faces .people-tiles {
+  grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
 }
 
 .fold {
@@ -3887,7 +3932,7 @@ body.stage-open .grok {
 }
 
 .people-tile .people-face {
-  object-position: center 12%;
+  object-position: center 16%;
 }
 
 .status-active {
@@ -3997,12 +4042,12 @@ body.stage-open .grok {
 
 .prog-mark em,
 .wordmark-caption {
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   font-style: normal;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   text-align: center;
-  color: var(--ink);
+  color: var(--navy);
 }
 
 .cohort-note {
@@ -4475,6 +4520,7 @@ body.stage-open .grok {
   }
 
   .hero-still,
+  .people-tile .people-face,
   .people-tile .people-bed,
   .proof-chip .photo-plate img,
   .essay-card .photo-plate img,

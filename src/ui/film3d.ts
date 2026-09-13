@@ -102,7 +102,13 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   const img = new Image();
   img.onload = () => {
     if (!ctx) return;
-    ctx.drawImage(img, 0, 0, 1280, 720);
+    if (img.naturalWidth && img.naturalHeight) {
+      const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      const faceBias = img.naturalHeight > img.naturalWidth ? 0.18 : 0.5;
+      ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) * faceBias, dw, dh);
+    }
     ctx.fillStyle = 'rgba(7, 11, 20, 0.52)';
     ctx.fillRect(0, 632, 1280, 88);
     ctx.fillStyle = '#EAF1FF';
