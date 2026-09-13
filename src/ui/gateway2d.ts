@@ -101,8 +101,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
-  const restAx = 1.08;
-  const restAy = 0.28;
+  const restAx = 1.2;
+  const restAy = 0.36;
   const orbit = (16 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -126,7 +126,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     plateDirty = true;
     draw(performance.now());
   };
-  backdrop.src = '/visuals/topics/canary.jpg';
+  backdrop.src = '/visuals/stills/future.jpg';
   const plate = document.createElement('canvas');
   let plateDirty = true;
 
@@ -158,10 +158,10 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     let z1 = -x * sy + z * cy;
     const y1 = y * cx - z1 * sx;
     z1 = y * sx + z1 * cx;
-    const k = 2.05 / (3.2 - z1);
+    const k = 2.15 / (3.15 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.42;
-    return [W / 2 + x1 * k * scale + parx, H * 0.52 + y1 * k * scale + pary, z1];
+    const scale = Math.min(W, H) * 0.5;
+    return [W / 2 + x1 * k * scale + parx, H * 0.62 + y1 * k * scale + pary, z1];
   };
 
   const draw = (now: number): void => {
@@ -199,21 +199,23 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         pctx.fillStyle = '#070b14';
         pctx.fillRect(0, 0, W, H);
         if (backdrop.complete && backdrop.naturalWidth) {
-          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight);
+          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight) * 1.08;
           const dw = backdrop.naturalWidth * scale;
           const dh = backdrop.naturalHeight * scale;
-          pctx.save();
-          pctx.globalAlpha = 0.62;
-          pctx.filter = 'saturate(0.85) contrast(1.15) blur(1.2px)';
-          pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.06, dw, dh);
-          pctx.restore();
-          pctx.filter = 'none';
+          pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.18, dw, dh);
         }
-        const studio = pctx.createRadialGradient(W * 0.5, H * 0.36, 16, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
-        studio.addColorStop(0, 'rgba(26, 48, 88, 0.28)');
-        studio.addColorStop(0.45, 'rgba(10, 18, 32, 0.72)');
-        studio.addColorStop(1, 'rgba(5, 8, 16, 0.92)');
-        pctx.fillStyle = studio;
+        const fade = pctx.createLinearGradient(0, 0, 0, H);
+        fade.addColorStop(0, 'rgba(6, 10, 20, 0.04)');
+        fade.addColorStop(0.22, 'rgba(6, 10, 20, 0.12)');
+        fade.addColorStop(0.48, 'rgba(6, 10, 20, 0.52)');
+        fade.addColorStop(0.72, 'rgba(6, 10, 20, 0.82)');
+        fade.addColorStop(1, 'rgba(6, 10, 20, 0.92)');
+        pctx.fillStyle = fade;
+        pctx.fillRect(0, 0, W, H);
+        const vignette = pctx.createRadialGradient(W * 0.5, H * 0.42, H * 0.12, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
+        vignette.addColorStop(0, 'rgba(21, 87, 255, 0.08)');
+        vignette.addColorStop(1, 'rgba(4, 8, 16, 0.42)');
+        pctx.fillStyle = vignette;
         pctx.fillRect(0, 0, W, H);
       }
       plateDirty = false;
@@ -257,24 +259,38 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       ctx.stroke();
     });
 
+    const paintHex = (pts: Array<[number, number, number]>, lift: number, fill: string | CanvasGradient, stroke: string, blur: number): void => {
+      ctx.beginPath();
+      pts.forEach((pt, i) => {
+        if (i === 0) ctx.moveTo(pt[0], pt[1] + lift);
+        else ctx.lineTo(pt[0], pt[1] + lift);
+      });
+      ctx.closePath();
+      ctx.shadowColor = 'rgba(61, 140, 255, 0.75)';
+      ctx.shadowBlur = blur;
+      ctx.fillStyle = fill;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.6, W / 200) : Math.max(1.6, W / 280);
+      ctx.stroke();
+    };
+    paintHex(hex, 10, 'rgba(6, 20, 51, 0.55)', 'rgba(234, 241, 255, 0.12)', 8);
+    const hexFill = ctx.createLinearGradient(hex[0][0], hex[0][1], hex[3][0], hex[3][1]);
+    hexFill.addColorStop(0, selected === 6 || hover === 6 ? '#9CC4FF' : '#5B93FF');
+    hexFill.addColorStop(0.45, '#1557FF');
+    hexFill.addColorStop(1, '#061433');
+    paintHex(hex, 0, hexFill, '#EAF1FF', 48);
     ctx.beginPath();
     hex.forEach((pt, i) => {
-      if (i === 0) ctx.moveTo(pt[0], pt[1]);
-      else ctx.lineTo(pt[0], pt[1]);
+      const ix = gate[0] + (pt[0] - gate[0]) * 0.42;
+      const iy = gate[1] + (pt[1] - gate[1]) * 0.42;
+      if (i === 0) ctx.moveTo(ix, iy);
+      else ctx.lineTo(ix, iy);
     });
     ctx.closePath();
-    const hexFill = ctx.createLinearGradient(hex[0][0], hex[0][1], hex[3][0], hex[3][1]);
-    hexFill.addColorStop(0, selected === 6 || hover === 6 ? '#7EB0FF' : '#3B7BFF');
-    hexFill.addColorStop(0.55, '#1557FF');
-    hexFill.addColorStop(1, '#061433');
-    ctx.shadowColor = 'rgba(61, 140, 255, 0.7)';
-    ctx.shadowBlur = 42;
-    ctx.fillStyle = hexFill;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.28)';
     ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.strokeStyle = '#EAF1FF';
-    ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.8, W / 190) : Math.max(1.8, W / 260);
-    ctx.stroke();
 
     ctx.beginPath();
     ctx.moveTo(gate[0], gate[1]);
@@ -299,20 +315,28 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.textBaseline = 'middle';
     ctx.fillText('SIM RT2', rt2[0], rt2[1]);
 
-    banks.forEach(({ bank, p }, i) => {
+    const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
-      const rw = Math.max(86, W / 8.2);
-      const rh = Math.max(36, W / 22);
-      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.38)' : 'rgba(11, 31, 92, 0.16)';
-      ctx.shadowBlur = on ? 28 : 18;
-      ctx.shadowOffsetY = 8;
+      const depth = 0.78 + Math.max(0, p[2] + 0.6) * 0.18;
+      const rw = Math.max(86, W / 8.2) * depth;
+      const rh = Math.max(36, W / 22) * depth;
+      ctx.save();
+      if (reflect) {
+        ctx.globalAlpha = 0.18;
+        ctx.translate(p[0], p[1] + rh * 0.95);
+        ctx.scale(1, -0.42);
+        ctx.translate(-p[0], -p[1]);
+      }
+      ctx.shadowColor = on ? 'rgba(90, 150, 255, 0.45)' : 'rgba(5, 10, 20, 0.45)';
+      ctx.shadowBlur = on ? 32 : 20;
+      ctx.shadowOffsetY = reflect ? 0 : 10;
       roundRect(p[0] - rw / 2, p[1] - rh / 2, rw, rh, 12);
       ctx.fillStyle = '#FFFFFF';
       ctx.fill();
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
-      ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.18)';
-      ctx.lineWidth = on ? 2.2 : 1.2;
+      ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
+      ctx.lineWidth = on ? 2.2 : 1.1;
       ctx.stroke();
       const logo = logos[i];
       if (logo?.complete && logo.naturalWidth) {
@@ -327,7 +351,13 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
         ctx.fillText(bank.short, p[0], p[1]);
       }
-    });
+      ctx.restore();
+    };
+    const ordered = banks
+      .map((row, i) => ({ ...row, i }))
+      .sort((a, b) => a.p[2] - b.p[2]);
+    ordered.forEach((row) => paintCard(row.bank, row.p, row.i, true));
+    ordered.forEach((row) => paintCard(row.bank, row.p, row.i));
 
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `700 ${Math.max(11, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;

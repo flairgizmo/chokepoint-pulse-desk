@@ -230,7 +230,8 @@ export class EarthGlobe {
   }
 
   private flat = false;
-  private flatImg: HTMLImageElement | null = null;
+  private flatDay: HTMLImageElement | null = null;
+  private flatNight: HTMLImageElement | null = null;
   private panX = 0;
   private flatWidth = 1;
 
@@ -243,12 +244,20 @@ export class EarthGlobe {
         '<p class="earth-fallback">The globe could not start. Use the city list beside the map.</p>';
       return;
     }
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      this.flatImg = img;
+    const load = (src: string, assign: (img: HTMLImageElement) => void): void => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        assign(img);
+      };
+      img.src = src;
     };
-    img.src = DAY_TEX;
+    load(DAY_TEX, (img) => {
+      this.flatDay = img;
+    });
+    load(NIGHT_TEX, (img) => {
+      this.flatNight = img;
+    });
     const resize = (): void => {
       const { width, height } = this.root.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
@@ -262,28 +271,100 @@ export class EarthGlobe {
       const y = ((90 - lat) / 180) * H;
       return [x, y];
     };
+    const tile = (img: HTMLImageElement): void => {
+      const { width: W, height: H } = canvas;
+      const shift = ((-this.panX % W) + W) % W;
+      ctx.drawImage(img, shift - W, 0, W, H);
+      ctx.drawImage(img, shift, 0, W, H);
+    };
+    const arc = (from: City, to: City, color: string, width: number): void => {
+      const { width: W } = canvas;
+      const [x1, y1] = project(from.lat, from.lon);
+      let [x2, y2] = project(to.lat, to.lon);
+      if (Math.abs(x2 - x1) > W / 2) x2 += x2 > x1 ? -W : W;
+      const copies = [0];
+      if (x2 < 0) copies.push(W);
+      if (x2 > W) copies.push(-W);
+      for (const dx of copies) {
+        const ax = x1 + dx;
+        const bx = x2 + dx;
+        const mx = (ax + bx) / 2;
+        const my = Math.min(y1, y2) - Math.abs(bx - ax) * 0.22;
+        ctx.beginPath();
+        ctx.moveTo(ax, y1);
+        ctx.quadraticCurveTo(mx, my, bx, y2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.stroke();
+      }
+    };
     const paint = (): void => {
       const { width: W, height: H } = canvas;
-      ctx.fillStyle = '#0b1016';
+      ctx.fillStyle = '#05070c';
       ctx.fillRect(0, 0, W, H);
-      if (this.flatImg) {
-        const shift = ((-this.panX % W) + W) % W;
-        ctx.drawImage(this.flatImg, shift - W, 0, W, H);
-        ctx.drawImage(this.flatImg, shift, 0, W, H);
-      } else {
-        ctx.fillStyle = '#16324a';
+      const day = this.overlays.day && this.flatDay;
+      const night = this.overlays.night && this.flatNight;
+      if (day) tile(day);
+      else if (!night) {
+        ctx.fillStyle = '#0d2233';
         ctx.fillRect(0, H * 0.28, W, H * 0.44);
       }
+      if (night) {
+        if (day) {
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.globalAlpha = 0.82;
+        }
+        tile(night);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      const wash = ctx.createLinearGradient(0, 0, 0, H);
+      wash.addColorStop(0, 'rgba(5, 8, 16, 0.42)');
+      wash.addColorStop(0.45, 'rgba(5, 8, 16, 0.08)');
+      wash.addColorStop(1, 'rgba(5, 8, 16, 0.55)');
+      ctx.fillStyle = wash;
+      ctx.fillRect(0, 0, W, H);
+      const vignette = ctx.createRadialGradient(W * 0.5, H * 0.48, H * 0.12, W * 0.5, H * 0.5, Math.max(W, H) * 0.68);
+      vignette.addColorStop(0, 'rgba(21, 87, 255, 0.04)');
+      vignette.addColorStop(1, 'rgba(4, 8, 16, 0.38)');
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, W, H);
+      ctx.save();
+      ctx.lineCap = 'round';
+      if (this.overlays.routes) {
+        for (const [a, b] of SETTLEMENT_ROUTES) {
+          const from = cityById(a);
+          const to = cityById(b);
+          if (from && to) arc(from, to, 'rgba(186, 204, 224, 0.38)', Math.max(1.1, W / 900));
+        }
+      }
+      if (this.overlays.corridors) {
+        for (const [a, b] of TOKEN_CORRIDORS) {
+          const from = cityById(a);
+          const to = cityById(b);
+          if (from && to) arc(from, to, 'rgba(30, 201, 176, 0.72)', Math.max(1.6, W / 620));
+        }
+      }
+      ctx.restore();
       for (const city of CITIES) {
         const [x, y] = project(city.lat, city.lon);
+        const hq = city.kind === 'Headquarters';
+        const hex = `#${kindColor(city.kind).toString(16).padStart(6, '0')}`;
         ctx.beginPath();
-        ctx.fillStyle = city.id === 'london' ? '#1ec9b0' : '#d4b483';
-        ctx.arc(x, y, city.kind === 'Headquarters' ? 6 : 4, 0, Math.PI * 2);
+        ctx.fillStyle = hq ? 'rgba(30, 201, 176, 0.22)' : 'rgba(212, 180, 131, 0.16)';
+        ctx.arc(x, y, hq ? 14 : 9, 0, Math.PI * 2);
         ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = hex;
+        ctx.shadowColor = hex;
+        ctx.shadowBlur = hq ? 16 : 10;
+        ctx.arc(x, y, hq ? 6 : 4.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
         if (this.overlays.labels) {
           ctx.font = `600 ${Math.max(11, W / 92)}px Outfit, system-ui, sans-serif`;
           ctx.fillStyle = '#f4f7fb';
-          ctx.fillText(city.name, x + 8, y + 4);
+          ctx.fillText(city.name, x + 10, y + 4);
         }
       }
     };

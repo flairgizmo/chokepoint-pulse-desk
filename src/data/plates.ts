@@ -255,6 +255,52 @@ function lookup(raw: string): Plate | undefined {
   return undefined
 }
 
+export type VisualId = 'hero' | 'history' | 'gateway' | 'sterling' | 'future' | 'london'
+
+const BEDS: VisualId[] = ['hero', 'history', 'gateway', 'sterling', 'future', 'london']
+
+const UNIQUE_CITY = new Set([
+  'geneva',
+  'basel',
+  'boston',
+  'cambridge',
+  'brussels',
+  'washington',
+  'paris',
+  'new-york',
+  'miami',
+  'frankfurt',
+  'zurich',
+  'lisbon',
+  'singapore',
+  'tokyo',
+  'hong-kong',
+  'sydney',
+])
+
+/** Motion bed for a page hero. Unique city stills stay stills — no mismatched Canary loop. */
+export function motionBedFor(...keys: Array<string | undefined | null>): VisualId | undefined {
+  const joined = keys.filter(Boolean).join(' ').toLowerCase()
+  if (!joined) return 'hero'
+  const tokens = joined.split(/[^a-z0-9-]+/).filter(Boolean)
+  if (tokens.some((t) => UNIQUE_CITY.has(t))) return undefined
+  for (const id of BEDS) {
+    if (tokens.includes(id)) return id
+  }
+  if (/vision|future|philosophy|essay|thesis/.test(joined)) return 'future'
+  if (/tech|stack|patent|overledger|gateway|fusion|payscript|quantnet/.test(joined)) return 'gateway'
+  if (/cbdc|sterling|money|wholesale|token|gbtd|programme|liability/.test(joined)) return 'sterling'
+  if (/\blondon\b|lab|boe|threadneedle/.test(joined)) return 'london'
+  if (
+    /story|glossary|language|research|library|news|wire|history|quote|people|person|podcast|standard|institution|room/.test(
+      joined,
+    )
+  ) {
+    return 'history'
+  }
+  return 'hero'
+}
+
 export function plateFor(...keys: Array<string | undefined | null>): Plate {
   for (const key of keys) {
     if (!key) continue

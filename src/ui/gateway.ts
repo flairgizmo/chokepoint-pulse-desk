@@ -133,14 +133,14 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.22;
+  renderer.toneMappingExposure = 1.28;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   pmrem.dispose();
-  scene.fog = new THREE.Fog(0x0a1220, 4.2, 9.2);
+  scene.fog = new THREE.Fog(0x0a1220, 6.8, 13);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 40);
   const group = new THREE.Group();
   scene.add(group);
@@ -162,13 +162,13 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   floor.position.y = -0.28;
   scene.add(floor);
 
-  const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg');
+  const backdropTex = new THREE.TextureLoader().load('/visuals/stills/future.jpg');
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   const backdrop = new THREE.Mesh(
-    new THREE.PlaneGeometry(14, 7.2),
-    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0x6b7c96 }),
+    new THREE.PlaneGeometry(18.5, 9.4),
+    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xd6e0ee }),
   );
-  backdrop.position.set(0, 1.15, -4.6);
+  backdrop.position.set(0, 1.82, -3.95);
   scene.add(backdrop);
 
   scene.add(new THREE.AmbientLight(0x8ea0c0, 0.38));

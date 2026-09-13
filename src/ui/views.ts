@@ -27,9 +27,9 @@ import type { NewsRiver } from '../modules/news';
 import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
-import { photoFigure, plateFor } from '../data/plates';
+import { photoFigure, plateFor, type VisualId } from '../data/plates';
 import { diagramFigure } from './diagrams';
-import { overledgerRoster } from './pages';
+import { heroPlate, overledgerRoster } from './pages';
 import { PROGRAMMES } from '../data/programmes';
 import { rememberHeadline } from './newsCache';
 
@@ -47,16 +47,9 @@ function displayTitle(title: string, mute = ''): string {
   return `${esc(title)} <span class="display-mute">${esc(mute)}</span>`;
 }
 
-type VisualId = 'hero' | 'history' | 'gateway' | 'sterling' | 'future' | 'london';
-
 export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId): string {
-  const plate = plateFor(k, bed, title, mute);
   return `<header class="page-hero enterprise-hero cinema-hero">
-    <figure class="hero-plate">
-      <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
-      <span class="hero-wash" aria-hidden="true"></span>
-      <figcaption>${esc(plate.credit)}</figcaption>
-    </figure>
+    ${heroPlate(k, title, mute, bed)}
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${displayTitle(title, mute)}</h1>
@@ -1129,7 +1122,7 @@ export function renderMarkets(print?: MarketPrint): string {
     'a network of networks.',
   )}
   ${quoteRail('markets')}
-  <section class="tape" data-mk data-proof="ticker">
+  <section class="tape cinema-tape" data-mk data-proof="ticker">
     ${photoFigure(plateFor('markets', 'qnt'), 'markets-still')}
     <div class="tape-head">${chip}<span class="mono subtle" data-mk-meta>Updated ${esc(p?.updated ?? '—')} · ${esc(p?.venue ?? '')}</span></div>
     <div class="stats">
@@ -1258,7 +1251,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
     'unfolds.',
   )}
   ${filterBox('news-filter', 'Search headlines…', filter)}
-  <section class="wire">
+  <section class="wire cinema-wire">
     <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
     <ul class="headlines" data-news-list>${list.html}</ul>
   </section>
@@ -1270,6 +1263,7 @@ function renderCalendar(compact = false): string {
     const stamp = dateStamp(e.when);
     return `<li class="cal-card">
       <button type="button" data-stage="source" data-stage-id="${esc(e.id)}" data-title="${esc(e.title)}" data-url="${esc(sourceUrl(e.href))}" data-source="${esc(e.hrefLabel)}">
+      ${photoFigure(plateFor(e.id, e.where, e.title), 'cal-still')}
       <time datetime="${esc(e.when)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(e.where)}</p>
       <h3>${esc(e.title)}</h3>
@@ -1290,6 +1284,7 @@ function renderThisMonth(compact = false): string {
     const stamp = dateStamp(n.date);
     return `<li class="month-card">
       <button type="button" data-stage="source" data-stage-id="${esc(n.id)}" data-title="${esc(n.title)}" data-url="${esc(sourceUrl(n.href))}" data-source="${esc(n.source)}">
+      ${photoFigure(plateFor(n.id, n.lane, n.title), 'month-still')}
       <time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(n.source)} · ${esc(n.lane)}</p>
       <h3>${esc(n.title)}</h3>
@@ -1320,6 +1315,7 @@ function renderVoices(): string {
 export function renderLiveRail(): string {
   return `<section class="live-rail">
     <article class="panel" id="home-tape">
+      ${photoFigure(plateFor('markets', 'qnt'), 'markets-still')}
       ${kicker('Live QNT')}
       <p class="stat" data-home-price>—</p>
       <p class="subtle" data-home-meta>Live print · Coinbase, Kraken or Binance · CoinGecko supply</p>

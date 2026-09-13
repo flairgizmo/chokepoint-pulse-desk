@@ -2327,30 +2327,35 @@ button.chip {
 
 .people-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
-  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr));
+  gap: 1.1rem;
   width: 100%;
 }
 
 .people-tile {
   display: grid;
-  gap: 0.55rem;
-  padding: 0.7rem;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 22px;
   background: var(--surface);
   text-decoration: none;
   color: inherit;
-  box-shadow: 0 12px 28px rgba(47, 91, 255, 0.06);
+  box-shadow: 0 16px 36px rgba(47, 91, 255, 0.08);
 }
 
 .people-tile img {
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
   object-position: center top;
-  border-radius: 16px;
+  border-radius: 0;
   background: var(--bg-2);
+}
+
+.people-tile span {
+  padding: 0.8rem 0.9rem 1rem;
 }
 
 .people-tile strong,
@@ -2678,6 +2683,19 @@ button.chip {
   height: 100%;
   object-fit: cover;
   opacity: 0.58;
+}
+
+.hero-plate .hero-bed {
+  opacity: 1;
+  z-index: 0;
+  filter: saturate(1.12) contrast(1.08) brightness(0.92);
+}
+
+.hero-plate.has-bed .hero-still {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .tesseract {
@@ -4097,6 +4115,39 @@ body.stage-open .grok {
   margin: 0 0 1.2rem;
 }
 
+.markets-still img {
+  aspect-ratio: 21 / 9;
+  max-height: 14rem;
+}
+
+.patent-still,
+.cal-still,
+.month-still {
+  margin: 0 0 0.75rem;
+}
+
+.patent-still img,
+.cal-still img,
+.month-still img {
+  aspect-ratio: 21 / 9;
+  max-height: 7.2rem;
+}
+
+.cinema-tape,
+.cinema-wire {
+  position: relative;
+}
+
+.cinema-tape .markets-still,
+.cinema-wire .headline-still {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.headline .photo-plate img {
+  max-height: 7.4rem;
+}
+
 .desk-stage-object .stage-photo {
   aspect-ratio: 16 / 9;
   max-height: 18rem;
@@ -4111,6 +4162,15 @@ body.stage-open .grok {
   .hero-still {
     animation: none;
     transform: none;
+  }
+
+  .hero-plate .hero-bed {
+    display: none;
+  }
+
+  .hero-plate.has-bed .hero-still {
+    position: relative;
+    opacity: 1;
   }
 }
 

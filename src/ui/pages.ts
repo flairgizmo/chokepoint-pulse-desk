@@ -6,7 +6,7 @@ import { PATENTS } from '../data/patents';
 import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
-import { plateFor } from '../data/plates';
+import { motionBedFor, photoFigure, plateFor, type VisualId } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
@@ -20,14 +20,23 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
   return `<a class="btn btn-${kind}" href="${esc(href)}"><span class="btn-swap"><span>${esc(label)}</span><span>${esc(hover)}</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>`;
 }
 
+export function heroPlate(k: string, title: string, mute = '', bed?: VisualId): string {
+  const plate = plateFor(k, bed, title, mute);
+  const motion = bed ?? motionBedFor(k, title, mute);
+  const video = motion
+    ? `<video class="hero-bed" poster="${esc(plate.src)}" src="/visuals/beds/${motion}.mp4" muted loop playsinline autoplay></video>`
+    : '';
+  return `<figure class="hero-plate${motion ? ' has-bed' : ''}">
+    ${video}
+    <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
+    <span class="hero-wash" aria-hidden="true"></span>
+    <figcaption>${esc(plate.credit)}</figcaption>
+  </figure>`;
+}
+
 function hero(k: string, title: string, lede: string, seed: string): string {
-  const plate = plateFor(k, seed, title);
   return `<header class="page-hero enterprise-hero cinema-hero">
-    <figure class="hero-plate">
-      <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
-      <span class="hero-wash" aria-hidden="true"></span>
-      <figcaption>${esc(plate.credit)}</figcaption>
-    </figure>
+    ${heroPlate(k, title, seed)}
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${title}</h1>
@@ -201,6 +210,7 @@ export function renderPatents(): string {
   const cards = PATENTS.map(
     (p) => `<article class="patent-card" id="${esc(p.id)}">
       <button type="button" data-stage="patent" data-stage-id="${esc(p.id)}">
+        ${photoFigure(plateFor('patents', p.id), 'patent-still')}
         ${diagramFigure(p.id, 'patent', p.number)}
         <p class="kicker">${esc(p.number)}</p>
         <h2>${esc(p.title)}</h2>
