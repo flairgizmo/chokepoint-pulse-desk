@@ -272,14 +272,15 @@ function mountFilm3D(
       const d = i - featured;
       const mag = Math.abs(d);
       const scale = mag === 0 ? 1 : mag === 1 ? 0.7 : 0.46;
-      mesh.position.set(d * (portrait ? 1.18 : 1.68), 0.1 - mag * 0.02, mag * 0.42);
+      mesh.position.set(d * (portrait ? 1.18 : 1.68), 0.16 - mag * 0.02, mag * 0.42);
       mesh.rotation.set(-0.06, -d * 0.18, 0);
       mesh.scale.setScalar(scale);
       const puddle = puddles[i];
       puddle.position.x = mesh.position.x;
-      puddle.position.z = mesh.position.z + 0.06;
+      puddle.position.y = mesh.position.y - (portrait ? 0.72 : 0.64) * scale;
+      puddle.position.z = mesh.position.z + 0.04;
       puddle.scale.setScalar(scale);
-      (puddle.material as THREE.MeshBasicMaterial).opacity = mag === 0 ? 0.84 : 0.38;
+      (puddle.material as THREE.MeshBasicMaterial).opacity = mag === 0 ? 0.88 : 0.4;
     });
   };
 
@@ -308,7 +309,7 @@ function mountFilm3D(
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
     camera.position.setFromSphericalCoords(lite ? 3.18 : 3.05, ax, ay);
-    camera.lookAt(0, 0.04, 0.18);
+    camera.lookAt(0, -0.08, 0.18);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
