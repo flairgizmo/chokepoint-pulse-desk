@@ -116,7 +116,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
-  const restAx = 1.32;
+  const restAx = 1.48;
   const restAy = 0.44;
   const orbit = (16 * Math.PI) / 180;
   let ax = restAx;
