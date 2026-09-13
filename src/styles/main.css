@@ -946,6 +946,16 @@ main {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
+.people-group > .lede-sm {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 900px) {
+  .people-group {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .timeline {
   list-style: none;
   margin: 1.5rem 0 0;
