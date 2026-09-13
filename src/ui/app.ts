@@ -1,3 +1,4 @@
+import { mountGateway2D } from './gateway2d';
 import { QNT_CONTRACT } from '../data/catalog';
 import { CITIES, cityVisual } from '../data/cities';
 import { fetchMarkets, staleCache, type MarketPrint } from '../modules/markets';
@@ -518,10 +519,13 @@ export class QntDesk {
   private wireGateway(): void {
     const canvas = this.root.querySelector<HTMLCanvasElement>('#gateway');
     if (!canvas) return;
+    this.tessDispose = mountGateway2D(canvas);
     void import('./gateway')
-      .then(({ mountGateway }) => {
-        if (!this.root.contains(canvas)) return;
-        this.tessDispose = mountGateway(canvas);
+      .then(({ upgradeGateway3D }) => {
+        const live = this.root.querySelector<HTMLCanvasElement>('#gateway');
+        if (!live || !this.root.contains(live)) return;
+        this.tessDispose?.();
+        this.tessDispose = upgradeGateway3D(live);
       })
       .catch(() => undefined);
   }
