@@ -8,6 +8,14 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { canUseBloom } from './webgl';
 
+export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
+  tex.generateMipmaps = false;
+  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.needsUpdate = true;
+  return tex;
+}
+
 export function cinemaFloorMap(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 512;
@@ -31,7 +39,7 @@ export function cinemaFloorMap(): THREE.CanvasTexture {
       ctx.stroke();
     }
   }
-  const tex = new THREE.CanvasTexture(c);
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }

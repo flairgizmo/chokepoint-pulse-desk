@@ -6,7 +6,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { cinemaFloorMap } from './cinemaSet';
+import { cinemaFloorMap, hardenCanvasTex } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import {
   BANKS,
@@ -93,8 +93,29 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   return c;
 }
 
+function tableCanvas(): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const g = ctx.createRadialGradient(128, 128, 8, 128, 128, 128);
+    g.addColorStop(0, '#f4f7fb');
+    g.addColorStop(0.55, '#b8d4ff');
+    g.addColorStop(1, '#3d7bff');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 256);
+    ctx.fillStyle = '#0B1F5C';
+    ctx.font = '800 118px Outfit, IBM Plex Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Q', 128, 140);
+  }
+  return c;
+}
+
 function facetMaterial(i: number, on: boolean, lite: boolean): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
-  const tex = new THREE.CanvasTexture(facetCanvas(i, on));
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on)));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
     ? new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide })
@@ -184,7 +205,7 @@ function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
     ctx.textBaseline = 'middle';
     ctx.fillText(text, 384, 64);
   }
-  const tex = new THREE.CanvasTexture(c);
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
   sprite.scale.set(text.length > 8 ? 1.28 : 0.86, 0.2, 1);
@@ -242,7 +263,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }
   }
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 7.4, 14);
-  const camera = new THREE.PerspectiveCamera(lite ? 36 : 34, 1, 0.05, 40);
+  const camera = new THREE.PerspectiveCamera(lite ? 34 : 32, 1, 0.05, 40);
   const group = new THREE.Group();
   scene.add(group);
 
@@ -299,19 +320,22 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crystal = new THREE.Group();
   const facets: THREE.Mesh[] = [];
   const sides = 8;
-  const restAyFace = 0.38;
+  const restAyFace = 0.28;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
-  const tableR = 0.16;
-  const tableY = 1.12;
-  const eqR = 0.52;
-  const eqY = 0.46;
-  const botY = 0.02;
+  const tableR = 0.24;
+  const tableY = 0.74;
+  const eqR = 0.62;
+  const eqY = 0.4;
+  const botY = 0.04;
+  const tableTex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas()));
+  tableTex.colorSpace = THREE.SRGBColorSpace;
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
-      ? new THREE.MeshBasicMaterial({ color: 0xd4e6ff, side: THREE.DoubleSide })
+      ? new THREE.MeshBasicMaterial({ map: tableTex, side: THREE.DoubleSide })
       : new THREE.MeshPhysicalMaterial({
-          color: 0xdce8ff,
+          map: tableTex,
+          color: 0xffffff,
           metalness: 0.18,
           roughness: 0.08,
           clearcoat: 1,
@@ -406,12 +430,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
-  crystal.scale.setScalar(1.18);
+  crystal.scale.setScalar(1.08);
   group.add(base);
   group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 1.46, 0);
+  gateLabel.position.set(0, 1.08, 0);
   gateLabel.scale.set(1.18, 0.2, 1);
   group.add(gateLabel);
 
@@ -427,7 +451,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.74;
+  rt2.position.y = 1.36;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -441,11 +465,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.74;
+  rt2Disk.position.y = 1.36;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.74, 0);
+  rt2Label.position.set(0, 1.36, 0);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
 
@@ -462,7 +486,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const cards: THREE.Mesh[] = [];
   const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
   BANKS.forEach((bank, i) => {
-    const tex = new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i]));
+    const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
     const mat = lite
       ? new THREE.MeshBasicMaterial({ map: tex })
@@ -474,9 +498,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           clearcoatRoughness: 0.18,
           transparent: true,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.72, 0.05), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.64, 0.04), mat);
     const [x, y, z] = bankXYZ(i, 0);
-    mesh.position.set(x, y + 0.28, z);
+    mesh.position.set(x, y + 0.2, z);
     mesh.userData.nodeId = bank.id;
     mesh.add(
       new THREE.LineSegments(
@@ -488,7 +512,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     cards.push(mesh);
     cardMats.push(mat);
     const paintOne = (): void => {
-      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false, stills[i]));
+      const next = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false, stills[i])));
       next.colorSpace = THREE.SRGBColorSpace;
       mat.map?.dispose();
       mat.map = next;
@@ -504,7 +528,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 1.12, 0), new THREE.Vector3(0, 1.7, 0)]),
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.74, 0), new THREE.Vector3(0, 1.32, 0)]),
     new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
   );
   stem.computeLineDistances();
@@ -533,8 +557,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...facets, core, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.16 : 1.26;
-  const restAy = 0.38;
+  const restAx = lite ? 0.98 : 1.05;
+  const restAy = 0.28;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -582,7 +606,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const paintCards = (): void => {
     BANKS.forEach((bank, i) => {
       const on = selected === bank.id || hover === bank.id;
-      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, on, stills[i]));
+      const next = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, on, stills[i])));
       next.colorSpace = THREE.SRGBColorSpace;
       cardMats[i].map?.dispose();
       cardMats[i].map = next;
@@ -614,14 +638,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 4.78 : 4.08, ax, ay);
-    camera.lookAt(0, lite ? 0.48 : 0.54, 0);
+    camera.position.setFromSphericalCoords(lite ? 5.15 : 4.45, ax, ay);
+    camera.lookAt(0, lite ? 0.36 : 0.4, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x, y + 0.28, z);
-      cards[i].lookAt(camera.position.x, y + 0.4, camera.position.z);
+      cards[i].position.set(x, y + 0.2, z);
+      cards[i].lookAt(camera.position.x, y + 0.3, camera.position.z);
     });
-    crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2600) * 0.16;
+    crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

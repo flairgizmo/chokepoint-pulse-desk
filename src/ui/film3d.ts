@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, hardenCanvasTex, plateMaterial } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
@@ -164,7 +164,7 @@ function plateTexture(
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, w, h);
   }
-  const tex = new THREE.CanvasTexture(c);
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image();
   img.onload = () => {
@@ -185,9 +185,13 @@ function plateTexture(
     ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
     ctx.fillRect(0, h - 92, w, 92);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = `700 ${portrait ? 34 : 40}px Arial, sans-serif`;
+    ctx.font = `800 ${portrait ? 36 : 44}px Arial, sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#05070c';
+    ctx.lineWidth = 7;
+    ctx.strokeText(title, 28, h - 34);
     ctx.fillText(title, 28, h - 34);
     tex.needsUpdate = true;
     onReady(tex);

@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, hardenCanvasTex, plateMaterial } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -111,7 +111,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, 1280, 720);
   }
-  const tex = new THREE.CanvasTexture(c);
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image();
   img.onload = () => {

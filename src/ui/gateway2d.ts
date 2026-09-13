@@ -73,9 +73,9 @@ export const RTGS: { id: NodeId; name: string; note: string } = {
 };
 
 export function bankXYZ(i: number, pulse: number): [number, number, number] {
-  const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
-  const r = 1.22 + pulse;
-  return [Math.cos(a) * r * 1.36, 0.02 + Math.sin(a) * 0.03, Math.sin(a) * r * 0.44];
+  const a = (i / 6) * Math.PI * 2 - Math.PI / 2 + Math.PI / 6;
+  const r = 1.24 + pulse;
+  return [Math.cos(a) * r * 1.52, Math.sin(a) * 0.02, Math.sin(a) * r * 0.34];
 }
 
 export function paintHint(canvas: HTMLCanvasElement, selected: NodeId | null, hover: NodeId | null): void {
@@ -290,8 +290,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const onGate = selected === 6 || hover === 6;
     const cx = gate[0];
     const cy = gate[1] - Math.max(28, H * 0.05);
-    const crystalW = Math.max(46, W * 0.064);
-    const crystalH = Math.max(118, H * 0.34);
+    const crystalW = Math.max(58, W * 0.078);
+    const crystalH = Math.max(78, H * 0.22);
     ctx.save();
     ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
     ctx.shadowBlur = onGate ? 36 : 22;
