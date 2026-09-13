@@ -219,7 +219,7 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, 512, 512);
   if (photo?.naturalWidth) {
-    ctx.globalAlpha = 0.82;
+    ctx.globalAlpha = 0.72;
     ctx.drawImage(
       photo,
       photo.naturalWidth * 0.26,
@@ -363,11 +363,11 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(0.9, 0.36 + key * 0.46 + rim * 0.16 + fres * 0.2);
+  const shade = Math.min(1, 0.42 + key * 0.5 + rim * 0.16);
   return new THREE.Color(
-    Math.min(1, shade + key * 0.16 + fres * 0.1 - rim * 0.06),
-    Math.min(1, shade - key * 0.02 + rim * 0.04),
-    Math.min(1, shade - key * 0.14 + rim * 0.2 + fres * 0.14),
+    Math.min(1, shade + key * 0.08 + fres * 0.04),
+    shade,
+    Math.min(1, shade - key * 0.06 + rim * 0.1 + fres * 0.06),
   );
 }
 

@@ -5799,22 +5799,29 @@ section.block .kicker {
 
 .treaty-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 1fr);
   gap: 1rem;
-  align-items: stretch;
 }
 
 .treaty-still {
   margin: 0;
-  height: 100%;
 }
 
 .treaty-still img {
-  aspect-ratio: 4 / 5;
-  height: 100%;
-  max-height: none;
+  aspect-ratio: 21 / 9;
+  max-height: 22rem;
   object-fit: cover;
-  filter: saturate(0.82) contrast(1.14) brightness(0.68);
+  filter: saturate(0.7) contrast(1.18) brightness(0.52);
+}
+
+.treaty-row button {
+  display: grid;
+  gap: 0.28rem;
+}
+
+.treaty-row .chip,
+.treaty-row strong,
+.treaty-row em {
+  display: block;
 }
 
 .satp-lab .stage {
@@ -5852,15 +5859,4 @@ section.block .kicker {
 
 .satp-lab .satp-title {
   padding-right: 1rem;
-}
-
-@media (max-width: 800px) {
-  .treaty-stage {
-    grid-template-columns: 1fr;
-  }
-
-  .treaty-still img {
-    aspect-ratio: 21 / 9;
-    max-height: 16rem;
-  }
 }
