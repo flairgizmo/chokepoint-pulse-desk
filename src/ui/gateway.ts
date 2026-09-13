@@ -45,8 +45,8 @@ function containDraw(
 
 type GlassCut = 'crown' | 'pav' | 'table';
 
-const TABLE_Y = 0.56;
-const BOT_Y = -0.2;
+const TABLE_Y = 0.32;
+const BOT_Y = -0.26;
 
 type CutMat = THREE.MeshPhongMaterial | THREE.MeshPhysicalMaterial;
 
@@ -67,8 +67,8 @@ function paintPhotoGlass(
     const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.22 : 0.55));
     ctx.filter =
       cut === 'table'
-        ? 'contrast(1.28) brightness(0.36) saturate(0.62)'
-        : 'contrast(1.16) brightness(0.62) saturate(0.74)';
+        ? 'contrast(1.22) brightness(0.52) saturate(0.68)'
+        : 'contrast(1.14) brightness(0.78) saturate(0.8)';
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.filter = 'none';
     ctx.save();
@@ -83,8 +83,8 @@ function paintPhotoGlass(
       : cut === 'pav'
         ? 'rgba(4, 10, 28, 0.5)'
         : cut === 'table'
-          ? 'rgba(3, 8, 20, 0.78)'
-          : 'rgba(6, 16, 40, 0.38)';
+          ? 'rgba(3, 8, 20, 0.52)'
+          : 'rgba(6, 16, 40, 0.22)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -537,10 +537,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const sides = 16;
   const restAyFace = 0.72;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
-  const tableR = 0.34;
+  const tableR = 0.4;
   const tableY = TABLE_Y;
-  const eqR = 0.54;
-  const eqY = 0.2;
+  const eqR = 0.58;
+  const eqY = 0.16;
   const botY = BOT_Y;
   const midR = tableR + (eqR - tableR) * 0.52;
   const midY = tableY + (eqY - tableY) * 0.48;
@@ -550,7 +550,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crownMat = glassMat(glassTex(photo0, false, 'crown'), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0x93a6c0,
+    tint: 0xa8b8d0,
   });
   const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, {
     transmission: 0.82,
@@ -665,8 +665,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     new THREE.CylinderGeometry(0.05, 0.08, 0.04, sides),
     cinemaChrome(lite),
   );
-  crystal.position.y = 0.18;
-  crystal.scale.setScalar(1.42);
+  crystal.position.y = 0.22;
+  crystal.scale.setScalar(1.5);
   base.position.y = -0.26;
   base.userData.nodeId = 6;
   group.add(base);
@@ -747,7 +747,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.08 : 1.18;
+  const restAx = lite ? 0.76 : 0.84;
   const restAy = 0.72;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
@@ -847,8 +847,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 3.88 : 3.72, ax, ay);
-    camera.lookAt(0, lite ? 0.5 : 0.52, 0);
+    camera.position.setFromSphericalCoords(lite ? 3.58 : 3.42, ax, ay);
+    camera.lookAt(0, lite ? 0.3 : 0.32, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
