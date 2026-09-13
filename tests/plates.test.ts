@@ -33,6 +33,17 @@ describe('Topic plates', () => {
     }
     expect(statSync(resolve(process.cwd(), 'public/visuals/topics/canary.jpg')).size).toBeGreaterThan(200_000);
     expect(statSync(resolve(process.cwd(), 'public/visuals/topics/ucl.jpg')).size).toBeGreaterThan(200_000);
+    expect(statSync(resolve(process.cwd(), 'public/visuals/topics/cable.jpg')).size).toBeGreaterThan(200_000);
+    expect(statSync(resolve(process.cwd(), 'public/visuals/topics/datacenter.jpg')).size).toBeGreaterThan(200_000);
+  });
+
+  it('maps technology and story beats to distinct photographs', () => {
+    expect(plateFor('connectors').src).toBe(PLATES.cable.src);
+    expect(plateFor('satp').src).toBe(PLATES.geneva.src);
+    expect(plateFor('whitepaper-2018').src).toBe(PLATES.ucl.src);
+    expect(plateFor('gbtd-2025').src).toBe(PLATES.canary.src);
+    expect(plateFor('murex-2026').src).toBe(PLATES.paris.src);
+    expect(plateFor('x402').src).toBe(PLATES.fiber.src);
   });
 
   it('maps each city id to that city’s Wikimedia still', () => {

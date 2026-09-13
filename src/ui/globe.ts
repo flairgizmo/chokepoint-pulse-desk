@@ -4,7 +4,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { canUseBloom } from './webgl';
+import { canUseBloom, probeWebGL } from './webgl';
 import {
   CITIES,
   SETTLEMENT_ROUTES,
@@ -104,8 +104,7 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
   return out;
 }
 
-function stars(): THREE.Points {
-  const count = 1800;
+function stars(count = 1800): THREE.Points {
   const pos = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 10);
@@ -230,6 +229,7 @@ export class EarthGlobe {
   }
 
   private flat = false;
+  private lite = false;
   private flatDay: HTMLImageElement | null = null;
   private flatNight: HTMLImageElement | null = null;
   private panX = 0;
@@ -420,14 +420,20 @@ export class EarthGlobe {
     canvas.setAttribute('aria-hidden', 'true');
     this.root.appendChild(canvas);
 
+    const probe = probeWebGL();
+    if (!probe) {
+      this.mountFlat(canvas);
+      return;
+    }
+    this.lite = probe.lite;
     let renderer: THREE.WebGLRenderer;
     try {
       renderer = new THREE.WebGLRenderer({
         canvas,
-        antialias: true,
+        antialias: !this.lite,
         alpha: true,
-        powerPreference: 'high-performance',
-        failIfMajorPerformanceCaveat: true,
+        powerPreference: this.lite ? 'low-power' : 'high-performance',
+        failIfMajorPerformanceCaveat: false,
       });
     } catch {
       this.mountFlat(canvas);
@@ -435,18 +441,25 @@ export class EarthGlobe {
     }
     this.renderer = renderer;
     canvas.dataset.engine = 'webgl';
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    canvas.dataset.profile = this.lite ? 'lite' : 'unreal';
+    renderer.setPixelRatio(this.lite ? 1 : Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = this.lite ? 1.08 : 1.2;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
     this.scene = scene;
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    pmrem.dispose();
-    scene.add(stars());
+    if (!this.lite) {
+      try {
+        const pmrem = new THREE.PMREMGenerator(renderer);
+        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+        pmrem.dispose();
+      } catch {
+        // Lights-only path if RoomEnvironment stalls.
+      }
+    }
+    scene.add(stars(this.lite ? 600 : 1800));
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
 
@@ -454,8 +467,10 @@ export class EarthGlobe {
     this.earth = group;
     scene.add(group);
 
+    const segs = this.lite ? 48 : 96;
+    const rings = this.lite ? 32 : 64;
     const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1, 96, 64),
+      new THREE.SphereGeometry(1, segs, rings),
       new THREE.MeshPhysicalMaterial({
         color: 0x0b2a32,
         roughness: 0.38,
@@ -463,7 +478,7 @@ export class EarthGlobe {
         emissive: 0x031016,
         clearcoat: 0.42,
         clearcoatRoughness: 0.28,
-        envMapIntensity: 1.05,
+        envMapIntensity: this.lite ? 0.55 : 1.05,
       }),
     );
     this.globeMesh = globe;
@@ -471,7 +486,7 @@ export class EarthGlobe {
     group.add(this.graticule());
 
     const lights = new THREE.Mesh(
-      new THREE.SphereGeometry(1.004, 96, 64),
+      new THREE.SphereGeometry(1.004, segs, rings),
       new THREE.MeshBasicMaterial({
         color: 0xffffff,
         transparent: true,
@@ -484,7 +499,7 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.09, 64, 48),
+      new THREE.SphereGeometry(1.09, this.lite ? 32 : 64, this.lite ? 24 : 48),
       new THREE.ShaderMaterial({
         uniforms: { color: { value: new THREE.Color(0x8ec0ff) } },
         vertexShader: `
@@ -535,31 +550,33 @@ export class EarthGlobe {
       undefined,
       ignore,
     );
-    loader.load(
-      BUMP_TEX,
-      (tex) => {
-        const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
-        if (!mat) return;
-        mat.bumpMap = tex;
-        mat.bumpScale = 0.055;
-        mat.needsUpdate = true;
-      },
-      undefined,
-      ignore,
-    );
-    loader.load(
-      WATER_TEX,
-      (tex) => {
-        const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
-        if (!mat) return;
-        mat.metalnessMap = tex;
-        mat.metalness = 0.42;
-        mat.roughness = 0.38;
-        mat.needsUpdate = true;
-      },
-      undefined,
-      ignore,
-    );
+    if (!this.lite) {
+      loader.load(
+        BUMP_TEX,
+        (tex) => {
+          const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+          if (!mat) return;
+          mat.bumpMap = tex;
+          mat.bumpScale = 0.055;
+          mat.needsUpdate = true;
+        },
+        undefined,
+        ignore,
+      );
+      loader.load(
+        WATER_TEX,
+        (tex) => {
+          const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+          if (!mat) return;
+          mat.metalnessMap = tex;
+          mat.metalness = 0.42;
+          mat.roughness = 0.38;
+          mat.needsUpdate = true;
+        },
+        undefined,
+        ignore,
+      );
+    }
 
     scene.add(new THREE.AmbientLight(0x6b7c8c, 0.32));
     const key = new THREE.DirectionalLight(0xfff4e5, 1.85);
@@ -573,7 +590,7 @@ export class EarthGlobe {
     for (const city of CITIES) {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, 12, 12),
+        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, this.lite ? 8 : 12, this.lite ? 8 : 12),
         new THREE.MeshPhysicalMaterial({
           color: kindColor(city.kind),
           emissive: kindColor(city.kind),
@@ -611,11 +628,12 @@ export class EarthGlobe {
     this.pulse.position.copy(latLonToVec(london.lat, london.lon, 1.03));
     group.add(this.pulse);
 
+    const arcSegs = this.lite ? 32 : 64;
     this.routeLines = SETTLEMENT_ROUTES.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, 0.32),
+      this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, 0.32, arcSegs),
     );
     this.corridorLines = TOKEN_CORRIDORS.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x1ec9b0, 0.72),
+      this.addArc(cityById(a)!, cityById(b)!, 0x1ec9b0, 0.72, arcSegs),
     );
 
     window.addEventListener('resize', () => this.resize());
@@ -678,6 +696,22 @@ export class EarthGlobe {
     }
 
     this.resize();
+    const first = performance.now();
+    this.tick();
+    if (this.lite && performance.now() - first > 2500) {
+      this.renderer.dispose();
+      this.renderer = null;
+      this.scene = null;
+      this.camera = null;
+      this.composer = null;
+      canvas.remove();
+      const flat = document.createElement('canvas');
+      flat.className = 'earth-canvas';
+      flat.setAttribute('aria-hidden', 'true');
+      this.root.appendChild(flat);
+      this.mountFlat(flat);
+      return;
+    }
     const loop = () => {
       if (this.disposed) return;
       this.frame = requestAnimationFrame(loop);
@@ -705,8 +739,8 @@ export class EarthGlobe {
     );
   }
 
-  private addArc(a: City, b: City, color: number, opacity: number): THREE.Line {
-    const pts = greatCircle(latLonToVec(a.lat, a.lon, 1), latLonToVec(b.lat, b.lon, 1));
+  private addArc(a: City, b: City, color: number, opacity: number, segs = 64): THREE.Line {
+    const pts = greatCircle(latLonToVec(a.lat, a.lon, 1), latLonToVec(b.lat, b.lon, 1), segs);
     const geo = new THREE.BufferGeometry().setFromPoints(pts);
     const line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
     this.earth?.add(line);

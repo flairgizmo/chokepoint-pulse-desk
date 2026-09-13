@@ -1,4 +1,4 @@
-import type { WebGLRenderer } from 'three';
+import { WebGLRenderer } from 'three';
 
 function rendererName(renderer: WebGLRenderer): string {
   try {
@@ -27,4 +27,26 @@ export function canUseBloom(renderer: WebGLRenderer): boolean {
   return !/swiftshader|llvmpipe|softpipe|software|microsoft basic render|virtualbox|mesa offscreen/i.test(
     name,
   );
+}
+
+/**
+ * Open a WebGL context even on software GL. `lite` means no bloom / no PMREM.
+ * Returns null only when WebGL itself cannot start.
+ */
+export function probeWebGL(): { lite: boolean } | null {
+  if (typeof document === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  try {
+    const renderer = new WebGLRenderer({
+      canvas,
+      antialias: false,
+      alpha: true,
+      failIfMajorPerformanceCaveat: false,
+    });
+    const lite = isSoftwareRenderer(renderer);
+    renderer.dispose();
+    return { lite };
+  } catch {
+    return null;
+  }
 }

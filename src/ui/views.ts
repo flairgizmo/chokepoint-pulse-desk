@@ -1304,7 +1304,12 @@ function renderThisMonth(compact = false): string {
 
 function renderVoices(): string {
   const voices = OFFICIAL_VOICES.map(
-    (v) => `<article class="voice"><h3>${esc(v.name)} <span class="mono">${esc(v.handle)}</span></h3><p>${esc(v.blurb)}</p>${extLink(v.href, v.handle)}</article>`,
+    (v) => `<article class="voice cinema-voice">
+      ${photoFigure(plateFor(v.handle, v.name), 'voice-still')}
+      <h3>${esc(v.name)} <span class="mono">${esc(v.handle)}</span></h3>
+      <p>${esc(v.blurb)}</p>
+      ${extLink(v.href, v.handle)}
+    </article>`,
   ).join('');
   return `<section class="voices">
     ${kicker('Voices')}

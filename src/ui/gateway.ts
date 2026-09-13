@@ -6,7 +6,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { canUseBloom, isSoftwareRenderer } from './webgl';
+import { canUseBloom, probeWebGL } from './webgl';
 import {
   BANKS,
   MARK,
@@ -86,67 +86,59 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   return mountGateway2D(canvas);
 }
 
-/** Swap the live 2D corridor for WebGL only when a hardware GPU is present. */
+/** Swap the live 2D corridor for WebGL. Software GL is allowed without bloom. */
 export function upgradeGateway3D(canvas: HTMLCanvasElement): (() => void) | null {
-  const probe = document.createElement('canvas');
-  try {
-    const renderer = new THREE.WebGLRenderer({
-      canvas: probe,
-      antialias: false,
-      alpha: true,
-      failIfMajorPerformanceCaveat: true,
-    });
-    const software = isSoftwareRenderer(renderer);
-    renderer.dispose();
-    if (software) return null;
-  } catch {
-    return null;
-  }
+  const probe = probeWebGL();
+  if (!probe) return null;
   const next = remountCanvas(canvas);
   try {
-    return mountGateway3D(next);
+    return mountGateway3D(next, { lite: probe.lite });
   } catch {
     return mountGateway2D(next);
   }
 }
 
-function mountGateway3D(canvas: HTMLCanvasElement): () => void {
+function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}): () => void {
+  const lite = Boolean(opts.lite);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      antialias: !lite,
       alpha: true,
-      powerPreference: 'high-performance',
-      failIfMajorPerformanceCaveat: true,
+      powerPreference: lite ? 'low-power' : 'high-performance',
+      failIfMajorPerformanceCaveat: false,
     });
   } catch {
     throw new Error('webgl-unavailable');
   }
-  if (isSoftwareRenderer(renderer)) {
-    renderer.dispose();
-    throw new Error('software-gl');
-  }
 
   canvas.dataset.engine = 'webgl';
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+  canvas.dataset.profile = lite ? 'lite' : 'unreal';
+  renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.28;
+  renderer.toneMappingExposure = lite ? 1.18 : 1.28;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  pmrem.dispose();
+  if (!lite) {
+    try {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      pmrem.dispose();
+    } catch {
+      // Lights-only path if RoomEnvironment stalls.
+    }
+  }
   scene.fog = new THREE.Fog(0x0a1220, 6.8, 13);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 40);
   const group = new THREE.Group();
   scene.add(group);
 
   const floor = new THREE.Mesh(
-    new THREE.CircleGeometry(4.4, 96),
+    new THREE.CircleGeometry(4.4, lite ? 48 : 96),
     new THREE.MeshPhysicalMaterial({
       color: 0x1b2a44,
       roughness: 0.05,
@@ -155,7 +147,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       clearcoatRoughness: 0.04,
       transparent: true,
       opacity: 0.52,
-      envMapIntensity: 1.45,
+      envMapIntensity: lite ? 0.85 : 1.45,
     }),
   );
   floor.rotation.x = -Math.PI / 2;
@@ -166,7 +158,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   const backdrop = new THREE.Mesh(
     new THREE.PlaneGeometry(18.5, 9.4),
-    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xd0d8e6 }),
+    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xffffff }),
   );
   backdrop.position.set(0, 1.95, -3.85);
   scene.add(backdrop);
@@ -189,7 +181,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       bevelEnabled: true,
       bevelThickness: 0.014,
       bevelSize: 0.012,
-      bevelSegments: 2,
+      bevelSegments: lite ? 1 : 2,
     }),
     new THREE.MeshPhysicalMaterial({
       color: 0x3b7bff,
@@ -214,7 +206,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
-    new THREE.TorusGeometry(0.22, 0.028, 16, 48),
+    new THREE.TorusGeometry(0.22, 0.028, lite ? 8 : 16, lite ? 24 : 48),
     new THREE.MeshPhysicalMaterial({
       color: 0x00a878,
       metalness: 0.35,
@@ -229,7 +221,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
-    new THREE.CircleGeometry(0.18, 32),
+    new THREE.CircleGeometry(0.18, lite ? 24 : 32),
     new THREE.MeshPhysicalMaterial({
       color: 0xffffff,
       roughness: 0.3,
@@ -294,7 +286,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   group.add(stem);
 
   const bead = new THREE.Mesh(
-    new THREE.SphereGeometry(0.045, 24, 24),
+    new THREE.SphereGeometry(0.045, lite ? 12 : 24, lite ? 12 : 24),
     new THREE.MeshPhysicalMaterial({
       color: 0x00a878,
       emissive: 0x00a878,
@@ -460,14 +452,19 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   resize();
   paintHint(canvas, selected, hover);
   paintCards();
+  const first = performance.now();
+  tick(first);
+  if (lite && performance.now() - first > 2500) {
+    renderer.dispose();
+    throw new Error('software-gl-slow');
+  }
   window.addEventListener('resize', resize);
   canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointermove', onMove);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointercancel', onUp);
   canvas.addEventListener('click', onClick);
-  if (reduced) tick(performance.now());
-  else raf = requestAnimationFrame(loop);
+  if (!reduced) raf = requestAnimationFrame(loop);
 
   return () => {
     cancelAnimationFrame(raf);
