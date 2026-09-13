@@ -66,16 +66,16 @@ type GlassGrade = {
 /** Two shared Canary crops — not a per-facet quilt. Lane A is the bright window; B is the dusk kite. */
 function glassGrade(cut: GlassCut, lane: GlassLane): GlassGrade {
   if (cut === 'table') {
-    return { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.74, contrast: 1.22, saturate: 0.76, multiply: 0.22 };
+    return { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.8, contrast: 1.24, saturate: 0.8, multiply: 0.16 };
   }
   if (cut === 'crown') {
     return lane === 0
-      ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.84, contrast: 1.14, saturate: 0.8, multiply: 0.12 }
-      : { sx: 0.34, sy: 0.28, sw: 0.52, sh: 0.46, brightness: 0.64, contrast: 1.18, saturate: 0.7, multiply: 0.22 };
+      ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.88, contrast: 1.16, saturate: 0.84, multiply: 0.1 }
+      : { sx: 0.34, sy: 0.28, sw: 0.52, sh: 0.46, brightness: 0.7, contrast: 1.2, saturate: 0.74, multiply: 0.18 };
   }
   return lane === 0
-    ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.54, contrast: 1.16, saturate: 0.64, multiply: 0.36 }
-    : { sx: 0.4, sy: 0.44, sw: 0.44, sh: 0.34, brightness: 0.42, contrast: 1.18, saturate: 0.56, multiply: 0.44 };
+    ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.7, contrast: 1.2, saturate: 0.72, multiply: 0.2 }
+    : { sx: 0.4, sy: 0.44, sw: 0.44, sh: 0.34, brightness: 0.56, contrast: 1.22, saturate: 0.64, multiply: 0.28 };
 }
 
 function paintPhotoGlass(
@@ -99,7 +99,7 @@ function paintPhotoGlass(
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.filter = 'none';
     ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.36 : cut === 'table' ? 0.14 : lane === 0 ? 0.16 : 0.22;
+    ctx.globalAlpha = cut === 'pav' ? 0.46 : cut === 'table' ? 0.22 : lane === 0 ? 0.18 : 0.24;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
@@ -119,8 +119,8 @@ function paintPhotoGlass(
   }
   if (cut === 'table') {
     ctx.globalCompositeOperation = 'screen';
-    const catchL = ctx.createRadialGradient(w * 0.34, h * 0.28, 2, w * 0.34, h * 0.28, w * 0.14);
-    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.32)');
+    const catchL = ctx.createRadialGradient(w * 0.34, h * 0.28, 2, w * 0.34, h * 0.28, w * 0.18);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.42)');
     catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
     ctx.fillStyle = catchL;
     ctx.fillRect(0, 0, w, h);
@@ -147,8 +147,8 @@ function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: nu
   const fire = ctx.createLinearGradient(w * 0.1, h * 0.08, w * 0.86, h * 0.94);
   if (lane === 0) {
     fire.addColorStop(0, 'rgba(255, 236, 210, 0)');
-    fire.addColorStop(0.48, 'rgba(255, 236, 210, 0.12)');
-    fire.addColorStop(0.52, 'rgba(200, 220, 255, 0.22)');
+    fire.addColorStop(0.48, 'rgba(255, 236, 210, 0.18)');
+    fire.addColorStop(0.52, 'rgba(200, 220, 255, 0.28)');
     fire.addColorStop(1, 'rgba(255, 236, 210, 0)');
   } else {
     fire.addColorStop(0, 'rgba(140, 170, 220, 0)');
@@ -342,7 +342,7 @@ function facetShade(
   if (n.dot(mid) < 0) n.negate();
   const key = Math.max(0, n.dot(KEY_DIR));
   const rim = Math.max(0, n.dot(RIM_DIR));
-  return Math.min(1, 0.34 + key * 0.54 + rim * 0.16);
+  return Math.min(1, 0.42 + key * 0.5 + rim * 0.16);
 }
 
 function wrapU(x: number, z: number): number {
@@ -652,13 +652,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x6a7c94,
+    tint: 0x8a9cb4,
     vertexColors: lite,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x4a5c74,
+    tint: 0x6a7c94,
     vertexColors: lite,
   });
   const table = new THREE.Mesh(
@@ -667,7 +667,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       transmission: 0.38,
       thickness: 0.28,
       shade: false,
-      tint: 0x8a9cb4,
+      tint: 0xb4c4d8,
     }),
   );
   table.position.y = tableY;
