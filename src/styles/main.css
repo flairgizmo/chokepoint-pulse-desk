@@ -508,7 +508,7 @@ main {
 .page-hero h1,
 .masthead h1 {
   margin: 0;
-  font-size: clamp(2.6rem, 7vw, 5.4rem);
+  font-size: clamp(2.35rem, 5.4vw, 4.2rem);
 }
 
 .masthead .lede,
@@ -4112,8 +4112,8 @@ body.stage-open .grok {
 .page-hero.cinema-hero .film-stage-wrap.cinema-stage {
   width: 100%;
   margin: 0 0 1.4rem;
-  min-height: 360px;
-  max-height: min(70dvh, 680px);
+  min-height: 420px;
+  max-height: min(74dvh, 760px);
   box-shadow: 0 32px 80px rgba(11, 31, 92, 0.18);
 }
 
@@ -4254,8 +4254,8 @@ body.stage-open .grok {
   width: min(var(--max), calc(100% - 2.5rem));
   margin: 1.1rem auto 2.2rem;
   aspect-ratio: 16 / 9;
-  min-height: 440px;
-  max-height: min(74dvh, 820px);
+  min-height: 500px;
+  max-height: min(78dvh, 880px);
   overflow: hidden;
   border-radius: 22px;
   background:

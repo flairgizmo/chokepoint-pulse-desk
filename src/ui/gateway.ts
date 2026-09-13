@@ -159,21 +159,21 @@ function logoCanvas(
 
 function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
   const c = document.createElement('canvas');
-  c.width = 512;
+  c.width = 768;
   c.height = 128;
   const ctx = c.getContext('2d');
   if (ctx) {
-    ctx.clearRect(0, 0, 512, 128);
-    ctx.font = '700 42px Outfit, IBM Plex Sans, sans-serif';
+    ctx.clearRect(0, 0, 768, 128);
+    ctx.font = '700 48px Outfit, IBM Plex Sans, sans-serif';
     ctx.fillStyle = color;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, 256, 64);
+    ctx.fillText(text, 384, 64);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
-  sprite.scale.set(0.92, 0.23, 1);
+  sprite.scale.set(text.length > 8 ? 1.28 : 0.86, 0.2, 1);
   return sprite;
 }
 
@@ -276,16 +276,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const crystal = new THREE.Group();
   const facets: THREE.Mesh[] = [];
-  const facetH = 0.92;
-  const facetR = 0.36;
+  const facetH = 1.02;
+  const facetR = 0.4;
+  const face0 = 0.5;
   for (let i = 0; i < 6; i++) {
-    const a0 = (i / 6) * Math.PI * 2 + Math.PI / 6;
-    const a1 = ((i + 1) / 6) * Math.PI * 2 + Math.PI / 6;
+    const a0 = (i / 6) * Math.PI * 2 + face0 - Math.PI / 6;
+    const a1 = ((i + 1) / 6) * Math.PI * 2 + face0 - Math.PI / 6;
     const mid = (a0 + a1) / 2;
     const chord = 2 * facetR * Math.sin(Math.PI / 6);
     const face = new THREE.Mesh(new THREE.PlaneGeometry(chord, facetH), facetMaterial(i, false, lite));
     face.position.set(Math.cos(mid) * facetR, facetH / 2 + 0.08, Math.sin(mid) * facetR);
-    face.lookAt(0, face.position.y, 0);
+    face.lookAt(Math.cos(mid) * 8, face.position.y, Math.sin(mid) * 8);
     face.userData.nodeId = 6;
     crystal.add(face);
     facets.push(face);
@@ -320,15 +321,23 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(lid);
     facets.push(lid);
   }
+  const body = new THREE.Mesh(
+    new THREE.CylinderGeometry(facetR * 0.9, facetR * 0.9, facetH * 0.96, 6),
+    new THREE.MeshBasicMaterial({ color: 0x0a1848 }),
+  );
+  body.position.y = facetH / 2 + 0.08;
+  body.rotation.y = face0;
+  body.userData.nodeId = 6;
+  crystal.add(body);
   const edgePts: number[] = [];
   for (let i = 0; i < 6; i++) {
-    const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
+    const a = (i / 6) * Math.PI * 2 + face0 - Math.PI / 6;
     const x = Math.cos(a) * facetR;
     const z = Math.sin(a) * facetR;
     edgePts.push(x, 0.08, z, x, facetH + 0.08, z);
-    const n = ((i + 1) / 6) * Math.PI * 2 + Math.PI / 6;
+    const n = ((i + 1) / 6) * Math.PI * 2 + face0 - Math.PI / 6;
     edgePts.push(x, facetH + 0.08, z, Math.cos(n) * facetR, facetH + 0.08, Math.sin(n) * facetR);
-    edgePts.push(x, facetH + 0.08, z, 0, facetH + 0.3, 0);
+    edgePts.push(x, facetH + 0.08, z, 0, facetH + 0.32, 0);
   }
   const edgeGeo = new THREE.BufferGeometry();
   edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
@@ -346,7 +355,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       opacity: 0.55,
     }),
   );
-  core.position.y = 0.5;
+  core.position.y = 0.56;
   core.userData.nodeId = 6;
   crystal.add(core);
   const base = new THREE.Mesh(
@@ -366,8 +375,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 1.14, 0);
-  gateLabel.scale.set(1.08, 0.26, 1);
+  gateLabel.position.set(0, 1.28, 0);
+  gateLabel.scale.set(1.22, 0.22, 1);
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
@@ -382,7 +391,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.46;
+  rt2.position.y = 1.62;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -396,11 +405,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.46;
+  rt2Disk.position.y = 1.62;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.46, 0);
+  rt2Label.position.set(0, 1.62, 0);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
 
@@ -459,7 +468,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.9, 0), new THREE.Vector3(0, 1.44, 0)]),
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 1.02, 0), new THREE.Vector3(0, 1.58, 0)]),
     new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
   );
   stem.computeLineDistances();
@@ -485,11 +494,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [...facets, core, base, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...facets, body, core, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.28 : 1.36;
-  const restAy = lite ? 0.46 : 0.52;
+  const restAx = lite ? 1.22 : 1.3;
+  const restAy = 0.5;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -569,14 +578,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 4.05 : 3.45, ax, ay);
-    camera.lookAt(0, lite ? 0.42 : 0.48, 0);
+    camera.position.setFromSphericalCoords(lite ? 4.28 : 3.68, ax, ay);
+    camera.lookAt(0, lite ? 0.54 : 0.58, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x * 1.22, y + 0.3, z * 1.22);
-      cards[i].lookAt(camera.position.x, y + 0.38, camera.position.z);
+      cards[i].position.set(x * 1.1, y + 0.28, z * 1.1);
+      cards[i].lookAt(camera.position.x, y + 0.36, camera.position.z);
     });
-    crystal.rotation.y = reduced ? 0 : now / 14000;
+    crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2600) * 0.16;
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

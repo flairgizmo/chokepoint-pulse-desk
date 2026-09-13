@@ -77,6 +77,18 @@ export function upgradeStack3D(canvas: HTMLCanvasElement): Stack3DHandle | null 
   }
 }
 
+function paintTitle(ctx: CanvasRenderingContext2D, title: string, maxW: number, x: number, y: number): void {
+  let size = 46;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = `800 ${size}px Outfit, IBM Plex Sans, sans-serif`;
+  while (size > 28 && ctx.measureText(title).width > maxW) {
+    size -= 2;
+    ctx.font = `800 ${size}px Outfit, IBM Plex Sans, sans-serif`;
+  }
+  ctx.fillText(title, x, y);
+}
+
 function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTexture) => void): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 1280;
@@ -86,8 +98,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, 1280, 720);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '800 48px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 676);
+    paintTitle(ctx, title, 1180, 48, 676);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -97,12 +108,13 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
+    ctx.filter = 'saturate(1.12) contrast(1.08) brightness(1.08)';
     ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) / 2, dw, dh);
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
-    ctx.fillRect(0, 638, 1280, 82);
+    ctx.filter = 'none';
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
+    ctx.fillRect(0, 628, 1280, 92);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '800 48px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 688);
+    paintTitle(ctx, title, 1180, 48, 690);
     tex.needsUpdate = true;
     onReady(tex);
   };
@@ -129,7 +141,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.08 : 1.2;
+  renderer.toneMappingExposure = lite ? 1.2 : 1.34;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -159,8 +171,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     slabs.forEach((mesh, i) => {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
       const t = i - mid;
-      mesh.position.set(t * 0.5 + drift, 2.18 - i * 0.78, i * 0.1);
-      mesh.rotation.set(0.24, -0.3, 0);
+      mesh.position.set(t * 0.36 + 0.18 + drift, 2.02 - i * 0.7, i * 0.12);
+      mesh.rotation.set(0.16, -0.14, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
       const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
       mat.opacity = dim ? 0.28 : 1;
@@ -200,8 +212,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 6.65 : 5.95, ax, ay);
-    camera.lookAt(0.02, 0.95, 0.18);
+    camera.position.setFromSphericalCoords(lite ? 6.95 : 6.25, ax, ay);
+    camera.lookAt(0.12, 1.08, 0.16);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };

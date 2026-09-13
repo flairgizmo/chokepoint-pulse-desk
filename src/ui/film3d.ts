@@ -206,7 +206,8 @@ function mountFilm3D(
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const plates: THREE.Mesh[] = [];
   const mid = (slides.length - 1) / 2;
-  let featured = set.startsWith('city:') ? 0 : mid;
+  const featuredBase = set.startsWith('city:') ? 0 : mid;
+  let featured = featuredBase;
 
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);
@@ -281,7 +282,7 @@ function mountFilm3D(
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
     ty = nx * 0.22;
     tx = 1.18 + ny * 0.1;
-    featured = Math.max(0, Math.min(slides.length - 1, mid + nx * 2.2));
+    featured = Math.max(0, Math.min(slides.length - 1, featuredBase + nx * 2.2));
     canvas.style.cursor = pick(ev.clientX, ev.clientY) ? 'pointer' : 'grab';
   };
 

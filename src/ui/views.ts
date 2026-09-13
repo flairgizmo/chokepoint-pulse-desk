@@ -30,7 +30,7 @@ import { playerMarkup, relatedEpisodeCard } from './player';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
-import { filmStageMarkup } from './filmSets';
+import { FILM_SETS, filmStageMarkup } from './filmSets';
 import { PROGRAMMES } from '../data/programmes';
 import { rememberHeadline } from './newsCache';
 
@@ -98,7 +98,7 @@ export function constellation(): string {
     ${kicker('Open the sources')}
     <div class="section-head">
       <h2 class="display">The original pages. Not a recap.</h2>
-      <p class="lede-sm">If a sentence on this desk matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. Click through.</p>
+      <p class="lede-sm">If a sentence on this desk matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. The original, not a recap.</p>
     </div>
     <ul class="constellation-grid">${nodes
       .map(
@@ -744,7 +744,7 @@ export function renderChapterPage(
 ): string {
   const body = chaptersFor(page).map(chapterCard).join('');
   const bed: VisualId = page === 'vision' ? 'future' : page === 'technology' ? 'gateway' : page === 'cbdc' ? 'sterling' : 'london';
-  return `${pageHero(k, title, lede, mute, bed)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
+  return `${pageHero(k, title, lede, mute, bed, FILM_SETS[page] ? page : undefined)}${quoteRail(page)}${extra}<div class="chapter-stack">${body}</div>${dykBlock()}`;
 }
 
 export function renderVision(): string {
@@ -1072,7 +1072,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
   return `${pageHero(
     'Library',
     'Forty-eight documents —',
-    'Read the filings, not the recap. Primary sources, standards drafts, patents, books, surveys, briefs. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
+    'Read the filings. Not the recap. Primary sources, standards drafts, patents, books, surveys, briefs. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
     'grouped by what they are.',
     'london',
     'research',

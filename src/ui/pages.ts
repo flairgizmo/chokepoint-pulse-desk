@@ -61,7 +61,7 @@ export function renderHome(): string {
       <div class="hero-split">
         <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
         <div>
-          <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed as the operating system for that problem. Then six UK banks put live tokenised sterling on it. Independent research. Not Quant’s corporate site.</p>
+          <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. Independent research. Not Quant’s corporate site.</p>
           <div class="cta-row">
             ${pill('/technology', 'Enter the stack', 'Product theatre')}
             ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')}
@@ -125,7 +125,7 @@ export function renderStory(): string {
       </li>`,
     )
     .join('');
-  return `${hero('Story / Timeline', 'The story, in the order it happened.', 'Search and filter. Quiet months collapse — there are no empty holes. Each node opens a stage with the stake, the filing, and the source. Start at ISO. End at live sterling.', 'story-hero', 'story')}
+  return `${hero('Story / Timeline', 'First the committee. Then the operating system. Then the sterling.', 'Quiet months collapse — there are no empty holes. Each node opens the stake, the filing, and the source. Start at ISO 2015. End at live tokenised sterling.', 'story-hero', 'story')}
     <div class="toolbar filter-bar">
       <input type="search" id="story-search" placeholder="Search the rail…" />
       <div class="chip-row" id="story-themes">${chips}</div>
@@ -158,7 +158,7 @@ export function renderStack(): string {
       <canvas id="stack-stage" class="stack-stage" role="img" aria-label="Five Overledger layers as film plates. Click a plate."></canvas>
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     </section>
-    ${hero('Stack', 'How the layers sit — once you stop treating them as one product.', 'Isolate a rung. Dim the rest. Each layer opens with the job, the standard, and what it is not.', 'stack-hero')}
+    ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero')}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
       <div class="stack-tools">
@@ -202,7 +202,7 @@ export function renderTechnology(): string {
       </details>
     </article>`,
   ).join('');
-  return `${hero('Technology', 'Not another chain. The layer that makes the others usable.', 'Isolated ledgers were the problem. Overledger is the operating layer. Then the network, the standards, and the sterling that is already live. Read the chapters in that order.', 'tech-hero', 'technology')}
+  return `${hero('Technology', 'Not another chain. The layer that makes the others usable.', 'The books already exist. Isolated ledgers were the 2018 problem. Overledger was filed as the operating layer. Then the network, the standards, and the sterling that is already live.', 'tech-hero', 'technology')}
     <p class="lede">The problem of isolated ledgers → Overledger as the operating layer → the network of counterparties → standards that outlive a brand → tokenised deposits as a live example, not a slogan.</p>
     <div class="toolbar filter-bar">
       <input type="search" id="tech-search" placeholder="Search chapters…" />
@@ -225,7 +225,7 @@ export function renderPatents(): string {
       </button>
     </article>`,
   ).join('');
-  return `${hero('Patents', 'Claims on paper. Not a live rail.', 'Numbers match the public file. A grant is a method, not a deployment. Each card opens why it matters to Overledger, SATP, or Fusion.', 'patents-hero', 'patents')}
+  return `${hero('Patents', 'A grant is a method. Not a deployment.', 'Numbers match the public file. Each card opens why the claim matters to Overledger, SATP, or Fusion — and where it still sits on paper.', 'patents-hero', 'patents')}
     <div class="toolbar filter-bar">
       <input type="search" id="patent-search" placeholder="Search numbers, inventors, claims…" />
     </div>
@@ -251,7 +251,7 @@ export function renderInstitutions(): string {
       </button>
     </article>`;
   }).join('');
-  return `${hero('Institutions & boards', 'Who is in the room — and who is only adjacent.', 'Current, historical, adjacency: labelled. Official marks where they are on file. A typeset name where they are not. Mixing those up is how a lab becomes a mandate in someone else’s recap.', 'inst-hero', 'institutions')}
+  return `${hero('Institutions & boards', 'Who is in the room — and who is only next to it.', 'Current, historical, adjacency: labelled. Official marks where they are on file. A typeset name where they are not. Mixing those up is how a lab becomes a mandate in someone else’s recap.', 'inst-hero', 'institutions')}
     <div class="toolbar filter-bar">
       <input type="search" id="inst-search" placeholder="Search institutions…" />
       <div class="chip-row" id="inst-status">

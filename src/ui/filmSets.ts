@@ -66,7 +66,7 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
     { id: 'verdian', title: 'VERDIAN', src: '/people/verdian.jpg', stageKind: 'person', stageId: 'verdian' },
     { id: 'tasca', title: 'TASCA', src: '/people/tasca.jpg', stageKind: 'person', stageId: 'tasca' },
     { id: 'facer', title: 'FACER', src: '/people/facer.png', stageKind: 'person', stageId: 'facer' },
-    { id: 'yates', title: 'YATES', src: '/people/yates.jpg', stageKind: 'person', stageId: 'yates' },
+    { id: 'hargreaves', title: 'HARGREAVES', src: '/people/hargreaves.jpg', stageKind: 'person', stageId: 'hargreaves' },
     { id: 'baugh', title: 'BAUGH', src: '/people/baugh.png', stageKind: 'person', stageId: 'baugh' },
   ],
   cbdc: [
