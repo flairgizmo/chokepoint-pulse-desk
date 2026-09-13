@@ -70,12 +70,12 @@ function glassGrade(cut: GlassCut, lane: GlassLane): GlassGrade {
   }
   if (cut === 'crown') {
     return lane === 0
-      ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.92, contrast: 1.12, saturate: 0.86, multiply: 0.08 }
-      : { sx: 0.4, sy: 0.32, sw: 0.48, sh: 0.42, brightness: 0.48, contrast: 1.22, saturate: 0.62, multiply: 0.38 };
+      ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.84, contrast: 1.14, saturate: 0.8, multiply: 0.12 }
+      : { sx: 0.34, sy: 0.28, sw: 0.52, sh: 0.46, brightness: 0.64, contrast: 1.18, saturate: 0.7, multiply: 0.22 };
   }
   return lane === 0
-    ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.5, contrast: 1.16, saturate: 0.64, multiply: 0.42 }
-    : { sx: 0.46, sy: 0.48, sw: 0.4, sh: 0.32, brightness: 0.34, contrast: 1.2, saturate: 0.52, multiply: 0.54 };
+    ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.54, contrast: 1.16, saturate: 0.64, multiply: 0.36 }
+    : { sx: 0.4, sy: 0.44, sw: 0.44, sh: 0.34, brightness: 0.42, contrast: 1.18, saturate: 0.56, multiply: 0.44 };
 }
 
 function paintPhotoGlass(
@@ -601,12 +601,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crownA = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xe4ecf4,
+    tint: 0xc4d2e4,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0x5a6c84,
+    tint: 0x8a9cb4,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
@@ -616,7 +616,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x2c3c54,
+    tint: 0x4a5c74,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
