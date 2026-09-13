@@ -45,8 +45,8 @@ function containDraw(
 
 type GlassCut = 'crown' | 'pav' | 'table';
 
-const TABLE_Y = 0.32;
-const BOT_Y = -0.26;
+const TABLE_Y = 0.42;
+const BOT_Y = -0.24;
 
 type CutMat = THREE.MeshPhongMaterial | THREE.MeshPhysicalMaterial;
 
@@ -537,10 +537,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const sides = 16;
   const restAyFace = 0.72;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
-  const tableR = 0.4;
+  const tableR = 0.36;
   const tableY = TABLE_Y;
-  const eqR = 0.58;
-  const eqY = 0.16;
+  const eqR = 0.56;
+  const eqY = 0.18;
   const botY = BOT_Y;
   const midR = tableR + (eqR - tableR) * 0.52;
   const midY = tableY + (eqY - tableY) * 0.48;
@@ -665,8 +665,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     new THREE.CylinderGeometry(0.05, 0.08, 0.04, sides),
     cinemaChrome(lite),
   );
-  crystal.position.y = 0.22;
-  crystal.scale.setScalar(1.5);
+  crystal.position.y = 0.2;
+  crystal.scale.setScalar(1.46);
   base.position.y = -0.26;
   base.userData.nodeId = 6;
   group.add(base);
@@ -747,7 +747,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 0.76 : 0.84;
+  const restAx = lite ? 0.92 : 0.98;
   const restAy = 0.72;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
@@ -847,8 +847,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 3.58 : 3.42, ax, ay);
-    camera.lookAt(0, lite ? 0.3 : 0.32, 0);
+    camera.position.setFromSphericalCoords(lite ? 3.72 : 3.56, ax, ay);
+    camera.lookAt(0, lite ? 0.38 : 0.4, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
