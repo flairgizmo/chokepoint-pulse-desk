@@ -48,11 +48,11 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     next.needsUpdate = true;
   });
   tex.colorSpace = THREE.SRGBColorSpace;
-  scene.background = tex;
+  scene.background = new THREE.Color(0x070b14);
 
   const cyc = new THREE.Mesh(
     new THREE.PlaneGeometry(7.2, 3.4),
-    duskSheen({ map: tex, reflectivity: 0.24, envSrc: src }),
+    duskSheen({ map: tex, color: 0x6a7c96, reflectivity: 0.2, envSrc: src }),
   );
   cyc.position.set(0, 0.2, -1.45);
   scene.add(cyc);
