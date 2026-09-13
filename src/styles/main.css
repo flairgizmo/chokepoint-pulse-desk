@@ -2180,7 +2180,7 @@ main {
 
 .spark {
   border-radius: 12px;
-  background: var(--paper);
+  background: transparent;
 }
 
 @media (min-width: 900px) {
@@ -4858,20 +4858,18 @@ body.stage-open .grok {
 .token-board h2,
 .token-board p,
 .cinema-wire .headline button,
-.cinema-wire .meta,
 .satp-lab .stage-btn,
-.satp-lab .stage-body,
 .acid li,
 .treaty-row strong,
-.treaty-row em,
 .donate-list .kicker,
 .term h2,
 .term p,
+.term button,
 .voice h3,
 .voice p,
 .float-grid strong,
-.float-grid span {
-  color: inherit;
+.headline button {
+  color: #f4f7fb;
 }
 
 .beat {
@@ -4944,6 +4942,13 @@ body.stage-open .grok {
 .cinema-wire .headline,
 .bars li {
   border-color: rgba(234, 241, 255, 0.08);
+}
+
+.headline button,
+.term button {
+  background: #122038;
+  color: #f4f7fb;
+  border-color: transparent;
 }
 
 .bars {

@@ -189,7 +189,7 @@ export function stillStrip(set: string, label = 'Photographs on this rail', coun
   return `<section class="still-strip" aria-label="${esc(label)}">
     ${slides
       .map((s) => {
-        const plate = plateFor(s.id, s.title, set);
+        const plate = Object.values(PLATES).find((p) => p.src === s.src) ?? plateFor(s.id, s.title, set);
         return `<figure class="photo-plate cinema-frame strip-still">
           <img src="${esc(s.src)}" alt="${esc(plate.alt)}" width="1280" height="720" loading="lazy" decoding="async" />
           <figcaption>${esc(plate.credit)}</figcaption>
