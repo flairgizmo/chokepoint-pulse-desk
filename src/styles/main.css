@@ -4416,7 +4416,7 @@ body.stage-open .grok {
 .term .photo-plate img,
 .headline .photo-plate img {
   aspect-ratio: 21 / 9;
-  max-height: 16rem;
+  max-height: 22rem;
 }
 
 .cinema-diagram {
@@ -4450,7 +4450,7 @@ body.stage-open .grok {
 
 .markets-still img {
   aspect-ratio: 21 / 9;
-  max-height: 20rem;
+  max-height: 26rem;
 }
 
 .patent-still,
@@ -4463,7 +4463,7 @@ body.stage-open .grok {
 .cal-still img,
 .month-still img {
   aspect-ratio: 21 / 9;
-  max-height: 16rem;
+  max-height: 22rem;
 }
 
 .cinema-tape,
@@ -4478,7 +4478,7 @@ body.stage-open .grok {
 }
 
 .headline .photo-plate img {
-  max-height: 16rem;
+  max-height: 22rem;
 }
 
 .voice.cinema-voice {
@@ -4498,7 +4498,7 @@ body.stage-open .grok {
 
 .voice-still img {
   aspect-ratio: 16 / 9;
-  max-height: 16rem;
+  max-height: 22rem;
 }
 
 .people-tile,
@@ -4529,7 +4529,7 @@ body.stage-open .grok {
 
 .city-essay-still img {
   aspect-ratio: 21 / 9;
-  max-height: 28rem;
+  max-height: 32rem;
   animation: ken-burns 42s ease-in-out infinite alternate;
 }
 

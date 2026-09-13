@@ -69,18 +69,24 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   g.addColorStop(1, '#02060f');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 512);
+  const fire = ctx.createLinearGradient(256, 0, 0, 512);
+  fire.addColorStop(0, 'rgba(255, 92, 176, 0.28)');
+  fire.addColorStop(0.42, 'rgba(90, 230, 255, 0.16)');
+  fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
+  ctx.fillStyle = fire;
+  ctx.fillRect(0, 0, 256, 512);
   const sheen = ctx.createLinearGradient(0, 0, 200, 260);
-  sheen.addColorStop(0, 'rgba(255,255,255,0.42)');
-  sheen.addColorStop(0.45, 'rgba(255,255,255,0.04)');
+  sheen.addColorStop(0, 'rgba(255,255,255,0.58)');
+  sheen.addColorStop(0.45, 'rgba(255,255,255,0.08)');
   sheen.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = sheen;
   ctx.beginPath();
   ctx.moveTo(0, 0);
-  ctx.lineTo(168, 0);
-  ctx.lineTo(0, 280);
+  ctx.lineTo(176, 0);
+  ctx.lineTo(0, 300);
   ctx.closePath();
   ctx.fill();
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.38)';
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.46)';
   ctx.lineWidth = 8;
   ctx.strokeRect(8, 8, 240, 496);
   if (i === 0) {
@@ -93,6 +99,33 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
     ctx.fillStyle = 'rgba(6, 20, 51, 0.55)';
     ctx.fillRect(0, 0, 256, 512);
   }
+  return c;
+}
+
+function pavCanvas(i: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  const g = ctx.createLinearGradient(28, 0, 220, 256);
+  if (i % 2) {
+    g.addColorStop(0, '#b8d4ff');
+    g.addColorStop(0.38, '#1557FF');
+    g.addColorStop(1, '#02060f');
+  } else {
+    g.addColorStop(0, '#5b93ff');
+    g.addColorStop(0.48, '#061433');
+    g.addColorStop(1, '#02060f');
+  }
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  const fire = ctx.createLinearGradient(256, 0, 0, 256);
+  fire.addColorStop(0, 'rgba(255, 120, 200, 0.3)');
+  fire.addColorStop(0.5, 'rgba(80, 230, 255, 0.14)');
+  fire.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = fire;
+  ctx.fillRect(0, 0, 256, 256);
   return c;
 }
 
@@ -288,13 +321,28 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.32;
   scene.add(floor);
-  const caustic = new THREE.Mesh(
-    new THREE.CircleGeometry(1.15, 48),
-    new THREE.MeshBasicMaterial({ color: 0x8ec0ff, transparent: true, opacity: 0.32 }),
-  );
+  const causticMat = new THREE.MeshBasicMaterial({
+    color: 0x8ec0ff,
+    transparent: true,
+    opacity: 0.32,
+    depthWrite: false,
+  });
+  const caustic = new THREE.Mesh(new THREE.CircleGeometry(1.15, 48), causticMat);
   caustic.rotation.x = -Math.PI / 2;
   caustic.position.y = -0.31;
   scene.add(caustic);
+  const halo = new THREE.Mesh(
+    new THREE.CircleGeometry(1.08, 48),
+    new THREE.MeshBasicMaterial({
+      color: 0x6aa8ff,
+      transparent: true,
+      opacity: 0.2,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    }),
+  );
+  halo.position.set(0, 0.5, -0.58);
+  scene.add(halo);
 
   const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
@@ -383,11 +431,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     facets.push(face);
     const lower = new THREE.BufferGeometry();
     lower.setAttribute('position', new THREE.Float32BufferAttribute([0, botY, 0, x1, eqY, z1, x0, eqY, z0], 3));
+    lower.setAttribute('uv', new THREE.Float32BufferAttribute([0.5, 0, 1, 1, 0, 1], 2));
     lower.computeVertexNormals();
+    const pavTex = hardenCanvasTex(new THREE.CanvasTexture(pavCanvas(i)));
+    pavTex.colorSpace = THREE.SRGBColorSpace;
     const pav = new THREE.Mesh(
       lower,
       new THREE.MeshBasicMaterial({
-        color: i % 2 ? 0x1a62ff : 0x071536,
+        map: pavTex,
         side: THREE.DoubleSide,
       }),
     );
@@ -658,6 +709,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
+    causticMat.opacity = reduced ? 0.26 : 0.2 + Math.abs(Math.sin((now - t0) / 1600)) * 0.18;
+    halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

@@ -768,7 +768,7 @@ export function renderVision(): string {
           <div class="flip-face flip-back">
             ${kicker(c.kicker)}
             <h3>${esc(c.title)}</h3>
-            <p>${esc(c.body)}</p>
+            ${essayParas(c.body)}
           </div>
         </div>
       </article>`;
@@ -1557,12 +1557,13 @@ export function renderNote(id: string): string {
   const bed: VisualId = n.era === 'future' ? 'future' : n.era === 'history' ? 'history' : 'sterling';
   return `<article class="note-page">
     ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed, 'notes')}
-    <div class="chapter note-body">
+    <article class="chapter city-essay note-body">
+      ${photoFigure(plateFor(n.id, n.era, n.title), 'city-essay-still')}
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
-      <p>${esc(n.body)}</p>
+      ${essayParas(n.body)}
       <p class="source-row">${source}</p>
       <p><a class="text-link" href="/news">← The wire</a></p>
-    </div>
+    </article>
     ${related ? `<section class="notes-related">${kicker('Same era')}<div class="notes-index">${related}</div></section>` : ''}
   </article>`;
 }

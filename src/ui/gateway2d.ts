@@ -293,6 +293,12 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const crystalW = Math.max(52, W * 0.07);
     const crystalH = Math.max(96, H * 0.26);
     ctx.save();
+    ctx.fillStyle = 'rgba(142, 192, 255, 0.3)';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy + crystalH + 10, crystalW * 1.28, crystalW * 0.32, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    ctx.save();
     ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
     ctx.shadowBlur = onGate ? 36 : 22;
     const tableY = cy - crystalH * 0.04;
