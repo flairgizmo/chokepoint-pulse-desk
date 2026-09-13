@@ -485,15 +485,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     map: causticTex,
     color: 0xffffff,
     transparent: true,
-    opacity: 0.58,
+    opacity: 0.48,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
   });
-  const caustic = new THREE.Mesh(new THREE.CircleGeometry(1.28, 48), causticMat);
+  const caustic = new THREE.Mesh(new THREE.CircleGeometry(1.22, 48), causticMat);
   caustic.rotation.x = -Math.PI / 2;
   caustic.position.y = -0.31;
   scene.add(caustic);
-  scene.add(makeFloorPool(-0.315, 3.2));
+  const pool = makeFloorPool(-0.315, 2.6);
+  (pool.material as THREE.MeshBasicMaterial).opacity = 0.28;
+  scene.add(pool);
   const halo = new THREE.Mesh(
     new THREE.CircleGeometry(1.08, 48),
     new THREE.MeshBasicMaterial({
@@ -950,7 +952,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
-    causticMat.opacity = reduced ? 0.36 : 0.32 + Math.abs(Math.sin((now - t0) / 1600)) * 0.28;
+    causticMat.opacity = reduced ? 0.3 : 0.26 + Math.abs(Math.sin((now - t0) / 1600)) * 0.22;
     halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
     stars.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;

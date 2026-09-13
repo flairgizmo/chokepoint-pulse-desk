@@ -464,7 +464,7 @@ export class EarthGlobe {
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
     const globeMat = this.lite
-      ? duskSheen({ color: 0x16384a, reflectivity: 0.48 })
+      ? new THREE.MeshBasicMaterial({ color: 0x16384a })
       : new THREE.MeshPhysicalMaterial({
           color: 0x16384a,
           roughness: 0.28,
