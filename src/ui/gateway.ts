@@ -47,36 +47,55 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-function jewelCanvas(on = false): HTMLCanvasElement {
+function facetCanvas(i: number, on = false): HTMLCanvasElement {
+  const shades = [
+    ['#e8f0ff', '#7eb0ff', '#1557FF'],
+    ['#9cc4ff', '#3d7bff', '#0d3fd4'],
+    ['#5b93ff', '#1557FF', '#061433'],
+    ['#c8dcff', '#5b93ff', '#0b1f5c'],
+    ['#7aa6ff', '#1557FF', '#02060f'],
+    ['#d4e4ff', '#3d7bff', '#061433'],
+  ][i % 6];
   const c = document.createElement('canvas');
-  c.width = 512;
+  c.width = 256;
   c.height = 512;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  const g = ctx.createLinearGradient(40, 20, 480, 500);
-  g.addColorStop(0, on ? '#c8dcff' : '#8eb4ff');
-  g.addColorStop(0.38, on ? '#3d7bff' : '#1557FF');
-  g.addColorStop(0.72, '#061433');
-  g.addColorStop(1, '#02060f');
+  const g = ctx.createLinearGradient(0, 0, 256, 512);
+  g.addColorStop(0, on ? '#ffffff' : shades[0]);
+  g.addColorStop(0.42, shades[1]);
+  g.addColorStop(1, shades[2]);
   ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 512, 512);
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.28)';
-  ctx.lineWidth = 3;
-  for (let i = 0; i < 6; i++) {
-    const x = 40 + i * 78;
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x + 46, 512);
-    ctx.stroke();
+  ctx.fillRect(0, 0, 256, 512);
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.55)';
+  ctx.lineWidth = 10;
+  ctx.strokeRect(6, 6, 244, 500);
+  if (i === 0) {
+    ctx.fillStyle = '#F4F7FB';
+    ctx.font = '800 120px Outfit, IBM Plex Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Q', 128, 256);
   }
-  ctx.fillStyle = 'rgba(234, 241, 255, 0.16)';
-  ctx.fillRect(0, 0, 512, 36);
-  ctx.fillStyle = '#F4F7FB';
-  ctx.font = '800 92px Outfit, IBM Plex Sans, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('Q', 256, 256);
   return c;
+}
+
+function facetMaterial(i: number, on: boolean, lite: boolean): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
+  const tex = new THREE.CanvasTexture(facetCanvas(i, on));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return lite
+    ? new THREE.MeshBasicMaterial({ map: tex })
+    : new THREE.MeshPhysicalMaterial({
+        map: tex,
+        color: 0xffffff,
+        metalness: 0.82,
+        roughness: 0.12,
+        iridescence: 1,
+        clearcoat: 1,
+        emissive: 0x1557ff,
+        emissiveIntensity: on ? 0.38 : 0.16,
+        envMapIntensity: 1.55,
+      });
 }
 
 function logoCanvas(
@@ -255,33 +274,81 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
 
-  const jewelTex = new THREE.CanvasTexture(jewelCanvas(true));
-  jewelTex.colorSpace = THREE.SRGBColorSpace;
-  const jewelMat = lite
-    ? new THREE.MeshBasicMaterial({ map: jewelTex })
-    : new THREE.MeshPhysicalMaterial({
-        map: jewelTex,
-        color: 0xffffff,
-        metalness: 0.88,
-        roughness: 0.1,
-        iridescence: 1,
-        iridescenceIOR: 1.34,
-        clearcoat: 1,
-        clearcoatRoughness: 0.04,
-        emissive: 0x1557ff,
-        emissiveIntensity: 0.42,
-        envMapIntensity: 1.7,
-      });
-  const hex = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 0.86, 6), jewelMat);
-  hex.position.y = 0.46;
-  hex.rotation.y = Math.PI / 6;
-  hex.userData.nodeId = 6;
-  group.add(hex);
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.32, 0.14, 6), jewelMat);
-  cap.position.y = 0.96;
-  cap.rotation.y = Math.PI / 6;
-  cap.userData.nodeId = 6;
-  group.add(cap);
+  const crystal = new THREE.Group();
+  const facets: THREE.Mesh[] = [];
+  const facetH = 0.92;
+  const facetR = 0.36;
+  for (let i = 0; i < 6; i++) {
+    const a0 = (i / 6) * Math.PI * 2 + Math.PI / 6;
+    const a1 = ((i + 1) / 6) * Math.PI * 2 + Math.PI / 6;
+    const mid = (a0 + a1) / 2;
+    const chord = 2 * facetR * Math.sin(Math.PI / 6);
+    const face = new THREE.Mesh(new THREE.PlaneGeometry(chord, facetH), facetMaterial(i, false, lite));
+    face.position.set(Math.cos(mid) * facetR, facetH / 2 + 0.08, Math.sin(mid) * facetR);
+    face.lookAt(0, face.position.y, 0);
+    face.userData.nodeId = 6;
+    crystal.add(face);
+    facets.push(face);
+    const capGeo = new THREE.BufferGeometry();
+    capGeo.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(
+        [
+          0,
+          facetH + 0.22,
+          0,
+          Math.cos(a0) * facetR,
+          facetH,
+          Math.sin(a0) * facetR,
+          Math.cos(a1) * facetR,
+          facetH,
+          Math.sin(a1) * facetR,
+        ],
+        3,
+      ),
+    );
+    capGeo.computeVertexNormals();
+    const lid = new THREE.Mesh(
+      capGeo,
+      new THREE.MeshBasicMaterial({
+        color: i % 2 ? 0x9cc4ff : 0x3d7bff,
+        side: THREE.DoubleSide,
+      }),
+    );
+    lid.position.y = 0.08;
+    lid.userData.nodeId = 6;
+    crystal.add(lid);
+    facets.push(lid);
+  }
+  const edgePts: number[] = [];
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
+    const x = Math.cos(a) * facetR;
+    const z = Math.sin(a) * facetR;
+    edgePts.push(x, 0.08, z, x, facetH + 0.08, z);
+    const n = ((i + 1) / 6) * Math.PI * 2 + Math.PI / 6;
+    edgePts.push(x, facetH + 0.08, z, Math.cos(n) * facetR, facetH + 0.08, Math.sin(n) * facetR);
+    edgePts.push(x, facetH + 0.08, z, 0, facetH + 0.3, 0);
+  }
+  const edgeGeo = new THREE.BufferGeometry();
+  edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
+  crystal.add(
+    new THREE.LineSegments(
+      edgeGeo,
+      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.82 }),
+    ),
+  );
+  const core = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.12, 0.14, 0.7, 6),
+    new THREE.MeshBasicMaterial({
+      color: 0x3d7bff,
+      transparent: true,
+      opacity: 0.55,
+    }),
+  );
+  core.position.y = 0.5;
+  core.userData.nodeId = 6;
+  crystal.add(core);
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.46, 0.5, 0.08, 6),
     lite
@@ -294,9 +361,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         }),
   );
   base.position.y = 0.02;
-  base.rotation.y = Math.PI / 6;
   base.userData.nodeId = 6;
   group.add(base);
+  group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
   gateLabel.position.set(0, 1.14, 0);
@@ -366,6 +433,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.28, z);
     mesh.userData.nodeId = bank.id;
+    mesh.add(
+      new THREE.LineSegments(
+        new THREE.EdgesGeometry(mesh.geometry),
+        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.28 }),
+      ),
+    );
     group.add(mesh);
     cards.push(mesh);
     cardMats.push(mat);
@@ -412,7 +485,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [hex, cap, base, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...facets, core, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.28 : 1.36;
@@ -460,6 +533,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     return typeof id === 'number' ? (id as NodeId) : null;
   };
 
+  let gateLit = false;
   const paintCards = (): void => {
     BANKS.forEach((bank, i) => {
       const on = selected === bank.id || hover === bank.id;
@@ -473,8 +547,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       }
       cardMats[i].needsUpdate = true;
     });
-    if (hex.material instanceof THREE.MeshPhysicalMaterial) {
-      hex.material.emissiveIntensity = selected === 6 || hover === 6 ? 0.55 : 0.28;
+    const gateOn = selected === 6 || hover === 6;
+    if (gateOn !== gateLit) {
+      gateLit = gateOn;
+      facets.forEach((mesh, i) => {
+        if (i % 2 === 1) return;
+        const next = facetMaterial(i / 2, gateOn, lite);
+        const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+        prev.map?.dispose();
+        mesh.material = next;
+      });
     }
     const rtMat = rt2.material as THREE.MeshPhysicalMaterial;
     rtMat.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
@@ -494,8 +576,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       cards[i].position.set(x * 1.22, y + 0.3, z * 1.22);
       cards[i].lookAt(camera.position.x, y + 0.38, camera.position.z);
     });
-    hex.rotation.y = Math.PI / 6 + (reduced ? 0 : now / 14000);
-    cap.rotation.y = hex.rotation.y;
+    crystal.rotation.y = reduced ? 0 : now / 14000;
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

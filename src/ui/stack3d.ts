@@ -86,8 +86,8 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, 1280, 720);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 680);
+    ctx.font = '800 48px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 36, 676);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -101,8 +101,8 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
     ctx.fillRect(0, 638, 1280, 82);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 690);
+    ctx.font = '800 48px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 36, 688);
     tex.needsUpdate = true;
     onReady(tex);
   };
