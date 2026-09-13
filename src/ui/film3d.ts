@@ -191,8 +191,11 @@ function plateTexture(
         ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
       }
     }
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
-    ctx.fillRect(0, h - 92, w, 92);
+    ctx.fillStyle = '#05070c';
+    ctx.fillRect(0, 0, w, portrait ? 36 : 28);
+    ctx.fillRect(0, h - (portrait ? 36 : 28), w, portrait ? 36 : 28);
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
+    ctx.fillRect(0, h - 92, w, 64);
     ctx.fillStyle = '#EAF1FF';
     ctx.font = `800 ${portrait ? 28 : 34}px Arial, sans-serif`;
     ctx.textAlign = 'left';

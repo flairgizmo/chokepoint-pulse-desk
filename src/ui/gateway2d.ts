@@ -263,27 +263,15 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.fill();
     ctx.restore();
 
-    ctx.save();
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.08)';
-    ctx.lineWidth = 1;
-    for (const ring of [0.55, 0.9, 1.25]) {
-      const a = project(ring, 0, 0);
-      const b = project(0, 0, ring);
-      ctx.beginPath();
-      ctx.ellipse(gate[0], gate[1] + 8, Math.abs(a[0] - gate[0]), Math.abs(b[1] - gate[1]) * 0.35 + 18, 0, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    ctx.restore();
-
     banks.forEach(({ p }) => {
       const spoke = ctx.createLinearGradient(gate[0], gate[1], p[0], p[1]);
-      spoke.addColorStop(0, 'rgba(90, 150, 255, 0.72)');
-      spoke.addColorStop(1, 'rgba(21, 87, 255, 0.05)');
+      spoke.addColorStop(0, 'rgba(90, 150, 255, 0.08)');
+      spoke.addColorStop(1, 'rgba(21, 87, 255, 0)');
       ctx.beginPath();
       ctx.moveTo(gate[0], gate[1]);
       ctx.lineTo(p[0], p[1]);
       ctx.strokeStyle = spoke;
-      ctx.lineWidth = Math.max(1.6, W / 380);
+      ctx.lineWidth = Math.max(1, W / 520);
       ctx.stroke();
     });
 
@@ -358,6 +346,11 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
         ctx.fillStyle = fire;
         ctx.fill();
+        const rim = ctx.createLinearGradient(minX, minY, minX, minY + bh * 0.28);
+        rim.addColorStop(0, 'rgba(234, 241, 255, 0.36)');
+        rim.addColorStop(1, 'rgba(234, 241, 255, 0)');
+        ctx.fillStyle = rim;
+        ctx.fill();
         ctx.restore();
       } else {
         ctx.fillStyle = tint;
@@ -398,8 +391,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       ctx.fill();
       ctx.globalAlpha = 1;
     }
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.16)';
-    ctx.lineWidth = Math.max(1.1, W / 520);
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.08)';
+    ctx.lineWidth = Math.max(0.8, W / 640);
     ctx.beginPath();
     girdle.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
     ctx.closePath();
@@ -428,9 +421,9 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.beginPath();
     ctx.moveTo(gate[0], gate[1]);
     ctx.lineTo(rt2[0], rt2[1]);
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.28)';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.08)';
     ctx.setLineDash([6, 7]);
-    ctx.lineWidth = Math.max(1.2, W / 420);
+    ctx.lineWidth = Math.max(0.8, W / 560);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -480,12 +473,15 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       if (still?.complete && still.naturalWidth) {
         ctx.save();
         ctx.clip();
-        ctx.filter = 'saturate(1.16) contrast(1.1) brightness(0.86)';
+        ctx.filter = 'saturate(1.08) contrast(1.12) brightness(0.72)';
         const scale = Math.max(rw / still.naturalWidth, rh / still.naturalHeight);
         const dw = still.naturalWidth * scale;
         const dh = still.naturalHeight * scale;
         ctx.drawImage(still, -dw / 2, -dh / 2, dw, dh);
         ctx.filter = 'none';
+        ctx.fillStyle = '#05070c';
+        ctx.fillRect(-rw / 2, -rh / 2, rw, Math.max(6, rh * 0.06));
+        ctx.fillRect(-rw / 2, rh / 2 - Math.max(6, rh * 0.06), rw, Math.max(6, rh * 0.06));
         ctx.restore();
         roundRect(-rw / 2, -rh / 2, rw, rh, 12);
       }

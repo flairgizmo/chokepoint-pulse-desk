@@ -517,13 +517,13 @@ export function makeCinemaPlate(
     );
     frame.position.z = -(depth / 2 - 0.006);
     root.add(frame);
+    const edge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)),
+      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.14 }),
+    );
+    edge.position.z = face.position.z + 0.002;
+    root.add(edge);
   }
-  const edge = new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)),
-    new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.42 }),
-  );
-  edge.position.z = face.position.z + 0.002;
-  root.add(edge);
   return { root, face, mat };
 }
 

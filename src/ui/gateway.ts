@@ -98,6 +98,14 @@ function paintPhotoGlass(
     ctx.rotate(((i % 4) + 1) * (Math.PI / 2));
     ctx.drawImage(photo, rx, ry, sw * 0.4, sh * 0.4, -w * 0.42, -h * 0.42, w * 0.84, h * 0.84);
     ctx.restore();
+    const dx = ((fx + 0.17) % 1) * photo.naturalWidth;
+    const dy = ((fy + 0.51) % 0.5) * photo.naturalHeight;
+    ctx.save();
+    ctx.globalAlpha = cut === 'pav' ? 0.26 : cut === 'table' ? 0.12 : 0.18;
+    ctx.translate(w * 0.52, h * 0.64);
+    ctx.scale(-0.72, 0.52);
+    ctx.drawImage(photo, dx, dy, sw * 0.36, sh * 0.36, -w * 0.5, -h * 0.5, w, h);
+    ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
       ? 'rgba(234, 241, 255, 0.4)'
@@ -147,12 +155,23 @@ function paintPhotoGlass(
   ctx.lineTo(0, h * 0.52);
   ctx.closePath();
   ctx.fill();
-  ctx.strokeStyle = i % 2 ? 'rgba(255, 92, 176, 0.55)' : 'rgba(90, 240, 255, 0.5)';
-  ctx.lineWidth = Math.max(2, w / 90);
+  const rim = ctx.createLinearGradient(0, 0, 0, h * 0.2);
+  rim.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.28)' : 'rgba(234, 241, 255, 0.62)');
+  rim.addColorStop(1, 'rgba(234, 241, 255, 0)');
+  ctx.fillStyle = rim;
+  ctx.fillRect(0, 0, w, h * 0.2);
+  const sliver = ctx.createLinearGradient(w * 0.06, h * 0.08, w * 0.82, h * 0.22);
+  sliver.addColorStop(0, i % 2 ? 'rgba(255, 92, 176, 0.42)' : 'rgba(90, 240, 255, 0.4)');
+  sliver.addColorStop(0.45, 'rgba(234, 241, 255, 0.18)');
+  sliver.addColorStop(1, 'rgba(21, 87, 255, 0)');
+  ctx.fillStyle = sliver;
   ctx.beginPath();
-  ctx.moveTo(w * 0.08, h * 0.1);
-  ctx.lineTo(w * 0.74, h * 0.07);
-  ctx.stroke();
+  ctx.moveTo(w * 0.04, h * 0.06);
+  ctx.lineTo(w * 0.86, h * 0.03);
+  ctx.lineTo(w * 0.78, h * 0.14);
+  ctx.lineTo(w * 0.1, h * 0.16);
+  ctx.closePath();
+  ctx.fill();
   ctx.globalCompositeOperation = 'source-over';
 }
 
@@ -218,14 +237,29 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   g.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 512, 512);
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.16)';
-  ctx.lineWidth = 2;
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2 + 0.18;
+  if (photo?.naturalWidth) {
+    ctx.save();
+    ctx.globalAlpha = 0.38;
     ctx.beginPath();
-    ctx.moveTo(256 + Math.cos(a) * 28, 256 + Math.sin(a) * 28);
-    ctx.lineTo(256 + Math.cos(a) * 210, 256 + Math.sin(a) * 210);
-    ctx.stroke();
+    ctx.moveTo(256, 46);
+    ctx.lineTo(404, 210);
+    ctx.lineTo(348, 430);
+    ctx.lineTo(164, 430);
+    ctx.lineTo(108, 210);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(
+      photo,
+      photo.naturalWidth * 0.34,
+      photo.naturalHeight * 0.22,
+      photo.naturalWidth * 0.36,
+      photo.naturalHeight * 0.36,
+      64,
+      64,
+      384,
+      384,
+    );
+    ctx.restore();
   }
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -341,15 +375,18 @@ function logoCanvas(
   if (!ctx) return c;
   ctx.clearRect(0, 0, CARD_W, CARD_H);
   if (still?.complete && still.naturalWidth) {
-    ctx.filter = 'saturate(1.18) contrast(1.12) brightness(0.86)';
+    ctx.filter = 'saturate(1.08) contrast(1.14) brightness(0.72)';
     coverDraw(ctx, still, CARD_W, CARD_H);
     ctx.filter = 'none';
   } else {
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.28)' : 'rgba(7, 11, 20, 0.42)';
-  ctx.fillRect(0, CARD_H - 196, CARD_W, 196);
+  ctx.fillStyle = '#05070c';
+  ctx.fillRect(0, 0, CARD_W, 28);
+  ctx.fillRect(0, CARD_H - 28, CARD_W, 28);
+  ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.34)' : 'rgba(7, 11, 20, 0.52)';
+  ctx.fillRect(0, CARD_H - 196, CARD_W, 168);
   const bw = 292;
   const bh = 64;
   const bx = (CARD_W - bw) / 2;
@@ -754,19 +791,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     };
     logos[i].onload = paintOne;
     stills[i].onload = paintOne;
-    const spoke = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.02, 0), new THREE.Vector3(x, y + 0.02, z)]),
-      new THREE.LineBasicMaterial({ color: 0x1557ff, transparent: true, opacity: 0.35 }),
-    );
-    group.add(spoke);
   });
-
-  const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.86, 0), new THREE.Vector3(0, 1.48, 0)]),
-    new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
-  );
-  stem.computeLineDistances();
-  group.add(stem);
 
   const bead = new THREE.Mesh(
     new THREE.SphereGeometry(0.038, lite ? 12 : 24, lite ? 12 : 24),
@@ -775,8 +800,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(bead);
   const lockLabel = labelSprite('LOCK', '#EAF1FF');
   const releaseLabel = labelSprite('RELEASE', '#EAF1FF');
-  lockLabel.scale.set(0.42, 0.11, 1);
-  releaseLabel.scale.set(0.52, 0.12, 1);
+  lockLabel.scale.set(0.36, 0.09, 1);
+  releaseLabel.scale.set(0.44, 0.1, 1);
+  lockLabel.material.opacity = 0.48;
+  releaseLabel.material.opacity = 0.48;
   group.add(lockLabel);
   group.add(releaseLabel);
   releaseLabel.visible = false;
