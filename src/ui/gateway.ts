@@ -406,6 +406,12 @@ function logoCanvas(
   return c;
 }
 
+function sitIssuerStill(card: THREE.Group, x: number, z: number): void {
+  card.position.set(x, -0.22, z);
+  card.lookAt(0, 0.28, 5);
+  card.rotateX(-0.92);
+}
+
 function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
   const c = document.createElement('canvas');
   c.width = 768;
@@ -679,8 +685,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const gateLabel = labelSprite('OVERLEDGER', '#EAF1FF');
   gateLabel.position.set(0, -0.22, 0.68);
-  gateLabel.scale.set(0.58, 0.1, 1);
-  gateLabel.material.opacity = 0.38;
+  gateLabel.scale.set(0.46, 0.08, 1);
+  gateLabel.material.opacity = 0.2;
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
@@ -702,8 +708,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(rt2);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
   rt2Label.position.set(0, -0.22, 1.02);
-  rt2Label.scale.set(0.36, 0.08, 1);
-  rt2Label.material.opacity = 0.32;
+  rt2Label.scale.set(0.3, 0.066, 1);
+  rt2Label.material.opacity = 0.16;
   group.add(rt2Label);
 
   const logos = BANKS.map((b) => {
@@ -725,8 +731,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const plate = makeCinemaPlate(0.56, 0.36, lite, undefined, 0.014, true);
     applyPlateMap(plate.mat, tex);
     const [x, , z] = bankXYZ(i, 0);
-    plate.root.position.set(x, -0.14, z);
-    plate.root.lookAt(0, 0.28, 5);
+    sitIssuerStill(plate.root, x, z);
     plate.root.userData.nodeId = bank.id;
     plate.face.userData.nodeId = bank.id;
     group.add(plate.root);
@@ -865,8 +870,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     camera.lookAt(0, lite ? 0.5 : 0.54, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
-      cards[i].position.set(x, -0.14, z);
-      cards[i].lookAt(0, 0.28, 5);
+      sitIssuerStill(cards[i], x, z);
       puddles[i].position.x = x;
       puddles[i].position.z = z;
     });

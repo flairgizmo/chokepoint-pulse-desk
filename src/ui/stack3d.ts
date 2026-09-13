@@ -59,12 +59,16 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
       ctx.fill();
       ctx.fillStyle = '#05070c';
       ctx.fillRect(-6, -6, pw + 12, ph + 12);
-      if (img.complete && img.naturalWidth) ctx.drawImage(img, 0, 0, pw, ph);
-      ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
-      ctx.fillRect(0, ph - 28, pw, 28);
-      ctx.fillStyle = '#EAF1FF';
-      ctx.font = '700 13px Outfit, IBM Plex Sans, sans-serif';
-      ctx.fillText(STACK_SLABS[i].title, 12, ph - 10);
+      if (img.complete && img.naturalWidth) {
+        ctx.filter = 'saturate(0.88) contrast(1.06) brightness(0.72)';
+        ctx.drawImage(img, 0, 0, pw, ph);
+        ctx.filter = 'none';
+      }
+      ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
+      ctx.fillRect(0, ph - 22, pw, 22);
+      ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
+      ctx.font = '700 12px Outfit, IBM Plex Sans, sans-serif';
+      ctx.fillText(STACK_SLABS[i].title, 10, ph - 8);
       ctx.restore();
     });
     const vig = ctx.createRadialGradient(w * 0.5, h * 0.42, h * 0.12, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
@@ -94,23 +98,6 @@ export function upgradeStack3D(canvas: HTMLCanvasElement): Stack3DHandle | null 
   }
 }
 
-function paintTitle(ctx: CanvasRenderingContext2D, title: string, maxW: number, x: number, y: number): void {
-  let size = 52;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'alphabetic';
-  ctx.font = `800 ${size}px Arial, sans-serif`;
-  while (size > 30 && ctx.measureText(title).width > maxW) {
-    size -= 2;
-    ctx.font = `800 ${size}px Arial, sans-serif`;
-  }
-  ctx.lineJoin = 'round';
-  ctx.miterLimit = 2;
-  ctx.strokeStyle = '#05070c';
-  ctx.lineWidth = 8;
-  ctx.strokeText(title, x, y);
-  ctx.fillText(title, x, y);
-}
-
 function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTexture) => void): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 1280;
@@ -128,13 +115,19 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
-    ctx.filter = 'saturate(1.12) contrast(1.08) brightness(1.08)';
+    ctx.filter = 'saturate(0.88) contrast(1.06) brightness(0.72)';
     ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) / 2, dw, dh);
     ctx.filter = 'none';
+    ctx.fillStyle = '#05070c';
+    ctx.fillRect(0, 0, 1280, 28);
+    ctx.fillRect(0, 692, 1280, 28);
     ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
-    ctx.fillRect(0, 600, 1280, 120);
-    ctx.fillStyle = '#EAF1FF';
-    paintTitle(ctx, title, 1180, 48, 684);
+    ctx.fillRect(0, 662, 1280, 30);
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
+    ctx.font = '700 18px Outfit, IBM Plex Sans, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, 22, 678);
     tex.needsUpdate = true;
     onReady(tex);
   };

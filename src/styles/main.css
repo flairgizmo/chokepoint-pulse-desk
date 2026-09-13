@@ -4329,21 +4329,7 @@ body.stage-open .grok {
 }
 
 .cinema-stage .tess-hint {
-  bottom: 1.45rem;
-  z-index: 6;
-  max-width: min(42rem, calc(100% - 2rem));
-  border-radius: 14px;
-  white-space: normal;
-  line-height: 1.35;
-  background: rgba(8, 12, 22, 0.72);
-  border-color: rgba(234, 241, 255, 0.16);
-  color: #eaf1ff;
-}
-
-@media (max-width: 720px) {
-  .cinema-stage .tess-hint {
-    display: none;
-  }
+  display: none;
 }
 
 .earth-hero.cinema-earth {
@@ -5347,7 +5333,10 @@ button.text-link {
   border-radius: 10px;
 }
 
-.player-adjacent .text-link {
+.player-adjacent .text-link,
+.player-byline strong,
+.pod-transcript summary,
+.pod-list .pod-item strong {
   color: #eaf1ff;
 }
 
@@ -5421,7 +5410,11 @@ section.block,
 .prog-grid,
 .patent-grid,
 .inst-grid,
-.still-strip {
+.still-strip,
+.player,
+.pod-quotes,
+.pod-transcript,
+.pod-list {
   width: min(var(--max), calc(100% - 2.5rem));
   margin-inline: auto;
   margin-block: 1.15rem;
@@ -5450,6 +5443,10 @@ section.block,
 .triptych .kicker,
 .notes-strip .kicker,
 .pod-home .kicker,
+.player .kicker,
+.pod-quotes .kicker,
+.pod-transcript .kicker,
+.pod-list .kicker,
 .era-strip .kicker,
 .featured-note .kicker,
 .dyk .kicker,
@@ -5560,6 +5557,9 @@ section.block .kicker {
 .triptych .text-link,
 .notes-strip .text-link,
 .pod-home .text-link,
+.player .text-link,
+.pod-quotes .text-link,
+.pod-list .text-link,
 .era-strip .text-link,
 .featured-note .text-link,
 .dyk .text-link,

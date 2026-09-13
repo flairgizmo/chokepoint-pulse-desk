@@ -404,17 +404,14 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       ctx.lineTo(cx, baseY);
       ctx.stroke();
     }
-    ctx.fillStyle = '#F4F7FB';
-    ctx.font = `800 ${Math.max(22, W / 28)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.28)';
+    ctx.font = `600 ${Math.max(14, W / 42)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
-    ctx.shadowBlur = 10;
     ctx.fillText('Q', cx, (tableY + waistY) / 2);
-    ctx.shadowBlur = 0;
     ctx.restore();
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.42)';
-    ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.28)';
+    ctx.font = `600 ${Math.max(9, W / 64)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillText('OVERLEDGER', cx, cy + crystalH + 22);
 
@@ -424,8 +421,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.strokeStyle = onRt ? '#8eb0ff' : 'rgba(61, 79, 108, 0.88)';
     ctx.lineWidth = onRt ? 2.4 : 1.5;
     ctx.stroke();
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.38)';
-    ctx.font = `600 ${Math.max(8, W / 78)}px "IBM Plex Mono", ui-monospace, monospace`;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.22)';
+    ctx.font = `600 ${Math.max(8, W / 82)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('SIM RT2', cx, cy + crystalH + 40);
@@ -443,8 +440,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         ctx.scale(1, -0.38);
         ctx.translate(-p[0], -p[1]);
       }
-      ctx.translate(p[0], p[1]);
-      ctx.transform(1, 0, yaw * 0.18, 0.94 + depth * 0.06, 0, 0);
+      ctx.translate(p[0], p[1] + rh * 0.22);
+      ctx.transform(1, 0.18, yaw * 0.22, 0.46 + depth * 0.04, 0, 0);
       if (!reflect) {
         ctx.shadowColor = on ? 'rgba(90, 150, 255, 0.5)' : 'rgba(5, 10, 20, 0.55)';
         ctx.shadowBlur = on ? 28 : 18;
@@ -532,9 +529,6 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.arc(bead[0], bead[1], Math.max(4.2, W / 170), 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
-    ctx.fillStyle = '#EAF1FF';
-    ctx.font = `600 ${Math.max(8, W / 80)}px "IBM Plex Mono", ui-monospace, monospace`;
-    ctx.fillText(local < 0.5 ? 'LOCK' : 'RELEASE', bead[0], bead[1] - Math.max(14, W / 50));
   };
 
   const pick = (clientX: number, clientY: number): NodeId | null => {
