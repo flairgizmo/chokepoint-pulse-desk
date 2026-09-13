@@ -223,3 +223,24 @@ export const GROUP_LABEL: Record<PersonGroup, string> = {
     'Co-founders, the first CTO, the Overledger inventors, and the research engineer who wrote the ACM paper while at Quant. Some have since left. The documents remain.',
   board: 'Documented directors. Not operating owners of the technology thesis.',
 };
+
+export interface OverledgerBuilder {
+  id: string;
+  era: string;
+  role: string;
+}
+
+/** Builders of the interoperability layer — role + era, not a leftover caption. */
+export const OVERLEDGER_BUILDERS: OverledgerBuilder[] = [
+  { id: 'verdian', era: '2015–', role: 'Founder. Gateway thesis. ISO/TC 307.' },
+  { id: 'tasca', era: '2018–2022', role: 'Whitepaper and ordering patent. Left; the books remain.' },
+  { id: 'paterson', era: '2018–', role: 'First CTO. Whitepaper and ordering patent. Documentary.' },
+  { id: 'mondelli', era: '2018–', role: 'Fourth whitepaper author. Ordering patent. Inventor, not a current officer.' },
+  { id: 'chiriac', era: '2018–', role: 'Overledger architect. SATP core author. Named connectors.' },
+  { id: 'riley', era: '2019–', role: 'Quant Labs. Interoperability taxonomy. Flow Applications.' },
+  { id: 'hargreaves', era: 'SATP era', role: 'CPO. SATP author. Payments patents before DLT.' },
+  { id: 'facer', era: 'SATP WG', role: 'Product. IETF SATP co-chair.' },
+  { id: 'belchior', era: 'while at Quant', role: 'ACM interoperability paper. SATP author. Now Técnico Lisboa.' },
+  { id: 'sentelidis', era: '2020–', role: 'Head of Technology. Engineering organisation.' },
+  { id: 'lovesey', era: 'community-identified', role: 'Technical Lead in a 2026 thread. Not on Quant’s about page.' },
+];
