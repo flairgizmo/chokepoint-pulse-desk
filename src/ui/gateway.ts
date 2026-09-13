@@ -44,12 +44,12 @@ function containDraw(
 }
 
 const GLASS_TINT = [
-  'rgba(21, 87, 255, 0.2)',
-  'rgba(196, 58, 134, 0.18)',
-  'rgba(18, 153, 180, 0.2)',
-  'rgba(61, 114, 224, 0.2)',
-  'rgba(143, 46, 212, 0.16)',
-  'rgba(10, 168, 136, 0.18)',
+  'rgba(21, 87, 255, 0.12)',
+  'rgba(196, 58, 134, 0.1)',
+  'rgba(18, 153, 180, 0.12)',
+  'rgba(61, 114, 224, 0.12)',
+  'rgba(143, 46, 212, 0.1)',
+  'rgba(10, 168, 136, 0.1)',
 ];
 
 type GlassCut = 'crown' | 'bezel' | 'pav' | 'table';
@@ -272,13 +272,6 @@ function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = nul
   const ctx = c.getContext('2d');
   if (!ctx) return c;
   paintPhotoGlass(ctx, photo, i, 512, 1024, on, i >= 32 || (i >= 16 && i < 24) ? 'bezel' : 'crown');
-  if (i === 0) {
-    ctx.fillStyle = 'rgba(244,247,251,0.96)';
-    ctx.font = '800 260px Outfit, IBM Plex Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Q', 256, 540);
-  }
   return c;
 }
 
@@ -317,12 +310,7 @@ function facetMaterial(
   const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on, photo)));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
-    ? duskSheen({
-        map: tex,
-        reflectivity: 0.28,
-        combine: THREE.MixOperation,
-        side: THREE.DoubleSide,
-      })
+    ? new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide })
     : diamondPhysical(tex, { on, transmission: 0.7, thickness: 0.52 });
 }
 
@@ -352,12 +340,7 @@ function pavMaterial(
   const tex = hardenCanvasTex(new THREE.CanvasTexture(pavCanvas(i, photo)));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
-    ? duskSheen({
-        map: tex,
-        reflectivity: 0.3,
-        combine: THREE.MixOperation,
-        side: THREE.DoubleSide,
-      })
+    ? new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide })
     : diamondPhysical(tex, { transmission: 0.82, thickness: 0.7 });
 }
 
@@ -593,12 +576,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
-      ? duskSheen({
-          map: tableTex,
-          reflectivity: 0.3,
-          combine: THREE.MixOperation,
-          side: THREE.DoubleSide,
-        })
+      ? new THREE.MeshBasicMaterial({ map: tableTex, color: 0xffffff, side: THREE.DoubleSide })
       : diamondPhysical(tableTex, { transmission: 0.38, thickness: 0.28 }),
   );
   table.rotation.x = -Math.PI / 2;
@@ -682,15 +660,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(
     new THREE.LineSegments(
       edgeGeo,
-      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.06 }),
+      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.03 }),
     ),
   );
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
-      ? duskSheen({
+      ? new THREE.MeshBasicMaterial({
           map: tableTex,
-          reflectivity: 0.22,
+          color: 0xffffff,
           transparent: true,
           opacity: 0.26,
         })

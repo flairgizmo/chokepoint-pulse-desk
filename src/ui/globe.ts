@@ -104,11 +104,11 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.22) saturate(0.68) brightness(0.74)';
+  ctx.filter = 'contrast(1.28) saturate(0.56) brightness(0.68)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(36, 46, 68, 0.48)';
+  ctx.fillStyle = 'rgba(42, 36, 52, 0.55)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
   return c;

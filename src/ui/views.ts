@@ -1045,7 +1045,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
   const lanes = RESEARCH_LANES.map((lane) => {
     const items = all.filter((p) => p.kind === lane.id);
     if (!items.length) return '';
-    return `<section class="research-lane" data-lane="${esc(lane.id)}">
+    return `<section class="research-lane cinema-room" data-lane="${esc(lane.id)}">
       <div class="lane-head">
         ${diagramFigure(`lane-${lane.id}`, `paper-${lane.id}`, lane.title)}
         <div>
