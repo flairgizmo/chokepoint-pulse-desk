@@ -276,30 +276,6 @@ function facetMaterial(
     : diamondPhysical(tex, { on, transmission: 0.7, thickness: 0.52 });
 }
 
-function quadGeo(
-  ax: number,
-  ay: number,
-  az: number,
-  bx: number,
-  by: number,
-  bz: number,
-  cx: number,
-  cy: number,
-  cz: number,
-  dx: number,
-  dy: number,
-  dz: number,
-): THREE.BufferGeometry {
-  const g = new THREE.BufferGeometry();
-  g.setAttribute(
-    'position',
-    new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz, ax, ay, az, cx, cy, cz, dx, dy, dz], 3),
-  );
-  g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], 2));
-  g.computeVertexNormals();
-  return g;
-}
-
 function triGeo(
   ax: number,
   ay: number,
@@ -602,38 +578,25 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const px1 = Math.cos(a1) * pavR;
     const pz1 = Math.sin(a1) * pavR;
     const photo = visionStill();
-    addCut(quadGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, mx1, midY, mz1), facetMaterial(i, false, lite, photo), crowns);
-    addCut(quadGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, tx1, tableY, tz1), facetMaterial(i + 8, false, lite, photo), crowns);
-    addCut(quadGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, x1, eqY, z1), pavMaterial(i, lite, photo), pavs);
+    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1), facetMaterial(i, false, lite, photo), crowns);
+    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1), facetMaterial(i + 16, false, lite, photo), crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1), facetMaterial(i + 8, false, lite, photo), crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1), facetMaterial(i + 24, false, lite, photo), crowns);
+    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1), pavMaterial(i, lite, photo), pavs);
+    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1), pavMaterial(i + 16, lite, photo), pavs);
     addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1), pavMaterial(i + 8, lite, photo), pavs);
     const amid = (a0 + a1) / 2;
     const starR = tableR + (eqR - tableR) * 0.4;
     const starY = tableY + (eqY - tableY) * 0.4;
     const sx = Math.cos(amid) * starR;
     const sz = Math.sin(amid) * starR;
-    const starGeo = new THREE.BufferGeometry();
-    starGeo.setAttribute('position', new THREE.Float32BufferAttribute([tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz], 3));
-    starGeo.computeVertexNormals();
-    const star = new THREE.Mesh(
-      starGeo,
-      new THREE.MeshBasicMaterial({
-        color: i % 2 ? 0xff5cb0 : 0x5af0ff,
-        transparent: true,
-        opacity: 0.32,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-      }),
-    );
-    star.userData.nodeId = 6;
-    crystal.add(star);
-    stars.push(star);
+    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz), facetMaterial(i + 32, false, lite, photo), stars);
     const spark = new THREE.Mesh(
       new THREE.SphereGeometry(0.016, 8, 8),
       new THREE.MeshBasicMaterial({
         color: i % 2 ? 0xff5cb0 : 0x5af0ff,
         transparent: true,
-        opacity: 0.92,
+        opacity: 0.55,
       }),
     );
     spark.position.set(x0, eqY, z0);
@@ -899,6 +862,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       prev.map?.dispose();
       prev.dispose();
     });
+    stars.forEach((mesh, i) => {
+      const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+      mesh.material = facetMaterial(i + 32, false, lite, photo);
+      prev.map?.dispose();
+      prev.dispose();
+    });
     pavs.forEach((mesh, i) => {
       const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
       mesh.material = pavMaterial(i, lite, photo);
@@ -954,15 +923,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
     causticMat.opacity = reduced ? 0.3 : 0.26 + Math.abs(Math.sin((now - t0) / 1600)) * 0.22;
     halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
-    stars.forEach((mesh, i) => {
-      const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = reduced ? 0.18 : 0.12 + Math.abs(Math.sin((now - t0) / 720 + i)) * 0.28;
-    });
     sparks.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;
-      const pulse = reduced ? 0.7 : 0.32 + Math.abs(Math.sin((now - t0) / 480 + i * 0.7)) * 0.68;
+      const pulse = reduced ? 0.4 : 0.22 + Math.abs(Math.sin((now - t0) / 640 + i * 0.7)) * 0.38;
       mat.opacity = pulse;
-      mesh.scale.setScalar(0.65 + pulse * 0.7);
+      mesh.scale.setScalar(0.55 + pulse * 0.45);
     });
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;

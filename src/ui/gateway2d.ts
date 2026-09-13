@@ -293,61 +293,90 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const crystalW = Math.max(52, W * 0.07);
     const crystalH = Math.max(96, H * 0.26);
     ctx.save();
-    ctx.fillStyle = 'rgba(142, 192, 255, 0.3)';
+    ctx.fillStyle = 'rgba(142, 192, 255, 0.22)';
     ctx.beginPath();
     ctx.ellipse(cx, cy + crystalH + 10, crystalW * 1.28, crystalW * 0.32, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
     ctx.save();
-    ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
-    ctx.shadowBlur = onGate ? 36 : 22;
     const tableY = cy - crystalH * 0.04;
     const waistY = cy + crystalH * 0.34;
     const baseY = cy + crystalH;
+    const midY = (tableY + waistY) / 2;
     const girdle: Array<[number, number]> = [];
     const table: Array<[number, number]> = [];
+    const mid: Array<[number, number]> = [];
     for (let i = 0; i < 8; i++) {
       const a = -Math.PI / 2 + (i * Math.PI) / 4;
       girdle.push([cx + Math.cos(a) * crystalW, waistY + Math.sin(a) * crystalW * 0.2]);
       table.push([cx + Math.cos(a) * crystalW * 0.32, tableY + Math.sin(a) * crystalW * 0.08]);
+      mid.push([cx + Math.cos(a) * crystalW * 0.68, midY + Math.sin(a) * crystalW * 0.14]);
     }
-    for (let i = 0; i < 8; i++) {
-      const a = girdle[i];
-      const b = girdle[(i + 1) % 8];
+    const fillGlass = (pts: Array<[number, number]>, i: number, tint: string): void => {
       ctx.beginPath();
-      ctx.moveTo(a[0], a[1]);
-      ctx.lineTo(b[0], b[1]);
-      ctx.lineTo(cx, baseY);
+      pts.forEach((p, n) => (n ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
       ctx.closePath();
-      ctx.fillStyle = i % 2 ? (onGate ? '#1557FF' : '#0d3fd4') : '#061433';
-      ctx.fill();
-    }
-    ctx.shadowBlur = 0;
+      if (backdrop.complete && backdrop.naturalWidth) {
+        const xs = pts.map((p) => p[0]);
+        const ys = pts.map((p) => p[1]);
+        const minX = Math.min(...xs);
+        const minY = Math.min(...ys);
+        const bw = Math.max(1, Math.max(...xs) - minX);
+        const bh = Math.max(1, Math.max(...ys) - minY);
+        ctx.save();
+        ctx.clip();
+        const fx = (i % 4) / 4;
+        const fy = ((Math.floor(i / 4) * 3 + i) % 5) / 8;
+        const sx = fx * backdrop.naturalWidth;
+        const sy = fy * backdrop.naturalHeight;
+        const sw = Math.max(1, backdrop.naturalWidth * 0.46);
+        const sh = Math.max(1, backdrop.naturalHeight * 0.58);
+        ctx.drawImage(backdrop, sx, sy, sw, sh, minX, minY, bw, bh);
+        ctx.fillStyle = onGate && i === 2 ? 'rgba(234, 241, 255, 0.28)' : tint;
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.fill();
+        ctx.restore();
+      } else {
+        ctx.fillStyle = tint;
+        ctx.fill();
+      }
+    };
     for (let i = 0; i < 8; i++) {
-      const t0 = table[i];
-      const t1 = table[(i + 1) % 8];
-      const e0 = girdle[i];
-      const e1 = girdle[(i + 1) % 8];
-      ctx.beginPath();
-      ctx.moveTo(t0[0], t0[1]);
-      ctx.lineTo(t1[0], t1[1]);
-      ctx.lineTo(e1[0], e1[1]);
-      ctx.lineTo(e0[0], e0[1]);
-      ctx.closePath();
-      ctx.fillStyle = i === 2 || i === 3 ? '#EAF1FF' : i % 2 ? (onGate ? '#9CC4FF' : '#5B93FF') : '#7eb0ff';
-      ctx.globalAlpha = i === 2 || i === 3 ? 0.78 : 0.92;
-      ctx.fill();
-      ctx.globalAlpha = 1;
+      const n = (i + 1) % 8;
+      fillGlass([girdle[i], girdle[n], [cx, baseY]], i, i % 2 ? 'rgba(8, 22, 56, 0.72)' : 'rgba(6, 14, 36, 0.78)');
+      fillGlass([table[i], mid[i], mid[n]], i + 8, 'rgba(21, 87, 255, 0.28)');
+      fillGlass([mid[i], girdle[i], girdle[n], mid[n]], i + 16, 'rgba(21, 87, 255, 0.22)');
+      fillGlass([table[i], table[n], mid[n], mid[i]], i + 24, i === 2 || i === 3 ? 'rgba(234, 241, 255, 0.2)' : 'rgba(61, 114, 224, 0.24)');
     }
     ctx.beginPath();
     table.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
     ctx.closePath();
-    ctx.fillStyle = '#F4F7FB';
-    ctx.globalAlpha = 0.88;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.86)';
-    ctx.lineWidth = Math.max(1.4, W / 420);
+    if (backdrop.complete && backdrop.naturalWidth) {
+      ctx.save();
+      ctx.clip();
+      ctx.drawImage(
+        backdrop,
+        backdrop.naturalWidth * 0.3,
+        backdrop.naturalHeight * 0.2,
+        backdrop.naturalWidth * 0.4,
+        backdrop.naturalHeight * 0.4,
+        cx - crystalW * 0.36,
+        tableY - crystalW * 0.1,
+        crystalW * 0.72,
+        crystalW * 0.28,
+      );
+      ctx.fillStyle = 'rgba(21, 87, 255, 0.18)';
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fill();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#F4F7FB';
+      ctx.globalAlpha = 0.88;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.28)';
+    ctx.lineWidth = Math.max(1.1, W / 520);
     ctx.beginPath();
     girdle.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
     ctx.closePath();
@@ -385,10 +414,10 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const onRt = selected === 7 || hover === 7;
     ctx.beginPath();
     ctx.arc(rt2[0], rt2[1], Math.max(16, W / 42), 0, Math.PI * 2);
-    ctx.fillStyle = onRt ? 'rgba(0, 168, 120, 0.18)' : 'rgba(0, 168, 120, 0.08)';
+    ctx.fillStyle = onRt ? 'rgba(26, 36, 56, 0.72)' : 'rgba(11, 18, 32, 0.62)';
     ctx.fill();
-    ctx.strokeStyle = onRt ? '#00A878' : 'rgba(234, 241, 255, 0.55)';
-    ctx.lineWidth = onRt ? 2.4 : 1.5;
+    ctx.strokeStyle = onRt ? '#8eb0ff' : 'rgba(61, 79, 108, 0.95)';
+    ctx.lineWidth = onRt ? 2.2 : 1.4;
     ctx.stroke();
     ctx.fillStyle = '#EAF1FF';
     ctx.font = `600 ${Math.max(9, W / 72)}px "IBM Plex Mono", ui-monospace, monospace`;
