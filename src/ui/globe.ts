@@ -113,6 +113,9 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   ctx.globalCompositeOperation = 'screen';
   ctx.fillStyle = 'rgba(255, 172, 100, 0.1)';
   ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'color';
+  ctx.fillStyle = 'rgba(196, 164, 112, 0.22)';
+  ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
   return c;
 }
@@ -1001,7 +1004,7 @@ export class EarthGlobe {
     if (mat) {
       if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
-        mat.color = new THREE.Color(0xffffff);
+        mat.color = new THREE.Color(this.lite ? 0xe6d4b8 : 0xffffff);
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
       } else {
         mat.map = this.overlays.night && this.nightTex ? this.nightTex : null;
