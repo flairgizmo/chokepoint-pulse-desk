@@ -166,6 +166,12 @@ describe('Topic plates', () => {
     expect(renderPodcast()).toContain('/visuals/topics/radio.jpg');
     expect(renderCbdc()).toContain('still-strip');
     expect(renderStandards()).toContain('still-strip');
+    expect(renderStandards()).toContain('treaty-still');
+    expect(renderStandards()).toContain('satp-still');
+    expect(renderStandards()).toContain('/visuals/cities/geneva.jpg');
+    expect(renderStandards()).toContain('/visuals/topics/fiber.jpg');
+    expect(renderStandards()).toContain('/visuals/topics/canary.jpg');
+    expect(renderStandards()).toContain('/visuals/topics/ucl.jpg');
     expect(renderProgrammes()).toContain('still-strip');
   });
 });

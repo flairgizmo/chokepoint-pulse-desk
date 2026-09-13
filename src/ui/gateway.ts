@@ -157,6 +157,17 @@ function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: nu
   }
   ctx.fillStyle = fire;
   ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = lane === 0 ? 'rgba(255, 214, 140, 0.2)' : 'rgba(170, 200, 255, 0.1)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(w * 0.08, h * 0.1);
+  ctx.lineTo(w * 0.92, h * 0.9);
+  ctx.stroke();
+  ctx.strokeStyle = lane === 0 ? 'rgba(140, 200, 255, 0.18)' : 'rgba(255, 176, 210, 0.08)';
+  ctx.beginPath();
+  ctx.moveTo(w * 0.9, h * 0.08);
+  ctx.lineTo(w * 0.1, h * 0.92);
+  ctx.stroke();
   for (let i = 0; i < sides; i++) {
     const cx = (i + 0.38) * bw;
     const cy = 36 + (i % 5) * 78;
@@ -208,7 +219,7 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, 512, 512);
   if (photo?.naturalWidth) {
-    ctx.globalAlpha = 0.72;
+    ctx.globalAlpha = 0.82;
     ctx.drawImage(
       photo,
       photo.naturalWidth * 0.26,
@@ -322,9 +333,17 @@ function glassMat(
 
 const KEY_DIR = new THREE.Vector3(2.4, 3.2, 2.1).normalize();
 const RIM_DIR = new THREE.Vector3(-2.8, 1.2, -2.4).normalize();
+/** Rest camera → jewel, rotated into crystal space so the −0.34 lean still keys the fire. */
+const VIEW_DIR = new THREE.Vector3(
+  -(3.48 * Math.sin(1.24) * Math.sin(0.72)),
+  0.38 - 3.48 * Math.cos(1.24),
+  -(3.48 * Math.sin(1.24) * Math.cos(0.72)),
+)
+  .applyAxisAngle(new THREE.Vector3(1, 0, 0), 0.34)
+  .normalize();
 
-/** Flat facet luminance for lite MeshBasic. Outward Lambert, not |dot| — that painted every kite the same. */
-function facetShade(
+/** Spectral kite fire for lite MeshBasic. Outward Lambert, not |dot| — that painted every kite the same. */
+function facetFire(
   ax: number,
   ay: number,
   az: number,
@@ -334,7 +353,7 @@ function facetShade(
   cx: number,
   cy: number,
   cz: number,
-): number {
+): THREE.Color {
   const n = new THREE.Vector3(bx - ax, by - ay, bz - az)
     .cross(new THREE.Vector3(cx - ax, cy - ay, cz - az))
     .normalize();
@@ -342,7 +361,14 @@ function facetShade(
   if (n.dot(mid) < 0) n.negate();
   const key = Math.max(0, n.dot(KEY_DIR));
   const rim = Math.max(0, n.dot(RIM_DIR));
-  return Math.min(1, 0.42 + key * 0.5 + rim * 0.16);
+  const facing = Math.max(0, n.dot(VIEW_DIR));
+  const fres = (1 - facing) ** 1.55;
+  const shade = Math.min(0.9, 0.36 + key * 0.46 + rim * 0.16 + fres * 0.2);
+  return new THREE.Color(
+    Math.min(1, shade + key * 0.16 + fres * 0.1 - rim * 0.06),
+    Math.min(1, shade - key * 0.02 + rim * 0.04),
+    Math.min(1, shade - key * 0.14 + rim * 0.2 + fres * 0.14),
+  );
 }
 
 function wrapU(x: number, z: number): number {
@@ -406,8 +432,14 @@ function triGeo(
       2,
     ),
   );
-  const s = facetShade(ax, ay, az, bx, by, bz, cx, cy, cz);
-  g.setAttribute('color', new THREE.Float32BufferAttribute([s, s, s, s, s, s, s, s, s], 3));
+  const fire = facetFire(ax, ay, az, bx, by, bz, cx, cy, cz);
+  g.setAttribute(
+    'color',
+    new THREE.Float32BufferAttribute(
+      [fire.r, fire.g, fire.b, fire.r, fire.g, fire.b, fire.r, fire.g, fire.b],
+      3,
+    ),
+  );
   g.computeVertexNormals();
   return g;
 }

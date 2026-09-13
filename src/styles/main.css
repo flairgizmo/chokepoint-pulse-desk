@@ -5796,3 +5796,71 @@ section.block .kicker {
 .token-board .float-grid li {
   box-shadow: 0 16px 36px rgba(7, 11, 20, 0.22);
 }
+
+.treaty-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.treaty-still {
+  margin: 0;
+  height: 100%;
+}
+
+.treaty-still img {
+  aspect-ratio: 4 / 5;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
+  filter: saturate(0.82) contrast(1.14) brightness(0.68);
+}
+
+.satp-lab .stage {
+  overflow: hidden;
+  padding: 0 0 0.85rem;
+}
+
+.satp-lab .stage-btn {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: 0.55rem 0.7rem;
+  padding: 0;
+}
+
+.satp-lab .satp-still {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.satp-lab .satp-still img {
+  aspect-ratio: 21 / 9;
+  max-height: 11rem;
+  filter: saturate(0.8) contrast(1.12) brightness(0.62);
+}
+
+.satp-lab .stage-btn .n,
+.satp-lab .satp-title {
+  padding-bottom: 0.15rem;
+}
+
+.satp-lab .stage-btn .n {
+  padding-left: 1rem;
+}
+
+.satp-lab .satp-title {
+  padding-right: 1rem;
+}
+
+@media (max-width: 800px) {
+  .treaty-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .treaty-still img {
+    aspect-ratio: 21 / 9;
+    max-height: 16rem;
+  }
+}

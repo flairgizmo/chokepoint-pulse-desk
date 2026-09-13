@@ -27,7 +27,7 @@ import type { NewsRiver } from '../modules/news';
 import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
-import { photoFigure, plateFor, type VisualId } from '../data/plates';
+import { photoFigure, plateFor, PLATES, type VisualId } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
 import { FILM_SETS, filmStageMarkup, stillStrip } from './filmSets';
@@ -898,9 +898,14 @@ export function renderCbdc(): string {
 }
 
 export function renderStandards(): string {
+  const satpStills = [PLATES.geneva, PLATES.fiber, PLATES.canary, PLATES.ucl] as const;
   const stages = SATP_STAGES.map(
     (s) => `<li class="stage" data-satp-n="${esc(s.n)}">
-      <button type="button" class="stage-btn" data-stage="satp" data-stage-id="${esc(s.n)}"><span class="n">${esc(s.n)}</span> ${esc(s.title)}</button>
+      <button type="button" class="stage-btn" data-stage="satp" data-stage-id="${esc(s.n)}">
+        ${photoFigure(satpStills[Number(s.n)] ?? PLATES.geneva, 'satp-still')}
+        <span class="n">${esc(s.n)}</span>
+        <span class="satp-title">${esc(s.title)}</span>
+      </button>
       <p class="stage-body"><span>${esc(s.body)}</span><span class="mono subtle">${esc(s.tags)}</span></p>
     </li>`,
   ).join('');
@@ -917,12 +922,15 @@ export function renderStandards(): string {
   ${cinemaDiagram('standards', '/visuals/plates/satp-stages.svg', 'SATP stages 0 verify, 1 init, 2 lock, 3 two-phase commit')}
   <section class="treaty-table">
     ${kicker('Treaty table')}
-    <ul class="treaty-row">
-      <li><button type="button" data-stage="satp" data-stage-id="3"><span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em></button></li>
-      <li><button type="button" data-stage="chapter" data-stage-id="iso"><span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em></button></li>
-      <li><button type="button" data-stage="event" data-stage-id="iso-2015"><span class="chip">adopted</span><strong>ISO/TC 307</strong><em>Proposed 2015</em></button></li>
-      <li><button type="button" data-stage="event" data-stage-id="odap-2020"><span class="chip">referenced</span><strong>ODAP 2020</strong><em>Maiden name of the SATP shape</em></button></li>
-    </ul>
+    <div class="treaty-stage">
+      ${photoFigure(plateFor('standards', 'geneva'), 'treaty-still')}
+      <ul class="treaty-row">
+        <li><button type="button" data-stage="satp" data-stage-id="3"><span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em></button></li>
+        <li><button type="button" data-stage="chapter" data-stage-id="iso"><span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em></button></li>
+        <li><button type="button" data-stage="event" data-stage-id="iso-2015"><span class="chip">adopted</span><strong>ISO/TC 307</strong><em>Proposed 2015</em></button></li>
+        <li><button type="button" data-stage="event" data-stage-id="odap-2020"><span class="chip">referenced</span><strong>ODAP 2020</strong><em>Maiden name of the SATP shape</em></button></li>
+      </ul>
+    </div>
   </section>
   <section class="satp-lab" id="satp-method">
     ${kicker('Verify, initiate, lock, then 2PC')}
