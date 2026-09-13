@@ -44,12 +44,12 @@ function containDraw(
 }
 
 const GLASS_TINT = [
-  'rgba(21, 87, 255, 0.36)',
-  'rgba(196, 58, 134, 0.32)',
-  'rgba(18, 153, 180, 0.34)',
-  'rgba(61, 114, 224, 0.34)',
-  'rgba(143, 46, 212, 0.3)',
-  'rgba(10, 168, 136, 0.32)',
+  'rgba(21, 87, 255, 0.2)',
+  'rgba(196, 58, 134, 0.18)',
+  'rgba(18, 153, 180, 0.2)',
+  'rgba(61, 114, 224, 0.2)',
+  'rgba(143, 46, 212, 0.16)',
+  'rgba(10, 168, 136, 0.18)',
 ];
 
 type GlassCut = 'crown' | 'bezel' | 'pav' | 'table';
@@ -110,9 +110,9 @@ function paintPhotoGlass(
     ctx.fillStyle = on
       ? 'rgba(234, 241, 255, 0.4)'
       : cut === 'pav'
-        ? 'rgba(6, 14, 36, 0.48)'
+        ? 'rgba(4, 10, 28, 0.62)'
         : cut === 'table'
-          ? 'rgba(21, 87, 255, 0.18)'
+          ? 'rgba(21, 87, 255, 0.14)'
           : GLASS_TINT[i % GLASS_TINT.length];
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
