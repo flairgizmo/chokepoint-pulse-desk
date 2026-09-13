@@ -390,13 +390,13 @@
   },
   {
     "id": "synchro",
-    "title": "What is Synchro / Synthorus",
-    "year": "n.d.",
-    "venue": "Bank of England adjacency",
+    "title": "RTGS synchronisation — desk research note",
+    "year": "2024",
+    "venue": "Desk file · BoE language, not a Quant SKU",
     "kind": "note",
     "hrefKey": "synchroPdf",
     "authors": [],
-    "lede": "RTGS / research thread. Distinct from the 2026 Synchronisation Lab note."
+    "lede": "Desk research on Bank of England RTGS synchronisation language. Distinct from Quant’s February 2026 Synchronisation Lab participation (simulated RT2). This file is not a Bank of England publication naming Quant as operator of Synthorus."
   },
   {
     "id": "verdian-cv",

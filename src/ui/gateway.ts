@@ -1,27 +1,72 @@
-/** Three-layer digital money, with Overledger as the connecting lattice. */
+/** Sterling corridor — six GBTD issuers around one Overledger plane. Not a Q mascot. */
 
-type LayerId = 0 | 1 | 2;
+type NodeId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-const LAYERS: Array<{ id: LayerId; name: string; note: string; color: string }> = [
+const BANKS: Array<{ id: NodeId; name: string; short: string; note: string }> = [
   {
     id: 0,
-    name: 'Wholesale · RTGS',
-    note: 'Layer 1 — central-bank money and finality. The Synchronisation Lab sits here.',
-    color: '#7C5CFF',
+    name: 'Barclays',
+    short: 'BARC',
+    note: 'Named GBTD issuer, 26 September 2025. Quant’s write-up of a remortgage lock-and-release sits with this name.',
   },
   {
     id: 1,
-    name: 'Commercial deposits',
-    note: 'Layer 2 — GBTD. Six UK banks. The banks owe the holder. Overledger runs the rails.',
-    color: '#1550FF',
+    name: 'HSBC',
+    short: 'HSBC',
+    note: 'Named GBTD issuer. Quant’s write-up of an Orion delivery-versus-payment sits with this name.',
   },
   {
     id: 2,
-    name: 'Tokens · agents',
-    note: 'Layer 3 — programmable instructions, x402, Flow. The gate maps; it does not replace.',
-    color: '#00C9A7',
+    name: 'Lloyds Banking Group',
+    short: 'LLOY',
+    note: 'UK Finance’s press uses Lloyds Banking Group. The public wordmark is Lloyds. Retail P2P lock-and-release is the Quant write-up.',
+  },
+  {
+    id: 3,
+    name: 'NatWest',
+    short: 'NWB',
+    note: 'Named GBTD issuer. Sat on the June 2026 Digital Innovation Summit panel, in Quant’s own note.',
+  },
+  {
+    id: 4,
+    name: 'Nationwide',
+    short: 'NWID',
+    note: 'Named GBTD issuer. Commercial-bank sterling. Quant is the technology partner, not the issuer.',
+  },
+  {
+    id: 5,
+    name: 'Santander',
+    short: 'SAN',
+    note: 'Named GBTD issuer. UK Finance’s press also writes Santander UK in some bylines. Same issuing bank.',
   },
 ];
+
+const MARK: Record<string, string> = {
+  Barclays: '/marks/barclays.svg',
+  HSBC: '/marks/hsbc.svg',
+  'Lloyds Banking Group': '/marks/lloyds.svg',
+  NatWest: '/marks/natwest.svg',
+  Nationwide: '/marks/nationwide.svg',
+  Santander: '/marks/santander.svg',
+};
+
+const GATE: { id: NodeId; name: string; note: string } = {
+  id: 6,
+  name: 'Overledger',
+  note: 'Gateway OS. Maps a lock-and-release across the six books. Not a seventh chain. Whitepaper, UCL Discovery, 2018.',
+};
+
+const RTGS: { id: NodeId; name: string; note: string } = {
+  id: 7,
+  name: 'Simulated RT2',
+  note: 'Bank of England Synchronisation Lab, February 2026. Simulated RT2. Not live RTGS. Not a Quant endorsement.',
+};
+
+function bankXYZ(i: number, pulse: number): [number, number, number] {
+  const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+  const r = 1.18 + pulse;
+  return [Math.cos(a) * r, 0.04 + Math.sin(a) * 0.04, Math.sin(a) * r];
+}
 
 export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const ctx = canvas.getContext('2d');
@@ -30,19 +75,41 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hint = canvas.parentElement?.querySelector<HTMLElement>('[data-gateway-hint]');
   let raf = 0;
-  let ax = 0.62;
-  let ay = 0.18;
-  let spin = reduced ? 0 : 0.0042;
+  const restAx = 1.08;
+  const restAy = 0.28;
+  const orbit = (16 * Math.PI) / 180;
+  let ax = restAx;
+  let ay = restAy;
   let dragging = false;
   let lastX = 0;
   let lastY = 0;
-  let selected: LayerId | null = 1;
-  let hover: LayerId | null = null;
+  let selected: NodeId | null = 6;
+  let hover: NodeId | null = null;
   const t0 = performance.now();
+  let parx = 0;
+  let pary = 0;
+  const projected: Array<{ id: NodeId; x: number; y: number; z: number }> = [];
+  const logos = BANKS.map((b) => {
+    const img = new Image();
+    img.onload = () => draw(performance.now());
+    img.src = MARK[b.name];
+    return img;
+  });
+
+  const roundRect = (x: number, y: number, w: number, h: number, r: number): void => {
+    const rad = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
+  };
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.max(1, Math.floor(r.width * dpr));
     canvas.height = Math.max(1, Math.floor(r.height * dpr));
   };
@@ -56,128 +123,199 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     let z1 = -x * sy + z * cy;
     const y1 = y * cx - z1 * sx;
     z1 = y * sx + z1 * cx;
-    const k = 2.15 / (3.35 - z1);
+    const k = 2.05 / (3.2 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.34;
-    return [W / 2 + x1 * k * scale, H * 0.52 + y1 * k * scale, z1];
-  };
-
-  const ring = (y: number, r: number, n: number): Array<[number, number, number]> => {
-    const pts: Array<[number, number, number]> = [];
-    for (let i = 0; i < n; i += 1) {
-      const a = (i / n) * Math.PI * 2;
-      pts.push([Math.cos(a) * r, y, Math.sin(a) * r]);
-    }
-    return pts;
+    const scale = Math.min(W, H) * 0.42;
+    return [W / 2 + x1 * k * scale + parx, H * 0.52 + y1 * k * scale + pary, z1];
   };
 
   const paintHint = (): void => {
     if (!hint) return;
-    const layer = selected != null ? LAYERS[selected] : hover != null ? LAYERS[hover] : null;
-    hint.textContent = layer
-      ? `${layer.name} — ${layer.note}`
-      : 'Drag to orbit the three layers. Click a ring. Overledger is the lattice.';
+    const node =
+      selected != null
+        ? [...BANKS, GATE, RTGS].find((n) => n.id === selected)
+        : hover != null
+          ? [...BANKS, GATE, RTGS].find((n) => n.id === hover)
+          : null;
+    hint.textContent = node
+      ? `${node.name} — ${node.note}`
+      : 'Six commercial banks. One gateway plane. A lock leaves one book and a release lands in another. Click a node.';
   };
 
   const draw = (now: number): void => {
     const { width: W, height: H } = canvas;
     ctx.clearRect(0, 0, W, H);
-    const pulse = reduced ? 0 : Math.sin((now - t0) / 700) * 0.04;
-
-    const layers = [
-      { id: 0 as LayerId, y: -0.78, r: 1.05 + pulse },
-      { id: 1 as LayerId, y: 0.02, r: 0.92 + pulse * 0.6 },
-      { id: 2 as LayerId, y: 0.78, r: 0.72 + pulse * 0.4 },
-    ];
-
-    const projected = layers.map((L) => ({
-      ...L,
-      pts: ring(L.y, L.r, 14).map(([x, y, z]) => project(x, y, z)),
-    }));
+    const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
+    const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    projected.length = 0;
 
-    for (let i = 0; i < 14; i += 1) {
-      const a = projected[0].pts[i];
-      const b = projected[1].pts[i];
-      const c = projected[2].pts[i];
-      const g = ctx.createLinearGradient(a[0], a[1], c[0], c[1]);
-      g.addColorStop(0, 'rgba(124, 92, 255, 0.35)');
-      g.addColorStop(0.5, 'rgba(21, 80, 255, 0.55)');
-      g.addColorStop(1, 'rgba(0, 201, 167, 0.45)');
-      ctx.strokeStyle = g;
-      ctx.lineWidth = Math.max(1, W / 520);
+    const banks = BANKS.map((b, i) => {
+      const [x, y, z] = bankXYZ(i, pulse);
+      const p = project(x, y, z);
+      projected.push({ id: b.id, x: p[0], y: p[1], z: p[2] });
+      return { bank: b, p };
+    });
+
+    const gate = project(0, 0, 0);
+    projected.push({ id: 6, x: gate[0], y: gate[1], z: gate[2] });
+    const rt2 = project(0, -0.78, 0);
+    projected.push({ id: 7, x: rt2[0], y: rt2[1], z: rt2[2] });
+
+    const hex = Array.from({ length: 6 }, (_, i) => {
+      const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
+      return project(Math.cos(a) * (0.42 + pulse * 0.4), 0, Math.sin(a) * (0.42 + pulse * 0.4));
+    });
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(11, 31, 92, 0.06)';
+    ctx.lineWidth = 1;
+    for (const ring of [0.55, 0.9, 1.25]) {
+      const a = project(ring, 0, 0);
+      const b = project(0, 0, ring);
       ctx.beginPath();
-      ctx.moveTo(a[0], a[1]);
-      ctx.lineTo(b[0], b[1]);
-      ctx.lineTo(c[0], c[1]);
+      ctx.ellipse(gate[0], gate[1] + 8, Math.abs(a[0] - gate[0]), Math.abs(b[1] - gate[1]) * 0.35 + 18, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
+    ctx.restore();
 
-    for (const L of projected) {
-      const on = selected === L.id || hover === L.id;
-      const meta = LAYERS[L.id];
+    banks.forEach(({ p }) => {
       ctx.beginPath();
-      L.pts.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p[0], p[1]);
-        else ctx.lineTo(p[0], p[1]);
-      });
-      ctx.closePath();
-      ctx.strokeStyle = on ? meta.color : `${meta.color}cc`;
-      ctx.lineWidth = on ? Math.max(2.6, W / 240) : Math.max(1.6, W / 340);
-      ctx.shadowColor = on ? meta.color : 'transparent';
-      ctx.shadowBlur = on ? 18 : 0;
+      ctx.moveTo(gate[0], gate[1]);
+      ctx.lineTo(p[0], p[1]);
+      ctx.strokeStyle = 'rgba(21, 87, 255, 0.28)';
+      ctx.lineWidth = Math.max(1.4, W / 420);
       ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = on ? `${meta.color}22` : `${meta.color}10`;
-      ctx.fill();
-      for (const p of L.pts) {
-        ctx.beginPath();
-        ctx.fillStyle = meta.color;
-        ctx.arc(p[0], p[1], on ? Math.max(3.2, W / 220) : Math.max(2.1, W / 280), 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
+    });
 
-    const core = project(0, 0.02, 0);
-    const cg = ctx.createRadialGradient(core[0], core[1], 2, core[0], core[1], Math.min(W, H) * 0.12);
-    cg.addColorStop(0, 'rgba(255,255,255,0.95)');
-    cg.addColorStop(0.35, 'rgba(21,80,255,0.55)');
-    cg.addColorStop(1, 'rgba(21,80,255,0)');
-    ctx.fillStyle = cg;
     ctx.beginPath();
-    ctx.arc(core[0], core[1], Math.min(W, H) * 0.12, 0, Math.PI * 2);
+    hex.forEach((pt, i) => {
+      if (i === 0) ctx.moveTo(pt[0], pt[1]);
+      else ctx.lineTo(pt[0], pt[1]);
+    });
+    ctx.closePath();
+    ctx.fillStyle = selected === 6 || hover === 6 ? 'rgba(21, 87, 255, 0.16)' : 'rgba(21, 87, 255, 0.08)';
     ctx.fill();
-    ctx.fillStyle = '#04101f';
-    ctx.font = `600 ${Math.max(11, W / 62)}px "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.strokeStyle = selected === 6 || hover === 6 ? '#1557FF' : '#0B1F5C';
+    ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.6, W / 200) : Math.max(1.8, W / 280);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(gate[0], gate[1]);
+    ctx.lineTo(rt2[0], rt2[1]);
+    ctx.strokeStyle = 'rgba(11, 31, 92, 0.28)';
+    ctx.setLineDash([6, 7]);
+    ctx.lineWidth = Math.max(1.2, W / 420);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const onRt = selected === 7 || hover === 7;
+    ctx.beginPath();
+    ctx.arc(rt2[0], rt2[1], Math.max(16, W / 42), 0, Math.PI * 2);
+    ctx.fillStyle = onRt ? 'rgba(0, 168, 120, 0.18)' : 'rgba(0, 168, 120, 0.08)';
+    ctx.fill();
+    ctx.strokeStyle = onRt ? '#00A878' : '#0B1F5C';
+    ctx.lineWidth = onRt ? 2.4 : 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#0B1F5C';
+    ctx.font = `600 ${Math.max(9, W / 72)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('Overledger', core[0], core[1] + 4);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SIM RT2', rt2[0], rt2[1]);
+
+    banks.forEach(({ bank, p }, i) => {
+      const on = selected === bank.id || hover === bank.id;
+      const rw = Math.max(86, W / 8.2);
+      const rh = Math.max(36, W / 22);
+      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.28)' : 'rgba(11, 31, 92, 0.08)';
+      ctx.shadowBlur = on ? 16 : 8;
+      roundRect(p[0] - rw / 2, p[1] - rh / 2, rw, rh, 10);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.18)';
+      ctx.lineWidth = on ? 2.2 : 1.2;
+      ctx.stroke();
+      const logo = logos[i];
+      if (logo?.complete && logo.naturalWidth) {
+        const maxW = rw - 18;
+        const maxH = rh - 12;
+        const scale = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight);
+        const dw = logo.naturalWidth * scale;
+        const dh = logo.naturalHeight * scale;
+        ctx.drawImage(logo, p[0] - dw / 2, p[1] - dh / 2, dw, dh);
+      } else {
+        ctx.fillStyle = '#0B1F5C';
+        ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+        ctx.fillText(bank.short, p[0], p[1]);
+      }
+    });
+
+    ctx.fillStyle = '#0B1F5C';
+    ctx.font = `700 ${Math.max(11, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.fillText('OVERLEDGER', gate[0], gate[1] + 2);
+
+    const from = Math.floor(travel * 6) % 6;
+    const to = (from + 1) % 6;
+    const local = (travel * 6) % 1;
+    const a = banks[from].p;
+    const b = gate;
+    const c = banks[to].p;
+    const bead =
+      local < 0.5
+        ? [a[0] + (b[0] - a[0]) * (local * 2), a[1] + (b[1] - a[1]) * (local * 2)]
+        : [b[0] + (c[0] - b[0]) * ((local - 0.5) * 2), b[1] + (c[1] - b[1]) * ((local - 0.5) * 2)];
+    ctx.fillStyle = '#00A878';
+    ctx.shadowColor = '#00A878';
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.arc(bead[0], bead[1], Math.max(4.2, W / 170), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#0B1220';
+    ctx.font = `500 ${Math.max(8, W / 80)}px "IBM Plex Mono", ui-monospace, monospace`;
+    ctx.fillText(local < 0.5 ? 'LOCK' : 'RELEASE', bead[0], bead[1] - Math.max(14, W / 50));
+
+    for (let i = 1; i <= 4; i++) {
+      const t = (travel + i * 0.12) % 1;
+      const f = Math.floor(t * 6) % 6;
+      const n = (f + 1) % 6;
+      const loc = (t * 6) % 1;
+      const pa = banks[f].p;
+      const pb = loc < 0.5 ? gate : banks[n].p;
+      const src = loc < 0.5 ? pa : gate;
+      const u = loc < 0.5 ? loc * 2 : (loc - 0.5) * 2;
+      const x = src[0] + (pb[0] - src[0]) * u;
+      const y = src[1] + (pb[1] - src[1]) * u;
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(0, 168, 120, ${0.18 + i * 0.08})`;
+      ctx.arc(x, y, Math.max(1.6, W / 320), 0, Math.PI * 2);
+      ctx.fill();
+    }
   };
 
-  const pick = (clientX: number, clientY: number): LayerId | null => {
+  const pick = (clientX: number, clientY: number): NodeId | null => {
     const rect = canvas.getBoundingClientRect();
-    const x = ((clientX - rect.left) / rect.width) * canvas.width;
-    const y = ((clientY - rect.top) / rect.height) * canvas.height;
-    const bands: Array<[LayerId, number]> = [
-      [0, canvas.height * 0.28],
-      [1, canvas.height * 0.52],
-      [2, canvas.height * 0.72],
-    ];
-    let best: LayerId | null = null;
-    let dist = 1e9;
-    for (const [id, cy] of bands) {
-      const d = Math.abs(y - cy);
-      if (d < dist && d < canvas.height * 0.16 && x > canvas.width * 0.12 && x < canvas.width * 0.88) {
+    const sx = canvas.width / rect.width;
+    const sy = canvas.height / rect.height;
+    const x = (clientX - rect.left) * sx;
+    const y = (clientY - rect.top) * sy;
+    let best: NodeId | null = null;
+    let dist = Infinity;
+    for (const n of projected) {
+      const d = Math.hypot(n.x - x, n.y - y);
+      const hit = n.id === 6 ? Math.max(28, canvas.width / 18) : n.id === 7 ? Math.max(22, canvas.width / 24) : Math.max(40, canvas.width / 16);
+      if (d < hit && d < dist) {
         dist = d;
-        best = id;
+        best = n.id;
       }
     }
     return best;
   };
 
   const tick = (): void => {
-    if (spin) ay += spin;
     draw(performance.now());
     raf = requestAnimationFrame(tick);
   };
@@ -190,10 +328,21 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   };
   const onMove = (ev: PointerEvent): void => {
     hover = pick(ev.clientX, ev.clientY);
+    const rect = canvas.getBoundingClientRect();
+    const nx = (ev.clientX - rect.left) / rect.width - 0.5;
+    const ny = (ev.clientY - rect.top) / rect.height - 0.5;
+    if (!dragging) {
+      ay += (restAy + nx * 2 * orbit - ay) * 0.22;
+      ax += (restAx + ny * 2 * orbit - ax) * 0.22;
+      if (reduced) {
+        parx = nx * 12;
+        pary = ny * 8;
+      }
+    }
     paintHint();
     if (!dragging) return;
-    ay += (ev.clientX - lastX) * 0.007;
-    ax = Math.max(0.2, Math.min(1.25, ax + (ev.clientY - lastY) * 0.006));
+    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.018));
+    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.014));
     lastX = ev.clientX;
     lastY = ev.clientY;
   };
@@ -214,7 +363,8 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointercancel', onUp);
   canvas.addEventListener('click', onClick);
-  raf = requestAnimationFrame(tick);
+  if (reduced) draw(performance.now());
+  else raf = requestAnimationFrame(tick);
 
   return () => {
     cancelAnimationFrame(raf);

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Six-bank sterling corridor around an Overledger plane">
+  <rect width="640" height="360" fill="#ffffff"/>
+  <rect x="16" y="16" width="608" height="328" fill="none" stroke="#0B1F5C" stroke-opacity=".14"/>
+  <polygon points="320,132 368,160 368,216 320,244 272,216 272,160" fill="#1557FF" fill-opacity=".12" stroke="#1557FF" stroke-width="2.4"/>
+  <text x="320" y="194" text-anchor="middle" fill="#0B1F5C" font-family="Outfit, sans-serif" font-size="13" font-weight="700">OVERLEDGER</text>
+  <g fill="#ffffff" stroke="#1557FF" stroke-width="2">
+    <circle cx="320" cy="64" r="22"/><circle cx="470" cy="130" r="22"/><circle cx="470" cy="246" r="22"/>
+    <circle cx="320" cy="308" r="22"/><circle cx="170" cy="246" r="22"/><circle cx="170" cy="130" r="22"/>
+  </g>
+  <g fill="#0B1F5C" font-family="Outfit, sans-serif" font-size="9" font-weight="700" text-anchor="middle">
+    <text x="320" y="67">BAR</text><text x="470" y="133">HSB</text><text x="470" y="249">LLO</text>
+    <text x="320" y="311">NAT</text><text x="170" y="249">NWD</text><text x="170" y="133">SAN</text>
+  </g>
+  <circle cx="400" cy="188" r="7" fill="#00A878"/>
+  <text x="400" y="176" text-anchor="middle" fill="#0B1220" font-family="IBM Plex Mono, monospace" font-size="8">LOCK</text>
+</svg>

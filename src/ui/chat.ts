@@ -2,7 +2,7 @@ import { answerFromDesk, type ChatTurn } from '../modules/assistant';
 import { esc } from './html';
 
 const PROMPTS = ['What is GBTD?', 'What is Overledger?', 'Why does QNT exist?', 'What is PayScript?'];
-const STORE = 'qntdesk.grok.v1';
+const STORE = 'qntdesk.grok.v2';
 
 interface StoredCite {
   label: string;
@@ -17,22 +17,20 @@ interface StoredTurn {
 
 interface ChatStore {
   open: boolean;
-  min: boolean;
   turns: StoredTurn[];
 }
 
 function loadStore(): ChatStore {
   try {
-    const raw = sessionStorage.getItem(STORE);
-    if (!raw) return { open: false, min: false, turns: [] };
-    const parsed = JSON.parse(raw) as ChatStore;
+    const raw = sessionStorage.getItem(STORE) ?? sessionStorage.getItem('qntdesk.grok.v1');
+    if (!raw) return { open: false, turns: [] };
+    const parsed = JSON.parse(raw) as ChatStore & { min?: boolean };
     return {
-      open: Boolean(parsed.open),
-      min: Boolean(parsed.min),
+      open: Boolean(parsed.open) && !parsed.min,
       turns: Array.isArray(parsed.turns) ? parsed.turns.slice(-24) : [],
     };
   } catch {
-    return { open: false, min: false, turns: [] };
+    return { open: false, turns: [] };
   }
 }
 
@@ -46,9 +44,9 @@ function saveStore(next: ChatStore): void {
 
 export function chatMarkup(): string {
   return `<aside class="grok" id="grok">
-    <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel">
+    <button type="button" class="grok-launch" data-grok-toggle aria-expanded="false" aria-controls="grok-panel" aria-label="Ask Grok">
       <img class="grok-mark" src="/brand/grok-mark.png" width="36" height="36" alt="" />
-      <span class="grok-label">Ask Grok</span>
+      <span class="grok-label sr-only">Ask Grok</span>
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
@@ -88,6 +86,8 @@ export function wireChat(root: HTMLElement): void {
   const form = root.querySelector<HTMLFormElement>('#grok-form');
   const input = root.querySelector<HTMLInputElement>('#grok-input');
   if (!aside || !panel || !log || !form || !input) return;
+  if (aside.dataset.wired === '1') return;
+  aside.dataset.wired = '1';
 
   const store = loadStore();
   const history: ChatTurn[] = store.turns.map((t) => ({ role: t.role, content: t.text }));
@@ -96,7 +96,6 @@ export function wireChat(root: HTMLElement): void {
   const persist = (): void => {
     saveStore({
       open: !panel.hidden,
-      min: aside.classList.contains('is-min'),
       turns: store.turns,
     });
   };
@@ -124,25 +123,10 @@ export function wireChat(root: HTMLElement): void {
     for (const turn of store.turns) paint(turn.role, turn.text, turn.cites ?? [], false);
   }
 
-  if (store.open) {
-    panel.hidden = false;
-    root.querySelectorAll('[data-grok-toggle]').forEach((b) => b.setAttribute('aria-expanded', 'true'));
-  }
-  if (store.min) aside.classList.add('is-min');
-
-  void fetch('/api/chat')
-    .then((r) => (r.ok ? r.json() : null))
-    .then((s: { grok?: boolean } | null) => {
-      if (!statusLine) return;
-      statusLine.textContent = s?.grok
-        ? 'Grok is live on this desk — grounded in the record, with the live QNT print and the official wire. It keeps this conversation as you change pages.'
-        : 'Answers come from the record until a host key is set. I still remember what you asked on this visit.';
-    })
-    .catch(() => undefined);
-
   const setOpen = (open: boolean): void => {
     panel.hidden = !open;
-    if (open) aside.classList.remove('is-min');
+    aside.classList.remove('is-min');
+    aside.classList.toggle('is-open', open);
     root.querySelectorAll('[data-grok-toggle]').forEach((b) => {
       b.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
@@ -150,14 +134,50 @@ export function wireChat(root: HTMLElement): void {
     if (open) input.focus();
   };
 
+  if (store.open) setOpen(true);
+
+  void fetch('/api/chat')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((s: { grok?: boolean } | null) => {
+      if (!statusLine) return;
+      statusLine.textContent = s?.grok
+        ? 'Grok is live — grounded in the record, with the live QNT print and the official wire. It keeps this conversation as you change pages.'
+        : 'Answers come from the record until a host key is set. I still remember what you asked on this visit.';
+    })
+    .catch(() => undefined);
+
+  const minimise = (): void => {
+    setOpen(false);
+  };
+
+  aside.dataset.idle = '1';
+
   root.querySelectorAll('[data-grok-toggle]').forEach((b) =>
     b.addEventListener('click', () => setOpen(panel.hidden)),
   );
-  root.querySelector('[data-grok-min]')?.addEventListener('click', () => {
-    aside.classList.toggle('is-min');
-    if (aside.classList.contains('is-min')) panel.hidden = false;
-    persist();
-  });
+  root.querySelector('[data-grok-min]')?.addEventListener('click', minimise);
+
+  if (!document.body.dataset.grokKeys) {
+    document.body.dataset.grokKeys = '1';
+    document.addEventListener('keydown', (ev) => {
+      const live = document.querySelector<HTMLElement>('#grok-panel');
+      if (!live || live.hidden) return;
+      if (ev.key === 'Escape') {
+        ev.preventDefault();
+        live.hidden = true;
+        live.classList.remove('is-min');
+        document.querySelector('#grok')?.classList.remove('is-open', 'is-min');
+        document.querySelectorAll('[data-grok-toggle]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+        try {
+          const raw = sessionStorage.getItem(STORE);
+          const prev = raw ? (JSON.parse(raw) as ChatStore) : { open: false, turns: [] };
+          sessionStorage.setItem(STORE, JSON.stringify({ ...prev, open: false }));
+        } catch {
+          /* private mode */
+        }
+      }
+    });
+  }
 
   const ask = async (q: string) => {
     if (!q) return;
@@ -189,7 +209,7 @@ export function wireChat(root: HTMLElement): void {
           history.push({ role: 'assistant', content: data.text });
           if (statusLine && data.mode === 'live') {
             statusLine.textContent =
-              'Grok is live on this desk — grounded in the record, names and titles attached. It remembers this thread.';
+              'Grok is live — grounded in the record, names and titles attached. It remembers this thread.';
           }
           return;
         }
@@ -216,4 +236,21 @@ export function wireChat(root: HTMLElement): void {
       void ask(btn.dataset.grokPrompt ?? btn.textContent ?? '');
     });
   });
+}
+
+/** Force the launcher back to first-paint idle: mark only, no transcript peek. */
+export function forceGrokIdle(): void {
+  const panel = document.querySelector<HTMLElement>('#grok-panel');
+  const grok = document.querySelector<HTMLElement>('#grok');
+  if (!panel || !grok) return;
+  panel.hidden = true;
+  grok.classList.remove('is-open', 'is-min');
+  grok.querySelectorAll('[data-grok-toggle]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  try {
+    const raw = sessionStorage.getItem(STORE);
+    const prev = raw ? (JSON.parse(raw) as ChatStore) : { open: false, turns: [] };
+    sessionStorage.setItem(STORE, JSON.stringify({ ...prev, open: false }));
+  } catch {
+    /* private mode */
+  }
 }

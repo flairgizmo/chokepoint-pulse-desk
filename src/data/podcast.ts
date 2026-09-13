@@ -31,12 +31,12 @@ export interface Episode {
 export const HOSTS: Record<HostId, { name: string; title: string; voice: string }> = {
   james: {
     name: 'James Hale',
-    title: 'QntDesk correspondent',
+    title: 'Series host',
     voice: 'en-GB-RyanNeural',
   },
   amelia: {
     name: 'Amelia Crowe',
-    title: 'QntDesk correspondent',
+    title: 'Series host',
     voice: 'en-GB-SoniaNeural',
   },
 };
@@ -91,7 +91,7 @@ const MEMORY: Record<number, Memory> = {
   },
   5: {
     open: [
-      'LACChain, 2021. IDB Lab. The first time this desk can point at a public interoperability programme with Quant inside it.',
+      'LACChain, 2021. IDB Lab. The first public interoperability programme with Quant inside it.',
       'I keep this next to ISO on purpose. The committee writes the language. The development bank tries it in the wild.',
     ],
     close: [
@@ -106,7 +106,7 @@ const MEMORY: Record<number, Memory> = {
     ],
     close: [
       'The next step in the UK is not a CBDC. It is commercial-bank sterling learning to take an instruction.',
-      'RLN, then GBTD. The liability stays with the banks. Hold that — we will need it every week.',
+      'RLN, then GBTD. The liability stays with the banks. That distinction is the rest of this series.',
     ],
   },
   7: {
@@ -253,7 +253,7 @@ const MEMORY: Record<number, Memory> = {
 
 const JAMES_BRIDGES = [
   'That line still gets me.',
-  'Hold that — this is why the banks walked in.',
+  'That filing is why the six banks are on the page.',
   'You can hear the 2018 paper in that sentence.',
   'I keep a map: gate, rooms, token, standard.',
   'Optimistic, yes — because the rooms are named.',
@@ -263,7 +263,7 @@ const JAMES_BRIDGES = [
 const AMELIA_BRIDGES = [
   'And this is where sterling stops being a thought experiment.',
   'Right. The filing actually says it.',
-  'Stay with the title on the quote. It earns the next room.',
+  'Keep the title on the quote. It is how the next room is earned.',
   'That is the through-line, and it is a kind one.',
   'I can feel the decade connecting here.',
   'The banks still owe the holder. The instruction is new.',
@@ -402,9 +402,9 @@ Gilbert Verdian’s career is the industrial version of Tasca’s sentence. Voca
 
 Overledger, in the twenty eighteen whitepaper archived at UCL Discovery, is introduced as a technology for the design, deployment and execution of multi-ledger decentralized applications. The authors are Gilbert Verdian, Paolo Tasca, Colin Paterson, and Gaetano Mondelli. Their abstract is the cold open of this entire series: applications have been trapped on a single ledger. Overledger is the proposed way out.
 
-This desk files that argument as journalism. QNT is the utility token of the network. Six UK commercial banks are already programming sterling deposits on the architecture. The next nineteen films walk the decade: the burn, the standards rooms, Latin America, Rosalind, the Regulated Liability Network, GBTD, SATP, Fusion, PayScript, agents, Oracle, Murex, Tokyo, the Bank of England lab, Sibos Miami, and the Treasury’s DIGIT gilt.
+The record files that argument as journalism. QNT is the utility token of the network. Six UK commercial banks are already programming sterling deposits on the architecture. The next nineteen films walk the decade: the burn, the standards rooms, Latin America, Rosalind, the Regulated Liability Network, GBTD, SATP, Fusion, PayScript, agents, Oracle, Murex, Tokyo, the Bank of England lab, Sibos Miami, and the Treasury’s DIGIT gilt.
 
-Stay with us. The Internet of Value is no longer a slogan. It is a set of named rooms.`,
+The Internet of Value, on the record, is a set of named rooms and dated filings.`,
   ),
   ep(
     2,
@@ -439,7 +439,7 @@ Dr Luke Riley, Head of Innovation, writing the DLT interoperability options note
 
 The twenty twenty three ACM paper — Belchior, Riley, Hardjono, Vasconcelos, Correia — gives the academy the same grid: modes of data, asset transfer, asset exchange; infrastructure of nodes, proxies, gateways. Quant’s shipped claim occupies the gateway cell.
 
-That is why this desk keeps saying gateway. The scarce resource, if money is going to live on many ledgers, is a layer that already knows how to talk to the ones that exist. Fusion, PayScript, Flow Applications, QuantNet — they sit on that sentence. We will get to each of them. First, the token that licences the network.`,
+That is why the filing keeps saying gateway. If deposits, tokens and wholesale money sit on different books, the layer that already maps between those books is the object to file. Fusion, PayScript, Flow Applications, QuantNet sit on that sentence. We will get to each of them. First, the token that licences the network.`,
   ),
   ep(
     3,
@@ -466,13 +466,13 @@ That is why this desk keeps saying gateway. The scarce resource, if money is goi
 
 On the fourteenth of September, twenty eighteen, Quant burned unsold QNT. The transaction is on the chain: zero x seven six three f three two a zero. Quant’s own post records a post-burn total of fourteen million, six hundred and twelve thousand, four hundred and ninety three point zero eight QNT. Public allocation nine million, nine hundred and sixty four thousand. Company four million, six hundred and forty eight thousand.
 
-Bitstamp’s MiCA whitepaper, dated the thirteenth of May, twenty twenty six, records a TGE split of sixty eight point one nine percent market and thirty one point eight one percent company, an initialised contract of forty five million, four hundred and sixty seven thousand, and a post-burn maximum they cite as fourteen million, eight hundred and eighty one thousand, three hundred and sixty four. Those two supply figures sit together on the record. Today’s circulating supply and the live price come from CoinGecko. This desk does not invent a print.
+Bitstamp’s MiCA whitepaper, dated the thirteenth of May, twenty twenty six, records a TGE split of sixty eight point one nine percent market and thirty one point eight one percent company, an initialised contract of forty five million, four hundred and sixty seven thousand, and a post-burn maximum they cite as fourteen million, eight hundred and eighty one thousand, three hundred and sixty four. Those two supply figures sit together on the record. Today’s circulating supply and the live price come from CoinGecko. No invented print.
 
 Licences for Overledger can lock QNT for the term of the licence — that is in the MiCA filing. QNT is the utility token of Quant Network. It is distinct from equity in Quant Network Limited.
 
 Why does a gateway need a token. Because the network has to be paid for in a unit the software already understands. Overledger licences settle in QNT. That is the industrial reason it trades. Quant, on the company page: The foundation of digital finance.
 
-Hold that next to Gilbert Verdian’s twenty twenty six architecture essay. He writes that Quant is the horizontal interoperability layer connecting all three tiers of the digital money architecture. The token is how that layer is licensed. The banks we will name in episode eight do not issue QNT. They issue sterling deposits. The gateway in the middle is Overledger. The unit of that gateway is QNT.
+Read that next to Gilbert Verdian’s twenty twenty six architecture essay. He writes that Quant is the horizontal interoperability layer connecting all three tiers of the digital money architecture. The token is how that layer is licensed. The banks we will name in episode eight do not issue QNT. They issue sterling deposits. The gateway in the middle is Overledger. The unit of that gateway is QNT.
 
 If you came here for a price target, leave with a contract address and two supply notes. If you came here for the future of money, stay. The token is the metering of a network of networks.`,
   ),
@@ -507,7 +507,7 @@ SATP, which we film in episode ten, is IETF work. ISO 23516 is the committee voc
 
 The people in those rooms have names. Martin Hargreaves and Alex Chiriac appear on SATP drafts from Quant. Thomas Hardjono writes from MIT. Belchior writes from Técnico Lisboa. The protocol is larger than any one vendor. That is what a standard is.
 
-When this desk pins Geneva, Sydney, Brussels, Cambridge and Boston on the globe, those pins are rooms where interoperability is written down. They are documents, and the people who sign them.
+When Geneva, Sydney, Brussels, Cambridge and Boston sit on the globe, those pins are rooms where interoperability is written down. They are documents, and the people who sign them.
 
 The enthusiasm here is not for a committee number. It is for the moment a bank can say: we connected once, and the other networks already have a word for what we just did. ISO gave them the word. Overledger gave them the gate.`,
   ),
@@ -532,7 +532,7 @@ The enthusiasm here is not for a committee number. It is for the moment a bank c
         text: 'Synchronised settlement across jurisdictions is technically achievable today. The reason it is not the default is a coordination problem, not a capability problem.',
       },
     ],
-    `James Hale. First of February, twenty twenty one. Quant and LACChain, the IDB Lab programme, announce Overledger interoperability and tokenised cross-border payments for Latin America and the Caribbean. The grade on this desk is announced. It is a named room in twenty twenty one.
+    `James Hale. First of February, twenty twenty one. Quant and LACChain, the IDB Lab programme, announce Overledger interoperability and tokenised cross-border payments for Latin America and the Caribbean. The grade on the record is announced. It is a named room in twenty twenty one.
 
 That announcement matters because the Internet of Value was never going to be a London-only story. Cross-border value is where single-ledger dependency hurts first. A payment that has to become a message, then a correspondent, then another message, is the old internet of value — slow, expensive, and full of reconciliation.
 
@@ -667,13 +667,13 @@ Those six are the GBTD cohort. Each token is that bank’s liability. The holder
 
 That is the design that lets a regulated system move. Programmability arrives without asking a supervisor to pretend a new issuer has appeared. The issuer is the bank you already know.
 
-Around the cohort sit the institutions this desk also files. UK Finance convened the selection. The Bank of England runs the Synchronisation Lab we reach later. The BIS holds the Rosalind page. Murex puts tokenised deposits inside MX.3. Oracle names Overledger on a Fabric platform.
+Around the cohort sit the institutions also on the record. UK Finance convened the selection. The Bank of England runs the Synchronisation Lab we reach later. The BIS holds the Rosalind page. Murex puts tokenised deposits inside MX.3. Oracle names Overledger on a Fabric platform.
 
 Gilbert Verdian, CEO of Quant, twenty sixth of September, twenty twenty five: Our involvement underscores Quant’s leadership in digital finance, as we work alongside the UK’s leading institutions to build the infrastructure powering tomorrow’s economy.
 
 Working alongside is the correct verb. Technology partner. Overledger plus PayScript. EY and Linklaters in support.
 
-When this desk prints letter tiles — B, H, L, N, N, S — those are the banks. When the live QNT chip moves in the header, that is the utility token of the gateway, priced by the market, licensed by the software. Two different objects on one page, because the future of money is a system, not a ticker.
+When the letter tiles print — B, H, L, N, N, S — those are the banks. When the live QNT chip moves in the header, that is the utility token of the gateway, priced by the market, licensed by the software. Two different objects on one page, because the future of money is a system, not a ticker.
 
 Episode ten is how an asset is supposed to move from one network to another without being in two places at once.`,
   ),
@@ -758,7 +758,7 @@ Connect once. Transact across. That is Fusion’s job description in motion. Epi
         text: 'PayScript, our fully customisable, open standard language enables businesses to develop programmable workflows that improve the efficiency of payment processes by removing repetitive manual tasks.',
       },
     ],
-    `Amelia Crowe. Martin Hargreaves is Chief Product Officer, Financial Services. On the second of May, twenty twenty five, he writes the programmable payments note that this desk keeps next to the whitepaper.
+    `Amelia Crowe. Martin Hargreaves is Chief Product Officer, Financial Services. On the second of May, twenty twenty five, he writes the programmable payments note that sits next to the whitepaper.
 
 Martin Hargreaves, Chief Product Officer, Financial Services: Programmable payments present a transformative opportunity for financial transactions – enabling automation, customisation and greater control beyond the traditional payment mechanisms we have today.
 
@@ -802,7 +802,7 @@ That is the sentence where the future of money meets the future of software. The
 
 Thomas Hardjono’s work on authenticated delegation — including the ICML twenty twenty five position that AI agents need authenticated delegation — is the constraint beside that excitement. An agent that pays must carry an auditable authority, not a key in a prompt.
 
-MIT SERC, the Social and Ethical Responsibilities of Computing, sits in the landscape of that argument. This desk files it as landscape. The constraint still applies to Flow and to x402.
+MIT SERC, the Social and Ethical Responsibilities of Computing, sits in the landscape of that argument. It is filed as landscape. The constraint still applies to Flow and to x402.
 
 Riley again, twenty twenty one, on why the gateway category: We explain why we think that the API gateway categorisation is the best approach, and why Quant’s Overledger is the leading solution in this category.
 
@@ -832,7 +832,7 @@ Listen to that twice. Agents will pay. The open question is what they pay in. Qu
 
 Quant, About Quant: Ready to redefine how money works for you?
 
-The company page is allowed a slogan. This desk translates it. Money that works is money that can answer a machine without leaving the regulated perimeter.
+The company page is allowed a slogan. The filing translates it. Money that works is money that can answer a machine without leaving the regulated perimeter.
 
 Hardjono’s delegation papers are again the brake pedal. An agent with a payment method and no authentic delegation is a story we already know the ending of. Flow Applications plus x402 plus tokenised deposits is the stack Quant is arguing for: the workflow, the web status code, the bank liability.
 
@@ -918,7 +918,7 @@ Quant’s own note on that announcement lists prior regulated pilots. We file Qu
 
 Quant, Company value — Ambition: The scale of a task won’t deter us when we believe it will take us closer to our vision. Every problem is an opportunity. Every obstacle is a chance to take a calculated risk and question assumptions. In short, we’re not afraid to think big.
 
-The Internet of Value has to be a multi-city story or it is a pamphlet. Tokyo is how this desk remembers that. Dentsu Soken is the fourteenth of January. Murex is the twenty fifth of March. The Bank of England lab is February. Sibos Miami is the last week of September.
+The Internet of Value has to be a multi-city story or it is a pamphlet. Tokyo is how the record remembers that. Dentsu Soken is the fourteenth of January. Murex is the twenty fifth of March. The Bank of England lab is February. Sibos Miami is the last week of September.
 
 Corridors on the globe — Dentsu, Murex, Oracle, LACChain, Sibos — are sourced programme arcs. They are how a gateway company looks when it is walking.
 
@@ -978,7 +978,7 @@ Then the calendar. Sibos twenty twenty six, Miami Beach Convention Center, the t
 
 Sibos twenty twenty five was Frankfurt, stand thirteen. The industry fair is where a gateway company stands still long enough for the banks to walk over.
 
-This desk will be reading the wire that week the way we read it every week: headlines that name Quant, Overledger, or QNT. Official voices: at quantnetwork, at OverledgerDev, at gverdian.
+The wire that week is read the way it is read every week: headlines that name Quant, Overledger, or QNT. Official voices: at quantnetwork, at OverledgerDev, at gverdian.
 
 Episode twenty is the decade ahead — DIGIT, deposits, and the sentence Verdian already wrote.`,
   ),
@@ -1026,7 +1026,7 @@ Gilbert Verdian, Founder and CEO, Murex newsroom, twenty fifth of March, twenty 
 
 Paolo Tasca, Frontiers in Blockchain, twenty twenty: I, therefore, invite all the operators and stakeholders who are building the new digital economy to work together to build an open, accessible, and secure IoV for an equitable global economy.
 
-That is the future of money as this desk can state it from the record. Commercial-bank sterling, programmed, at six UK banks. A gateway operating system archived in twenty eighteen. A utility token burned down and licensed. An IETF protocol for moving an asset once. A Layer 2.5 rollup. A language called PayScript. Workflows an agent can call. Oracle on Fabric. Murex in MX.3. A lab beside RTGS. Miami at the end of September.
+That is the future of money as the record can state it. Commercial-bank sterling, programmed, at six UK banks. A gateway operating system archived in twenty eighteen. A utility token burned down and licensed. An IETF protocol for moving an asset once. A Layer 2.5 rollup. A language called PayScript. Workflows an agent can call. Oracle on Fabric. Murex in MX.3. A lab beside RTGS. Miami at the end of September.
 
 QNT is how the network is metered. Overledger is how the networks speak. The banks still owe the holder. The instruction is new.
 
