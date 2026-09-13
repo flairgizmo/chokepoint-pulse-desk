@@ -2714,10 +2714,10 @@ button.chip {
 
 .pod-item {
   display: grid;
-  grid-template-columns: 7.2rem 2.2rem 1fr;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+  grid-template-columns: 2.2rem 1fr;
+  align-items: start;
+  gap: 0.45rem 0.75rem;
+  padding: 0 0 0.85rem;
   border: 1px solid transparent;
   border-radius: 16px;
   background: #0b1220;
@@ -2727,22 +2727,14 @@ button.chip {
 }
 
 .pod-still {
+  grid-column: 1 / -1;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 21 / 9;
+  max-height: 7.6rem;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 0;
   display: block;
-  filter: saturate(0.82) contrast(1.12) brightness(0.62);
-}
-
-@media (max-width: 640px) {
-  .pod-item {
-    grid-template-columns: 2.2rem 1fr;
-  }
-
-  .pod-still {
-    grid-column: 1 / -1;
-  }
+  filter: saturate(0.8) contrast(1.12) brightness(0.58);
 }
 
 .pod-item.is-on {
@@ -2755,6 +2747,11 @@ button.chip {
   font-family: var(--display);
   font-size: 1.3rem;
   color: var(--accent);
+  padding-left: 0.9rem;
+}
+
+.pod-item > span:last-child {
+  padding-right: 0.9rem;
 }
 
 .pod-item em {
@@ -5987,7 +5984,7 @@ section.block .kicker {
 }
 
 .liability-still img {
-  max-height: 8.5rem;
+  max-height: 11rem;
 }
 
 .liability-cards .n,

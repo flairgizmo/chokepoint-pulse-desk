@@ -166,6 +166,10 @@ describe('Topic plates', () => {
     expect(renderPodcast()).toContain('/visuals/topics/radio.jpg');
     expect(renderPodcast()).toContain('pod-still');
     expect(renderPodcast()).toContain('/podcast/stills/');
+    expect(renderPodcast()).toContain('/visuals/stills/future.jpg');
+    expect(renderPodcast()).toContain('/visuals/stills/gateway.jpg');
+    expect(renderPodcast()).toContain('/visuals/topics/city.jpg');
+    expect(renderPodcast()).toContain('/visuals/topics/payments.jpg');
     expect(renderCbdc()).toContain('still-strip');
     expect(renderCbdc()).toContain('liability-still');
     expect(renderCbdc()).toContain('/visuals/topics/payments.jpg');

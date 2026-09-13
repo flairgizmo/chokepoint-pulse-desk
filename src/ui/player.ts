@@ -1,6 +1,14 @@
 import { quotes } from '../data/catalog';
+import { PLATES, type Plate } from '../data/plates';
 import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
+
+const BED_STILL: Record<Episode['bed'], Plate> = {
+  future: PLATES.future,
+  gateway: PLATES.gateway,
+  london: PLATES.city,
+  sterling: PLATES.payments,
+};
 
 function quoteStageId(text: string): string | undefined {
   return quotes.find((q) => q.text === text || q.text.startsWith(text.slice(0, 48)))?.id;
@@ -18,7 +26,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
     .map(
       (item) => `<li>
         <a class="pod-item${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}">
-          <img class="pod-still" src="${esc(item.posterSrc)}" alt="" width="640" height="360" loading="lazy" decoding="async" />
+          <img class="pod-still" src="${esc(BED_STILL[item.bed].src)}" alt="" width="1280" height="720" loading="lazy" decoding="async" />
           <span class="n">${String(item.n).padStart(2, '0')}</span>
           <span>
             <strong>${esc(item.title)}</strong>
