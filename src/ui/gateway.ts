@@ -788,12 +788,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
     addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav, pavs);
     addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav, pavs);
-    const amid = (a0 + a1) / 2;
-    const starR = tableR + (eqR - tableR) * 0.4;
-    const starY = tableY + (eqY - tableY) * 0.4;
-    const sx = Math.cos(amid) * starR;
-    const sz = Math.sin(amid) * starR;
-    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz, 'crown'), crownA, stars);
+    if (!lite) {
+      const amid = (a0 + a1) / 2;
+      const starR = tableR + (eqR - tableR) * 0.4;
+      const starY = tableY + (eqY - tableY) * 0.4;
+      const sx = Math.cos(amid) * starR;
+      const sz = Math.sin(amid) * starR;
+      addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz, 'crown'), crownA, stars);
+    }
     if (!lite) {
       const spark = new THREE.Mesh(
         new THREE.SphereGeometry(0.016, 8, 8),
@@ -858,14 +860,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let ghostRoot: THREE.Group | null = null;
   let flareRoot: THREE.Group | null = null;
   if (lite) {
-    const heartCrownA = glassMat(glassTex(photo0, false, 'crown', 0, true), true, {
-      tint: 0xffffff,
-      vertexColors: true,
-    });
-    const heartCrownB = glassMat(glassTex(photo0, false, 'crown', 1, true), true, {
-      tint: 0xffffff,
-      vertexColors: true,
-    });
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
       vertexColors: true,
@@ -886,14 +880,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     for (let i = 0; i < sides; i++) {
       const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
       const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const tx0 = Math.cos(a0) * tableR;
-      const tz0 = Math.sin(a0) * tableR;
-      const tx1 = Math.cos(a1) * tableR;
-      const tz1 = Math.sin(a1) * tableR;
-      const mx0 = Math.cos(a0) * midR;
-      const mz0 = Math.sin(a0) * midR;
-      const mx1 = Math.cos(a1) * midR;
-      const mz1 = Math.sin(a1) * midR;
       const x0 = Math.cos(a0) * eqR;
       const z0 = Math.sin(a0) * eqR;
       const x1 = Math.cos(a1) * eqR;
@@ -902,12 +888,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       const pz0 = Math.sin(a0) * pavR;
       const px1 = Math.cos(a1) * pavR;
       const pz1 = Math.sin(a1) * pavR;
-      const crown = i % 2 ? heartCrownB : heartCrownA;
       const pav = i % 2 ? heartPavB : heartPavA;
-      addHeart(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, 'crown'), crown);
-      addHeart(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1, 'crown'), crown);
-      addHeart(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown);
-      addHeart(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown);
       addHeart(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav);
       addHeart(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav);
       addHeart(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav);
@@ -915,7 +896,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(heart);
     heartRoot = heart;
     core.visible = false;
-    heartStamp.push(heartCrownA, heartCrownB, heartPavA, heartPavB);
+    heartStamp.push(heartPavA, heartPavB);
     const ghost = heart.clone(true);
     ghost.scale.setScalar(0.76);
     ghost.rotation.set(0.16, -0.22, -0.06);
@@ -1114,15 +1095,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
-    if (heartStamp.length >= 4) {
+    if (heartStamp.length >= 2) {
       const kinds = [
-        ['crown', 0, on],
-        ['crown', 1, on],
-        ['pav', 0, false],
-        ['pav', 1, false],
+        ['pav', 0, on],
+        ['pav', 1, on],
       ] as const;
       heartStamp.forEach((mat, i) => {
-        const [cut, lane, lit] = kinds[i % 4];
+        const [cut, lane, lit] = kinds[i % 2];
         swapMap(mat, glassTex(photo, lit, cut, lane, true));
       });
     }
