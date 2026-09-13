@@ -1086,7 +1086,7 @@ main {
 
 .person {
   display: grid;
-  grid-template-columns: 8.4rem 1fr;
+  grid-template-columns: 9.6rem 1fr;
   gap: 1.15rem;
   padding: 0.7rem 1.15rem 0.7rem 0.7rem;
   border: 1px solid var(--line);
@@ -1133,6 +1133,11 @@ main {
   object-position: center 16%;
   border: 0;
   border-radius: 0;
+}
+
+.person .people-face {
+  transform: scale(1.34);
+  transform-origin: center 22%;
 }
 
 .person .people-mono {

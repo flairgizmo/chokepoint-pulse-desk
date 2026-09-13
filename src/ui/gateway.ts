@@ -579,18 +579,20 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const sx = Math.cos(amid) * starR;
     const sz = Math.sin(amid) * starR;
     addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz), facetMaterial(i + 32, false, lite, photo), stars);
-    const spark = new THREE.Mesh(
-      new THREE.SphereGeometry(0.016, 8, 8),
-      new THREE.MeshBasicMaterial({
-        color: i % 2 ? 0xff5cb0 : 0x5af0ff,
-        transparent: true,
-        opacity: 0.28,
-      }),
-    );
-    spark.position.set(x0, eqY, z0);
-    spark.userData.nodeId = 6;
-    crystal.add(spark);
-    sparks.push(spark);
+    if (!lite) {
+      const spark = new THREE.Mesh(
+        new THREE.SphereGeometry(0.016, 8, 8),
+        new THREE.MeshBasicMaterial({
+          color: i % 2 ? 0xff5cb0 : 0x5af0ff,
+          transparent: true,
+          opacity: 0.28,
+        }),
+      );
+      spark.position.set(x0, eqY, z0);
+      spark.userData.nodeId = 6;
+      crystal.add(spark);
+      sparks.push(spark);
+    }
   }
   if (!lite) {
     const edgePts: number[] = [];
