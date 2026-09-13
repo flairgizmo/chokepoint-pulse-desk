@@ -74,8 +74,8 @@ export const RTGS: { id: NodeId; name: string; note: string } = {
 
 export function bankXYZ(i: number, pulse: number): [number, number, number] {
   const a = (i / 6) * Math.PI * 2 - Math.PI / 2 + Math.PI / 6;
-  const r = 1.48 + pulse;
-  return [Math.cos(a) * r * 1.52, Math.sin(a) * 0.02 - 0.08, Math.sin(a) * r * 0.34];
+  const r = 1.32 + pulse;
+  return [Math.cos(a) * r * 1.22, Math.sin(a) * 0.02 - 0.08, Math.sin(a) * r * 0.42];
 }
 
 export function paintHint(canvas: HTMLCanvasElement, selected: NodeId | null, hover: NodeId | null): void {
@@ -116,7 +116,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
-  const restAx = 1.24;
+  const restAx = 1.32;
   const restAy = 0.44;
   const orbit = (16 * Math.PI) / 180;
   let ax = restAx;

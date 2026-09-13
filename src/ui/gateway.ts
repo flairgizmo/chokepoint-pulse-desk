@@ -530,7 +530,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     new THREE.MeshBasicMaterial({
       color: 0x6aa8ff,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.08,
       depthWrite: false,
       side: THREE.DoubleSide,
     }),
@@ -811,7 +811,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.24 : 1.3;
+  const restAx = lite ? 1.32 : 1.36;
   const restAy = 0.5;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
@@ -919,8 +919,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 4.12 : 3.95, ax, ay);
-    camera.lookAt(0, lite ? 0.52 : 0.56, 0);
+    camera.position.setFromSphericalCoords(lite ? 4.22 : 4.05, ax, ay);
+    camera.lookAt(0, lite ? 0.4 : 0.44, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
       cards[i].position.set(x, y + 0.08, z);
