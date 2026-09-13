@@ -1436,13 +1436,18 @@ export function renderCity(city: City): string {
     .slice(0, 4)
     .map(
       (c) => `<a class="city-neighbor" href="/${esc(c.id)}">
-        <img src="${esc(c.photo ?? `/visuals/cities/${c.id}.jpg`)}" alt="${esc(c.name)}" width="720" height="405" decoding="async" />
+        <span class="city-neighbor-still cinema-frame">
+          <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+          <span class="cinema-grain" aria-hidden="true"></span>
+          <img src="${esc(c.photo ?? `/visuals/cities/${c.id}.jpg`)}" alt="${esc(c.name)}" width="720" height="405" decoding="async" />
+          <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+        </span>
         <span>${esc(c.name)}</span>
       </a>`,
     )
     .join('');
   return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
-    <p class="mono subtle">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
+    <p class="mono subtle coord-block">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
     <article class="chapter city-essay">
       ${photoFigure(plateFor(city.id, city.name), 'city-essay-still')}
       ${essayParas(city.body)}

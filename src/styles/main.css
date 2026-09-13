@@ -5378,3 +5378,299 @@ body.stage-open .grok {
   color: #7ee0c4;
   background: color-mix(in srgb, var(--live) 18%, #0b1220);
 }
+
+/* Cinema rooms: dusk wrappers around already-dusk cards.
+   Essay-flow, wordmarks, search, toolbar, and page-hero titles stay on white. */
+.cinema-room,
+.proof-row,
+.pulse-strip,
+.live-rail,
+.stack-visual,
+.people-rail,
+.latest-strip,
+.essays,
+.layers-wrap,
+.timeline-wrap,
+.calendar,
+.voices,
+.triptych,
+.notes-strip,
+.pod-home,
+.era-strip,
+.featured-note,
+.dyk,
+.city-neighbors,
+.cbdc-models,
+.vision-deck,
+.satp-lab,
+.treaty-table,
+.constellation,
+.film-rail,
+.quote-rail,
+.compare,
+.stack-exploded,
+.token-lab,
+.ol-roster,
+.story-rail,
+section.block,
+.letter,
+.notes-related,
+.notes-index,
+.prog-grid,
+.patent-grid,
+.inst-grid,
+.still-strip {
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin-inline: auto;
+  margin-block: 1.15rem;
+  padding: 1.55rem 1.4rem 1.75rem;
+  border-radius: 22px;
+  border: 1px solid rgba(234, 241, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(234, 241, 255, 0.045), transparent 32%),
+    #0b1220;
+  color: #f4f7fb;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
+}
+
+.cinema-room .kicker,
+.proof-row .kicker,
+.pulse-strip .kicker,
+.live-rail .kicker,
+.stack-visual .kicker,
+.people-rail .kicker,
+.latest-strip .kicker,
+.essays .kicker,
+.layers-wrap .kicker,
+.timeline-wrap .kicker,
+.calendar .kicker,
+.voices .kicker,
+.triptych .kicker,
+.notes-strip .kicker,
+.pod-home .kicker,
+.era-strip .kicker,
+.featured-note .kicker,
+.dyk .kicker,
+.city-neighbors .kicker,
+.cbdc-models .kicker,
+.vision-deck .kicker,
+.satp-lab .kicker,
+.treaty-table .kicker,
+.constellation .kicker,
+.film-rail .kicker,
+.quote-rail .kicker,
+.stack-exploded .kicker,
+.token-lab .kicker,
+.ol-roster .kicker,
+.letter h3,
+.notes-related .kicker,
+section.block .kicker {
+  color: #8aa3c8;
+}
+
+.cinema-room .display,
+.proof-row .display,
+.pulse-strip .display,
+.stack-visual .display,
+.people-rail .display,
+.latest-strip .display,
+.essays .display,
+.layers-wrap .display,
+.timeline-wrap .display,
+.calendar .display,
+.voices .display,
+.notes-strip .display,
+.pod-home .display,
+.era-strip .display,
+.featured-note .display,
+.dyk .display,
+.city-neighbors .display,
+.cbdc-models .display,
+.vision-deck .display,
+.satp-lab .display,
+.quote-rail .display,
+.token-lab .display,
+.ol-roster .display,
+.letter h3 {
+  color: #f4f7fb;
+}
+
+.cinema-room .display-mute,
+.proof-row .display-mute,
+.pulse-strip .display-mute,
+.stack-visual .display-mute,
+.people-rail .display-mute,
+.latest-strip .display-mute,
+.essays .display-mute,
+.layers-wrap .display-mute,
+.timeline-wrap .display-mute,
+.calendar .display-mute,
+.voices .display-mute,
+.notes-strip .display-mute,
+.pod-home .display-mute,
+.era-strip .display-mute,
+.dyk .display-mute,
+.city-neighbors .display-mute,
+.satp-lab .display-mute,
+.quote-rail .display-mute,
+.token-lab .display-mute,
+.ol-roster .display-mute {
+  color: #8aa3c8;
+}
+
+.cinema-room .lede,
+.cinema-room .lede-sm,
+.cinema-room .subtle,
+.cinema-room .empty-note,
+.cinema-room p,
+.proof-row p,
+.pulse-strip p,
+.people-rail .lede-sm,
+.latest-strip .lede-sm,
+.calendar > p,
+.voices .lede,
+.notes-strip .lede-sm,
+.constellation .lede-sm,
+.ol-roster .lede-sm,
+.token-lab > p,
+.satp-lab > p,
+.vision-deck > p,
+.cbdc-models > p,
+.dyk > p,
+.city-neighbors p,
+.featured-note .featured-aside p,
+.story-keys {
+  color: #b7c4d8;
+}
+
+.cinema-room .text-link,
+.proof-row .text-link,
+.pulse-strip .text-link,
+.live-rail .text-link,
+.stack-visual .text-link,
+.people-rail .text-link,
+.latest-strip .text-link,
+.essays .text-link,
+.layers-wrap .text-link,
+.timeline-wrap .text-link,
+.calendar .text-link,
+.voices .text-link,
+.triptych .text-link,
+.notes-strip .text-link,
+.pod-home .text-link,
+.era-strip .text-link,
+.featured-note .text-link,
+.dyk .text-link,
+.city-neighbors .text-link,
+.token-lab .text-link,
+.ol-roster .text-link,
+.quote-rail .text-link,
+.constellation .text-link,
+.latest-strip .ext,
+.calendar .ext,
+.voices .ext,
+.featured-note .ext {
+  color: #eaf1ff;
+}
+
+.cinema-room .text-link:hover,
+.proof-row .text-link:hover,
+.pulse-strip .text-link:hover,
+.people-rail .text-link:hover,
+.latest-strip .text-link:hover,
+.essays .text-link:hover,
+.timeline-wrap .text-link:hover,
+.notes-strip .text-link:hover,
+.pod-home .text-link:hover,
+.era-strip .text-link:hover,
+.dyk .text-link:hover,
+.city-neighbors .text-link:hover {
+  color: #8eb0ff;
+  border-bottom-color: #8eb0ff;
+}
+
+.cinema-room .section-head,
+.proof-row .section-head,
+.pulse-strip .section-head,
+.people-rail .section-head,
+.latest-strip .section-head,
+.notes-strip .section-head,
+.pod-home .section-head,
+.constellation .section-head,
+.film-rail .section-head,
+.featured-note .section-head {
+  width: 100%;
+  margin-inline: 0;
+}
+
+.fold .calendar,
+.fold .month-rail,
+.fold .voices,
+.notes-strip .notes-index,
+.notes-related .notes-index,
+.chapter.city-essay .city-neighbors {
+  width: 100%;
+  margin-inline: 0;
+  margin-block: 0.6rem 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.month-card .rest,
+.cal-card .rest {
+  color: #8aa3c8;
+}
+
+.triptych .panel:hover,
+.live-rail .panel:hover,
+.month-card:hover,
+.cal-card:hover {
+  border-color: rgba(234, 241, 255, 0.22);
+}
+
+.stack-rungs.exploded li {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.stack-rungs.exploded li strong,
+.stack-rungs.exploded li span {
+  color: inherit;
+}
+
+.stack-rungs.exploded li small {
+  color: #8aa3c8;
+}
+
+.featured-note .btn,
+.featured-note .btn-ghost {
+  --btn-fg: #eaf1ff;
+  --btn-bg: #122038;
+  --btn-line: rgba(234, 241, 255, 0.22);
+}
+
+.featured-note .btn-primary {
+  --btn-fg: #fff;
+  --btn-bg: var(--accent);
+  --btn-line: var(--accent);
+}
+
+.city-neighbor-still {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #070b14;
+}
+
+.city-neighbor-still img {
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+}
+
+.city-neighbor {
+  color: #f4f7fb;
+}
