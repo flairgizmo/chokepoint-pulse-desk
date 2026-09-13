@@ -290,7 +290,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const facets: THREE.Mesh[] = [];
   const facetH = 1.02;
   const facetR = 0.4;
-  const face0 = Math.PI / 2 - 0.5;
+  const face0 = Math.PI / 2 - 0.5 + Math.PI / 6;
   for (let i = 0; i < 6; i++) {
     const a0 = (i / 6) * Math.PI * 2 + face0 - Math.PI / 6;
     const a1 = ((i + 1) / 6) * Math.PI * 2 + face0 - Math.PI / 6;
@@ -387,7 +387,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 1.28, 0);
+  gateLabel.position.set(0, 1.52, 0);
   gateLabel.scale.set(1.22, 0.22, 1);
   group.add(gateLabel);
 
@@ -403,7 +403,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.62;
+  rt2.position.y = 1.78;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -417,11 +417,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.62;
+  rt2Disk.position.y = 1.78;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.62, 0);
+  rt2Label.position.set(0, 1.78, 0);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
 
@@ -480,7 +480,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 1.02, 0), new THREE.Vector3(0, 1.58, 0)]),
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 1.12, 0), new THREE.Vector3(0, 1.74, 0)]),
     new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
   );
   stem.computeLineDistances();

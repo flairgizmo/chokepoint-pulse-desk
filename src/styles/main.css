@@ -4244,6 +4244,12 @@ body.stage-open .grok {
   color: #eaf1ff;
 }
 
+@media (max-width: 720px) {
+  .cinema-stage .tess-hint {
+    display: none;
+  }
+}
+
 .earth-hero.cinema-earth {
   background: radial-gradient(ellipse at 50% 42%, #14305c 0%, #071018 62%, #04070c 100%);
 }
