@@ -5228,3 +5228,33 @@ body.stage-open .grok {
 .chapter.city-essay .city-neighbors {
   margin-inline: 1.25rem;
 }
+
+.chapter,
+.reveal.chapter,
+.cinema-chapter {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
+}
+
+.chapter h2,
+.chapter p,
+.cinema-chapter .kicker,
+.cinema-chapter summary h2,
+.reveal-body p,
+.reveal-body .meta,
+.reveal-body .note {
+  color: inherit;
+}
+
+.cinema-chapter .text-link,
+.reveal-body .text-link,
+.chapter .text-link {
+  color: #eaf1ff;
+}
+
+.reveal[open] {
+  border-color: rgba(234, 241, 255, 0.16);
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.18);
+}

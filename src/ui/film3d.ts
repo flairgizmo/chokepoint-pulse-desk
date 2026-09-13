@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, hardenCanvasTex, makeCinemaPlate } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, hardenCanvasTex, makeCinemaPlate, makeFloorContact } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
@@ -49,6 +49,10 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
       const x = w / 2 + d * (w * (portrait ? 0.16 : 0.22)) - pw / 2;
       const y = h * 0.12 + mag * 18;
       ctx.save();
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.beginPath();
+      ctx.ellipse(x + pw / 2, y + ph + 14, pw * 0.44, 16, 0, 0, Math.PI * 2);
+      ctx.fill();
       ctx.fillStyle = '#05070c';
       ctx.fillRect(x - 6, y - 6, pw + 12, ph + 12);
       const img = imgs[i];
@@ -242,12 +246,16 @@ function mountFilm3D(
   const featuredBase = set.startsWith('city:') ? 0 : mid;
   let featured = featuredBase;
 
+  const puddles: THREE.Mesh[] = [];
   slides.forEach((slide) => {
     const plate = makeCinemaPlate(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, lite, backdrop);
     plate.root.userData.slide = slide;
     plate.face.userData.slide = slide;
     group.add(plate.root);
     plates.push(plate.root);
+    const puddle = makeFloorContact(portrait ? 1.18 : 2.42, portrait ? 1.42 : 1.36);
+    scene.add(puddle);
+    puddles.push(puddle);
     plateTexture(slide.src, slide.title, portrait, (tex) => applyPlateMap(plate.mat, tex));
   });
 
@@ -264,9 +272,14 @@ function mountFilm3D(
       const d = i - featured;
       const mag = Math.abs(d);
       const scale = mag === 0 ? 1 : mag === 1 ? 0.7 : 0.46;
-      mesh.position.set(d * (portrait ? 1.18 : 1.68), -0.08 - mag * 0.02, mag * 0.42);
+      mesh.position.set(d * (portrait ? 1.18 : 1.68), 0.1 - mag * 0.02, mag * 0.42);
       mesh.rotation.set(-0.06, -d * 0.18, 0);
       mesh.scale.setScalar(scale);
+      const puddle = puddles[i];
+      puddle.position.x = mesh.position.x;
+      puddle.position.z = mesh.position.z + 0.06;
+      puddle.scale.setScalar(scale);
+      (puddle.material as THREE.MeshBasicMaterial).opacity = mag === 0 ? 0.84 : 0.38;
     });
   };
 

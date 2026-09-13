@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaFloorMap, climbUserData, duskSheen, hardenCanvasTex, makeCinemaPlate, onDuskPhoto, visionStill } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaFloorMap, climbUserData, duskSheen, hardenCanvasTex, makeCinemaPlate, makeFloorContact, onDuskPhoto, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -754,6 +754,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
   const cards: THREE.Group[] = [];
   const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
+  const puddles: THREE.Mesh[] = [];
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
@@ -766,6 +767,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     group.add(plate.root);
     cards.push(plate.root);
     cardMats.push(plate.mat);
+    const puddle = makeFloorContact(1.18, 0.86, -0.318);
+    scene.add(puddle);
+    puddles.push(puddle);
     const paintOne = (): void => {
       const next = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false, stills[i])));
       next.colorSpace = THREE.SRGBColorSpace;
@@ -921,6 +925,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       const [x, y, z] = bankXYZ(i, pulse);
       cards[i].position.set(x, y + 0.18, z);
       cards[i].lookAt(camera.position.x, y + 0.28, camera.position.z);
+      puddles[i].position.x = x;
+      puddles[i].position.z = z;
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;

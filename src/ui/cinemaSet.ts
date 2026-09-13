@@ -273,6 +273,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.62;
   scene.add(floor);
+  scene.add(makeFloorPool());
 
   scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.7 : 0.4));
   scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.68 : 0.52));
@@ -283,6 +284,73 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   rim.position.set(-2.4, 1.3, -1.6);
   scene.add(rim);
   addCinemaHaze(scene);
+}
+
+let contactMap: THREE.CanvasTexture | null = null;
+
+function floorContactMap(): THREE.CanvasTexture {
+  if (contactMap) return contactMap;
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const g = ctx.createRadialGradient(128, 128, 6, 128, 128, 124);
+    g.addColorStop(0, 'rgba(0, 0, 0, 0.78)');
+    g.addColorStop(0.32, 'rgba(0, 0, 0, 0.42)');
+    g.addColorStop(0.68, 'rgba(0, 0, 0, 0.12)');
+    g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 256);
+  }
+  contactMap = hardenCanvasTex(new THREE.CanvasTexture(c));
+  return contactMap;
+}
+
+/** Soft oval on the stage floor. A plane behind a camera-facing plate never reads. */
+export function makeFloorContact(w = 2.6, d = 1.55, y = -0.608): THREE.Mesh {
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, d),
+    new THREE.MeshBasicMaterial({
+      map: floorContactMap(),
+      transparent: true,
+      opacity: 0.78,
+      depthWrite: false,
+    }),
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = y;
+  mesh.renderOrder = 2;
+  return mesh;
+}
+
+function makeFloorPool(): THREE.Mesh {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const g = ctx.createRadialGradient(128, 148, 8, 128, 128, 122);
+    g.addColorStop(0, 'rgba(255, 214, 148, 0.5)');
+    g.addColorStop(0.38, 'rgba(90, 150, 255, 0.16)');
+    g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 256);
+  }
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(5.4, 5.4),
+    new THREE.MeshBasicMaterial({
+      map: hardenCanvasTex(new THREE.CanvasTexture(c)),
+      transparent: true,
+      opacity: 0.52,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    }),
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = -0.605;
+  mesh.renderOrder = 1;
+  return mesh;
 }
 
 /** Additive dusk shafts. Reads on software GL; hardware bloom picks them up. */
@@ -397,17 +465,6 @@ export function makeCinemaPlate(
     new THREE.MeshBasicMaterial({ color: 0x05070c }),
   );
   root.add(stock);
-  const contact = new THREE.Mesh(
-    new THREE.PlaneGeometry(w * 1.06, h * 1.08),
-    new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0.32,
-      depthWrite: false,
-    }),
-  );
-  contact.position.z = -(depth / 2 + 0.05);
-  root.add(contact);
   if (!flush) {
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(w + 0.04, h + 0.06, 0.02),

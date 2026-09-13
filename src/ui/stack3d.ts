@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate, makeFloorContact } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -53,6 +53,10 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
       const y = h * 0.05 + i * (h * 0.165);
       ctx.save();
       ctx.translate(x, y);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.46)';
+      ctx.beginPath();
+      ctx.ellipse(pw / 2, ph + 12, pw * 0.42, 14, 0, 0, Math.PI * 2);
+      ctx.fill();
       ctx.fillStyle = '#05070c';
       ctx.fillRect(-6, -6, pw + 12, ph + 12);
       if (img.complete && img.naturalWidth) ctx.drawImage(img, 0, 0, pw, ph);
@@ -166,6 +170,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   const slabs: THREE.Group[] = [];
   let isolated: string | null = null;
 
+  const puddles: THREE.Mesh[] = [];
   STACK_SLABS.forEach((layer) => {
     const plate = makeCinemaPlate(2.36, 1.12, lite, '/visuals/topics/canary.jpg');
     plate.root.userData.layerId = layer.id;
@@ -173,6 +178,9 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     plate.face.userData.layerId = layer.id;
     group.add(plate.root);
     slabs.push(plate.root);
+    const puddle = makeFloorContact(2.55, 1.42);
+    scene.add(puddle);
+    puddles.push(puddle);
     plateTexture(layer.src, layer.title, (tex) => applyPlateMap(plate.mat, tex));
   });
 
@@ -186,6 +194,11 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
       mesh.rotation.set(-Math.PI / 2 + 0.22, -0.1, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
       dimCinemaPlate(mesh, dim);
+      const puddle = puddles[i];
+      puddle.position.x = mesh.position.x;
+      puddle.position.z = mesh.position.z;
+      puddle.scale.setScalar(dim ? 0.72 : 1);
+      (puddle.material as THREE.MeshBasicMaterial).opacity = dim ? 0.16 : 0.7;
     });
   };
 
