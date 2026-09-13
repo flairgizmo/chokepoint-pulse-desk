@@ -21,7 +21,7 @@ export const STORY: StoryEvent[] = [
     year: 2015,
     title: 'ISO/TC 307 proposed',
     stake: 'A CISO puts blockchain on the ISO agenda instead of founding a chain.',
-    body: 'Gilbert Verdian proposes a blockchain technical committee to ISO. A decade later the interoperability framework is ISO/TS 23516:2026, and Verdian convenes WG7. The scarce resource, in that telling, is a shared vocabulary — not another validator set.',
+    body: 'Gilbert Verdian proposes a blockchain technical committee to ISO. A decade later the interoperability framework is ISO/TS 23516:2026, and Verdian convenes WG7. The 2015 filing is a vocabulary and a committee, not a new chain.',
     analogy: 'This is the moment someone asks for a dictionary before anyone builds another private language.',
     theme: 'standard',
     hrefKey: 'isoTc307',

@@ -1,12 +1,57 @@
-/** Quant Q / Overledger lattice — instrument, not mascot. */
+/** Sterling corridor — six GBTD issuers around one Overledger plane. Not a Q mascot. */
 
-type LayerId = 0 | 1 | 2;
+type NodeId = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-const NOTES: Array<{ id: LayerId; name: string; note: string }> = [
-  { id: 0, name: 'Outer ledger', note: 'One disciplined ring. A domain Overledger can map onto — Fabric, Ethereum, a bank core.' },
-  { id: 1, name: 'Inner ledger', note: 'A second book. The gate’s job is that both books can be true at once, then settle as one.' },
-  { id: 2, name: 'Light path', note: 'The Q tail. A single instruction walking from application to settlement without minting a new chain.' },
+const BANKS: Array<{ id: NodeId; name: string; note: string }> = [
+  {
+    id: 0,
+    name: 'Barclays',
+    note: 'Named GBTD issuer, 26 September 2025. Quant’s write-up of a remortgage lock-and-release sits with this name.',
+  },
+  {
+    id: 1,
+    name: 'HSBC',
+    note: 'Named GBTD issuer. Quant’s write-up of an Orion delivery-versus-payment sits with this name.',
+  },
+  {
+    id: 2,
+    name: 'Lloyds Banking Group',
+    note: 'UK Finance’s press uses Lloyds Banking Group. The public wordmark is Lloyds. Retail P2P lock-and-release is the Quant write-up.',
+  },
+  {
+    id: 3,
+    name: 'NatWest',
+    note: 'Named GBTD issuer. Sat on the June 2026 Digital Innovation Summit panel, in Quant’s own note.',
+  },
+  {
+    id: 4,
+    name: 'Nationwide',
+    note: 'Named GBTD issuer. Commercial-bank sterling. Quant is the technology partner, not the issuer.',
+  },
+  {
+    id: 5,
+    name: 'Santander',
+    note: 'Named GBTD issuer. UK Finance’s press also writes Santander UK in some bylines. Same issuing bank.',
+  },
 ];
+
+const GATE: { id: NodeId; name: string; note: string } = {
+  id: 6,
+  name: 'Overledger',
+  note: 'Gateway OS. Maps a lock-and-release across the six books. Not a seventh chain. Whitepaper, UCL Discovery, 2018.',
+};
+
+const RTGS: { id: NodeId; name: string; note: string } = {
+  id: 7,
+  name: 'Simulated RT2',
+  note: 'Bank of England Synchronisation Lab, February 2026. Simulated RT2. Not live RTGS. Not a Quant endorsement.',
+};
+
+function bankXYZ(i: number, pulse: number): [number, number, number] {
+  const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
+  const r = 1.18 + pulse;
+  return [Math.cos(a) * r, 0.04 + Math.sin(a) * 0.04, Math.sin(a) * r];
+}
 
 export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const ctx = canvas.getContext('2d');
@@ -23,11 +68,12 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   let dragging = false;
   let lastX = 0;
   let lastY = 0;
-  let selected: LayerId | null = 2;
-  let hover: LayerId | null = null;
+  let selected: NodeId | null = 6;
+  let hover: NodeId | null = null;
   const t0 = performance.now();
   let parx = 0;
   let pary = 0;
+  const projected: Array<{ id: NodeId; x: number; y: number; z: number }> = [];
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -47,25 +93,21 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     z1 = y * sx + z1 * cx;
     const k = 2.05 / (3.2 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.44;
-    return [W / 2 + x1 * k * scale + parx, H * 0.5 + y1 * k * scale + pary, z1];
+    const scale = Math.min(W, H) * 0.42;
+    return [W / 2 + x1 * k * scale + parx, H * 0.52 + y1 * k * scale + pary, z1];
   };
 
   const paintHint = (): void => {
     if (!hint) return;
-    const layer = selected != null ? NOTES[selected] : hover != null ? NOTES[hover] : null;
-    hint.textContent = layer
-      ? `${layer.name} — ${layer.note}`
-      : 'Orbit the Q. A lattice of ledgers, one light path. Overledger is the instrument.';
-  };
-
-  const ring = (y: number, r: number, n: number, tilt = 0): Array<[number, number, number]> => {
-    const pts: Array<[number, number, number]> = [];
-    for (let i = 0; i < n; i += 1) {
-      const a = (i / n) * Math.PI * 2 + tilt;
-      pts.push([Math.cos(a) * r, y + Math.sin(a) * 0.08, Math.sin(a) * r]);
-    }
-    return pts;
+    const node =
+      selected != null
+        ? [...BANKS, GATE, RTGS].find((n) => n.id === selected)
+        : hover != null
+          ? [...BANKS, GATE, RTGS].find((n) => n.id === hover)
+          : null;
+    hint.textContent = node
+      ? `${node.name} — ${node.note}`
+      : 'Six commercial banks. One gateway plane. A lock leaves one book and a release lands in another. Click a node.';
   };
 
   const draw = (now: number): void => {
@@ -74,90 +116,131 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 8000) * Math.PI * 2) * 0.018;
     const travel = reduced ? 0.35 : ((now - t0) / 8000) % 1;
 
-    const outer = ring(-0.08, 1.12 + pulse, 22);
-    const mid = ring(0.02, 0.86 + pulse * 0.4, 16, 0.22);
-    const inner = ring(0.1, 0.58 + pulse * 0.5, 14, 0.4);
-    const po = outer.map(([x, y, z]) => project(x, y, z));
-    const pm = mid.map(([x, y, z]) => project(x, y, z));
-    const pi = inner.map(([x, y, z]) => project(x, y, z));
-
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    projected.length = 0;
 
-    for (let i = 0; i < 12; i += 1) {
-      const a = po[i * 2 % po.length];
-      const b = pm[i % pm.length];
-      const c = pi[i % pi.length];
-      ctx.strokeStyle = 'rgba(126, 224, 200, 0.28)';
-      ctx.lineWidth = Math.max(1, W / 560);
+    const banks = BANKS.map((b, i) => {
+      const [x, y, z] = bankXYZ(i, pulse);
+      const p = project(x, y, z);
+      projected.push({ id: b.id, x: p[0], y: p[1], z: p[2] });
+      return { bank: b, p };
+    });
+
+    const gate = project(0, 0, 0);
+    projected.push({ id: 6, x: gate[0], y: gate[1], z: gate[2] });
+    const rt2 = project(0, -0.78, 0);
+    projected.push({ id: 7, x: rt2[0], y: rt2[1], z: rt2[2] });
+
+    const hex = Array.from({ length: 6 }, (_, i) => {
+      const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
+      return project(Math.cos(a) * (0.42 + pulse * 0.4), 0, Math.sin(a) * (0.42 + pulse * 0.4));
+    });
+
+    banks.forEach(({ p }) => {
       ctx.beginPath();
-      ctx.moveTo(a[0], a[1]);
-      ctx.lineTo(b[0], b[1]);
-      ctx.lineTo(c[0], c[1]);
+      ctx.moveTo(gate[0], gate[1]);
+      ctx.lineTo(p[0], p[1]);
+      ctx.strokeStyle = 'rgba(21, 87, 255, 0.22)';
+      ctx.lineWidth = Math.max(1.2, W / 480);
       ctx.stroke();
-    }
+    });
 
-    const strokeRing = (pts: Array<[number, number, number]>, color: string, on: boolean): void => {
-      ctx.beginPath();
-      pts.forEach((p, i) => {
-        if (i === 0) ctx.moveTo(p[0], p[1]);
-        else ctx.lineTo(p[0], p[1]);
-      });
-      ctx.closePath();
-      ctx.strokeStyle = on ? color : `${color}99`;
-      ctx.lineWidth = on ? Math.max(2.4, W / 220) : Math.max(1.4, W / 320);
-      ctx.shadowColor = on ? color : 'transparent';
-      ctx.shadowBlur = on ? 16 : 0;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = on ? `${color}18` : `${color}0c`;
-      ctx.fill();
-    };
-
-    strokeRing(po, '#8b7cff', selected === 0 || hover === 0);
-    strokeRing(pm, '#c9b48a', false);
-    strokeRing(pi, '#7ee0c8', selected === 1 || hover === 1);
-
-    const tail = [
-      project(0.85, 0.55, 0.15),
-      project(1.05, 0.82, 0.05),
-      project(1.22, 1.05, -0.05),
-    ];
     ctx.beginPath();
-    ctx.moveTo(tail[0][0], tail[0][1]);
-    ctx.lineTo(tail[1][0], tail[1][1]);
-    ctx.lineTo(tail[2][0], tail[2][1]);
-    ctx.strokeStyle = selected === 2 || hover === 2 ? '#e8e4dc' : 'rgba(232,228,220,0.55)';
-    ctx.lineWidth = Math.max(2.2, W / 260);
+    hex.forEach((pt, i) => {
+      if (i === 0) ctx.moveTo(pt[0], pt[1]);
+      else ctx.lineTo(pt[0], pt[1]);
+    });
+    ctx.closePath();
+    ctx.fillStyle = selected === 6 || hover === 6 ? 'rgba(21, 87, 255, 0.16)' : 'rgba(21, 87, 255, 0.08)';
+    ctx.fill();
+    ctx.strokeStyle = selected === 6 || hover === 6 ? '#1557FF' : '#0B1F5C';
+    ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.6, W / 200) : Math.max(1.8, W / 280);
     ctx.stroke();
 
-    const pathPts = [...po.slice(0, 12), tail[0], tail[1], tail[2]];
-    const idx = Math.min(pathPts.length - 1, Math.floor(travel * (pathPts.length - 1)));
-    const bead = pathPts[idx];
-    ctx.fillStyle = '#7ee0c8';
-    ctx.shadowColor = '#7ee0c8';
-    ctx.shadowBlur = 18;
     ctx.beginPath();
-    ctx.arc(bead[0], bead[1], Math.max(3.4, W / 200), 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    ctx.moveTo(gate[0], gate[1]);
+    ctx.lineTo(rt2[0], rt2[1]);
+    ctx.strokeStyle = 'rgba(11, 31, 92, 0.28)';
+    ctx.setLineDash([6, 7]);
+    ctx.lineWidth = Math.max(1.2, W / 420);
+    ctx.stroke();
+    ctx.setLineDash([]);
 
-    const core = project(0, 0, 0);
-    ctx.fillStyle = '#e8e4dc';
-    ctx.font = `600 ${Math.max(28, W / 22)}px "IBM Plex Sans", system-ui, sans-serif`;
+    const onRt = selected === 7 || hover === 7;
+    ctx.beginPath();
+    ctx.arc(rt2[0], rt2[1], Math.max(16, W / 42), 0, Math.PI * 2);
+    ctx.fillStyle = onRt ? 'rgba(0, 168, 120, 0.18)' : 'rgba(0, 168, 120, 0.08)';
+    ctx.fill();
+    ctx.strokeStyle = onRt ? '#00A878' : '#0B1F5C';
+    ctx.lineWidth = onRt ? 2.4 : 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#0B1F5C';
+    ctx.font = `600 ${Math.max(9, W / 72)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', core[0], core[1] + 2);
+    ctx.fillText('SIM RT2', rt2[0], rt2[1]);
+
+    banks.forEach(({ bank, p }) => {
+      const on = selected === bank.id || hover === bank.id;
+      ctx.beginPath();
+      ctx.arc(p[0], p[1], on ? Math.max(18, W / 36) : Math.max(14, W / 44), 0, Math.PI * 2);
+      ctx.fillStyle = on ? '#1557FF' : '#FFFFFF';
+      ctx.fill();
+      ctx.strokeStyle = on ? '#0B1F5C' : '#1557FF';
+      ctx.lineWidth = on ? 2.6 : 1.8;
+      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.35)' : 'transparent';
+      ctx.shadowBlur = on ? 14 : 0;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = on ? '#FFFFFF' : '#0B1F5C';
+      ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+      ctx.fillText(bank.name.slice(0, 3).toUpperCase(), p[0], p[1]);
+    });
+
+    ctx.fillStyle = '#0B1F5C';
+    ctx.font = `700 ${Math.max(11, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.fillText('OVERLEDGER', gate[0], gate[1] + 2);
+
+    const from = Math.floor(travel * 6) % 6;
+    const to = (from + 1) % 6;
+    const local = (travel * 6) % 1;
+    const a = banks[from].p;
+    const b = gate;
+    const c = banks[to].p;
+    const bead =
+      local < 0.5
+        ? [a[0] + (b[0] - a[0]) * (local * 2), a[1] + (b[1] - a[1]) * (local * 2)]
+        : [b[0] + (c[0] - b[0]) * ((local - 0.5) * 2), b[1] + (c[1] - b[1]) * ((local - 0.5) * 2)];
+    ctx.fillStyle = '#00A878';
+    ctx.shadowColor = '#00A878';
+    ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.arc(bead[0], bead[1], Math.max(4.2, W / 170), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#0B1220';
+    ctx.font = `500 ${Math.max(8, W / 80)}px "IBM Plex Mono", ui-monospace, monospace`;
+    ctx.fillText(local < 0.5 ? 'LOCK' : 'RELEASE', bead[0], bead[1] - Math.max(14, W / 50));
   };
 
-  const pick = (clientX: number, clientY: number): LayerId | null => {
+  const pick = (clientX: number, clientY: number): NodeId | null => {
     const rect = canvas.getBoundingClientRect();
-    const x = (clientX - rect.left) / rect.width;
-    const y = (clientY - rect.top) / rect.height;
-    if (x > 0.62 && y > 0.58) return 2;
-    if (Math.hypot(x - 0.5, y - 0.5) < 0.18) return 1;
-    if (Math.hypot(x - 0.5, y - 0.5) < 0.36) return 0;
-    return null;
+    const sx = canvas.width / rect.width;
+    const sy = canvas.height / rect.height;
+    const x = (clientX - rect.left) * sx;
+    const y = (clientY - rect.top) * sy;
+    let best: NodeId | null = null;
+    let dist = Infinity;
+    for (const n of projected) {
+      const d = Math.hypot(n.x - x, n.y - y);
+      const hit = n.id === 6 ? Math.max(28, canvas.width / 18) : n.id === 7 ? Math.max(22, canvas.width / 24) : Math.max(24, canvas.width / 20);
+      if (d < hit && d < dist) {
+        dist = d;
+        best = n.id;
+      }
+    }
+    return best;
   };
 
   const tick = (): void => {

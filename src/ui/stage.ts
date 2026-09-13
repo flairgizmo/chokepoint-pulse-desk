@@ -97,10 +97,7 @@ function paint(root: HTMLElement, doc: StageDoc): void {
   const facts = doc.facts?.length
     ? `<dl class="stage-facts">${doc.facts.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`
     : '';
-  const analogy = doc.analogy
-    ? `<p class="stage-analogy"><strong>In one analogy.</strong> ${esc(doc.analogy)}</p>`
-    : '';
-  body.innerHTML = `<p>${esc(doc.body)}</p>${analogy}${sourced}${facts}`;
+  body.innerHTML = `<p>${esc(doc.body)}</p>${sourced}${facts}`;
 
   const crumb = stack.length
     ? `<button type="button" class="stage-crumb" data-stage-back>← ${esc(stack[stack.length - 1].title)}</button>`

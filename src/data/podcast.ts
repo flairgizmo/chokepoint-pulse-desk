@@ -106,7 +106,7 @@ const MEMORY: Record<number, Memory> = {
     ],
     close: [
       'The next step in the UK is not a CBDC. It is commercial-bank sterling learning to take an instruction.',
-      'RLN, then GBTD. The liability stays with the banks. Hold that — we will need it every week.',
+      'RLN, then GBTD. The liability stays with the banks. That distinction is the rest of this series.',
     ],
   },
   7: {
@@ -253,7 +253,7 @@ const MEMORY: Record<number, Memory> = {
 
 const JAMES_BRIDGES = [
   'That line still gets me.',
-  'Hold that — this is why the banks walked in.',
+  'That filing is why the six banks are on the page.',
   'You can hear the 2018 paper in that sentence.',
   'I keep a map: gate, rooms, token, standard.',
   'Optimistic, yes — because the rooms are named.',
@@ -263,7 +263,7 @@ const JAMES_BRIDGES = [
 const AMELIA_BRIDGES = [
   'And this is where sterling stops being a thought experiment.',
   'Right. The filing actually says it.',
-  'Stay with the title on the quote. It earns the next room.',
+  'Keep the title on the quote. It is how the next room is earned.',
   'That is the through-line, and it is a kind one.',
   'I can feel the decade connecting here.',
   'The banks still owe the holder. The instruction is new.',
@@ -404,7 +404,7 @@ Overledger, in the twenty eighteen whitepaper archived at UCL Discovery, is intr
 
 This desk files that argument as journalism. QNT is the utility token of the network. Six UK commercial banks are already programming sterling deposits on the architecture. The next nineteen films walk the decade: the burn, the standards rooms, Latin America, Rosalind, the Regulated Liability Network, GBTD, SATP, Fusion, PayScript, agents, Oracle, Murex, Tokyo, the Bank of England lab, Sibos Miami, and the Treasury’s DIGIT gilt.
 
-Stay with us. The Internet of Value is no longer a slogan. It is a set of named rooms.`,
+The Internet of Value, on this desk, is a set of named rooms and dated filings.`,
   ),
   ep(
     2,
@@ -439,7 +439,7 @@ Dr Luke Riley, Head of Innovation, writing the DLT interoperability options note
 
 The twenty twenty three ACM paper — Belchior, Riley, Hardjono, Vasconcelos, Correia — gives the academy the same grid: modes of data, asset transfer, asset exchange; infrastructure of nodes, proxies, gateways. Quant’s shipped claim occupies the gateway cell.
 
-That is why this desk keeps saying gateway. The scarce resource, if money is going to live on many ledgers, is a layer that already knows how to talk to the ones that exist. Fusion, PayScript, Flow Applications, QuantNet — they sit on that sentence. We will get to each of them. First, the token that licences the network.`,
+That is why this desk keeps saying gateway. If deposits, tokens and wholesale money sit on different books, the layer that already maps between those books is the object to file. Fusion, PayScript, Flow Applications, QuantNet sit on that sentence. We will get to each of them. First, the token that licences the network.`,
   ),
   ep(
     3,
@@ -472,7 +472,7 @@ Licences for Overledger can lock QNT for the term of the licence — that is in 
 
 Why does a gateway need a token. Because the network has to be paid for in a unit the software already understands. Overledger licences settle in QNT. That is the industrial reason it trades. Quant, on the company page: The foundation of digital finance.
 
-Hold that next to Gilbert Verdian’s twenty twenty six architecture essay. He writes that Quant is the horizontal interoperability layer connecting all three tiers of the digital money architecture. The token is how that layer is licensed. The banks we will name in episode eight do not issue QNT. They issue sterling deposits. The gateway in the middle is Overledger. The unit of that gateway is QNT.
+Read that next to Gilbert Verdian’s twenty twenty six architecture essay. He writes that Quant is the horizontal interoperability layer connecting all three tiers of the digital money architecture. The token is how that layer is licensed. The banks we will name in episode eight do not issue QNT. They issue sterling deposits. The gateway in the middle is Overledger. The unit of that gateway is QNT.
 
 If you came here for a price target, leave with a contract address and two supply notes. If you came here for the future of money, stay. The token is the metering of a network of networks.`,
   ),

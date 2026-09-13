@@ -28,7 +28,7 @@ const EXTRA: Programme[] = [
     hrefKey: 'gbtdUkFinance',
     title: 'Live tokenised sterling deposits',
     kicker: 'Active · GBTD — London',
-    body: 'On 26 September 2025 UK Finance selected Quant to provide the technology for live tokenised sterling deposits with Barclays, HSBC, Lloyds Bank, NatWest, Nationwide and Santander. EY and Linklaters support. Overledger and PayScript are named as the foundation. The six banks issue the deposits — commercial-bank sterling, building on the 2024 RLN phase. Quant does not issue the tokens. GBTD is not a CBDC.',
+    body: 'On 26 September 2025 UK Finance selected Quant to provide the technology for live tokenised sterling deposits with Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide and Santander. EY and Linklaters support. Overledger and PayScript are named as the foundation. The six banks issue the deposits — commercial-bank sterling, building on the 2024 RLN phase. Quant does not issue the tokens. GBTD is not a CBDC.',
   },
   {
     id: 'rln',

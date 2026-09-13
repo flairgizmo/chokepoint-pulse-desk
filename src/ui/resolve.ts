@@ -1,4 +1,5 @@
 import { paperById, quotes, sourceUrl, chapters } from '../data/catalog';
+import { bankDisplay } from '../data/marks';
 import { INSTITUTIONS, institutionById } from '../data/institutions';
 import { patentById } from '../data/patents';
 import { PEOPLE } from '../data/people';
@@ -234,7 +235,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       title: c.title,
       kicker: c.kicker,
       stake: c.kicker,
-      body: `${c.body} This chapter remains on the ${c.page} route. The stage is the brief; the page is the shelf.`,
+      body: `${c.body} Filed on the ${c.page} route of this desk.`,
       analogy: 'A chapter is a shelf mark, not a second home page.',
       related: chipsFromIds([c.id, 'overledger']),
       visual: diagramSvg(c.id, 'chapter', c.kicker),
@@ -276,7 +277,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       title: p.title,
       kicker: `${p.status} · ${p.kicker}`,
       stake: `Next public milestone: ${p.milestone}`,
-      body: `${p.body} Owner: ${p.owner}. Institutions on the card: ${p.institutions.join(', ') || 'see body'}. Related technology: ${p.tech.join(', ')}. A mention on the wire is not a new contract.`,
+      body: `${p.body} Owner: ${p.owner}. Institutions on the card: ${p.institutions.map(bankDisplay).join(', ') || 'see body'}. Related technology: ${p.tech.join(', ')}. A mention on the wire is not a new contract.`,
       analogy: 'A programme is a room with a status chip. A mention on the wire is not a new contract.',
       fact: factLine('Status', p.status),
       facts: [
@@ -356,8 +357,8 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       kind: 'source',
       title,
       kicker: who || 'On the record',
-      stake: 'A doorway, not a redirect.',
-      body: `${who}. This desk keeps the brief here. The publisher remains one click further if you want the sentence in its first room. Adjacency is not endorsement.`,
+      stake: 'The publisher keeps the original. This desk keeps the brief.',
+      body: `${who}. The citation is filed here so the sentence can be read next to the rest of the record. Open original if you want the first room. A cited neighbour is not an endorsement.`,
       analogy: 'A doorway, not a redirect.',
       original: href ? { href, label: 'Open original' } : undefined,
       visual: diagramSvg(id, 'source', title),
@@ -370,8 +371,8 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         kind: 'proof',
         title: 'Interoperability as an operating layer',
         kicker: 'Proof · interoperability',
-        stake: 'Overledger is a gateway OS. The scarce resource is not another chain.',
-        body: 'Overledger is a gateway OS. The 2018 whitepaper files multi-ledger applications without single-ledger dependency. Fusion sits across ledgers as Layer 2.5. PayScript programmes the account. The scarce resource is not another chain. This chip is a stage, not an anchor jump to a reused page.',
+        stake: 'Overledger is a gateway operating system. It does not mint a native L1.',
+        body: 'The 2018 Overledger whitepaper (Verdian, Tasca, Paterson, Mondelli; UCL Discovery) files multi-ledger applications without single-ledger dependency. Fusion is Quant’s Layer 2.5 rollup across connected ledgers. PayScript is the named programmability layer on GBTD. The product maps a request onto Ethereum, Hyperledger Fabric, Corda, or a bank core. It does not ask those domains to become one chain.',
         analogy: 'A clearing house that already knows the members, rather than a new exchange that asks them to move in.',
         fact: factLine('Primary', 'Overledger whitepaper, UCL Discovery, 2018'),
         related: chipsFromIds(['overledger', 'fusion', 'payscript']),
@@ -382,8 +383,8 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         kind: 'proof',
         title: 'Standards rooms Quant actually sits in',
         kicker: 'Proof · standards',
-        stake: 'The treaty table. The product may implement the treaty. It does not own the seals.',
-        body: 'IETF SATP: Quant authors and a co-chair. ISO/TC 307: Verdian proposed it in 2015 and convenes WG7. ISO/TS 23516:2026 is the interoperability framework. SATP is not a Quant SKU. The day it is an RFC, a bank can implement a gateway-to-gateway transfer without buying a brand.',
+        stake: 'SATP is IETF work. ISO/TS 23516:2026 is an ISO technical specification. Neither is a Quant product SKU.',
+        body: 'IETF SATP lists Quant authors; Facer is a co-chair. SATP-core was waiting for WG chair go-ahead in the 2–3 September 2026 Atom feed. draft-ietf-satp-usecases-10 posted 2 September 2026. Verdian proposed ISO/TC 307 in 2015 and convenes WG7. ISO/TS 23516:2026 is the interoperability framework. A bank can implement a gateway-to-gateway transfer from the drafts without buying a brand.',
         analogy: 'The treaty table. The product is allowed to implement the treaty. It does not own the seals.',
         fact: factLine('Rooms', 'IETF SATP · ISO/TC 307 WG7'),
         related: chipsFromIds(['satp', 'iso', 'verdian']),
@@ -394,8 +395,8 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         kind: 'proof',
         title: 'Who they still sit with',
         kicker: 'Proof · institutions',
-        stake: 'A seating plan, not a sponsorship reel.',
-        body: 'Current: UK Finance convenor; six GBTD issuing banks; Oracle and Murex as named vendors; IETF and ISO working-group roles; Linux Foundation x402 general membership; Dentsu Soken announced 2026. Historical: Rosalind (concluded), LACChain 2021 announcement, Vocalink lineage. Adjacency: Bank of England lab, MIT/SERC, INATBA. Adjacency is not a contract.',
+        stake: 'Current, former, and adjacent rooms are labelled. Adjacent is not a contract.',
+        body: 'Current: UK Finance convenor; six GBTD issuing banks named on 26 September 2025; Oracle and Murex as named vendors; IETF and ISO working-group roles; Linux Foundation x402 general membership; Dentsu Soken announced 2026. Historical: Rosalind (concluded 2023), LACChain 2021 announcement, Vocalink lineage. Adjacent: Bank of England Synchronisation Lab (simulated RT2, February 2026), MIT/SERC, INATBA.',
         analogy: 'A seating plan, not a sponsorship reel.',
         fact: factLine('Rule', 'Adjacency ≠ contract. Current vs former is labelled.'),
         related: chipsFromIds(['uk-finance', 'ietf', 'boe']),

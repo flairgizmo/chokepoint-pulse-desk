@@ -1,6 +1,6 @@
 import { quotesFor } from '../data/catalog';
 import { INSTITUTIONS } from '../data/institutions';
-import { markFor } from '../data/marks';
+import { bankDisplay, markFor } from '../data/marks';
 import { OVERLEDGER_BUILDERS, PEOPLE } from '../data/people';
 import { PATENTS } from '../data/patents';
 import { STORY, storyChronological, type StoryTheme } from '../data/story';
@@ -33,13 +33,14 @@ function hero(k: string, title: string, lede: string, seed: string): string {
 export function renderHome(): string {
   const banks = GBTD_BANKS.map((b) => {
     const mark = markFor(b);
-    return `<li class="wordmark">${mark ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="56" height="56" />` : ''}<span>${esc(b)}</span></li>`;
+    const caption = bankDisplay(b);
+    return `<li class="wordmark">${mark ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="128" height="52" />` : ''}<span>${esc(caption)}</span></li>`;
   }).join('');
   return `
     <section class="masthead masthead-lockup" data-proof="hero">
       <div class="hero-stage">
-        <canvas id="gateway" class="gateway-stage" role="img" aria-label="QntDesk mark: a spatial Q of interlocking ledgers. Drag to orbit."></canvas>
-        <p class="tess-hint" data-gateway-hint>Orbit the Q. A lattice of ledgers, one light path.</p>
+        <canvas id="gateway" class="gateway-stage" role="img" aria-label="Sterling corridor: six UK commercial banks around an Overledger plane."></canvas>
+        <p class="tess-hint" data-gateway-hint>Six commercial banks. One gateway plane.</p>
       </div>
       ${kicker('QntDesk · independent brief')}
       <div class="hero-split">
@@ -60,7 +61,7 @@ export function renderHome(): string {
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="interop">
           ${diagramFigure('home-interop', 'proof', 'Interop')}
           <strong>Interoperability</strong>
-          <span>A gateway OS. Not a twelfth validator set.</span>
+          <span>Overledger maps one request onto more than one ledger. 2018 whitepaper, UCL Discovery.</span>
         </button>
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="standards">
           ${diagramFigure('home-standards', 'proof', 'Standards')}
@@ -109,7 +110,7 @@ export function renderStory(): string {
       </li>`,
     )
     .join('');
-  return `${hero('Story / Timeline', 'History as a scored film.', 'Search and filter. Quiet months collapse — there are no empty holes. Each node opens a stage: the stake, the analogy, the source.', 'story-hero')}
+  return `${hero('Story / Timeline', 'History as a scored film.', 'Search and filter. Quiet months collapse — there are no empty holes. Each node opens a stage with the stake, the filing, and the source.', 'story-hero')}
     <div class="toolbar filter-bar">
       <input type="search" id="story-search" placeholder="Search the rail…" />
       <div class="chip-row" id="story-themes">${chips}</div>
@@ -125,7 +126,7 @@ export function renderStory(): string {
     <p class="story-suggest" data-story-suggest hidden></p>
     <ol class="story-rail" id="story-rail">${nodes}</ol>
     <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>
-    <p class="subtle story-keys">j and k move the visible rail. Each node opens a stage — object, analogy, source.</p>`;
+    <p class="subtle story-keys">j and k move the visible rail. Each node opens a stage — object, filing, source.</p>`;
 }
 
 export function renderStack(): string {
@@ -136,7 +137,7 @@ export function renderStack(): string {
     { id: 'gate', title: 'Overledger · QuantNet', job: 'Gateway OS. The bank-facing name for the same architecture.', analogy: 'This layer is the correspondent: it speaks every domain and replaces none.', std: 'ACM gateway cell. SATP-implementable. Not SATP.' },
     { id: 'ledgers', title: 'Ledgers & rails', job: 'Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments.', analogy: 'This layer is the SWIFT message and the RTGS book — the things the gate maps onto.', std: 'ISO 20022 adjacency via QuantNet’s published claim.' },
   ];
-  return `${hero('Stack', 'How the layers compose.', 'Isolate a rung. Dim the rest. Each layer opens a stage: job, analogy, standards mapping. Fun without being childish.', 'stack-hero')}
+  return `${hero('Stack', 'How the layers compose.', 'Isolate a rung. Dim the rest. Each layer opens a stage with the job and the standards mapping.', 'stack-hero')}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
       <div class="stack-tools">
@@ -150,7 +151,6 @@ export function renderStack(): string {
               ${diagramFigure(`stack-${l.id}`, 'stack', l.title)}
               <strong>${esc(l.title)}</strong>
               <span>${esc(l.job)}</span>
-              <em>${esc(l.analogy)}</em>
               <small>${esc(l.std)}</small>
             </button>
           </li>`,
@@ -175,7 +175,6 @@ export function renderTechnology(): string {
         <div><h3>Standards</h3><p>${esc(t.standards)}</p></div>
         <div><h3>What it is not</h3><p>${esc(t.isNot)}</p></div>
       </div>
-      <p class="stage-analogy"><strong>In one analogy.</strong> ${esc(t.analogy)}</p>
       <p class="stage-related">${relatedButtons(chipsFromIds(t.related))}</p>
     </article>`,
   ).join('');
@@ -211,16 +210,17 @@ export function renderPatents(): string {
 
 export function renderInstitutions(): string {
   const cards = INSTITUTIONS.map((i) => {
+    const caption = bankDisplay(i.name);
     const mark = i.mark ? markFor(i.mark) : undefined;
     const logo = mark
-      ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="56" height="56" />`
-      : `<span class="wordmark-label">${esc(i.name)} <em>wordmark</em></span>`;
+      ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="128" height="52" />`
+      : `<span class="wordmark-label">${esc(caption)} <em>wordmark</em></span>`;
     return `<article class="inst-card" id="${esc(i.id)}" data-status="${esc(i.status)}" data-q="${esc(`${i.name} ${i.body}`)}">
       <button type="button" data-stage="institution" data-stage-id="${esc(i.id)}">
         ${diagramFigure(i.id, 'institution', i.status)}
         <div class="inst-mark">${logo}</div>
         <p class="kicker">${esc(i.role)} · ${esc(i.status)}</p>
-        <h2>${esc(i.name)}</h2>
+        <h2>${esc(caption)}</h2>
         <p class="mono subtle">${esc(i.dates ?? '')}</p>
         <p>${esc(i.body)}</p>
       </button>

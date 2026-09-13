@@ -19,7 +19,7 @@
     "id": "gateway-not-chain",
     "category": "Technology",
     "q": "Did you know Overledger is not a twelfth blockchain?",
-    "a": "The 2018 whitepaper\u2019s whole point is single-ledger dependency. Overledger maps a request onto Ethereum, Hyperledger Fabric, Corda, a bank core, or all of them. If the future of money is many ledgers and many rails, the scarce resource is a gateway OS, not another validator set.",
+    "a": "The 2018 whitepaper\u2019s whole point is single-ledger dependency. Overledger maps a request onto Ethereum, Hyperledger Fabric, Corda, a bank core, or all of them. If money lives on many ledgers and rails, Overledger is the gateway OS that maps between them.",
     "cta": "",
     "to": "/read/overledger-2018"
   },
@@ -131,7 +131,7 @@
     "id": "verdian-ciso",
     "category": "People",
     "q": "Did you know Quant\u2019s founder left the CISO chair at UK payments rails?",
-    "a": "Gilbert Verdian was CISO at Vocalink \u2014 Mastercard\u2019s UK payments infrastructure \u2014 and CISO of the Year in 2017. He left that chair in May 2018 to build a gateway OS instead of another chain. The scarce resource, in his telling, was never a twelfth validator set.",
+    "a": "Gilbert Verdian was CISO at Vocalink \u2014 Mastercard\u2019s UK payments infrastructure \u2014 and CISO of the Year in 2017. He left that chair in May 2018 to build a gateway OS, not another chain.",
     "cta": "",
     "to": "/team/verdian"
   },

@@ -13,19 +13,19 @@ function hash(seed: string): number {
 
 function palette(seed: string): { a: string; b: string; c: string } {
   const palettes = [
-    { a: '#7ee0c8', b: '#8b7cff', c: '#d8d2c4' },
-    { a: '#8b7cff', b: '#7ee0c8', c: '#e4ddd0' },
-    { a: '#c9b48a', b: '#7ee0c8', c: '#9aa3b5' },
-    { a: '#7ea7ff', b: '#8b7cff', c: '#d8d2c4' },
-    { a: '#7ee0c8', b: '#c9b48a', c: '#8b7cff' },
-    { a: '#9aa3b5', b: '#7ee0c8', c: '#8b7cff' },
+    { a: '#1557FF', b: '#0B1F5C', c: '#3D4A63' },
+    { a: '#00A878', b: '#1557FF', c: '#0B1220' },
+    { a: '#C45C00', b: '#1557FF', c: '#0B1F5C' },
+    { a: '#3B2DFF', b: '#00A878', c: '#14203A' },
+    { a: '#E23B2C', b: '#0B1F5C', c: '#3D4A63' },
+    { a: '#0B1F5C', b: '#1557FF', c: '#00A878' },
   ];
   return palettes[hash(seed) % palettes.length];
 }
 
 function frame(uid: string, p: { a: string; b: string }, inner: string, title: string): string {
   const label = title
-    ? `<text x="18" y="228" fill="#d8d2c4" font-size="11" font-family="IBM Plex Sans, sans-serif" letter-spacing="1.8">${esc(title.slice(0, 42).toUpperCase())}</text>`
+    ? `<text x="18" y="228" fill="#0B1F5C" font-size="11" font-family="Outfit, IBM Plex Sans, sans-serif" letter-spacing="1.8">${esc(title.slice(0, 42).toUpperCase())}</text>`
     : '';
   return `<svg class="beat-diagram stage-object" viewBox="0 0 320 240" role="img" aria-hidden="true">
     <defs>
@@ -34,8 +34,8 @@ function frame(uid: string, p: { a: string; b: string }, inner: string, title: s
         <stop offset="1" stop-color="${p.a}" stop-opacity="0.08"/>
       </linearGradient>
     </defs>
-    <rect width="320" height="240" fill="#0e1114"/>
-    <rect x="8" y="8" width="304" height="224" rx="2" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <rect width="320" height="240" fill="#ffffff"/>
+    <rect x="8" y="8" width="304" height="224" rx="2" fill="none" stroke="rgba(11,31,92,0.14)" stroke-width="1"/>
     <rect x="12" y="12" width="296" height="216" fill="url(#${uid}g)"/>
     ${inner}
     ${label}
@@ -56,7 +56,7 @@ function personMotif(uid: string, p: { a: string; b: string; c: string }, h: num
     `<rect x="28" y="40" width="52" height="64" rx="2" fill="none" stroke="${p.a}" stroke-width="1.4"/>
      <text x="54" y="78" text-anchor="middle" fill="${p.c}" font-size="16" font-family="IBM Plex Sans, sans-serif" font-weight="600">${initials}</text>
      ${bars}
-     <path d="M28 168 H292" stroke="rgba(255,255,255,0.1)" />
+     <path d="M28 168 H292" stroke="rgba(11,31,92,0.14)" />
      <circle cx="${220 + (h % 40)}" cy="168" r="4" fill="${p.a}"/>`,
     title,
   );
@@ -184,7 +184,7 @@ function programmeCockpit(uid: string, p: { a: string; b: string; c: string }, h
     const x = 48 + i * 88;
     const sweep = 40 + ((h >> i) % 80);
     return `<g transform="translate(${x} 88)">
-      <circle r="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="6"/>
+      <circle r="28" fill="none" stroke="rgba(11,31,92,0.12)" stroke-width="6"/>
       <circle r="28" fill="none" stroke="${p.a}" stroke-width="6" stroke-dasharray="${sweep} 180" transform="rotate(-90)"/>
     </g>`;
   }).join('');
@@ -195,11 +195,72 @@ function paperCover(uid: string, p: { a: string; b: string; c: string }, title: 
   return frame(
     uid,
     p,
-    `<rect x="88" y="36" width="144" height="168" fill="#12151a" stroke="${p.b}" stroke-width="1.4"/>
+    `<rect x="88" y="36" width="144" height="168" fill="#F4F7FB" stroke="${p.b}" stroke-width="1.4"/>
      <rect x="100" y="52" width="120" height="4" fill="${p.a}"/>
      <rect x="100" y="66" width="88" height="3" fill="${p.c}" opacity="0.45"/>
      <rect x="100" y="78" width="104" height="3" fill="${p.c}" opacity="0.3"/>
      <text x="160" y="170" text-anchor="middle" fill="${p.c}" font-size="10" font-family="IBM Plex Mono, monospace">${esc((title || 'PAPER').slice(0, 12))}</text>`,
+    title,
+  );
+}
+
+function paperPrimary(uid: string, p: { a: string; b: string; c: string }, title: string): string {
+  return frame(
+    uid,
+    p,
+    `<rect x="54" y="40" width="212" height="148" fill="#F4F7FB" stroke="${p.a}" stroke-width="1.6"/>
+     <path d="M54 40 H266 L248 56 H72 Z" fill="${p.a}" opacity="0.18"/>
+     <text x="160" y="118" text-anchor="middle" fill="${p.b}" font-size="13" font-family="Outfit, sans-serif" font-weight="700">PRIMARY</text>
+     <text x="160" y="168" text-anchor="middle" fill="${p.c}" font-size="9" font-family="IBM Plex Mono, monospace">${esc((title || 'SOURCE').slice(0, 16))}</text>`,
+    title,
+  );
+}
+
+function paperStandards(uid: string, p: { a: string; b: string; c: string }, title: string): string {
+  return frame(
+    uid,
+    p,
+    `<rect x="36" y="44" width="248" height="152" fill="none" stroke="${p.b}" stroke-width="1.5"/>
+     <path d="M36 68 H284" stroke="${p.a}" stroke-width="8"/>
+     <text x="48" y="64" fill="#ffffff" font-size="10" font-family="IBM Plex Mono, monospace">IETF / ISO</text>
+     <rect x="48" y="88" width="160" height="3" fill="${p.b}"/>
+     <rect x="48" y="104" width="200" height="2" fill="${p.c}" opacity="0.4"/>
+     <rect x="48" y="118" width="132" height="2" fill="${p.c}" opacity="0.3"/>
+     <text x="48" y="168" fill="${p.a}" font-size="10" font-family="IBM Plex Mono, monospace">${esc((title || 'DRAFT').slice(0, 18))}</text>`,
+    title,
+  );
+}
+
+function paperBook(uid: string, p: { a: string; b: string; c: string }, title: string): string {
+  return frame(
+    uid,
+    p,
+    `<path d="M70 50 V190 C120 176 140 176 160 190 C180 176 200 176 250 190 V50 C200 64 180 64 160 50 C140 64 120 64 70 50 Z" fill="none" stroke="${p.a}" stroke-width="1.6"/>
+     <path d="M160 50 V190" stroke="${p.b}"/>
+     <text x="160" y="124" text-anchor="middle" fill="${p.c}" font-size="11" font-family="Source Serif 4, Georgia, serif">${esc((title || 'BOOK').slice(0, 14))}</text>`,
+    title,
+  );
+}
+
+function paperSurvey(uid: string, p: { a: string; b: string; c: string }, h: number, title: string): string {
+  const cells = Array.from({ length: 6 }, (_, i) => {
+    const x = 40 + (i % 3) * 86;
+    const y = 48 + Math.floor(i / 3) * 72;
+    return `<rect x="${x}" y="${y}" width="74" height="58" fill="none" stroke="${i === h % 6 ? p.a : p.b}" stroke-width="1.3"/>`;
+  }).join('');
+  return frame(uid, p, `${cells}<text x="160" y="220" text-anchor="middle" fill="${p.c}" font-size="9" font-family="IBM Plex Mono, monospace">${esc((title || 'SURVEY').slice(0, 14))}</text>`, title);
+}
+
+function paperNote(uid: string, p: { a: string; b: string; c: string }, title: string): string {
+  return frame(
+    uid,
+    p,
+    `<rect x="48" y="46" width="224" height="140" fill="#FFF8F0" stroke="${p.a}" stroke-width="1.3"/>
+     <path d="M48 70 H272" stroke="${p.b}" stroke-dasharray="4 5"/>
+     <text x="62" y="64" fill="${p.a}" font-size="10" font-family="IBM Plex Mono, monospace">FILED NOTE</text>
+     <rect x="62" y="88" width="168" height="3" fill="${p.c}" opacity="0.45"/>
+     <rect x="62" y="104" width="140" height="3" fill="${p.c}" opacity="0.3"/>
+     <text x="62" y="160" fill="${p.b}" font-size="11" font-family="Outfit, sans-serif">${esc((title || 'NOTE').slice(0, 18))}</text>`,
     title,
   );
 }
@@ -267,6 +328,18 @@ export function diagramSvg(seed: string, kind: string, title = ''): string {
       return programmeCockpit(uid, p, h, title);
     case 'paper':
       return paperCover(uid, p, title);
+    case 'paper-primary':
+      return paperPrimary(uid, p, title);
+    case 'paper-standards':
+      return paperStandards(uid, p, title);
+    case 'paper-patent':
+      return patentClaim(uid, p, h, title);
+    case 'paper-book':
+      return paperBook(uid, p, title);
+    case 'paper-survey':
+      return paperSurvey(uid, p, h, title);
+    case 'paper-note':
+      return paperNote(uid, p, title);
     case 'money':
     case 'cbdc':
       return moneyFlow(uid, p, title);

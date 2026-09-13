@@ -328,13 +328,19 @@ export class QntDesk {
       const apply = () => {
         const q = (input?.value ?? '').trim().toLowerCase();
         const region = this.root.querySelector<HTMLButtonElement>('#research-regions .chip.is-on')?.dataset.region ?? 'ALL';
+        const kind = this.root.querySelector<HTMLButtonElement>('#research-kinds .chip.is-on')?.dataset.kind ?? 'ALL';
         let n = 0;
         this.root.querySelectorAll<HTMLElement>('#research-grid .paper').forEach((el) => {
           const hay = (el.textContent ?? '').toLowerCase();
           const regionOk = region === 'ALL' || (el.dataset.region ?? '').includes(region);
-          const hit = (!q || hay.includes(q)) && regionOk;
+          const kindOk = kind === 'ALL' || el.dataset.kind === kind;
+          const hit = (!q || hay.includes(q)) && regionOk && kindOk;
           el.hidden = !hit;
           if (hit) n += 1;
+        });
+        this.root.querySelectorAll<HTMLElement>('#research-grid .research-lane').forEach((lane) => {
+          const any = [...lane.querySelectorAll<HTMLElement>('.paper')].some((p) => !p.hidden);
+          lane.hidden = !any;
         });
         const empty = this.root.querySelector<HTMLElement>('#research-empty');
         if (empty) empty.hidden = n > 0;
@@ -343,6 +349,13 @@ export class QntDesk {
       this.root.querySelectorAll<HTMLButtonElement>('#research-regions [data-region]').forEach((btn) => {
         btn.addEventListener('click', () => {
           this.root.querySelectorAll('#research-regions .chip').forEach((c) => c.classList.remove('is-on'));
+          btn.classList.add('is-on');
+          apply();
+        });
+      });
+      this.root.querySelectorAll<HTMLButtonElement>('#research-kinds [data-kind]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.root.querySelectorAll('#research-kinds .chip').forEach((c) => c.classList.remove('is-on'));
           btn.classList.add('is-on');
           apply();
         });

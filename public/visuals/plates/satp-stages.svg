@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="SATP stages 0 to 3 with two-phase commit">
+  <rect width="640" height="360" fill="#ffffff"/>
+  <rect x="24" y="48" width="592" height="8" fill="#0B1F5C"/>
+  <g font-family="IBM Plex Mono, monospace" font-size="12" fill="#0B1F5C" text-anchor="middle">
+    <circle cx="96" cy="160" r="28" fill="none" stroke="#1557FF" stroke-width="3"/><text x="96" y="164">0</text><text x="96" y="214">VERIFY</text>
+    <circle cx="246" cy="160" r="28" fill="none" stroke="#1557FF" stroke-width="3"/><text x="246" y="164">1</text><text x="246" y="214">INIT</text>
+    <circle cx="396" cy="160" r="28" fill="none" stroke="#1557FF" stroke-width="3"/><text x="396" y="164">2</text><text x="396" y="214">LOCK</text>
+    <circle cx="546" cy="160" r="28" fill="#1557FF"/><text x="546" y="164" fill="#ffffff">3</text><text x="546" y="214">2PC</text>
+  </g>
+  <path d="M124 160 H218 M274 160 H368 M424 160 H518" stroke="#00A878" stroke-width="2" fill="none"/>
+  <text x="320" y="300" text-anchor="middle" fill="#3D4A63" font-family="Outfit, sans-serif" font-size="14">IETF SATP · burn and mint inside stage 3</text>
+</svg>

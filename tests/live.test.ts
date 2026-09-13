@@ -105,6 +105,11 @@ describe('Public desk', () => {
     expect(html).not.toContain('five minutes each');
     expect(html).toContain('data-home-pulse');
     expect(html).toContain('data-stage="proof"');
+    expect(html).toContain('Lloyds Banking Group');
+    expect(html).toContain('/marks/lloyds.svg');
+    expect(html).not.toContain('This chip is a stage');
+    expect(html).not.toContain('The scarce resource is not another chain');
+    expect(html).not.toContain('Orbit the Q');
   });
 
   it('opens people and news as in-site stages, with original as secondary', () => {

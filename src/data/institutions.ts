@@ -46,7 +46,7 @@ export const INSTITUTIONS: Institution[] = [
   },
   {
     id: 'lloyds',
-    name: 'Lloyds Bank',
+    name: 'Lloyds Banking Group',
     mark: 'Lloyds Bank',
     role: 'issuer',
     status: 'current',
