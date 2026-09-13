@@ -645,7 +645,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(
     new THREE.LineSegments(
       edgeGeo,
-      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.88 }),
+      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.28 }),
     ),
   );
   const core = new THREE.Mesh(
