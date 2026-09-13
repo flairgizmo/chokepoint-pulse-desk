@@ -2821,8 +2821,8 @@ button.chip {
   overflow: hidden;
   border: 1px solid var(--line);
   background:
-    radial-gradient(ellipse at 50% 42%, #e8efff 0%, #eef2f8 68%);
-  box-shadow: 0 24px 64px rgba(11, 31, 92, 0.1);
+    radial-gradient(ellipse at 50% 38%, #2a3d62 0%, #141c2e 52%, #0a101c 100%);
+  box-shadow: 0 24px 64px rgba(7, 11, 20, 0.28);
 }
 
 .hero-bed {
@@ -5739,4 +5739,44 @@ section.block .kicker {
 
 .city-neighbor {
   color: #f4f7fb;
+}
+
+.panel {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.panel .display,
+.panel h2,
+.panel h3,
+.panel p,
+.panel .kicker,
+.panel .subtle,
+.panel .stat,
+.panel-n {
+  color: inherit;
+}
+
+.panel .text-link {
+  color: #eaf1ff;
+}
+
+.donate-list code {
+  display: block;
+  margin-top: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  background: #070b14;
+  color: #8eb0ff;
+  font-size: 0.78rem;
+}
+
+.fold-body .people-group {
+  margin-top: 1rem;
+}
+
+.token-lab .tokencard,
+.token-board .float-grid li {
+  box-shadow: 0 16px 36px rgba(7, 11, 20, 0.22);
 }

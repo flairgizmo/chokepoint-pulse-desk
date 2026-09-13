@@ -61,13 +61,13 @@ function paintPhotoGlass(
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const sx = photo.naturalWidth * (cut === 'table' ? 0.22 : 0.16);
-    const sy = photo.naturalHeight * (cut === 'table' ? 0.32 : 0.1);
-    const sw = Math.max(1, photo.naturalWidth * 0.7);
-    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.52 : 0.8));
+    const sx = photo.naturalWidth * (cut === 'table' ? 0.28 : 0.16);
+    const sy = photo.naturalHeight * (cut === 'table' ? 0.48 : 0.1);
+    const sw = Math.max(1, photo.naturalWidth * (cut === 'table' ? 0.58 : 0.7));
+    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.4 : 0.8));
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.36 : cut === 'table' ? 0.22 : 0.2;
+    ctx.globalAlpha = cut === 'pav' ? 0.4 : cut === 'table' ? 0.16 : 0.2;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
@@ -76,10 +76,10 @@ function paintPhotoGlass(
     ctx.fillStyle = on
       ? 'rgba(234, 241, 255, 0.35)'
       : cut === 'pav'
-        ? 'rgba(4, 10, 28, 0.66)'
+        ? 'rgba(4, 10, 28, 0.5)'
         : cut === 'table'
-          ? 'rgba(4, 10, 28, 0.38)'
-          : 'rgba(12, 28, 64, 0.16)';
+          ? 'rgba(3, 8, 22, 0.62)'
+          : 'rgba(8, 20, 48, 0.3)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -90,8 +90,17 @@ function paintPhotoGlass(
     ctx.fillRect(0, 0, w, h);
   }
   ctx.globalCompositeOperation = 'screen';
-  const catchL = ctx.createRadialGradient(w * 0.3, h * 0.2, 6, w * 0.3, h * 0.2, w * 0.46);
-  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.14)' : 'rgba(234, 241, 255, 0.3)');
+  const cx = cut === 'table' ? w * 0.36 : w * 0.3;
+  const cy = cut === 'table' ? h * 0.3 : h * 0.2;
+  const catchL = ctx.createRadialGradient(cx, cy, 3, cx, cy, cut === 'table' ? w * 0.18 : w * 0.46);
+  catchL.addColorStop(
+    0,
+    cut === 'pav'
+      ? 'rgba(234, 241, 255, 0.22)'
+      : cut === 'table'
+        ? 'rgba(255, 236, 210, 0.58)'
+        : 'rgba(234, 241, 255, 0.34)',
+  );
   catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
   ctx.fillStyle = catchL;
   ctx.fillRect(0, 0, w, h);
@@ -197,8 +206,8 @@ function glassCanvas(photo: HTMLImageElement | null, on: boolean, cut: GlassCut)
   if (!ctx) return c;
   paintPhotoGlass(ctx, photo, c.width, c.height, on, cut);
   if (cut === 'table') {
-    ctx.fillStyle = 'rgba(11, 31, 92, 0.28)';
-    ctx.font = '600 88px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillStyle = 'rgba(11, 31, 92, 0.16)';
+    ctx.font = '600 72px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Q', 256, 268);
@@ -226,10 +235,10 @@ function glassMat(
     ? new THREE.MeshPhongMaterial({
         map: tex,
         color: 0xffffff,
-        shininess: 38,
-        specular: new THREE.Color(0x8aa3c8),
+        shininess: 56,
+        specular: new THREE.Color(0xb4c8e4),
         emissive: 0x071018,
-        emissiveIntensity: 0.1,
+        emissiveIntensity: 0.08,
         side: THREE.DoubleSide,
       })
     : diamondPhysical(tex, opts);
@@ -468,6 +477,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const fill = new THREE.PointLight(0x6aa8ff, 0.55, 6);
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
+  const bounce = new THREE.DirectionalLight(0x9eb4d4, lite ? 0.26 : 0.14);
+  bounce.position.set(0.35, -1.15, 1.45);
+  scene.add(bounce);
+  const culet = new THREE.PointLight(0x8eb0ff, lite ? 0.22 : 0.12, 1.8);
+  culet.position.set(0.05, -0.42, 0.28);
+  scene.add(culet);
 
   const crystal = new THREE.Group();
   const crowns: THREE.Mesh[] = [];

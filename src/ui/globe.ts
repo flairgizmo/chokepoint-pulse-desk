@@ -104,11 +104,14 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.14) saturate(0.74) brightness(0.88)';
+  ctx.filter = 'contrast(1.2) saturate(0.7) brightness(0.9)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(42, 36, 52, 0.26)';
+  ctx.fillStyle = 'rgba(48, 32, 38, 0.16)';
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = 'rgba(255, 186, 120, 0.07)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -128,10 +131,11 @@ function terminatorTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createLinearGradient(0, 0, c.width, 0);
-  g.addColorStop(0, 'rgba(12, 10, 18, 0.58)');
-  g.addColorStop(0.34, 'rgba(28, 18, 14, 0.42)');
-  g.addColorStop(0.47, 'rgba(196, 160, 112, 0.22)');
-  g.addColorStop(0.56, 'rgba(255, 255, 255, 0)');
+  g.addColorStop(0, 'rgba(8, 8, 16, 0.7)');
+  g.addColorStop(0.32, 'rgba(22, 14, 16, 0.48)');
+  g.addColorStop(0.46, 'rgba(210, 140, 72, 0.3)');
+  g.addColorStop(0.54, 'rgba(255, 220, 170, 0.08)');
+  g.addColorStop(0.6, 'rgba(255, 255, 255, 0)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);
@@ -147,7 +151,7 @@ function terminatorTex(): THREE.CanvasTexture {
   return tex;
 }
 
-function stars(count = 1800): THREE.Points {
+function stars(count = 1800, opacity = 0.55): THREE.Points {
   const pos = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 10);
@@ -159,8 +163,33 @@ function stars(count = 1800): THREE.Points {
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   return new THREE.Points(
     geo,
-    new THREE.PointsMaterial({ color: 0xe8eef8, size: 0.028, transparent: true, opacity: 0.88, sizeAttenuation: true }),
+    new THREE.PointsMaterial({
+      color: 0xe8eef8,
+      size: 0.018,
+      transparent: true,
+      opacity,
+      sizeAttenuation: true,
+    }),
   );
+}
+
+/** Tight sun-locked wet-ocean catch. Scene child — never baked into the day still. */
+function sunGlintTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
+  const g = ctx.createRadialGradient(128, 128, 2, 128, 128, 118);
+  g.addColorStop(0, 'rgba(255, 248, 230, 0.95)');
+  g.addColorStop(0.08, 'rgba(255, 220, 168, 0.55)');
+  g.addColorStop(0.22, 'rgba(180, 200, 255, 0.16)');
+  g.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 export class EarthGlobe {
@@ -203,6 +232,7 @@ export class EarthGlobe {
   private dayTex: THREE.Texture | null = null;
   private nightTex: THREE.Texture | null = null;
   private terminator: THREE.Mesh | null = null;
+  private glint: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
   private hoverId: string | undefined;
@@ -227,6 +257,7 @@ export class EarthGlobe {
     if (this.pulse) this.pulse.visible = this.overlays.activity;
     for (const s of this.labelSprites) s.visible = this.overlays.labels;
     if (this.terminator) this.terminator.visible = this.overlays.day;
+    if (this.glint) this.glint.visible = this.overlays.day;
     this.applyMaps();
   }
 
@@ -498,7 +529,7 @@ export class EarthGlobe {
     const scene = new THREE.Scene();
     this.scene = scene;
     applyPhotoEnv(renderer, scene, this.lite);
-    scene.add(stars(this.lite ? 600 : 1800));
+    scene.add(stars(this.lite ? 160 : 900, this.lite ? 0.32 : 0.48));
     const skyTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.needsUpdate = true;
@@ -551,7 +582,7 @@ export class EarthGlobe {
     const atmo = new THREE.Mesh(
       new THREE.SphereGeometry(1.09, this.lite ? 32 : 64, this.lite ? 24 : 48),
       new THREE.ShaderMaterial({
-        uniforms: { color: { value: new THREE.Color(0x8ec0ff) } },
+        uniforms: { color: { value: new THREE.Color(0xb8c0c8) } },
         vertexShader: `
           varying vec3 vN;
           varying vec3 vV;
@@ -566,8 +597,8 @@ export class EarthGlobe {
           varying vec3 vV;
           uniform vec3 color;
           void main(){
-            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.85);
-            gl_FragColor = vec4(color, fresnel * 0.72);
+            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2);
+            gl_FragColor = vec4(color, fresnel * 0.4);
           }`,
         transparent: true,
         side: THREE.BackSide,
@@ -594,6 +625,23 @@ export class EarthGlobe {
       scene.add(term);
       this.terminator = term;
     }
+    const glint = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.52, 0.34),
+      new THREE.MeshBasicMaterial({
+        map: sunGlintTex(),
+        color: 0xffffff,
+        transparent: true,
+        opacity: this.lite ? 0.62 : 0.78,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      }),
+    );
+    glint.position.copy(this.sunDir.clone().multiplyScalar(1.018));
+    glint.lookAt(0, 0, 0);
+    glint.renderOrder = 4;
+    scene.add(glint);
+    this.glint = glint;
 
     const paintTex = (src: string, assign: (tex: THREE.Texture) => void, cinema = false): void => {
       const img = new Image();
@@ -962,6 +1010,7 @@ export class EarthGlobe {
       mat.needsUpdate = true;
     }
     if (this.terminator) this.terminator.visible = this.overlays.day;
+    if (this.glint) this.glint.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
       const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));
