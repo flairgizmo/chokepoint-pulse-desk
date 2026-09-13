@@ -85,8 +85,22 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   return mountGateway2D(canvas);
 }
 
-/** Swap the live 2D corridor for WebGL when a hardware GPU is present. */
-export function upgradeGateway3D(canvas: HTMLCanvasElement): () => void {
+/** Swap the live 2D corridor for WebGL only when a hardware GPU is present. */
+export function upgradeGateway3D(canvas: HTMLCanvasElement): (() => void) | null {
+  const probe = document.createElement('canvas');
+  try {
+    const renderer = new THREE.WebGLRenderer({
+      canvas: probe,
+      antialias: false,
+      alpha: true,
+      failIfMajorPerformanceCaveat: true,
+    });
+    const software = isSoftwareRenderer(renderer);
+    renderer.dispose();
+    if (software) return null;
+  } catch {
+    return null;
+  }
   const next = remountCanvas(canvas);
   try {
     return mountGateway3D(next);

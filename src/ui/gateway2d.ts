@@ -353,6 +353,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
   resize();
   paintHint(canvas, selected, hover);
+  draw(performance.now());
   window.addEventListener('resize', resize);
   canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointermove', onMove);
