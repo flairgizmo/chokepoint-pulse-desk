@@ -61,10 +61,10 @@ function paintPhotoGlass(
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const sx = photo.naturalWidth * 0.16;
-    const sy = photo.naturalHeight * 0.1;
+    const sx = photo.naturalWidth * (cut === 'table' ? 0.22 : 0.16);
+    const sy = photo.naturalHeight * (cut === 'table' ? 0.32 : 0.1);
     const sw = Math.max(1, photo.naturalWidth * 0.7);
-    const sh = Math.max(1, photo.naturalHeight * 0.8);
+    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.52 : 0.8));
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.save();
     ctx.globalAlpha = cut === 'pav' ? 0.36 : cut === 'table' ? 0.22 : 0.2;
@@ -78,7 +78,7 @@ function paintPhotoGlass(
       : cut === 'pav'
         ? 'rgba(4, 10, 28, 0.66)'
         : cut === 'table'
-          ? 'rgba(21, 87, 255, 0.12)'
+          ? 'rgba(4, 10, 28, 0.38)'
           : 'rgba(12, 28, 64, 0.16)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
