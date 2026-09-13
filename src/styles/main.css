@@ -4407,7 +4407,7 @@ body.stage-open .grok {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 3;
+  z-index: 2;
   box-shadow: inset 0 0 120px 24px rgba(4, 8, 18, 0.42);
 }
 
