@@ -1,4 +1,8 @@
 import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import {
   CITIES,
   SETTLEMENT_ROUTES,
@@ -33,6 +37,7 @@ interface GlobeOptions {
 const DAY_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-blue-marble.jpg';
 const NIGHT_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-night.jpg';
 const BUMP_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-topology.png';
+const WATER_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-water.png';
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
 function makeLabelSprite(text: string): THREE.Sprite {
@@ -150,6 +155,7 @@ export class EarthGlobe {
   private labelSprites: THREE.Sprite[] = [];
   private globeMesh: THREE.Mesh | null = null;
   private lightsMesh: THREE.Mesh | null = null;
+  private composer: EffectComposer | null = null;
   private dayTex: THREE.Texture | null = null;
   private nightTex: THREE.Texture | null = null;
   private sun: THREE.DirectionalLight | null = null;
@@ -204,6 +210,7 @@ export class EarthGlobe {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
+    this.composer?.dispose();
     this.renderer?.dispose();
     this.root.replaceChildren();
   }
@@ -343,10 +350,11 @@ export class EarthGlobe {
       return;
     }
     this.renderer = renderer;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.12;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
     this.scene = scene;
@@ -360,11 +368,14 @@ export class EarthGlobe {
 
     const globe = new THREE.Mesh(
       new THREE.SphereGeometry(1, 96, 64),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshPhysicalMaterial({
         color: 0x0b2a32,
-        roughness: 0.62,
-        metalness: 0.12,
+        roughness: 0.48,
+        metalness: 0.18,
         emissive: 0x031016,
+        clearcoat: 0.28,
+        clearcoatRoughness: 0.42,
+        envMapIntensity: 0.7,
       }),
     );
     this.globeMesh = globe;
@@ -385,16 +396,30 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.07, 64, 48),
+      new THREE.SphereGeometry(1.09, 64, 48),
       new THREE.ShaderMaterial({
-        uniforms: { color: { value: new THREE.Color(0x4c7cff) } },
-        vertexShader:
-          'varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
-        fragmentShader:
-          'varying vec3 vN; uniform vec3 color; void main(){ float f = pow(1.0 - abs(vN.z), 2.35); gl_FragColor = vec4(color, f * 0.42); }',
+        uniforms: { color: { value: new THREE.Color(0x6ea6ff) } },
+        vertexShader: `
+          varying vec3 vN;
+          varying vec3 vV;
+          void main(){
+            vN = normalize(normalMatrix * normal);
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vV = normalize(-mv.xyz);
+            gl_Position = projectionMatrix * mv;
+          }`,
+        fragmentShader: `
+          varying vec3 vN;
+          varying vec3 vV;
+          uniform vec3 color;
+          void main(){
+            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.15);
+            gl_FragColor = vec4(color, fresnel * 0.55);
+          }`,
         transparent: true,
         side: THREE.BackSide,
         depthWrite: false,
+        blending: THREE.AdditiveBlending,
       }),
     );
     group.add(atmo);
@@ -425,10 +450,23 @@ export class EarthGlobe {
     loader.load(
       BUMP_TEX,
       (tex) => {
-        const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
+        const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
         if (!mat) return;
         mat.bumpMap = tex;
-        mat.bumpScale = 0.04;
+        mat.bumpScale = 0.055;
+        mat.needsUpdate = true;
+      },
+      undefined,
+      ignore,
+    );
+    loader.load(
+      WATER_TEX,
+      (tex) => {
+        const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+        if (!mat) return;
+        mat.metalnessMap = tex;
+        mat.metalness = 0.42;
+        mat.roughness = 0.38;
         mat.needsUpdate = true;
       },
       undefined,
@@ -537,6 +575,16 @@ export class EarthGlobe {
       this.distance = THREE.MathUtils.clamp(this.distance - 0.85, 1.12, 6);
     });
 
+    try {
+      const composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.32, 0.46, 0.78));
+      composer.addPass(new OutputPass());
+      this.composer = composer;
+    } catch {
+      this.composer = null;
+    }
+
     this.resize();
     const loop = () => {
       if (this.disposed) return;
@@ -596,6 +644,7 @@ export class EarthGlobe {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+    this.composer?.setSize(w, h);
   }
 
   private facingLatLon(): { lat: number; lon: number } {
@@ -641,7 +690,8 @@ export class EarthGlobe {
       const s = 1 + Math.sin(performance.now() / 420) * 0.55;
       this.pulse.scale.setScalar(s);
     }
-    this.renderer.render(this.scene, this.camera);
+    if (this.composer) this.composer.render();
+    else this.renderer.render(this.scene, this.camera);
     this.hudClock += 1;
     if (this.hoverId !== this.lastHudHover || this.hudClock % 4 === 0) {
       this.lastHudHover = this.hoverId;
@@ -650,7 +700,7 @@ export class EarthGlobe {
   }
 
   private applyMaps(): void {
-    const mat = this.globeMesh?.material as THREE.MeshStandardMaterial | undefined;
+    const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
     if (mat) {
       if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;

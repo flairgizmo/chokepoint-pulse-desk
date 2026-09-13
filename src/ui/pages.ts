@@ -6,6 +6,7 @@ import { PATENTS } from '../data/patents';
 import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
+import { plateFor } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
@@ -20,8 +21,12 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
 }
 
 function hero(k: string, title: string, lede: string, seed: string): string {
-  return `<header class="page-hero enterprise-hero">
-    ${diagramFigure(seed, 'page', k)}
+  const plate = plateFor(k, seed, title);
+  return `<header class="page-hero enterprise-hero cinema-hero">
+    <figure class="hero-plate">
+      <img src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
+      <figcaption>${esc(plate.credit)}</figcaption>
+    </figure>
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${title}</h1>

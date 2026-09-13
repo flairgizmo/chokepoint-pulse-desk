@@ -27,6 +27,7 @@ import type { NewsRiver } from '../modules/news';
 import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
+import { plateFor } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { overledgerRoster } from './pages';
 import { PROGRAMMES } from '../data/programmes';
@@ -49,8 +50,12 @@ function displayTitle(title: string, mute = ''): string {
 type VisualId = 'hero' | 'history' | 'gateway' | 'sterling' | 'future' | 'london';
 
 export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId): string {
-  return `<header class="page-hero enterprise-hero">
-    ${diagramFigure(`${k}-${title}`, bed ?? 'page', k)}
+  const plate = plateFor(k, bed, title, mute);
+  return `<header class="page-hero enterprise-hero cinema-hero">
+    <figure class="hero-plate">
+      <img src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
+      <figcaption>${esc(plate.credit)}</figcaption>
+    </figure>
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${displayTitle(title, mute)}</h1>
@@ -205,8 +210,9 @@ function chapterCard(c: Chapter): string {
 }
 
 function chapterReveal(c: Chapter, open = false): string {
-  return `<details class="reveal chapter" id="${esc(c.id)}"${open ? ' open' : ''}>
+  return `<details class="reveal chapter cinema-chapter" id="${esc(c.id)}"${open ? ' open' : ''}>
     <summary>
+      ${diagramFigure(c.id, 'chapter', c.kicker)}
       ${kicker(c.kicker)}
       <h2>${esc(c.title)}</h2>
     </summary>
@@ -690,6 +696,7 @@ export function renderVision(): string {
       return `<article class="flip-card" style="--d:${i}">
         <div class="flip-inner">
           <div class="flip-face">
+            ${diagramFigure(`essay-${c.id}`, 'chapter', c.kicker)}
             ${kicker(c.kicker)}
             <h3 class="display">${esc(c.title)}</h3>
             <p>${esc(teaser)}</p>

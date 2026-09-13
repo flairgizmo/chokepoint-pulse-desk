@@ -9,7 +9,12 @@ import { storyById } from '../data/story';
 import { techById } from '../data/tech';
 import { SATP_STAGES } from '../data/timeline';
 import { GLOSSARY } from '../data/glossary';
+import { photoImg, plateFor } from '../data/plates';
 import { diagramSvg } from './diagrams';
+
+function plateVisual(...keys: Array<string | undefined>): string {
+  return photoImg(plateFor(...keys));
+}
 import { headlineById, rememberHeadline } from './newsCache';
 import { chipsFromIds, type RelatedChip } from './relate';
 import type { StageDoc } from './stage';
@@ -136,7 +141,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       fact: e.hrefKey ? factLine('Primary source', e.hrefKey) : factLine('Date', e.date),
       related: chipsFromIds(e.related),
       original: e.hrefKey ? { href: sourceUrl(e.hrefKey), label: 'Open original' } : undefined,
-      visual: diagramSvg(e.id, 'event', e.date),
+      visual: plateVisual(e.id, e.theme, 'event'),
     };
   }
   if (kind === 'tech') {
@@ -153,7 +158,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       fact: factLine('Standards', t.standards),
       facts: [{ label: 'Standards', value: t.standards }],
       related: chipsFromIds(t.related),
-      visual: diagramSvg(t.id, 'tech', t.name),
+      visual: plateVisual(t.id, t.name, 'tech'),
     };
   }
   if (kind === 'patent') {
@@ -202,7 +207,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       facts: i.dates ? [{ label: 'Dates', value: i.dates }] : [],
       related: chipsFromIds(['overledger', 'gbtd', 'satp']),
       original: { href: sourceUrl(i.hrefKey), label: 'Open original' },
-      visual: diagramSvg(i.id, 'institution', i.name),
+      visual: plateVisual(i.id, i.name, 'institution'),
     };
   }
   if (kind === 'term') {
@@ -245,7 +250,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       ],
       related: chipsFromIds(p.authors.some((a) => /verdian/i.test(a)) ? ['verdian'] : ['overledger']),
       original: { href: sourceUrl(p.hrefKey), label: 'Open original' },
-      visual: diagramSvg(p.id, 'paper', p.year),
+      visual: plateVisual(p.id, p.kind, 'paper'),
     };
   }
   if (kind === 'chapter') {
@@ -260,7 +265,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       body: `${c.body} Filed on the ${c.page} route.`,
       analogy: 'A chapter is a shelf mark, not a second home page.',
       related: chipsFromIds([c.id, 'overledger']),
-      visual: diagramSvg(c.id, 'chapter', c.kicker),
+      visual: plateVisual(c.id, c.kicker, c.page, 'chapter'),
     };
   }
   if (kind === 'news') {
@@ -287,7 +292,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       ],
       related: newsConnects(title),
       original: url ? { href: url, label: 'Open original' } : undefined,
-      visual: diagramSvg(id, 'news', lane),
+      visual: plateVisual(title, lane, 'news'),
     };
   }
   if (kind === 'programme') {
@@ -309,7 +314,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       ],
       related: chipsFromIds(p.tech),
       original: p.hrefKey ? { href: sourceUrl(p.hrefKey), label: 'Open original' } : undefined,
-      visual: diagramSvg(p.id, 'programme', p.status),
+      visual: plateVisual(p.id, p.kicker, 'programme'),
     };
   }
   if (kind === 'satp') {
@@ -341,7 +346,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         analogy: 'The settlement gold in the basement. The deposits upstairs are a different IOU.',
         fact: factLine('Adjacency', 'Synchronisation Lab = simulated RT2'),
         related: chipsFromIds(['quantnet', 'synchronisation', 'cbdc']),
-        visual: diagramSvg('money-wholesale', 'money', 'Wholesale'),
+        visual: plateVisual('wholesale', 'money'),
       },
       retail: {
         id: 'retail',
@@ -353,7 +358,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         analogy: 'A public counter at the central bank that has been designed, not opened.',
         fact: factLine('Programme', 'Rosalind concluded 2023'),
         related: chipsFromIds(['basel', 'digital-pound', 'cbdc']),
-        visual: diagramSvg('money-retail', 'money', 'Retail'),
+        visual: plateVisual('retail', 'money'),
       },
       tcbm: {
         id: 'tcbm',
@@ -365,7 +370,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         analogy: 'The same bank IOU, now able to lock, release and settle against a condition.',
         fact: factLine('Live specimen', 'GBTD — six commercial banks'),
         related: chipsFromIds(['gbtd', 'satp', 'tokenised-deposit']),
-        visual: diagramSvg('money-tcbm', 'money', 'TCBM'),
+        visual: plateVisual('tcbm', 'gbtd', 'money'),
       },
     };
     return models[id] ?? null;
@@ -383,7 +388,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       body: `${who}. The citation is filed so the sentence can be read next to the rest of the record. Open original for the first room. A cited neighbour is not an endorsement.`,
       analogy: 'A doorway, not a redirect.',
       original: href ? { href, label: 'Open original' } : undefined,
-      visual: diagramSvg(id, 'source', title),
+      visual: plateVisual(title, who, 'source'),
     };
   }
   if (kind === 'proof') {
@@ -398,7 +403,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         analogy: 'A clearing house that already knows the members, rather than a new exchange that asks them to move in.',
         fact: factLine('Primary', 'Overledger whitepaper, UCL Discovery, 2018'),
         related: chipsFromIds(['overledger', 'fusion', 'payscript']),
-        visual: diagramSvg('proof-interop', 'proof', 'Interop'),
+        visual: plateVisual('interop', 'proof'),
       },
       standards: {
         id: 'standards',
@@ -410,7 +415,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         analogy: 'The treaty table. The product is allowed to implement the treaty. It does not own the seals.',
         fact: factLine('Rooms', 'IETF SATP · ISO/TC 307 WG7'),
         related: chipsFromIds(['satp', 'iso', 'verdian']),
-        visual: diagramSvg('proof-standards', 'proof', 'Standards'),
+        visual: plateVisual('standards', 'proof'),
       },
       institutions: {
         id: 'institutions',
@@ -422,7 +427,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         analogy: 'A seating plan, not a sponsorship reel.',
         fact: factLine('Rule', 'Adjacency ≠ contract. Current vs former is labelled.'),
         related: chipsFromIds(['uk-finance', 'ietf', 'boe']),
-        visual: diagramSvg('proof-institutions', 'proof', 'Rooms'),
+        visual: plateVisual('institutions', 'proof'),
       },
     };
     return proofs[id] ?? null;

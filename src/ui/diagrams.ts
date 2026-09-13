@@ -1,4 +1,26 @@
+import { photoFigure, plateFor } from '../data/plates';
 import { esc } from './html';
+
+const PHOTO_KINDS = new Set([
+  'page',
+  'proof',
+  'chapter',
+  'programme',
+  'cbdc',
+  'money',
+  'event',
+  'institution',
+  'paper',
+  'paper-primary',
+  'paper-standards',
+  'paper-book',
+  'paper-survey',
+  'paper-note',
+  'news',
+  'source',
+  'stack',
+  'tech',
+]);
 
 /** Kind-specific instrument objects. One seed, one beat — never a reused photograph. */
 
@@ -351,5 +373,16 @@ export function diagramSvg(seed: string, kind: string, title = ''): string {
 }
 
 export function diagramFigure(seed: string, kind: string, title: string): string {
+  if (PHOTO_KINDS.has(kind) || kind.startsWith('paper-')) {
+    const plate = plateFor(seed, kind, title);
+    return `<figure class="beat-figure photo-plate" data-beat="${esc(seed)}" data-kind="${esc(kind)}">
+      <img src="${plate.src}" alt="${plate.alt}" width="1280" height="720" loading="lazy" decoding="async" />
+      <figcaption>${plate.credit}</figcaption>
+    </figure>`;
+  }
   return `<figure class="beat-figure" data-beat="${esc(seed)}" data-kind="${esc(kind)}">${diagramSvg(seed, kind, title)}</figure>`;
+}
+
+export function topicFigure(...keys: Array<string | undefined | null>): string {
+  return photoFigure(plateFor(...keys));
 }
