@@ -239,7 +239,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = new THREE.Color(0x070b14);
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = duskSheen({ map: tex, color: 0x6a7c96, reflectivity: 0.22, envSrc: backdropSrc });
+  const cycMat = duskSheen({ map: tex, color: 0x3f5168, reflectivity: 0.18, envSrc: backdropSrc });
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);
@@ -455,8 +455,9 @@ export function plateMaterial(
   lite: boolean,
   envSrc?: string,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
+  void envSrc;
   return lite
-    ? duskSheen({ color: 0x1a2438, reflectivity: 0.22, envSrc })
+    ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
         roughness: 0.1,
