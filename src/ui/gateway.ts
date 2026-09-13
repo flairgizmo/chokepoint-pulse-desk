@@ -66,7 +66,7 @@ type GlassGrade = {
 /** Two shared Canary crops — not a per-facet quilt. Lane A is the bright window; B is the dusk kite. */
 function glassGrade(cut: GlassCut, lane: GlassLane): GlassGrade {
   if (cut === 'table') {
-    return { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.66, contrast: 1.2, saturate: 0.72, multiply: 0.3 };
+    return { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.74, contrast: 1.22, saturate: 0.76, multiply: 0.22 };
   }
   if (cut === 'crown') {
     return lane === 0
@@ -323,7 +323,7 @@ function glassMat(
 const KEY_DIR = new THREE.Vector3(2.4, 3.2, 2.1).normalize();
 const RIM_DIR = new THREE.Vector3(-2.8, 1.2, -2.4).normalize();
 
-/** Flat facet luminance for lite MeshBasic. Not Phong — no camera-facing paper lid. */
+/** Flat facet luminance for lite MeshBasic. Outward Lambert, not |dot| — that painted every kite the same. */
 function facetShade(
   ax: number,
   ay: number,
@@ -338,9 +338,11 @@ function facetShade(
   const n = new THREE.Vector3(bx - ax, by - ay, bz - az)
     .cross(new THREE.Vector3(cx - ax, cy - ay, cz - az))
     .normalize();
-  const key = Math.max(0, Math.abs(n.dot(KEY_DIR)));
-  const rim = Math.max(0, Math.abs(n.dot(RIM_DIR)));
-  return Math.min(1, 0.64 + key * 0.3 + rim * 0.12);
+  const mid = new THREE.Vector3((ax + bx + cx) / 3, (ay + by + cy) / 3, (az + bz + cz) / 3);
+  if (n.dot(mid) < 0) n.negate();
+  const key = Math.max(0, n.dot(KEY_DIR));
+  const rim = Math.max(0, n.dot(RIM_DIR));
+  return Math.min(1, 0.34 + key * 0.54 + rim * 0.16);
 }
 
 function wrapU(x: number, z: number): number {
@@ -778,8 +780,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.scale.setScalar(1.52);
   base.position.y = -0.24;
   base.userData.nodeId = 6;
-  group.add(base);
-  group.add(crystal);
+  const lean = new THREE.Group();
+  lean.rotation.x = 0.34;
+  lean.add(crystal);
+  lean.add(base);
+  group.add(lean);
 
   const gateLabel = labelSprite('OVERLEDGER', '#EAF1FF');
   gateLabel.position.set(0, -0.22, 0.68);
@@ -856,7 +861,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.16 : 1.2;
+  const restAx = lite ? 1.24 : 1.28;
   const restAy = 0.72;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
@@ -961,7 +966,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 3.48 : 3.36, ax, ay);
-    camera.lookAt(0, lite ? 0.46 : 0.48, 0);
+    camera.lookAt(0, lite ? 0.38 : 0.4, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
