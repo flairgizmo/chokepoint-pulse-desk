@@ -91,9 +91,10 @@ function logoCanvas(img: HTMLImageElement | null, short: string, name: string, o
     ctx.font = '800 28px Outfit, IBM Plex Sans, sans-serif';
     ctx.fillText(wide ? 'Lloyds' : short, CARD_W / 2, by + bh / 2);
   }
+  const label = name === 'Lloyds Banking Group' ? 'Lloyds' : name;
   ctx.fillStyle = '#F4F7FB';
-  ctx.font = '800 44px Outfit, IBM Plex Sans, sans-serif';
-  ctx.fillText(name, CARD_W / 2, CARD_H - 72);
+  ctx.font = `800 ${label.length > 10 ? 36 : 44}px Outfit, IBM Plex Sans, sans-serif`;
+  ctx.fillText(label, CARD_W / 2, CARD_H - 72);
   ctx.fillStyle = 'rgba(234, 241, 255, 0.72)';
   ctx.font = '600 20px Outfit, IBM Plex Sans, sans-serif';
   ctx.fillText('GBTD issuer', CARD_W / 2, CARD_H - 32);
@@ -257,7 +258,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(hex);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 0.16, 0);
+  gateLabel.position.set(0, 0.38, 0);
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
@@ -319,7 +320,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     mesh.position.set(x, y + 0.28, z);
     mesh.userData.nodeId = bank.id;
     const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(1.16, 0.8, 0.03),
+      new THREE.BoxGeometry(1.12, 0.76, 0.028),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
     frame.position.z = -0.028;

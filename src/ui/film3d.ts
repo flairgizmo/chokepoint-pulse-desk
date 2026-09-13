@@ -53,14 +53,16 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
       ctx.fillRect(x - 6, y - 6, pw + 12, ph + 12);
       const img = imgs[i];
       if (img.complete && img.naturalWidth) {
-        const scaleImg = Math.max(pw / img.naturalWidth, ph / img.naturalHeight);
+        const scaleImg = portrait
+          ? Math.min(pw / img.naturalWidth, ph / img.naturalHeight)
+          : Math.max(pw / img.naturalWidth, ph / img.naturalHeight);
         const dw = img.naturalWidth * scaleImg;
         const dh = img.naturalHeight * scaleImg;
         ctx.save();
         ctx.beginPath();
         ctx.rect(x, y, pw, ph);
         ctx.clip();
-        ctx.drawImage(img, x + (pw - dw) / 2, y + (ph - dh) * 0.18, dw, dh);
+        ctx.drawImage(img, x + (pw - dw) / 2, y + (ph - dh) * (portrait ? 0.22 : 0.18), dw, dh);
         ctx.restore();
       }
       ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
@@ -137,14 +139,14 @@ function plateTexture(
   img.onload = () => {
     if (!ctx) return;
     if (img.naturalWidth && img.naturalHeight) {
-      const cutout = portrait && looksCutout(img);
+      const cutout = portrait || looksCutout(img);
       if (cutout) {
-        ctx.fillStyle = '#121a2c';
+        ctx.fillStyle = '#101828';
         ctx.fillRect(0, 0, w, h);
-        const scale = Math.min((w * 0.86) / img.naturalWidth, (h * 0.78) / img.naturalHeight);
+        const scale = Math.min((w * 0.92) / img.naturalWidth, (h * 0.88) / img.naturalHeight);
         const dw = img.naturalWidth * scale;
         const dh = img.naturalHeight * scale;
-        ctx.drawImage(img, (w - dw) / 2, (h - dh) * 0.28, dw, dh);
+        ctx.drawImage(img, (w - dw) / 2, (h - dh) * 0.22, dw, dh);
       } else {
         const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
         const dw = img.naturalWidth * scale;

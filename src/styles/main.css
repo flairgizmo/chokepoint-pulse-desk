@@ -4235,6 +4235,10 @@ body.stage-open .grok {
 .cinema-stage .tess-hint {
   bottom: 1.45rem;
   z-index: 6;
+  max-width: min(42rem, calc(100% - 2rem));
+  border-radius: 14px;
+  white-space: normal;
+  line-height: 1.35;
   background: rgba(8, 12, 22, 0.72);
   border-color: rgba(234, 241, 255, 0.16);
   color: #eaf1ff;

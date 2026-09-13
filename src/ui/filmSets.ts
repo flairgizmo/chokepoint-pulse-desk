@@ -64,10 +64,10 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
   ],
   people: [
     { id: 'verdian', title: 'VERDIAN', src: '/people/verdian.jpg', stageKind: 'person', stageId: 'verdian' },
-    { id: 'hargreaves', title: 'HARGREAVES', src: '/people/hargreaves.jpg', stageKind: 'person', stageId: 'hargreaves' },
     { id: 'tasca', title: 'TASCA', src: '/people/tasca.jpg', stageKind: 'person', stageId: 'tasca' },
     { id: 'facer', title: 'FACER', src: '/people/facer.png', stageKind: 'person', stageId: 'facer' },
     { id: 'yates', title: 'YATES', src: '/people/yates.jpg', stageKind: 'person', stageId: 'yates' },
+    { id: 'baugh', title: 'BAUGH', src: '/people/baugh.png', stageKind: 'person', stageId: 'baugh' },
   ],
   cbdc: [
     { id: 'wholesale', title: 'WHOLESALE', src: PLATES.sterling.src, stageKind: 'money', stageId: 'wholesale' },
@@ -147,7 +147,7 @@ export const FILM_BACKDROPS: Record<string, string> = {
   technology: PLATES.fiber.src,
   patents: PLATES.patentsHall.src,
   institutions: PLATES.royal.src,
-  people: '/people/verdian.jpg',
+  people: PLATES.canary.src,
   cbdc: PLATES.sterling.src,
   standards: PLATES.geneva.src,
   glossary: PLATES.library.src,

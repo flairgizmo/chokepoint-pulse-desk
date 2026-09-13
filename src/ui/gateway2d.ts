@@ -394,9 +394,10 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         ctx.font = `800 ${Math.max(13, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
         ctx.fillText(wide ? 'Lloyds' : bank.short, 0, -rh * 0.18 + ph / 2);
       }
+      const label = bank.name === 'Lloyds Banking Group' ? 'Lloyds' : bank.name;
       ctx.fillStyle = '#F4F7FB';
-      ctx.font = `800 ${Math.max(13, W / 42)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.fillText(bank.name, 0, rh * 0.22);
+      ctx.font = `800 ${Math.max(13, W / (label.length > 10 ? 48 : 42))}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+      ctx.fillText(label, 0, rh * 0.22);
       ctx.fillStyle = 'rgba(234, 241, 255, 0.7)';
       ctx.font = `600 ${Math.max(8, W / 78)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
       ctx.fillText('GBTD issuer', 0, rh * 0.36);
