@@ -59,7 +59,7 @@ export function renderHome(): string {
       </div>
       ${kicker('QntDesk · independent brief')}
       <div class="hero-split">
-        <h1 class="display">The ledgers were never the hard part. Making them talk is.</h1>
+        <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
         <div>
           <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed as the operating system for that problem. Then six UK banks put live tokenised sterling on it. Independent research. Not Quant’s corporate site.</p>
           <div class="cta-row">

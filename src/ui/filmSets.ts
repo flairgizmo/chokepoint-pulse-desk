@@ -1,5 +1,6 @@
 /** Film-stage stills for inner pages. Markup only — no Three.js. */
 
+import { CITIES } from '../data/cities';
 import { PLATES } from '../data/plates';
 import { esc } from './html';
 
@@ -65,7 +66,7 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
     { id: 'verdian', title: 'VERDIAN', src: '/people/verdian.jpg', stageKind: 'person', stageId: 'verdian' },
     { id: 'hargreaves', title: 'HARGREAVES', src: '/people/hargreaves.jpg', stageKind: 'person', stageId: 'hargreaves' },
     { id: 'tasca', title: 'TASCA', src: '/people/tasca.jpg', stageKind: 'person', stageId: 'tasca' },
-    { id: 'riley', title: 'RILEY', src: '/people/riley.jpg', stageKind: 'person', stageId: 'riley' },
+    { id: 'facer', title: 'FACER', src: '/people/facer.png', stageKind: 'person', stageId: 'facer' },
     { id: 'yates', title: 'YATES', src: '/people/yates.jpg', stageKind: 'person', stageId: 'yates' },
   ],
   cbdc: [
@@ -117,7 +118,26 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
     { id: 'geneva', title: 'SATP', src: PLATES.geneva.src, stageKind: 'event', stageId: 'odap-2020' },
     { id: 'payments', title: 'MONEY', src: PLATES.payments.src, stageKind: 'event', stageId: 'three-layer-2026' },
   ],
+  notes: [
+    { id: 'history', title: 'HISTORY', src: PLATES.history.src, stageKind: 'chapter', stageId: 'thesis' },
+    { id: 'present', title: 'PRESENT', src: PLATES.canary.src, stageKind: 'event', stageId: 'gbtd-2025' },
+    { id: 'future', title: 'AHEAD', src: PLATES.future.src, stageKind: 'chapter', stageId: 'future' },
+    { id: 'library', title: 'LIBRARY', src: PLATES.library.src, stageKind: 'paper', stageId: 'overledger-2018' },
+    { id: 'wire', title: 'WIRE', src: PLATES.newsroom.src, stageKind: 'event', stageId: 'ukf-2026' },
+  ],
 };
+
+function cityFilmSlides(id: string): FilmSlide[] {
+  const lead = CITIES.find((c) => c.id === id) ?? CITIES[0];
+  const rest = CITIES.filter((c) => c.id !== lead.id).slice(0, 4);
+  return [lead, ...rest].map((c) => ({
+    id: c.id,
+    title: c.name.toUpperCase(),
+    src: c.photo ?? `/visuals/cities/${c.id}.jpg`,
+    stageKind: 'city',
+    stageId: c.id,
+  }));
+}
 
 export const FILM_BACKDROPS: Record<string, string> = {
   story: PLATES.history.src,
@@ -135,18 +155,25 @@ export const FILM_BACKDROPS: Record<string, string> = {
   markets: PLATES.exchange.src,
   donate: PLATES.fiber.src,
   podcast: PLATES.radio.src,
+  notes: PLATES.history.src,
 };
 
 export function filmSetSlides(set: string): FilmSlide[] {
+  if (set.startsWith('city:')) return cityFilmSlides(set.slice(5));
   return FILM_SETS[set] ?? [];
 }
 
 export function filmBackdrop(set: string): string {
+  if (set.startsWith('city:')) {
+    const id = set.slice(5);
+    const city = CITIES.find((c) => c.id === id);
+    return city?.photo ?? `/visuals/cities/${id}.jpg`;
+  }
   return FILM_BACKDROPS[set] ?? FILM_SETS[set]?.[0]?.src ?? PLATES.canary.src;
 }
 
 export function filmStageMarkup(set: string, label: string): string {
-  if (!FILM_SETS[set]) return '';
+  if (!set.startsWith('city:') && !FILM_SETS[set]) return '';
   return `<section class="film-stage-wrap cinema-stage" aria-label="${esc(label)}">
     <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
     <span class="cinema-grain" aria-hidden="true"></span>

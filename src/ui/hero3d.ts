@@ -1,6 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
+import { addUnrealLook } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -73,6 +74,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 0.35 : 1.35);
   key.position.set(0.55, 0.7, 1.8);
   scene.add(key);
+  const composer = addUnrealLook(renderer, scene, camera, probe.lite);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
@@ -90,6 +92,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    composer?.setSize(w, h);
   };
 
   const dispose = (): void => {
@@ -98,6 +101,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     cancelAnimationFrame(raf);
     figure.removeEventListener('pointermove', onMove);
     window.removeEventListener('resize', resize);
+    composer?.dispose();
     renderer.dispose();
     canvas.remove();
   };
@@ -121,7 +125,8 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     camera.position.x = parx * 0.1;
     camera.position.y = -pary * 0.07;
     camera.lookAt(0, 0, 0);
-    renderer.render(scene, camera);
+    if (composer) composer.render();
+    else renderer.render(scene, camera);
     frames += 1;
     if (frames < 8 && performance.now() - t0 > 2500) {
       dispose();

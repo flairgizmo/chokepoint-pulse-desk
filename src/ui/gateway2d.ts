@@ -102,8 +102,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
-  const restAx = 1.02;
-  const restAy = 0.32;
+  const restAx = 1.24;
+  const restAy = 0.44;
   const orbit = (16 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -161,8 +161,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     z1 = y * sx + z1 * cx;
     const k = 2.15 / (3.15 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.34;
-    return [W / 2 + x1 * k * scale + parx, H * 0.76 + y1 * k * scale + pary, z1];
+    const scale = Math.min(W, H) * 0.42;
+    return [W / 2 + x1 * k * scale + parx, H * 0.62 + y1 * k * scale + pary, z1];
   };
 
   const draw = (now: number): void => {
@@ -330,9 +330,9 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
-      const depth = 0.8 + Math.max(0, p[2] + 0.55) * 0.2;
-      const rw = Math.max(92, W / 9.2) * depth;
-      const rh = Math.max(52, W / 17) * depth;
+      const depth = 0.82 + Math.max(0, p[2] + 0.55) * 0.22;
+      const rw = Math.max(132, W / 6.1) * depth;
+      const rh = Math.max(92, W / 9.4) * depth;
       const yaw = (p[0] - W / 2) / Math.max(1, W * 0.62);
       ctx.save();
       if (reflect) {
@@ -342,42 +342,64 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         ctx.translate(-p[0], -p[1]);
       }
       ctx.translate(p[0], p[1]);
-      ctx.transform(1, 0, yaw * 0.18, 0.92 + depth * 0.08, 0, 0);
+      ctx.transform(1, 0, yaw * 0.18, 0.94 + depth * 0.06, 0, 0);
       if (!reflect) {
         ctx.shadowColor = on ? 'rgba(90, 150, 255, 0.5)' : 'rgba(5, 10, 20, 0.55)';
         ctx.shadowBlur = on ? 28 : 18;
         ctx.shadowOffsetY = 12;
       }
-      ctx.fillStyle = '#c8d0e0';
-      roundRect(-rw / 2 + 5, -rh / 2 + 8, rw, rh, 11);
+      ctx.fillStyle = '#05070c';
+      roundRect(-rw / 2 + 5, -rh / 2 + 8, rw, rh, 12);
       ctx.fill();
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
-      roundRect(-rw / 2, -rh / 2, rw, rh, 11);
-      ctx.fillStyle = '#FFFFFF';
+      roundRect(-rw / 2, -rh / 2, rw, rh, 12);
+      ctx.fillStyle = '#0b1220';
       ctx.fill();
-      ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
-      ctx.lineWidth = on ? 2.2 : 1.1;
+      if (backdrop.complete && backdrop.naturalWidth) {
+        ctx.save();
+        ctx.clip();
+        ctx.filter = 'saturate(1.18) contrast(1.12) brightness(0.86)';
+        const scale = Math.max(rw / backdrop.naturalWidth, rh / backdrop.naturalHeight);
+        const dw = backdrop.naturalWidth * scale;
+        const dh = backdrop.naturalHeight * scale;
+        ctx.drawImage(backdrop, -dw / 2, -dh / 2, dw, dh);
+        ctx.filter = 'none';
+        ctx.restore();
+        roundRect(-rw / 2, -rh / 2, rw, rh, 12);
+      }
+      ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.28)' : 'rgba(7, 11, 20, 0.46)';
+      ctx.fillRect(-rw / 2, rh / 2 - rh * 0.46, rw, rh * 0.46);
+      ctx.strokeStyle = on ? '#1557FF' : 'rgba(234, 241, 255, 0.18)';
+      ctx.lineWidth = on ? 2.4 : 1.2;
       ctx.stroke();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const logo = logos[i];
       const wide = Boolean(logo && logo.naturalWidth / Math.max(1, logo.naturalHeight) > 6);
+      const pw = rw * 0.58;
+      const ph = rh * 0.22;
+      ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
+      roundRect(-pw / 2, -rh * 0.18, pw, ph, 8);
+      ctx.fill();
       if (logo?.complete && logo.naturalWidth && !wide) {
-        const maxW = rw - 22;
-        const maxH = rh * 0.42;
+        const maxW = pw - 16;
+        const maxH = ph - 10;
         const scale = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight);
         const dw = logo.naturalWidth * scale;
         const dh = logo.naturalHeight * scale;
-        ctx.drawImage(logo, -dw / 2, -rh * 0.22 - dh / 2, dw, dh);
+        ctx.drawImage(logo, -dw / 2, -rh * 0.18 + (ph - dh) / 2, dw, dh);
       } else {
         ctx.fillStyle = '#0B1F5C';
-        ctx.font = `800 ${Math.max(12, W / 52)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-        ctx.fillText(wide ? 'Lloyds' : bank.short, 0, -rh * 0.16);
+        ctx.font = `800 ${Math.max(13, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+        ctx.fillText(wide ? 'Lloyds' : bank.short, 0, -rh * 0.18 + ph / 2);
       }
-      ctx.fillStyle = '#0B1F5C';
-      ctx.font = `700 ${Math.max(9, W / 78)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.fillText(bank.name, 0, rh * 0.28);
+      ctx.fillStyle = '#F4F7FB';
+      ctx.font = `800 ${Math.max(13, W / 42)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+      ctx.fillText(bank.name, 0, rh * 0.22);
+      ctx.fillStyle = 'rgba(234, 241, 255, 0.7)';
+      ctx.font = `600 ${Math.max(8, W / 78)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+      ctx.fillText('GBTD issuer', 0, rh * 0.36);
       ctx.restore();
     };
     const ordered = banks

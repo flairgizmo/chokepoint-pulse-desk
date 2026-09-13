@@ -87,6 +87,8 @@ describe('Topic plates', () => {
     expect(geneva).toBeTruthy();
     const cityHtml = renderCity(geneva!);
     expect(cityHtml).toContain('/visuals/cities/geneva.jpg');
+    expect(cityHtml).toContain('id="film-stage"');
+    expect(cityHtml).toContain('data-film-set="city:geneva"');
     expect(cityHtml).not.toContain('hero-bed');
   });
 

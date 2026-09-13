@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, applyPlateMap, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, plateMaterial } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -94,7 +94,10 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   const img = new Image();
   img.onload = () => {
     if (!ctx) return;
-    ctx.drawImage(img, 0, 0, 1280, 720);
+    const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) / 2, dw, dh);
     ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
     ctx.fillRect(0, 638, 1280, 82);
     ctx.fillStyle = '#EAF1FF';
@@ -131,9 +134,10 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   const scene = new THREE.Scene();
   addCinemaSet(scene, lite, '/visuals/topics/canary.jpg');
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.08, 40);
+  const camera = new THREE.PerspectiveCamera(28, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
+  const composer = addUnrealLook(renderer, scene, camera, lite);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const slabs: THREE.Mesh[] = [];
@@ -141,7 +145,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   STACK_SLABS.forEach((layer) => {
     const mat = plateMaterial(lite);
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.03, 0.96), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.28, 0.04, 1.08), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     group.add(mesh);
@@ -155,7 +159,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     slabs.forEach((mesh, i) => {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
       const t = i - mid;
-      mesh.position.set(t * 0.46 + drift, 2.1 - i * 0.74, i * 0.12);
+      mesh.position.set(t * 0.5 + drift, 2.18 - i * 0.78, i * 0.1);
       mesh.rotation.set(0.24, -0.3, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
       const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
@@ -179,6 +183,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    composer?.setSize(w, h);
   };
 
   const pick = (x: number, y: number): (typeof STACK_SLABS)[number] | null => {
@@ -195,9 +200,10 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 7.15 : 6.45, ax, ay);
-    camera.lookAt(0.02, 0.9, 0.2);
-    renderer.render(scene, camera);
+    camera.position.setFromSphericalCoords(lite ? 6.65 : 5.95, ax, ay);
+    camera.lookAt(0.02, 0.95, 0.18);
+    if (composer) composer.render();
+    else renderer.render(scene, camera);
   };
 
   const onMove = (ev: PointerEvent): void => {
@@ -241,6 +247,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('click', onClick);
+      composer?.dispose();
       renderer.dispose();
     },
   };

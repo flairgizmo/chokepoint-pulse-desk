@@ -1,6 +1,12 @@
 /** Shared dusk cyclorama, floor, and key lights for film and stack stages. */
 
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { canUseBloom } from './webgl';
 
 export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: string): void {
   const tex = new THREE.TextureLoader().load(backdropSrc, (next) => {
@@ -51,10 +57,11 @@ export function plateMaterial(
     ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
-        roughness: 0.28,
-        metalness: 0.08,
-        clearcoat: 0.45,
-        clearcoatRoughness: 0.35,
+        roughness: 0.22,
+        metalness: 0.1,
+        clearcoat: 0.62,
+        clearcoatRoughness: 0.22,
+        envMapIntensity: 1.15,
       });
 }
 
@@ -65,4 +72,32 @@ export function applyPlateMap(
   mat.map = tex;
   mat.color = new THREE.Color(0xffffff);
   mat.needsUpdate = true;
+}
+
+/** Room IBL and bloom only on a named hardware GPU. Software GL stays fail-closed. */
+export function addUnrealLook(
+  renderer: THREE.WebGLRenderer,
+  scene: THREE.Scene,
+  camera: THREE.Camera,
+  lite: boolean,
+): EffectComposer | null {
+  if (!lite) {
+    try {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      pmrem.dispose();
+    } catch {
+      // Lights-only path if RoomEnvironment stalls.
+    }
+  }
+  if (!canUseBloom(renderer)) return null;
+  try {
+    const composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.4, 0.46, 0.8));
+    composer.addPass(new OutputPass());
+    return composer;
+  } catch {
+    return null;
+  }
 }

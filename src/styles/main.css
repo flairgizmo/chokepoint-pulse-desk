@@ -122,7 +122,7 @@ h2.display {
 
 .display-mute,
 .text-mute {
-  color: var(--grey);
+  color: color-mix(in srgb, var(--navy) 62%, var(--grey));
 }
 
 .kicker {
@@ -4215,8 +4215,8 @@ body.stage-open .grok {
 
 .hero-stage.cinema-stage {
   aspect-ratio: 21 / 9;
-  min-height: 420px;
-  max-height: min(78dvh, 880px);
+  min-height: 460px;
+  max-height: min(82dvh, 920px);
   background:
     radial-gradient(ellipse at 50% 40%, #1a2a48 0%, #0a1220 58%, #070b14 100%);
   border-color: #111827;
@@ -4250,8 +4250,8 @@ body.stage-open .grok {
   width: min(var(--max), calc(100% - 2.5rem));
   margin: 1.1rem auto 2.2rem;
   aspect-ratio: 16 / 9;
-  min-height: 400px;
-  max-height: min(70dvh, 760px);
+  min-height: 440px;
+  max-height: min(74dvh, 820px);
   overflow: hidden;
   border-radius: 22px;
   background:

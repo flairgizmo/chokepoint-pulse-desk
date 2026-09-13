@@ -63,37 +63,40 @@ function logoCanvas(img: HTMLImageElement | null, short: string, name: string, o
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
-  ctx.fillRect(0, CARD_H - 168, CARD_W, 168);
-  const bw = 400;
-  const bh = 78;
+  ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.28)' : 'rgba(7, 11, 20, 0.42)';
+  ctx.fillRect(0, CARD_H - 196, CARD_W, 196);
+  const bw = 292;
+  const bh = 64;
   const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 148;
+  const by = CARD_H - 176;
   ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
-  ctx.shadowColor = 'rgba(7, 11, 20, 0.4)';
-  ctx.shadowBlur = 14;
-  ctx.shadowOffsetY = 5;
+  ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
+  ctx.shadowBlur = 16;
+  ctx.shadowOffsetY = 6;
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 18);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 14);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
   ctx.shadowColor = 'transparent';
-  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.2)';
-  ctx.lineWidth = on ? 4 : 2;
+  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.18)';
+  ctx.lineWidth = on ? 3 : 1.5;
   ctx.stroke();
   const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
-    containDraw(ctx, img, bx + 28, by + 16, bw - 56, bh - 32);
+    containDraw(ctx, img, bx + 18, by + 12, bw - 36, bh - 24);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '800 34px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '800 28px Outfit, IBM Plex Sans, sans-serif';
     ctx.fillText(wide ? 'Lloyds' : short, CARD_W / 2, by + bh / 2);
   }
   ctx.fillStyle = '#F4F7FB';
-  ctx.font = '700 28px Outfit, IBM Plex Sans, sans-serif';
-  ctx.fillText(name, CARD_W / 2, CARD_H - 38);
+  ctx.font = '800 44px Outfit, IBM Plex Sans, sans-serif';
+  ctx.fillText(name, CARD_W / 2, CARD_H - 72);
+  ctx.fillStyle = 'rgba(234, 241, 255, 0.72)';
+  ctx.font = '600 20px Outfit, IBM Plex Sans, sans-serif';
+  ctx.fillText('GBTD issuer', CARD_W / 2, CARD_H - 32);
   return c;
 }
 
@@ -311,10 +314,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           clearcoatRoughness: 0.18,
           transparent: true,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.48, 0.04), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.08, 0.72, 0.05), mat);
     const [x, y, z] = bankXYZ(i, 0);
-    mesh.position.set(x, y + 0.18, z);
+    mesh.position.set(x, y + 0.28, z);
     mesh.userData.nodeId = bank.id;
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(1.16, 0.8, 0.03),
+      new THREE.MeshBasicMaterial({ color: 0x05070c }),
+    );
+    frame.position.z = -0.028;
+    mesh.add(frame);
     group.add(mesh);
     cards.push(mesh);
     cardMats.push(mat);
@@ -362,8 +371,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.06 : 0.98;
-  const restAy = lite ? 0.32 : 0.24;
+  const restAx = lite ? 1.28 : 1.36;
+  const restAy = lite ? 0.46 : 0.52;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -431,11 +440,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
+    camera.position.setFromSphericalCoords(lite ? 4.05 : 3.45, ax, ay);
+    camera.lookAt(0, lite ? 0.28 : 0.32, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x * 1.14, y + 0.2, z * 1.14);
-      cards[i].lookAt(0, y + 0.2, 0);
-      cards[i].rotateY(Math.PI);
+      cards[i].position.set(x * 1.28, y + 0.32, z * 1.28);
+      cards[i].lookAt(camera.position.x, y + 0.38, camera.position.z);
     });
     hex.rotation.z = reduced ? 0 : now / 18000;
     rt2.rotation.z = reduced ? 0 : now / 2400;
@@ -455,8 +465,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     releaseLabel.visible = !lockOn;
     lockLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
     releaseLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
-    camera.position.setFromSphericalCoords(lite ? 4.95 : 4.1, ax, ay);
-    camera.lookAt(0, lite ? 0.14 : 0.12, 0);
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
     lockLabel.lookAt(camera.position);

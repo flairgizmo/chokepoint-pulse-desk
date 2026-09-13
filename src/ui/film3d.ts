@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, applyPlateMap, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, plateMaterial } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
@@ -96,6 +96,22 @@ export function upgradeFilm3D(canvas: HTMLCanvasElement): Film3DHandle | null {
   }
 }
 
+function looksCutout(img: HTMLImageElement): boolean {
+  const s = document.createElement('canvas');
+  s.width = 8;
+  s.height = 8;
+  const probe = s.getContext('2d', { willReadFrequently: true });
+  if (!probe || !img.naturalWidth) return false;
+  probe.drawImage(img, 0, 0, 8, 8);
+  const d = probe.getImageData(0, 0, 8, 8).data;
+  let bright = 0;
+  for (const i of [0, 7, 56, 63]) {
+    const o = i * 4;
+    if (d[o] > 228 && d[o + 1] > 228 && d[o + 2] > 228) bright += 1;
+  }
+  return bright >= 3;
+}
+
 function plateTexture(
   src: string,
   title: string,
@@ -121,11 +137,21 @@ function plateTexture(
   img.onload = () => {
     if (!ctx) return;
     if (img.naturalWidth && img.naturalHeight) {
-      const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-      const dw = img.naturalWidth * scale;
-      const dh = img.naturalHeight * scale;
-      const faceBias = img.naturalHeight >= img.naturalWidth ? 0.16 : 0.42;
-      ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
+      const cutout = portrait && looksCutout(img);
+      if (cutout) {
+        ctx.fillStyle = '#121a2c';
+        ctx.fillRect(0, 0, w, h);
+        const scale = Math.min((w * 0.86) / img.naturalWidth, (h * 0.78) / img.naturalHeight);
+        const dw = img.naturalWidth * scale;
+        const dh = img.naturalHeight * scale;
+        ctx.drawImage(img, (w - dw) / 2, (h - dh) * 0.28, dw, dh);
+      } else {
+        const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+        const dw = img.naturalWidth * scale;
+        const dh = img.naturalHeight * scale;
+        const faceBias = img.naturalHeight >= img.naturalWidth ? 0.16 : 0.42;
+        ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
+      }
     }
     ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
     ctx.fillRect(0, h - 92, w, 92);
@@ -169,9 +195,10 @@ function mountFilm3D(
 
   const scene = new THREE.Scene();
   addCinemaSet(scene, lite, backdrop);
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.08, 40);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
+  const composer = addUnrealLook(renderer, scene, camera, lite);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const plates: THREE.Mesh[] = [];
@@ -181,7 +208,7 @@ function mountFilm3D(
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);
     const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 0.92 : 1.92, portrait ? 1.22 : 1.08, 0.045),
+      new THREE.BoxGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, 0.05),
       mat,
     );
     mesh.userData.slide = slide;
@@ -209,8 +236,8 @@ function mountFilm3D(
       const d = i - featured;
       const mag = Math.abs(d);
       const scale = mag === 0 ? 1 : mag === 1 ? 0.7 : 0.46;
-      mesh.position.set(d * (portrait ? 1.08 : 1.58), -0.1 - mag * 0.03, mag * 0.5);
-      mesh.rotation.set(-0.08, -d * 0.2, 0);
+      mesh.position.set(d * (portrait ? 1.18 : 1.68), -0.08 - mag * 0.02, mag * 0.42);
+      mesh.rotation.set(-0.06, -d * 0.18, 0);
       mesh.scale.setScalar(scale);
     });
   };
@@ -222,6 +249,7 @@ function mountFilm3D(
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    composer?.setSize(w, h);
   };
 
   const pick = (x: number, y: number): FilmSlide | null => {
@@ -238,9 +266,10 @@ function mountFilm3D(
     ay += (ty - ay) * 0.08;
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
-    camera.position.setFromSphericalCoords(lite ? 4.15 : 3.75, ax, ay);
-    camera.lookAt(0, -0.04, 0.1);
-    renderer.render(scene, camera);
+    camera.position.setFromSphericalCoords(lite ? 3.85 : 3.45, ax, ay);
+    camera.lookAt(0, -0.02, 0.12);
+    if (composer) composer.render();
+    else renderer.render(scene, camera);
   };
 
   const onMove = (ev: PointerEvent): void => {
@@ -281,6 +310,7 @@ function mountFilm3D(
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('pointermove', onMove);
       canvas.removeEventListener('click', onClick);
+      composer?.dispose();
       renderer.dispose();
     },
   };

@@ -1113,7 +1113,7 @@ export function renderRead(id: string): string {
   const p = paperById(id);
   if (!p) return renderNotFound();
   const href = sources[p.hrefKey];
-  return `${pageHero(p.kind, p.title, p.lede)}
+  return `${pageHero(p.kind, p.title, p.lede, '', undefined, 'research')}
     <article class="chapter">
       <p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
       <p>The original sits with the publisher. Open it if you want the sentence in its first room.</p>
@@ -1420,7 +1420,7 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
 }
 
 export function renderCity(city: City): string {
-  return `${pageHero(city.id, city.name, city.lede)}
+  return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
     <p class="mono subtle">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
     <article class="chapter"><p>${esc(city.body)}</p><p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p></article>
     <p><a class="text-link" href="/">← Earth</a></p>`;
@@ -1477,6 +1477,8 @@ export function renderEpisode(id: string): string {
     ep.title,
     ep.lede,
     '',
+    undefined,
+    'podcast',
   )}${playerMarkup(ep)}`;
 }
 
@@ -1496,6 +1498,7 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
     'Did-you-know items and September 2026 filings, latest first. History, the live rooms, and what is still ahead — from the record. Each card opens a briefing you can stay with.',
     '',
     'history',
+    'notes',
   )}
   ${filterBox('notes-search', 'Search news…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
   <p class="notes-count mono subtle">${list.length} filings on the record</p>
