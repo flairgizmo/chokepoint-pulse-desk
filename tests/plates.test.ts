@@ -30,6 +30,14 @@ describe('Topic plates', () => {
     }
   });
 
+  it('maps each city id to that city’s Wikimedia still', () => {
+    expect(plateFor('london').src).toBe('/visuals/cities/london.jpg');
+    expect(plateFor('geneva').src).toBe('/visuals/cities/geneva.jpg');
+    expect(plateFor('basel').src).toBe('/visuals/cities/basel.jpg');
+    expect(plateFor('new-york').src).toBe('/visuals/cities/new-york.jpg');
+    expect(plateFor('hong-kong').src).toBe('/visuals/cities/hong-kong.jpg');
+  });
+
   it('puts related photographs on the Vision essays', () => {
     const html = renderVision();
     expect(html).toContain('/visuals/topics/ucl.jpg');
