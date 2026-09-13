@@ -303,16 +303,16 @@ function fold(title: string, inner: string, open = false): string {
 export function storyArt(id: string, era: NoteEra): string {
   const named: Record<string, string> = {
     'trusted-node': '/visuals/stories/city.jpg',
-    gbtd: '/visuals/stills/sterling.jpg',
+    gbtd: '/visuals/topics/canary.jpg',
     'not-cbdc': '/visuals/stories/boe.jpg',
-    overledger: '/visuals/stills/gateway.jpg',
+    overledger: '/visuals/topics/datacenter.jpg',
     satp: '/visuals/stories/bis.jpg',
   };
   if (named[id]) return named[id];
   const beds: Record<NoteEra, string[]> = {
-    history: ['/visuals/stills/history.jpg', '/visuals/stories/exchange.jpg', '/visuals/stills/london.jpg'],
-    present: ['/visuals/stories/boe.jpg', '/visuals/stills/sterling.jpg', '/visuals/stories/city.jpg', '/visuals/stories/canary.jpg'],
-    future: ['/visuals/stills/future.jpg', '/visuals/stories/bis.jpg', '/visuals/stills/gateway.jpg'],
+    history: ['/visuals/topics/library.jpg', '/visuals/stories/exchange.jpg', '/visuals/cities/london.jpg'],
+    present: ['/visuals/stories/boe.jpg', '/visuals/topics/payments.jpg', '/visuals/stories/city.jpg', '/visuals/stories/canary.jpg'],
+    future: ['/visuals/topics/canary.jpg', '/visuals/stories/bis.jpg', '/visuals/topics/datacenter.jpg'],
   };
   const list = beds[era];
   let hash = 0;

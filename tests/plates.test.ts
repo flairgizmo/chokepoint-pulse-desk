@@ -48,14 +48,10 @@ describe('Topic plates', () => {
     expect(html).toContain('hero-plate');
     expect(html).toContain('hero-still');
     expect(html).toContain('hero-wash');
-    expect(html).toContain('hero-bed');
-    expect(html).toContain('/visuals/beds/future.mp4');
+    expect(html).not.toContain('hero-bed');
   });
 
-  it('wires a motion bed on shared pages and keeps unique city stills still', () => {
-    expect(motionBedFor('Vision')).toBe('future');
-    expect(motionBedFor('Patents')).toBe('gateway');
-    expect(motionBedFor('Liability test', 'What a CBDC rail needs')).toBe('sterling');
+  it('keeps unique city stills on city pages and does not cover them with a bed', () => {
     expect(motionBedFor('geneva')).toBeUndefined();
     expect(motionBedFor('hong-kong')).toBeUndefined();
     const geneva = cityById('geneva');
@@ -63,16 +59,12 @@ describe('Topic plates', () => {
     const cityHtml = renderCity(geneva!);
     expect(cityHtml).toContain('/visuals/cities/geneva.jpg');
     expect(cityHtml).not.toContain('hero-bed');
-    for (const file of ['hero.mp4', 'gateway.mp4', 'sterling.mp4', 'history.mp4', 'future.mp4', 'london.mp4']) {
-      expect(existsSync(resolve(process.cwd(), 'public/visuals/beds', file)), file).toBe(true);
-    }
   });
 
   it('keeps the patent claim SVG and adds a hall photograph above it', () => {
     const html = renderPatents();
     expect(html).toContain('/visuals/topics/patents-hall.jpg');
     expect(html).toContain('CLAIM SEQUENCE');
-    expect(html).toContain('hero-bed');
-    expect(html).toContain('/visuals/beds/gateway.mp4');
+    expect(html).not.toContain('hero-bed');
   });
 });

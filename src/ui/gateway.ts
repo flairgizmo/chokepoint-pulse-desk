@@ -162,13 +162,13 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   floor.position.y = -0.28;
   scene.add(floor);
 
-  const backdropTex = new THREE.TextureLoader().load('/visuals/stills/future.jpg');
+  const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg');
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   const backdrop = new THREE.Mesh(
     new THREE.PlaneGeometry(18.5, 9.4),
-    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xd6e0ee }),
+    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xd0d8e6 }),
   );
-  backdrop.position.set(0, 1.82, -3.95);
+  backdrop.position.set(0, 1.95, -3.85);
   scene.add(backdrop);
 
   scene.add(new THREE.AmbientLight(0x8ea0c0, 0.38));

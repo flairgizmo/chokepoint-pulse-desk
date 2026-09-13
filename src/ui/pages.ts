@@ -6,7 +6,7 @@ import { PATENTS } from '../data/patents';
 import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
-import { motionBedFor, photoFigure, plateFor, type VisualId } from '../data/plates';
+import { photoFigure, plateFor, type VisualId } from '../data/plates';
 import { diagramFigure } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
@@ -22,12 +22,7 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
 
 export function heroPlate(k: string, title: string, mute = '', bed?: VisualId): string {
   const plate = plateFor(k, bed, title, mute);
-  const motion = bed ?? motionBedFor(k, title, mute);
-  const video = motion
-    ? `<video class="hero-bed" poster="${esc(plate.src)}" src="/visuals/beds/${motion}.mp4" muted loop playsinline autoplay></video>`
-    : '';
-  return `<figure class="hero-plate${motion ? ' has-bed' : ''}">
-    ${video}
+  return `<figure class="hero-plate">
     <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
     <span class="hero-wash" aria-hidden="true"></span>
     <figcaption>${esc(plate.credit)}</figcaption>

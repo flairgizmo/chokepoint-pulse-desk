@@ -101,8 +101,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let raf = 0;
-  const restAx = 1.2;
-  const restAy = 0.36;
+  const restAx = 1.02;
+  const restAy = 0.32;
   const orbit = (16 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -126,7 +126,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     plateDirty = true;
     draw(performance.now());
   };
-  backdrop.src = '/visuals/stills/future.jpg';
+  backdrop.src = '/visuals/topics/canary.jpg';
   const plate = document.createElement('canvas');
   let plateDirty = true;
 
@@ -160,8 +160,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     z1 = y * sx + z1 * cx;
     const k = 2.15 / (3.15 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.5;
-    return [W / 2 + x1 * k * scale + parx, H * 0.62 + y1 * k * scale + pary, z1];
+    const scale = Math.min(W, H) * 0.34;
+    return [W / 2 + x1 * k * scale + parx, H * 0.76 + y1 * k * scale + pary, z1];
   };
 
   const draw = (now: number): void => {
@@ -199,17 +199,17 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         pctx.fillStyle = '#070b14';
         pctx.fillRect(0, 0, W, H);
         if (backdrop.complete && backdrop.naturalWidth) {
-          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight) * 1.08;
+          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight) * 1.2;
           const dw = backdrop.naturalWidth * scale;
           const dh = backdrop.naturalHeight * scale;
-          pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.18, dw, dh);
+          pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.22, dw, dh);
         }
         const fade = pctx.createLinearGradient(0, 0, 0, H);
-        fade.addColorStop(0, 'rgba(6, 10, 20, 0.04)');
-        fade.addColorStop(0.22, 'rgba(6, 10, 20, 0.12)');
-        fade.addColorStop(0.48, 'rgba(6, 10, 20, 0.52)');
-        fade.addColorStop(0.72, 'rgba(6, 10, 20, 0.82)');
-        fade.addColorStop(1, 'rgba(6, 10, 20, 0.92)');
+        fade.addColorStop(0, 'rgba(6, 10, 20, 0.06)');
+        fade.addColorStop(0.36, 'rgba(6, 10, 20, 0.1)');
+        fade.addColorStop(0.58, 'rgba(6, 10, 20, 0.42)');
+        fade.addColorStop(0.78, 'rgba(6, 10, 20, 0.78)');
+        fade.addColorStop(1, 'rgba(6, 10, 20, 0.9)');
         pctx.fillStyle = fade;
         pctx.fillRect(0, 0, W, H);
         const vignette = pctx.createRadialGradient(W * 0.5, H * 0.42, H * 0.12, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
@@ -318,8 +318,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
       const depth = 0.78 + Math.max(0, p[2] + 0.6) * 0.18;
-      const rw = Math.max(86, W / 8.2) * depth;
-      const rh = Math.max(36, W / 22) * depth;
+      const rw = Math.max(70, W / 11.2) * depth;
+      const rh = Math.max(30, W / 26) * depth;
       ctx.save();
       if (reflect) {
         ctx.globalAlpha = 0.18;

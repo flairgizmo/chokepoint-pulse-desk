@@ -31,7 +31,7 @@ const STORY = (file: string, credit: string, alt: string): Plate => ({
 })
 
 export const PLATES = {
-  hero: STILL('hero.jpg', 'Canary Wharf, Wikimedia Commons', 'Canary Wharf towers over the dock'),
+  hero: STILL('hero.jpg', 'Canary Wharf from Limehouse — Wikimedia Commons', 'Canary Wharf towers at night across the dock'),
   ucl: TOPIC('ucl.jpg', 'Wilkins Building, UCL — Wikimedia Commons', 'The Wilkins Building portico at University College London'),
   fiber: TOPIC('fiber.jpg', 'Illuminated optical fiber, Hustvedt — Wikimedia Commons', 'A clear optical-fiber cable carrying a laser from one connector to the other'),
   cable: TOPIC('cable.jpg', 'Port Darwin cable landing, 1871 — State Library of South Australia / Wikimedia', 'The 1871 Port Darwin landing of the Australia–Java telegraph cable'),
@@ -41,10 +41,10 @@ export const PLATES = {
   exchange: TOPIC('exchange.jpg', 'New York Stock Exchange — Wikimedia Commons', 'The New York Stock Exchange facade on Wall Street'),
   datacenter: TOPIC('datacenter.jpg', 'CERN data centre — Wikimedia Commons', 'Server racks on the floor of the CERN data centre'),
   payments: TOPIC('payments.jpg', 'Bank of England, Threadneedle Street — Wikimedia Commons', 'The Bank of England on Threadneedle Street'),
-  sterling: STILL('sterling.jpg', 'Bank of England, Threadneedle Street', 'The Bank of England on Threadneedle Street'),
-  gateway: STILL('gateway.jpg', 'Canary Wharf towers', 'Canary Wharf office towers'),
-  history: STILL('history.jpg', 'British Museum Great Court', 'The British Museum Great Court roof'),
-  future: STILL('future.jpg', 'Canary Wharf at dusk', 'Canary Wharf at dusk'),
+  sterling: STILL('sterling.jpg', 'Bank of England, Threadneedle Street — Wikimedia Commons', 'The Bank of England on Threadneedle Street'),
+  gateway: STILL('gateway.jpg', 'CERN data centre — Wikimedia Commons', 'Server racks on the floor of the CERN data centre'),
+  history: STILL('history.jpg', 'British Museum Reading Room — Wikimedia Commons', 'The British Museum Reading Room'),
+  future: STILL('future.jpg', 'City of London at dusk — Wikimedia Commons', 'Glass towers on the Thames at dusk'),
   london: CITY('london.jpg', 'Bank of England, Threadneedle Street', 'The Bank of England on Threadneedle Street'),
   geneva: CITY('geneva.jpg', 'Palace of Nations, Geneva — Wikimedia Commons', 'The Palace of Nations in Geneva'),
   basel: CITY('basel.jpg', 'Bank for International Settlements, Basel — Wikimedia Commons', 'The BIS tower in Basel'),
