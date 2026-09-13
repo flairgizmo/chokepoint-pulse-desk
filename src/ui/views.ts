@@ -1104,7 +1104,7 @@ function paperCard(p: Paper): string {
     <p class="meta">${esc(p.venue)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
     <details class="paper-more">
       <summary>What the document says</summary>
-      <p>${esc(p.lede)}</p>
+      ${essayParas(p.lede)}
     </details>
     <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read the brief →</button>
   </article>`;

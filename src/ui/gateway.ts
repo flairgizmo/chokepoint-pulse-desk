@@ -377,6 +377,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const crystal = new THREE.Group();
   const facets: THREE.Mesh[] = [];
+  const stars: THREE.Mesh[] = [];
+  const sparks: THREE.Mesh[] = [];
   const sides = 8;
   const restAyFace = 0.5;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
@@ -445,6 +447,36 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     pav.userData.nodeId = 6;
     crystal.add(pav);
     facets.push(pav);
+    const amid = (a0 + a1) / 2;
+    const starR = tableR + (eqR - tableR) * 0.4;
+    const starY = tableY + (eqY - tableY) * 0.4;
+    const sx = Math.cos(amid) * starR;
+    const sz = Math.sin(amid) * starR;
+    const starGeo = new THREE.BufferGeometry();
+    starGeo.setAttribute('position', new THREE.Float32BufferAttribute([tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz], 3));
+    starGeo.computeVertexNormals();
+    const star = new THREE.Mesh(
+      starGeo,
+      new THREE.MeshBasicMaterial({
+        color: i % 2 ? 0x9ad4ff : 0xffffff,
+        transparent: true,
+        opacity: 0.38,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
+    );
+    star.userData.nodeId = 6;
+    crystal.add(star);
+    stars.push(star);
+    const spark = new THREE.Mesh(
+      new THREE.SphereGeometry(0.016, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88 }),
+    );
+    spark.position.set(x0, eqY, z0);
+    spark.userData.nodeId = 6;
+    crystal.add(spark);
+    sparks.push(spark);
   }
   const edgePts: number[] = [];
   for (let i = 0; i < sides; i++) {
@@ -616,7 +648,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [...facets, core, base, girdle, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...facets, ...stars, ...sparks, core, base, girdle, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.24 : 1.3;
@@ -711,6 +743,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
     causticMat.opacity = reduced ? 0.26 : 0.2 + Math.abs(Math.sin((now - t0) / 1600)) * 0.18;
     halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
+    stars.forEach((mesh, i) => {
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      mat.opacity = reduced ? 0.3 : 0.2 + Math.abs(Math.sin((now - t0) / 720 + i)) * 0.45;
+    });
+    sparks.forEach((mesh, i) => {
+      const mat = mesh.material as THREE.MeshBasicMaterial;
+      const pulse = reduced ? 0.7 : 0.32 + Math.abs(Math.sin((now - t0) / 480 + i * 0.7)) * 0.68;
+      mat.opacity = pulse;
+      mesh.scale.setScalar(0.65 + pulse * 0.7);
+    });
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

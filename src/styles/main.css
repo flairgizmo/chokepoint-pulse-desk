@@ -3709,15 +3709,52 @@ button.chip {
 .ol-list {
   list-style: none;
   display: grid;
-  gap: 0.45rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
   padding: 0;
 }
 
 .ol-list button {
-  width: 100%;
-  border-radius: 14px;
   display: grid;
+  grid-template-columns: 72px 1fr;
+  grid-template-rows: auto auto auto;
+  column-gap: 0.8rem;
+  align-items: center;
   text-align: left;
+  border-radius: 16px !important;
+  width: 100%;
+  padding: 0.65rem !important;
+  background: #0b1220 !important;
+  color: #f4f7fb !important;
+  border: 0 !important;
+}
+
+.ol-face,
+.ol-initials {
+  width: 72px;
+  height: 90px;
+  grid-row: 1 / span 3;
+  object-fit: cover;
+  object-position: center 16%;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(47, 91, 255, 0.38), transparent 52%),
+    linear-gradient(160deg, #1a2744, #0b1220 72%);
+}
+
+.ol-initials {
+  display: grid;
+  place-items: center;
+  font-family: var(--display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.ol-list strong,
+.ol-list span,
+.ol-list em {
+  color: #f4f7fb;
 }
 
 #desk-search-hits {
@@ -4263,8 +4300,8 @@ body.stage-open .grok {
   width: min(var(--max), calc(100% - 2.5rem));
   margin: 1.1rem auto 2.2rem;
   aspect-ratio: 16 / 9;
-  min-height: 500px;
-  max-height: min(78dvh, 880px);
+  min-height: 560px;
+  max-height: min(82dvh, 920px);
   overflow: hidden;
   border-radius: 22px;
   background:
@@ -4537,6 +4574,70 @@ body.stage-open .grok {
   max-width: 40rem;
   font-size: 1.12rem;
   line-height: 1.55;
+}
+
+.paper,
+.patent-card,
+.inst-card,
+.prog-card,
+.term,
+.note-card.news-card {
+  background: #0b1220;
+  color: #f4f7fb;
+  box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
+  overflow: hidden;
+}
+
+.paper button,
+.patent-card button,
+.inst-card button,
+.prog-card button,
+.term button,
+.note-card.news-card {
+  background: transparent;
+  color: inherit;
+  border-color: transparent;
+}
+
+.paper .kicker,
+.paper h2,
+.paper .meta,
+.paper .year-num,
+.paper .paper-more,
+.patent-card .kicker,
+.patent-card h2,
+.patent-card p,
+.inst-card .kicker,
+.inst-card h2,
+.inst-card p,
+.prog-card .kicker,
+.prog-card h2,
+.prog-card p,
+.term h2,
+.term p,
+.note-card .kicker,
+.note-card h3,
+.note-card p {
+  color: inherit;
+}
+
+.paper .text-link,
+.paper .paper-more summary,
+.note-card .text-link,
+.inst-card .text-link,
+.prog-card .text-link,
+.patent-card .text-link,
+.term .text-link {
+  color: #eaf1ff;
+}
+
+.paper .photo-plate img,
+.patent-still img,
+.inst-card .photo-plate img,
+.prog-card .photo-plate img,
+.term .photo-plate img,
+.note-card .photo-plate img {
+  max-height: 24rem;
 }
 
 .city-neighbors {

@@ -249,12 +249,24 @@ function mountFilm3D(
       mat,
     );
     mesh.userData.slide = slide;
+    const chrome = new THREE.Mesh(
+      new THREE.PlaneGeometry(portrait ? 1.1 : 2.24, portrait ? 1.44 : 1.3),
+      new THREE.MeshBasicMaterial({ color: 0xd7e4ff }),
+    );
+    chrome.position.z = -0.032;
+    mesh.add(chrome);
     const frame = new THREE.Mesh(
       new THREE.PlaneGeometry(portrait ? 1.06 : 2.18, portrait ? 1.4 : 1.24),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
-    frame.position.z = -0.02;
+    frame.position.z = -0.018;
     mesh.add(frame);
+    mesh.add(
+      new THREE.LineSegments(
+        new THREE.EdgesGeometry(mesh.geometry),
+        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.62 }),
+      ),
+    );
     group.add(mesh);
     plates.push(mesh);
     plateTexture(slide.src, slide.title, portrait, (tex) => applyPlateMap(mat, tex));
