@@ -182,6 +182,26 @@ export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
   return tex;
 }
 
+/** Keep bright Vision stills on dusk plates. Official portraits skip this. */
+export function printGradeStill(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  x = 0,
+  y = 0,
+): void {
+  ctx.save();
+  ctx.filter = 'none';
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = 'rgba(16, 20, 32, 0.28)';
+  ctx.fillRect(x, y, w, h);
+  ctx.globalCompositeOperation = 'screen';
+  ctx.fillStyle = 'rgba(255, 188, 130, 0.06)';
+  ctx.fillRect(x, y, w, h);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.restore();
+}
+
 function photoFor(src: string): HTMLImageElement | null {
   return packs.get(src)?.img ?? (src === CANARY_STILL ? canaryImg : null);
 }

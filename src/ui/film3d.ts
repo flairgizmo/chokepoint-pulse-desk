@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, hardenCanvasTex, makeCinemaPlate, makeFloorContact } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, hardenCanvasTex, makeCinemaPlate, makeFloorContact, printGradeStill } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { looksCutout, punchStudioWhite } from './faces';
 import { remountCanvas } from './gateway2d';
@@ -69,6 +69,8 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
         ctx.clip();
         if (!portrait) ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
         ctx.drawImage(img, x + (pw - dw) / 2, y + (ph - dh) * (portrait ? 0.22 : 0.18), dw, dh);
+        ctx.filter = 'none';
+        if (!portrait) printGradeStill(ctx, pw, ph, x, y);
         ctx.restore();
       }
       ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
@@ -153,6 +155,7 @@ function plateTexture(
         ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
         ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
         ctx.filter = 'none';
+        printGradeStill(ctx, w, h);
       }
     }
     ctx.fillStyle = '#05070c';

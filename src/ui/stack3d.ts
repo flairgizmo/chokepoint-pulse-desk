@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate, makeFloorContact } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate, makeFloorContact, printGradeStill } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -63,6 +63,7 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
         ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
         ctx.drawImage(img, 0, 0, pw, ph);
         ctx.filter = 'none';
+        printGradeStill(ctx, pw, ph);
       }
       ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
       ctx.fillRect(0, ph - 22, pw, 22);
@@ -118,6 +119,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
     ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) / 2, dw, dh);
     ctx.filter = 'none';
+    printGradeStill(ctx, 1280, 720);
     ctx.fillStyle = '#05070c';
     ctx.fillRect(0, 0, 1280, 28);
     ctx.fillRect(0, 692, 1280, 28);
