@@ -756,7 +756,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     applyPlateMap(plate.mat, tex);
     const [x, , z] = bankXYZ(i, 0);
     plate.root.position.set(x, -0.14, z);
-    plate.root.lookAt(0, 0.55, 0);
+    plate.root.lookAt(0, 0.28, 5);
     plate.root.userData.nodeId = bank.id;
     plate.face.userData.nodeId = bank.id;
     group.add(plate.root);
@@ -906,7 +906,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       cards[i].position.set(x, -0.14, z);
-      cards[i].lookAt(0, 0.55, 0);
+      cards[i].lookAt(0, 0.28, 5);
       puddles[i].position.x = x;
       puddles[i].position.z = z;
     });
