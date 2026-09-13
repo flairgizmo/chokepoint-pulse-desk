@@ -379,14 +379,20 @@ export type CinemaPlate = {
 };
 
 /** Photograph on the front only. Stock and bezel stay dark so box sides cannot blow out to sky. */
-export function makeCinemaPlate(w: number, h: number, lite: boolean, envSrc?: string): CinemaPlate {
+export function makeCinemaPlate(
+  w: number,
+  h: number,
+  lite: boolean,
+  envSrc?: string,
+  depth = 0.05,
+): CinemaPlate {
   const root = new THREE.Group();
   const mat = plateMaterial(lite, envSrc);
   const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
-  face.position.z = 0.028;
+  face.position.z = depth / 2 + 0.003;
   root.add(face);
   const stock = new THREE.Mesh(
-    new THREE.BoxGeometry(w, h, 0.05),
+    new THREE.BoxGeometry(w, h, depth),
     new THREE.MeshBasicMaterial({ color: 0x05070c }),
   );
   root.add(stock);
@@ -394,19 +400,19 @@ export function makeCinemaPlate(w: number, h: number, lite: boolean, envSrc?: st
     new THREE.BoxGeometry(w + 0.04, h + 0.06, 0.02),
     cinemaChrome(lite, envSrc),
   );
-  chrome.position.z = -0.04;
+  chrome.position.z = -(depth / 2 + 0.015);
   root.add(chrome);
   const frame = new THREE.Mesh(
     new THREE.BoxGeometry(w + 0.02, h + 0.03, 0.02),
     new THREE.MeshBasicMaterial({ color: 0x0a1018 }),
   );
-  frame.position.z = -0.018;
+  frame.position.z = -(depth / 2 - 0.006);
   root.add(frame);
   const edge = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)),
     new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.42 }),
   );
-  edge.position.z = 0.03;
+  edge.position.z = face.position.z + 0.002;
   root.add(edge);
   return { root, face, mat };
 }
