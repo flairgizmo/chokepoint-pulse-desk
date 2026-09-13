@@ -757,7 +757,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const plate = makeCinemaPlate(0.98, 0.64, lite, undefined, 0.016);
+    const plate = makeCinemaPlate(0.98, 0.64, lite, undefined, 0.016, true);
     applyPlateMap(plate.mat, tex);
     const [x, y, z] = bankXYZ(i, 0);
     plate.root.position.set(x, y + 0.2, z);
