@@ -63,11 +63,11 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  const bw = 700;
-  const bh = 92;
+  const bw = 520;
+  const bh = 70;
   const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 118;
-  ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.94)';
+  const by = CARD_H - 92;
+  ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.9)';
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 18);
   else ctx.rect(bx, by, bw, bh);

@@ -76,26 +76,34 @@ export function upgradeStack3D(canvas: HTMLCanvasElement): Stack3DHandle | null 
   }
 }
 
-function caption(title: string): THREE.Sprite {
+function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTexture) => void): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = 768;
-  c.height = 128;
+  c.width = 1280;
+  c.height = 720;
   const ctx = c.getContext('2d');
   if (ctx) {
-    ctx.clearRect(0, 0, 768, 128);
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.72)';
-    ctx.fillRect(0, 28, 768, 72);
-    ctx.font = '700 42px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0, 0, 1280, 720);
     ctx.fillStyle = '#EAF1FF';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(title, 384, 64);
+    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 36, 680);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
-  sprite.scale.set(1.35, 0.22, 1);
-  return sprite;
+  const img = new Image();
+  img.onload = () => {
+    if (!ctx) return;
+    ctx.drawImage(img, 0, 0, 1280, 720);
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
+    ctx.fillRect(0, 638, 1280, 82);
+    ctx.fillStyle = '#EAF1FF';
+    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 36, 690);
+    tex.needsUpdate = true;
+    onReady(tex);
+  };
+  img.src = src;
+  return tex;
 }
 
 function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
@@ -131,46 +139,39 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const slabs: THREE.Mesh[] = [];
-  const labels: THREE.Sprite[] = [];
   let isolated: string | null = null;
 
   STACK_SLABS.forEach((layer) => {
-    const tex = new THREE.TextureLoader().load(layer.src, (t) => {
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.needsUpdate = true;
-    });
-    tex.colorSpace = THREE.SRGBColorSpace;
     const mat = lite
-      ? new THREE.MeshBasicMaterial({ map: tex })
+      ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
       : new THREE.MeshPhysicalMaterial({
-          map: tex,
+          color: 0x1a2438,
           roughness: 0.32,
           metalness: 0.08,
           clearcoat: 0.4,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.78, 0.045), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.95, 0.88, 0.04), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     group.add(mesh);
     slabs.push(mesh);
-    const label = caption(layer.title);
-    label.userData.layerId = layer.id;
-    group.add(label);
-    labels.push(label);
+    plateTexture(layer.src, layer.title, (tex) => {
+      mat.map = tex;
+      mat.color = new THREE.Color(0xffffff);
+      mat.needsUpdate = true;
+    });
   });
 
   const place = (now: number): void => {
-    const drift = reduced ? 0 : Math.sin(now / 4200) * 0.04;
+    const drift = reduced ? 0 : Math.sin(now / 4200) * 0.03;
     slabs.forEach((mesh, i) => {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
-      mesh.position.set(i * 0.1 + drift, 0.95 - i * 0.42, -i * 0.18);
-      mesh.rotation.set(-0.18, -0.46, 0);
-      mesh.scale.setScalar(dim ? 0.92 : 1);
+      mesh.position.set(i * 0.08 + drift, 1.15 - i * 0.55, -i * 0.28);
+      mesh.rotation.set(-0.1, -0.34, 0);
+      mesh.scale.setScalar(dim ? 0.94 : 1);
       const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mat.opacity = dim ? 0.28 : 1;
+      mat.opacity = dim ? 0.3 : 1;
       mat.transparent = dim;
-      labels[i].position.set(mesh.position.x, mesh.position.y - 0.48, mesh.position.z + 0.08);
-      labels[i].visible = !dim;
     });
   };
 
@@ -205,9 +206,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 4.35 : 3.7, ax, ay);
-    camera.lookAt(0.18, 0.12, -0.2);
-    labels.forEach((l) => l.lookAt(camera.position));
+    camera.position.setFromSphericalCoords(lite ? 5.15 : 4.4, ax, ay);
+    camera.lookAt(0.22, 0.05, -0.35);
     renderer.render(scene, camera);
   };
 
