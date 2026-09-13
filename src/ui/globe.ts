@@ -97,7 +97,7 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
   return out;
 }
 
-/** Sun-locked dusk wedge. White leaves the day still; dusk multiplies the night side. */
+/** Sun-locked dusk wedge. Night is a dusk veil; day stays a clear hole so the still reads. */
 function terminatorTex(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 1024;
@@ -105,22 +105,20 @@ function terminatorTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createLinearGradient(0, 0, c.width, 0);
-  g.addColorStop(0, '#121018');
-  g.addColorStop(0.34, '#2a1c12');
-  g.addColorStop(0.47, '#c4a070');
-  g.addColorStop(0.56, '#ffffff');
-  g.addColorStop(1, '#ffffff');
+  g.addColorStop(0, 'rgba(12, 10, 18, 0.78)');
+  g.addColorStop(0.34, 'rgba(28, 18, 14, 0.58)');
+  g.addColorStop(0.47, 'rgba(196, 160, 112, 0.28)');
+  g.addColorStop(0.56, 'rgba(255, 255, 255, 0)');
+  g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);
   const poles = ctx.createLinearGradient(0, 0, 0, c.height);
-  poles.addColorStop(0, 'rgba(8, 14, 28, 0.42)');
-  poles.addColorStop(0.2, 'rgba(255, 255, 255, 0)');
-  poles.addColorStop(0.8, 'rgba(255, 255, 255, 0)');
-  poles.addColorStop(1, 'rgba(8, 14, 28, 0.46)');
-  ctx.globalCompositeOperation = 'multiply';
+  poles.addColorStop(0, 'rgba(8, 14, 28, 0.28)');
+  poles.addColorStop(0.2, 'rgba(8, 14, 28, 0)');
+  poles.addColorStop(0.8, 'rgba(8, 14, 28, 0)');
+  poles.addColorStop(1, 'rgba(8, 14, 28, 0.32)');
   ctx.fillStyle = poles;
   ctx.fillRect(0, 0, c.width, c.height);
-  ctx.globalCompositeOperation = 'source-over';
   const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
@@ -563,7 +561,7 @@ export class EarthGlobe {
           map: terminatorTex(),
           color: 0xffffff,
           transparent: true,
-          blending: THREE.MultiplyBlending,
+          opacity: 1,
           depthWrite: false,
         }),
       );
@@ -938,10 +936,11 @@ export class EarthGlobe {
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
-      if (this.overlays.night && this.nightTex) {
+      const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));
+      if (showLights) {
         lm.map = this.nightTex;
         this.lightsMesh.visible = true;
-        lm.opacity = this.overlays.day ? (this.lite ? 0.82 : 0.72) : 1;
+        lm.opacity = this.overlays.day ? 0.72 : 1;
         lm.needsUpdate = true;
       } else {
         this.lightsMesh.visible = false;
