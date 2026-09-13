@@ -1004,9 +1004,17 @@ function personCard(p: Person): string {
       ? '<p class="tiny">Monogram only — Quant has not published a portrait.</p>'
       : '';
   const photo = p.photo
-    ? `<img class="avatar avatar-photo avatar-${esc(p.group)}" src="${esc(p.photo)}" alt="${esc(p.name)}" width="160" height="160" />`
-    : `<div class="avatar avatar-mono avatar-${esc(p.group)}" aria-hidden="true">${esc(p.initials)}</div>`;
-  const face = `<button type="button" class="person-face" data-stage="person" data-stage-id="${esc(p.id)}" aria-label="${esc(p.name)} story">${photo}</button>`;
+    ? `<img class="people-face" src="${esc(p.photo)}" alt="${esc(p.name)}" width="320" height="400" />`
+    : `<span class="people-mono" aria-hidden="true">${esc(p.initials)}</span>`;
+  const face = `<button type="button" class="person-face" data-stage="person" data-stage-id="${esc(p.id)}" aria-label="${esc(p.name)} story">
+    <span class="person-still cinema-frame">
+      <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+      <span class="cinema-grain" aria-hidden="true"></span>
+      ${photo}
+      <span class="people-wash" aria-hidden="true"></span>
+      <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+    </span>
+  </button>`;
   return `<article class="person group-${esc(p.group)}" id="${esc(p.id)}" data-q="${esc(`${p.name} ${p.role} ${p.bio}`)}">
     ${face}
     <div>

@@ -104,11 +104,11 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.28) saturate(0.56) brightness(0.68)';
+  ctx.filter = 'contrast(1.14) saturate(0.74) brightness(0.88)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(42, 36, 52, 0.55)';
+  ctx.fillStyle = 'rgba(42, 36, 52, 0.26)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -128,9 +128,9 @@ function terminatorTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createLinearGradient(0, 0, c.width, 0);
-  g.addColorStop(0, 'rgba(12, 10, 18, 0.78)');
-  g.addColorStop(0.34, 'rgba(28, 18, 14, 0.58)');
-  g.addColorStop(0.47, 'rgba(196, 160, 112, 0.28)');
+  g.addColorStop(0, 'rgba(12, 10, 18, 0.58)');
+  g.addColorStop(0.34, 'rgba(28, 18, 14, 0.42)');
+  g.addColorStop(0.47, 'rgba(196, 160, 112, 0.22)');
   g.addColorStop(0.56, 'rgba(255, 255, 255, 0)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;

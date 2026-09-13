@@ -43,15 +43,6 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-const GLASS_TINT = [
-  'rgba(21, 87, 255, 0.12)',
-  'rgba(196, 58, 134, 0.1)',
-  'rgba(18, 153, 180, 0.12)',
-  'rgba(61, 114, 224, 0.12)',
-  'rgba(143, 46, 212, 0.1)',
-  'rgba(10, 168, 136, 0.1)',
-];
-
 type GlassCut = 'crown' | 'bezel' | 'pav' | 'table';
 
 function paintPhotoGlass(
@@ -66,54 +57,33 @@ function paintPhotoGlass(
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const cols = 4;
-    const fx = (i % cols) / cols;
-    const fy = ((Math.floor(i / cols) * 3 + i) % 5) / 8;
-    const sx = fx * photo.naturalWidth;
-    const sy = fy * photo.naturalHeight;
-    const sw = Math.max(1, photo.naturalWidth * 0.68);
-    const sh = Math.max(1, photo.naturalHeight * 0.74);
+    const drift = ((i % 6) - 2.5) * 0.01;
+    const sx = photo.naturalWidth * (0.18 + drift);
+    const sy = photo.naturalHeight * 0.12;
+    const sw = Math.max(1, photo.naturalWidth * 0.64);
+    const sh = Math.max(1, photo.naturalHeight * 0.76);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
-    const bx = ((fx + 0.28) % 1) * photo.naturalWidth;
-    const by = ((fy + 0.18) % 0.7) * photo.naturalHeight;
     ctx.save();
-    ctx.globalAlpha = cut === 'table' ? 0.3 : cut === 'pav' ? 0.46 : 0.36;
+    ctx.globalAlpha = cut === 'table' ? 0.28 : cut === 'pav' ? 0.4 : 0.3;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(photo, bx, by, sw * 0.72, sh * 0.72, 0, h * 0.1, w, h * 0.9);
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, h * 0.08, w, h * 0.92);
     ctx.restore();
-    const cx = ((fx + 0.62) % 1) * photo.naturalWidth;
-    const cy = ((fy + 0.42) % 0.62) * photo.naturalHeight;
     ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.22 : 0.16;
-    ctx.translate(0, h);
-    ctx.scale(1, -1);
-    ctx.drawImage(photo, cx, cy, sw * 0.48, sh * 0.48, w * 0.08, h * 0.18, w * 0.84, h * 0.64);
-    ctx.restore();
-    const rx = ((fx + 0.41) % 1) * photo.naturalWidth;
-    const ry = ((fy + 0.31) % 0.58) * photo.naturalHeight;
-    ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.2 : 0.14;
+    ctx.globalAlpha = cut === 'pav' ? 0.2 : 0.12;
     ctx.translate(w / 2, h / 2);
-    ctx.rotate(((i % 4) + 1) * (Math.PI / 2));
-    ctx.drawImage(photo, rx, ry, sw * 0.4, sh * 0.4, -w * 0.42, -h * 0.42, w * 0.84, h * 0.84);
-    ctx.restore();
-    const dx = ((fx + 0.17) % 1) * photo.naturalWidth;
-    const dy = ((fy + 0.51) % 0.5) * photo.naturalHeight;
-    ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.26 : cut === 'table' ? 0.12 : 0.18;
-    ctx.translate(w * 0.52, h * 0.64);
-    ctx.scale(-0.72, 0.52);
-    ctx.drawImage(photo, dx, dy, sw * 0.36, sh * 0.36, -w * 0.5, -h * 0.5, w, h);
+    ctx.rotate((i % 2) * Math.PI);
+    ctx.scale(1, -1);
+    ctx.drawImage(photo, sx, sy, sw * 0.9, sh * 0.9, -w * 0.44, -h * 0.34, w * 0.88, h * 0.68);
     ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
       ? 'rgba(234, 241, 255, 0.4)'
       : cut === 'pav'
-        ? 'rgba(4, 10, 28, 0.62)'
+        ? 'rgba(4, 10, 28, 0.66)'
         : cut === 'table'
-          ? 'rgba(21, 87, 255, 0.14)'
-          : GLASS_TINT[i % GLASS_TINT.length];
+          ? 'rgba(21, 87, 255, 0.12)'
+          : 'rgba(12, 28, 64, 0.18)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -292,11 +262,11 @@ function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const ctx = c.getContext('2d');
   if (ctx) {
     paintPhotoGlass(ctx, photo, 16, 512, 512, false, 'table');
-    ctx.fillStyle = 'rgba(11, 31, 92, 0.48)';
-    ctx.font = '800 168px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillStyle = 'rgba(11, 31, 92, 0.28)';
+    ctx.font = '600 88px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', 256, 280);
+    ctx.fillText('Q', 256, 268);
   }
   return c;
 }
