@@ -19,32 +19,32 @@ import {
 
 function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  c.width = 512;
+  c.width = 768;
   c.height = 220;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.clearRect(0, 0, 512, 220);
+  ctx.clearRect(0, 0, 768, 220);
   ctx.fillStyle = '#ffffff';
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 8, 496, 204, 28);
-  else ctx.rect(8, 8, 496, 204);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(10, 10, 748, 200, 28);
+  else ctx.rect(10, 10, 748, 200);
   ctx.fill();
   ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
   ctx.lineWidth = on ? 8 : 3;
   ctx.stroke();
   if (img?.complete && img.naturalWidth) {
-    const maxW = 420;
-    const maxH = 120;
+    const maxW = 700;
+    const maxH = 96;
     const scale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight);
     const dw = img.naturalWidth * scale;
     const dh = img.naturalHeight * scale;
-    ctx.drawImage(img, (512 - dw) / 2, (220 - dh) / 2, dw, dh);
+    ctx.drawImage(img, (768 - dw) / 2, (220 - dh) / 2, dw, dh);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '700 64px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '700 56px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(short, 256, 110);
+    ctx.fillText(short, 384, 110);
   }
   return c;
 }
@@ -132,7 +132,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       // Lights-only path if RoomEnvironment stalls.
     }
   }
-  scene.fog = new THREE.Fog(0x0a1220, 6.8, 13);
+  if (!lite) scene.fog = new THREE.Fog(0x0a1220, 7.4, 14);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 40);
   const group = new THREE.Group();
   scene.add(group);
@@ -146,7 +146,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       clearcoat: 1,
       clearcoatRoughness: 0.04,
       transparent: true,
-      opacity: 0.52,
+      opacity: lite ? 0.22 : 0.52,
       envMapIntensity: lite ? 0.85 : 1.45,
     }),
   );
@@ -154,18 +154,22 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   floor.position.y = -0.3;
   scene.add(floor);
 
-  const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg');
+  const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    scene.background = tex;
+  });
   backdropTex.colorSpace = THREE.SRGBColorSpace;
+  scene.background = backdropTex;
   const backdrop = new THREE.Mesh(
-    new THREE.PlaneGeometry(18.5, 9.4),
-    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xffffff }),
+    new THREE.PlaneGeometry(28, 14.2),
+    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xffffff, depthWrite: false }),
   );
-  backdrop.position.set(0, 1.95, -3.85);
+  backdrop.position.set(0, 1.35, -5.4);
   scene.add(backdrop);
 
-  scene.add(new THREE.AmbientLight(0x8ea0c0, 0.38));
-  scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, 0.55));
-  const key = new THREE.DirectionalLight(0xfff1dc, 2.05);
+  scene.add(new THREE.AmbientLight(0x8ea0c0, lite ? 0.72 : 0.38));
+  scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, lite ? 0.85 : 0.55));
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 2.45 : 2.05);
   key.position.set(2.4, 3.2, 2.1);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
@@ -257,7 +261,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       clearcoatRoughness: 0.18,
       transparent: true,
     });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.37, 0.05), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.02, 0.34, 0.05), mat);
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.18, z);
     mesh.userData.nodeId = bank.id;
@@ -308,8 +312,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = 1.12;
-  const restAy = 0.38;
+  const restAx = lite ? 1.26 : 1.12;
+  const restAy = lite ? 0.16 : 0.38;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -376,7 +380,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
       cards[i].position.set(x, y + 0.18, z);
-      cards[i].lookAt(camera.position);
+      cards[i].lookAt(0, y + 0.18, 0);
+      cards[i].rotateY(Math.PI);
     });
     hex.rotation.z = reduced ? 0 : now / 18000;
     rt2.rotation.z = reduced ? 0 : now / 2400;
@@ -396,8 +401,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     releaseLabel.visible = !lockOn;
     lockLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
     releaseLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
-    camera.position.setFromSphericalCoords(3.55, ax, ay);
-    camera.lookAt(0, 0.12, 0);
+    camera.position.setFromSphericalCoords(lite ? 4.05 : 3.55, ax, ay);
+    camera.lookAt(0, lite ? 0.2 : 0.12, 0);
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
     lockLabel.lookAt(camera.position);

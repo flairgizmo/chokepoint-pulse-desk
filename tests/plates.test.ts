@@ -35,6 +35,8 @@ describe('Topic plates', () => {
     expect(statSync(resolve(process.cwd(), 'public/visuals/topics/ucl.jpg')).size).toBeGreaterThan(200_000);
     expect(statSync(resolve(process.cwd(), 'public/visuals/topics/cable.jpg')).size).toBeGreaterThan(200_000);
     expect(statSync(resolve(process.cwd(), 'public/visuals/topics/datacenter.jpg')).size).toBeGreaterThan(200_000);
+    expect(statSync(resolve(process.cwd(), 'public/visuals/earth/day.jpg')).size).toBeGreaterThan(100_000);
+    expect(statSync(resolve(process.cwd(), 'public/visuals/earth/night.jpg')).size).toBeGreaterThan(80_000);
   });
 
   it('maps technology and story beats to distinct photographs', () => {

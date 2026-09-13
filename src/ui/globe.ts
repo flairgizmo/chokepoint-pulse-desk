@@ -36,8 +36,8 @@ interface GlobeOptions {
   onHud: (hud: GlobeHud) => void;
 }
 
-const DAY_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-blue-marble.jpg';
-const NIGHT_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-night.jpg';
+const DAY_TEX = '/visuals/earth/day.jpg';
+const NIGHT_TEX = '/visuals/earth/night.jpg';
 const BUMP_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-topology.png';
 const WATER_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-water.png';
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -469,18 +469,18 @@ export class EarthGlobe {
 
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
-    const globe = new THREE.Mesh(
-      new THREE.SphereGeometry(1, segs, rings),
-      new THREE.MeshPhysicalMaterial({
-        color: 0x0b2a32,
-        roughness: 0.38,
-        metalness: 0.22,
-        emissive: 0x031016,
-        clearcoat: 0.42,
-        clearcoatRoughness: 0.28,
-        envMapIntensity: this.lite ? 0.55 : 1.05,
-      }),
-    );
+    const globeMat = this.lite
+      ? new THREE.MeshBasicMaterial({ color: 0x0b2a32 })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x0b2a32,
+          roughness: 0.38,
+          metalness: 0.22,
+          emissive: 0x031016,
+          clearcoat: 0.42,
+          clearcoatRoughness: 0.28,
+          envMapIntensity: 1.05,
+        });
+    const globe = new THREE.Mesh(new THREE.SphereGeometry(1, segs, rings), globeMat);
     this.globeMesh = globe;
     group.add(globe);
     group.add(this.graticule());
@@ -527,29 +527,26 @@ export class EarthGlobe {
     );
     group.add(atmo);
 
+    const paintTex = (src: string, assign: (tex: THREE.Texture) => void): void => {
+      const img = new Image();
+      img.decoding = 'async';
+      img.onload = () => {
+        const tex = new THREE.Texture(img);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.needsUpdate = true;
+        assign(tex);
+        this.applyMaps();
+      };
+      img.src = src;
+    };
+    paintTex(DAY_TEX, (tex) => {
+      this.dayTex = tex;
+    });
+    paintTex(NIGHT_TEX, (tex) => {
+      this.nightTex = tex;
+    });
     const loader = new THREE.TextureLoader();
-    loader.setCrossOrigin('anonymous');
     const ignore = (): void => undefined;
-    loader.load(
-      DAY_TEX,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        this.dayTex = tex;
-        this.applyMaps();
-      },
-      undefined,
-      ignore,
-    );
-    loader.load(
-      NIGHT_TEX,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        this.nightTex = tex;
-        this.applyMaps();
-      },
-      undefined,
-      ignore,
-    );
     if (!this.lite) {
       loader.load(
         BUMP_TEX,
@@ -621,6 +618,7 @@ export class EarthGlobe {
     }
 
     const london = CITIES.find((c) => c.id === 'london')!;
+    this.lookAtCity(london);
     this.pulse = new THREE.Mesh(
       new THREE.SphereGeometry(0.028, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0x1ec9b0, transparent: true, opacity: 0.32 }),
@@ -826,16 +824,16 @@ export class EarthGlobe {
   }
 
   private applyMaps(): void {
-    const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+    const mat = this.globeMesh?.material as (THREE.MeshStandardMaterial | THREE.MeshBasicMaterial) | undefined;
     if (mat) {
       if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
         mat.color = new THREE.Color(0xffffff);
-        mat.emissive = new THREE.Color(0x0a1218);
+        if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
       } else {
         mat.map = this.overlays.night && this.nightTex ? this.nightTex : null;
         mat.color = new THREE.Color(this.nightTex && this.overlays.night ? 0xffffff : 0x0b2a32);
-        mat.emissive = new THREE.Color(0x071018);
+        if ('emissive' in mat) mat.emissive = new THREE.Color(0x071018);
       }
       mat.needsUpdate = true;
     }

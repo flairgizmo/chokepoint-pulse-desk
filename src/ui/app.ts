@@ -134,6 +134,7 @@ export class QntDesk {
     if (head === 'timeline' || head === 'story') return { name: 'story' };
     if (head === 'boards') return { name: 'institutions' };
     if ((head === 'city' || head === 'cities') && parts[1]) return { name: 'city', id: parts[1] };
+    if (!parts[1] && CITIES.some((c) => c.id === head)) return { name: 'city', id: head };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
     if (head === 'podcast' && parts[1]) return { name: 'episode', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
