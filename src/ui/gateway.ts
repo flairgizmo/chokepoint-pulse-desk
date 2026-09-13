@@ -860,8 +860,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 3.68 : 3.52, ax, ay);
-    camera.lookAt(0, lite ? 0.38 : 0.42, 0);
+    camera.position.setFromSphericalCoords(lite ? 3.88 : 3.72, ax, ay);
+    camera.lookAt(0, lite ? 0.46 : 0.5, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
