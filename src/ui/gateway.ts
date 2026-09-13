@@ -61,11 +61,14 @@ function paintPhotoGlass(
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const sx = photo.naturalWidth * (cut === 'table' ? 0.2 : 0.16);
-    const sy = photo.naturalHeight * (cut === 'table' ? 0.3 : 0.1);
-    const sw = Math.max(1, photo.naturalWidth * (cut === 'table' ? 0.48 : 0.7));
-    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.22 : 0.8));
-    if (cut === 'table') ctx.filter = 'contrast(1.28) brightness(0.36) saturate(0.62)';
+    const sx = photo.naturalWidth * (cut === 'table' ? 0.2 : 0.18);
+    const sy = photo.naturalHeight * (cut === 'table' ? 0.3 : 0.22);
+    const sw = Math.max(1, photo.naturalWidth * (cut === 'table' ? 0.48 : 0.64));
+    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.22 : 0.55));
+    ctx.filter =
+      cut === 'table'
+        ? 'contrast(1.28) brightness(0.36) saturate(0.62)'
+        : 'contrast(1.18) brightness(0.48) saturate(0.7)';
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.filter = 'none';
     ctx.save();
@@ -81,7 +84,7 @@ function paintPhotoGlass(
         ? 'rgba(4, 10, 28, 0.5)'
         : cut === 'table'
           ? 'rgba(3, 8, 20, 0.78)'
-          : 'rgba(6, 16, 40, 0.42)';
+          : 'rgba(6, 16, 40, 0.58)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -238,9 +241,9 @@ function glassMat(
   return lite
     ? new THREE.MeshPhongMaterial({
         map: tex,
-        color: 0xc5d0e0,
-        shininess: 56,
-        specular: new THREE.Color(0xb4c8e4),
+        color: 0x8aa0b8,
+        shininess: 72,
+        specular: new THREE.Color(0xc8d8ee),
         emissive: 0x071018,
         emissiveIntensity: 0.08,
         side: THREE.DoubleSide,
@@ -495,7 +498,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   scene.add(new THREE.AmbientLight(0x8ea0c0, lite ? 0.72 : 0.38));
   scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, lite ? 0.85 : 0.55));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.55 : 2.05);
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.18 : 2.05);
   key.position.set(2.4, 3.2, 2.1);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
@@ -721,7 +724,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.26 : 1.28;
+  const restAx = lite ? 1.08 : 1.18;
   const restAy = 0.72;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
@@ -822,7 +825,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 3.88 : 3.72, ax, ay);
-    camera.lookAt(0, lite ? 0.46 : 0.5, 0);
+    camera.lookAt(0, lite ? 0.5 : 0.52, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
