@@ -41,6 +41,16 @@ export const BANKS: Array<{ id: NodeId; name: string; short: string; note: strin
   },
 ];
 
+/** Distinct Wikimedia stills — one per issuer, not six copies of Canary. */
+export const CARD_STILL = [
+  '/visuals/topics/canary.jpg',
+  '/visuals/stories/city.jpg',
+  '/visuals/topics/payments.jpg',
+  '/visuals/topics/city.jpg',
+  '/visuals/stills/sterling.jpg',
+  '/visuals/stories/canary.jpg',
+] as const;
+
 export const MARK: Record<string, string> = {
   Barclays: '/marks/barclays.svg',
   HSBC: '/marks/hsbc.svg',
@@ -122,6 +132,12 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     img.src = MARK[b.name];
     return img;
   });
+  const stills = CARD_STILL.map((src) => {
+    const img = new Image();
+    img.onload = () => draw(performance.now());
+    img.src = src;
+    return img;
+  });
   const backdrop = new Image();
   backdrop.onload = () => {
     plateDirty = true;
@@ -184,13 +200,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
     const gate = project(0, 0, 0);
     projected.push({ id: 6, x: gate[0], y: gate[1], z: gate[2] });
-    const rt2 = project(0, -0.78, 0);
+    const rt2 = project(0, -1.12, 0);
     projected.push({ id: 7, x: rt2[0], y: rt2[1], z: rt2[2] });
-
-    const hex = Array.from({ length: 6 }, (_, i) => {
-      const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
-      return project(Math.cos(a) * (0.42 + pulse * 0.4), 0, Math.sin(a) * (0.42 + pulse * 0.4));
-    });
 
     if (plateDirty || plate.width !== W || plate.height !== H) {
       plate.width = W;
@@ -272,38 +283,46 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       ctx.stroke();
     });
 
-    const paintHex = (pts: Array<[number, number, number]>, lift: number, fill: string | CanvasGradient, stroke: string, blur: number): void => {
-      ctx.beginPath();
-      pts.forEach((pt, i) => {
-        if (i === 0) ctx.moveTo(pt[0], pt[1] + lift);
-        else ctx.lineTo(pt[0], pt[1] + lift);
-      });
-      ctx.closePath();
-      ctx.shadowColor = 'rgba(61, 140, 255, 0.75)';
-      ctx.shadowBlur = blur;
-      ctx.fillStyle = fill;
-      ctx.fill();
-      ctx.shadowBlur = 0;
-      ctx.strokeStyle = stroke;
-      ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.6, W / 200) : Math.max(1.6, W / 280);
-      ctx.stroke();
-    };
-    paintHex(hex, 10, 'rgba(6, 20, 51, 0.55)', 'rgba(234, 241, 255, 0.12)', 8);
-    const hexFill = ctx.createLinearGradient(hex[0][0], hex[0][1], hex[3][0], hex[3][1]);
-    hexFill.addColorStop(0, selected === 6 || hover === 6 ? '#9CC4FF' : '#5B93FF');
-    hexFill.addColorStop(0.45, '#1557FF');
-    hexFill.addColorStop(1, '#061433');
-    paintHex(hex, 0, hexFill, '#EAF1FF', 48);
+    const onGate = selected === 6 || hover === 6;
+    const cx = gate[0];
+    const cy = gate[1] - Math.max(28, H * 0.05);
+    const crystalW = Math.max(34, W * 0.046);
+    const crystalH = Math.max(96, H * 0.28);
+    ctx.save();
+    ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
+    ctx.shadowBlur = onGate ? 36 : 22;
     ctx.beginPath();
-    hex.forEach((pt, i) => {
-      const ix = gate[0] + (pt[0] - gate[0]) * 0.42;
-      const iy = gate[1] + (pt[1] - gate[1]) * 0.42;
-      if (i === 0) ctx.moveTo(ix, iy);
-      else ctx.lineTo(ix, iy);
-    });
+    ctx.moveTo(cx - crystalW, cy);
+    ctx.lineTo(cx, cy - crystalH * 0.14);
+    ctx.lineTo(cx, cy + crystalH);
+    ctx.lineTo(cx - crystalW, cy + crystalH * 0.86);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.28)';
+    ctx.fillStyle = onGate ? '#1557FF' : '#0d3fd4';
     ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx + crystalW, cy);
+    ctx.lineTo(cx, cy - crystalH * 0.14);
+    ctx.lineTo(cx, cy + crystalH);
+    ctx.lineTo(cx + crystalW, cy + crystalH * 0.86);
+    ctx.closePath();
+    ctx.fillStyle = onGate ? '#9CC4FF' : '#5B93FF';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - crystalH * 0.14);
+    ctx.lineTo(cx + crystalW, cy);
+    ctx.lineTo(cx, cy + crystalH * 0.1);
+    ctx.lineTo(cx - crystalW, cy);
+    ctx.closePath();
+    ctx.fillStyle = '#EAF1FF';
+    ctx.globalAlpha = 0.55;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = `800 ${Math.max(12, W / 46)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('OVERLEDGER', cx, cy - crystalH * 0.22);
 
     ctx.beginPath();
     ctx.moveTo(gate[0], gate[1]);
@@ -356,14 +375,15 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       roundRect(-rw / 2, -rh / 2, rw, rh, 12);
       ctx.fillStyle = '#0b1220';
       ctx.fill();
-      if (backdrop.complete && backdrop.naturalWidth) {
+      const still = stills[i];
+      if (still?.complete && still.naturalWidth) {
         ctx.save();
         ctx.clip();
-        ctx.filter = 'saturate(1.18) contrast(1.12) brightness(0.86)';
-        const scale = Math.max(rw / backdrop.naturalWidth, rh / backdrop.naturalHeight);
-        const dw = backdrop.naturalWidth * scale;
-        const dh = backdrop.naturalHeight * scale;
-        ctx.drawImage(backdrop, -dw / 2, -dh / 2, dw, dh);
+        ctx.filter = 'saturate(1.16) contrast(1.1) brightness(0.86)';
+        const scale = Math.max(rw / still.naturalWidth, rh / still.naturalHeight);
+        const dw = still.naturalWidth * scale;
+        const dh = still.naturalHeight * scale;
+        ctx.drawImage(still, -dw / 2, -dh / 2, dw, dh);
         ctx.filter = 'none';
         ctx.restore();
         roundRect(-rw / 2, -rh / 2, rw, rh, 12);
@@ -408,10 +428,6 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       .sort((a, b) => a.p[2] - b.p[2]);
     ordered.forEach((row) => paintCard(row.bank, row.p, row.i, true));
     ordered.forEach((row) => paintCard(row.bank, row.p, row.i));
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = `700 ${Math.max(11, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-    ctx.fillText('OVERLEDGER', gate[0], gate[1] + 2);
 
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

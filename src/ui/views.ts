@@ -1416,6 +1416,8 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
     'This page now lives',
     'The live pages are News, Programmes, Research and the twenty-part podcast.',
     'with the record.',
+    undefined,
+    'news',
   )}<p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
 }
 
@@ -1453,7 +1455,7 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not', 'Try News, Podcast, Vision, Programmes, Research or Markets.', 'on the map.')}<p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
+  return `${pageHero('404', 'This page is not', 'Try News, Podcast, Vision, Programmes, Research or Markets.', 'on the map.', undefined, 'news')}<p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
 }
 
 export function renderPodcast(): string {
@@ -1520,7 +1522,7 @@ export function renderNote(id: string): string {
       : '';
   const bed: VisualId = n.era === 'future' ? 'future' : n.era === 'history' ? 'history' : 'sterling';
   return `<article class="note-page">
-    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed)}
+    ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed, 'notes')}
     <div class="chapter note-body">
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
       <p>${esc(n.body)}</p>

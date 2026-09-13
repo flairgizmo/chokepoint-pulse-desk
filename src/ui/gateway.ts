@@ -9,6 +9,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { canUseBloom, probeWebGL } from './webgl';
 import {
   BANKS,
+  CARD_STILL,
   MARK,
   type NodeId,
   bankXYZ,
@@ -19,8 +20,6 @@ import {
 
 const CARD_W = 768;
 const CARD_H = 512;
-const duskPlate = new Image();
-duskPlate.src = '/visuals/topics/canary.jpg';
 
 function coverDraw(
   ctx: CanvasRenderingContext2D,
@@ -48,16 +47,54 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-function logoCanvas(img: HTMLImageElement | null, short: string, name: string, on = false): HTMLCanvasElement {
+function jewelCanvas(on = false): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = 512;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  const g = ctx.createLinearGradient(40, 20, 480, 500);
+  g.addColorStop(0, on ? '#c8dcff' : '#8eb4ff');
+  g.addColorStop(0.38, on ? '#3d7bff' : '#1557FF');
+  g.addColorStop(0.72, '#061433');
+  g.addColorStop(1, '#02060f');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 512, 512);
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.28)';
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 6; i++) {
+    const x = 40 + i * 78;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + 46, 512);
+    ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(234, 241, 255, 0.16)';
+  ctx.fillRect(0, 0, 512, 36);
+  ctx.fillStyle = '#F4F7FB';
+  ctx.font = '800 92px Outfit, IBM Plex Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('Q', 256, 256);
+  return c;
+}
+
+function logoCanvas(
+  img: HTMLImageElement | null,
+  short: string,
+  name: string,
+  on = false,
+  still?: HTMLImageElement | null,
+): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = CARD_W;
   c.height = CARD_H;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
   ctx.clearRect(0, 0, CARD_W, CARD_H);
-  if (duskPlate.complete && duskPlate.naturalWidth) {
-    ctx.filter = 'saturate(1.22) contrast(1.14) brightness(0.88)';
-    coverDraw(ctx, duskPlate, CARD_W, CARD_H);
+  if (still?.complete && still.naturalWidth) {
+    ctx.filter = 'saturate(1.18) contrast(1.12) brightness(0.86)';
+    coverDraw(ctx, still, CARD_W, CARD_H);
     ctx.filter = 'none';
   } else {
     ctx.fillStyle = '#0b1220';
@@ -119,19 +156,6 @@ function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
   const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
   sprite.scale.set(0.92, 0.23, 1);
   return sprite;
-}
-
-function hexShape(r: number): THREE.Shape {
-  const s = new THREE.Shape();
-  for (let i = 0; i < 6; i++) {
-    const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
-    const x = Math.cos(a) * r;
-    const y = Math.sin(a) * r;
-    if (i === 0) s.moveTo(x, y);
-    else s.lineTo(x, y);
-  }
-  s.closePath();
-  return s;
 }
 
 export function mountGateway(canvas: HTMLCanvasElement): () => void {
@@ -231,34 +255,52 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
 
-  const hex = new THREE.Mesh(
-    new THREE.ExtrudeGeometry(hexShape(0.52), {
-      depth: 0.07,
-      bevelEnabled: true,
-      bevelThickness: 0.014,
-      bevelSize: 0.012,
-      bevelSegments: lite ? 1 : 2,
-    }),
-    new THREE.MeshPhysicalMaterial({
-      color: 0x3b7bff,
-      metalness: 0.72,
-      roughness: 0.1,
-      iridescence: 1,
-      iridescenceIOR: 1.34,
-      clearcoat: 1,
-      clearcoatRoughness: 0.045,
-      emissive: 0x1557ff,
-      emissiveIntensity: 0.48,
-      envMapIntensity: 1.55,
-    }),
-  );
-  hex.rotation.x = -Math.PI / 2;
-  hex.position.y = -0.03;
+  const jewelTex = new THREE.CanvasTexture(jewelCanvas(true));
+  jewelTex.colorSpace = THREE.SRGBColorSpace;
+  const jewelMat = lite
+    ? new THREE.MeshBasicMaterial({ map: jewelTex })
+    : new THREE.MeshPhysicalMaterial({
+        map: jewelTex,
+        color: 0xffffff,
+        metalness: 0.88,
+        roughness: 0.1,
+        iridescence: 1,
+        iridescenceIOR: 1.34,
+        clearcoat: 1,
+        clearcoatRoughness: 0.04,
+        emissive: 0x1557ff,
+        emissiveIntensity: 0.42,
+        envMapIntensity: 1.7,
+      });
+  const hex = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.38, 0.86, 6), jewelMat);
+  hex.position.y = 0.46;
+  hex.rotation.y = Math.PI / 6;
   hex.userData.nodeId = 6;
   group.add(hex);
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.32, 0.14, 6), jewelMat);
+  cap.position.y = 0.96;
+  cap.rotation.y = Math.PI / 6;
+  cap.userData.nodeId = 6;
+  group.add(cap);
+  const base = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.46, 0.5, 0.08, 6),
+    lite
+      ? new THREE.MeshBasicMaterial({ color: 0x0b1f5c })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x0b1f5c,
+          metalness: 0.7,
+          roughness: 0.22,
+          clearcoat: 0.7,
+        }),
+  );
+  base.position.y = 0.02;
+  base.rotation.y = Math.PI / 6;
+  base.userData.nodeId = 6;
+  group.add(base);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 0.38, 0);
+  gateLabel.position.set(0, 1.14, 0);
+  gateLabel.scale.set(1.08, 0.26, 1);
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
@@ -273,7 +315,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 0.86;
+  rt2.position.y = 1.46;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -287,11 +329,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 0.86;
+  rt2Disk.position.y = 1.46;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 0.86, 0);
+  rt2Label.position.set(0, 1.46, 0);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
 
@@ -300,10 +342,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     img.src = MARK[b.name];
     return img;
   });
+  const stills = CARD_STILL.map((src) => {
+    const img = new Image();
+    img.src = src;
+    return img;
+  });
   const cards: THREE.Mesh[] = [];
   const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
   BANKS.forEach((bank, i) => {
-    const tex = new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false));
+    const tex = new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i]));
     tex.colorSpace = THREE.SRGBColorSpace;
     const mat = lite
       ? new THREE.MeshBasicMaterial({ map: tex })
@@ -322,13 +369,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     group.add(mesh);
     cards.push(mesh);
     cardMats.push(mat);
-    logos[i].onload = () => {
-      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false));
+    const paintOne = (): void => {
+      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false, stills[i]));
       next.colorSpace = THREE.SRGBColorSpace;
       mat.map?.dispose();
       mat.map = next;
       mat.needsUpdate = true;
     };
+    logos[i].onload = paintOne;
+    stills[i].onload = paintOne;
     const spoke = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.02, 0), new THREE.Vector3(x, y + 0.02, z)]),
       new THREE.LineBasicMaterial({ color: 0x1557ff, transparent: true, opacity: 0.35 }),
@@ -337,7 +386,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.04, 0), new THREE.Vector3(0, 0.84, 0)]),
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.9, 0), new THREE.Vector3(0, 1.44, 0)]),
     new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
   );
   stem.computeLineDistances();
@@ -363,7 +412,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [hex, cap, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.28 : 1.36;
@@ -414,7 +463,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const paintCards = (): void => {
     BANKS.forEach((bank, i) => {
       const on = selected === bank.id || hover === bank.id;
-      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, on));
+      const next = new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, on, stills[i]));
       next.colorSpace = THREE.SRGBColorSpace;
       cardMats[i].map?.dispose();
       cardMats[i].map = next;
@@ -424,25 +473,29 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       }
       cardMats[i].needsUpdate = true;
     });
-    const hexMat = hex.material as THREE.MeshPhysicalMaterial;
-    hexMat.emissiveIntensity = selected === 6 || hover === 6 ? 0.42 : 0.22;
+    if (hex.material instanceof THREE.MeshPhysicalMaterial) {
+      hex.material.emissiveIntensity = selected === 6 || hover === 6 ? 0.55 : 0.28;
+    }
     const rtMat = rt2.material as THREE.MeshPhysicalMaterial;
     rtMat.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
   };
-  if (!duskPlate.complete) duskPlate.onload = () => paintCards();
-  else paintCards();
+  stills.forEach((img) => {
+    if (!img.complete) img.onload = () => paintCards();
+  });
+  paintCards();
 
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 4.05 : 3.45, ax, ay);
-    camera.lookAt(0, lite ? 0.28 : 0.32, 0);
+    camera.lookAt(0, lite ? 0.42 : 0.48, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
       cards[i].position.set(x * 1.22, y + 0.3, z * 1.22);
       cards[i].lookAt(camera.position.x, y + 0.38, camera.position.z);
     });
-    hex.rotation.z = reduced ? 0 : now / 18000;
+    hex.rotation.y = Math.PI / 6 + (reduced ? 0 : now / 14000);
+    cap.rotation.y = hex.rotation.y;
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

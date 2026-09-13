@@ -38,7 +38,7 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
       ctx.filter = 'none';
     }
     const n = Math.max(1, slides.length);
-    const mid = (n - 1) / 2;
+    const mid = (canvas.dataset.filmSet ?? '').startsWith('city:') ? 0 : (n - 1) / 2;
     slides.forEach((slide, i) => {
       const d = i - mid;
       const mag = Math.abs(d);

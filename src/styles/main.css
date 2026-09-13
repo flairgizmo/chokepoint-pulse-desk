@@ -4312,6 +4312,12 @@ body.stage-open .grok {
   margin: 0 0 0.85rem;
 }
 
+.cinema-chapter summary .photo-plate img,
+.cinema-chapter summary .beat-figure img {
+  aspect-ratio: 21 / 9;
+  max-height: 28rem;
+}
+
 .flip-card {
   min-height: 28rem;
 }
@@ -4332,7 +4338,7 @@ body.stage-open .grok {
 .flip-face .photo-plate img,
 .flip-face .beat-figure img {
   aspect-ratio: 16 / 9;
-  max-height: 14rem;
+  max-height: 22rem;
 }
 
 .proof-chip .photo-plate,
