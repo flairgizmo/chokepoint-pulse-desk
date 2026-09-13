@@ -2354,6 +2354,10 @@ button.chip {
   background: #0b1220;
 }
 
+.people-still-wrap .cinema-letterbox {
+  height: 1.05rem;
+}
+
 .people-tile .people-bed {
   position: absolute;
   inset: 0;

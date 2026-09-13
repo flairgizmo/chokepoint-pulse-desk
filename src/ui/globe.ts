@@ -144,7 +144,7 @@ export class EarthGlobe {
     routes: true,
     corridors: true,
     activity: true,
-    labels: true,
+    labels: false,
     night: true,
     day: true,
     spin: true,
@@ -830,7 +830,9 @@ export class EarthGlobe {
     const w = this.renderer.domElement.clientWidth;
     const h = this.renderer.domElement.clientHeight;
     const placed: Array<{ x: number; y: number }> = [];
-    const minDist = 56;
+    const minDist = 110;
+    let shown = 0;
+    const cap = 4;
     const rank = (id: string): number => {
       if (id === this.followId || id === this.hoverId) return 0;
       const city = cityById(id);
@@ -857,10 +859,13 @@ export class EarthGlobe {
       }
       const x = (ndc.x * 0.5 + 0.5) * w;
       const y = (-ndc.y * 0.5 + 0.5) * h;
-      const forced = rank(String(sprite.userData.cityId)) === 0;
+      const forced = rank(String(sprite.userData.cityId)) < 2;
       const hit = placed.some((p) => Math.hypot(p.x - x, p.y - y) < minDist);
-      sprite.visible = forced || !hit;
-      if (sprite.visible) placed.push({ x, y });
+      sprite.visible = forced || (!hit && shown < cap);
+      if (sprite.visible) {
+        shown += 1;
+        placed.push({ x, y });
+      }
     }
   }
 

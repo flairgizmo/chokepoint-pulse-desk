@@ -586,6 +586,8 @@ export function renderHome(): string {
 
     ${renderLiveRail()}
 
+    ${stackVisual()}
+
     <section class="earth-hero cinema-earth">
       <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
       <span class="cinema-grain" aria-hidden="true"></span>
@@ -609,7 +611,7 @@ export function renderHome(): string {
           <fieldset class="hud-toggles">
             <legend class="sr-only">Globe overlays</legend>
             <label><input type="checkbox" data-globe-opt="spin" checked /> Auto-spin</label>
-            <label><input type="checkbox" data-globe-opt="labels" checked /> City labels</label>
+            <label><input type="checkbox" data-globe-opt="labels" /> City labels</label>
             <label><input type="checkbox" data-globe-opt="day" checked /> Day marble</label>
             <label><input type="checkbox" data-globe-opt="night" checked /> Night lights</label>
             <label><input type="checkbox" data-globe-opt="routes" checked /> Settlement routes</label>
@@ -651,7 +653,6 @@ export function renderHome(): string {
       <h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>
       <div class="essay-grid">${essays}</div>
     </section>
-    ${stackVisual()}
     <section class="layers-wrap">
       ${kicker('Three layers, one horizontal gate')}
       <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>

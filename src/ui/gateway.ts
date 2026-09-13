@@ -63,26 +63,27 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  const bw = 860;
-  const bh = 168;
+  const bw = 720;
+  const bh = 132;
   const bx = (CARD_W - bw) / 2;
   const by = (CARD_H - bh) / 2;
   ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.94)';
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 22);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 18);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
   ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
-  ctx.lineWidth = on ? 7 : 2;
+  ctx.lineWidth = on ? 6 : 2;
   ctx.stroke();
-  if (img?.complete && img.naturalWidth && img.naturalHeight) {
-    containDraw(ctx, img, bx + 36, by + 28, bw - 72, bh - 56);
+  const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
+  if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
+    containDraw(ctx, img, bx + 40, by + 24, bw - 80, bh - 48);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '700 54px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '700 52px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(short, CARD_W / 2, CARD_H / 2);
+    ctx.fillText(wide ? 'LLOYDS' : short, CARD_W / 2, CARD_H / 2);
   }
   return c;
 }
