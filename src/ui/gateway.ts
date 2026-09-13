@@ -781,7 +781,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   base.position.y = -0.24;
   base.userData.nodeId = 6;
   const lean = new THREE.Group();
-  lean.rotation.x = 0.34;
+  lean.rotation.x = -0.34;
   lean.add(crystal);
   lean.add(base);
   group.add(lean);
