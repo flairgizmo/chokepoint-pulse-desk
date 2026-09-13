@@ -1,10 +1,9 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { duskSheen } from './cinemaSet';
+import { applyPhotoEnv, duskSheen } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import { latLonToVec, vecToLatLon } from './latlon';
 import {
@@ -441,15 +440,7 @@ export class EarthGlobe {
 
     const scene = new THREE.Scene();
     this.scene = scene;
-    if (!this.lite) {
-      try {
-        const pmrem = new THREE.PMREMGenerator(renderer);
-        scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-        pmrem.dispose();
-      } catch {
-        // Lights-only path if RoomEnvironment stalls.
-      }
-    }
+    applyPhotoEnv(renderer, scene, this.lite);
     scene.add(stars(this.lite ? 600 : 1800));
     const skyTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
@@ -470,7 +461,7 @@ export class EarthGlobe {
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
     const globeMat = this.lite
-      ? duskSheen({ color: 0x16384a, reflectivity: 0.3 })
+      ? duskSheen({ color: 0x16384a, reflectivity: 0.38 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x16384a,
           roughness: 0.38,

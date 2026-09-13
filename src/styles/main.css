@@ -2578,9 +2578,9 @@ button.chip {
 
 .player-skip {
   min-width: 3.2rem;
-  background: var(--surface);
-  color: var(--ink);
-  border: 1px solid var(--line);
+  background: #122038;
+  color: #f4f7fb;
+  border: 1px solid transparent;
 }
 
 .player-adjacent {
@@ -4105,10 +4105,11 @@ body.stage-open .grok {
 
 .plate-figure {
   margin: 0 0 1.2rem;
-  background: #fff;
-  border: 1px solid var(--line);
+  background: #0b1220;
+  border: 1px solid transparent;
   max-width: 100%;
   overflow: hidden;
+  color: #f4f7fb;
 }
 
 .plate-figure img,
@@ -4645,7 +4646,8 @@ body.stage-open .grok {
 .inst-card,
 .prog-card,
 .term,
-.note-card.news-card {
+.note-card,
+.pulse-list button {
   background: #0b1220;
   color: #f4f7fb;
   box-shadow: 0 22px 48px rgba(11, 31, 92, 0.16);
@@ -4661,6 +4663,11 @@ body.stage-open .grok {
   background: transparent;
   color: inherit;
   border-color: transparent;
+}
+
+.pulse-list button {
+  border-radius: 14px;
+  padding: 0.7rem 0.9rem;
 }
 
 .paper .kicker,

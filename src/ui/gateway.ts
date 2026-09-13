@@ -1,13 +1,8 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { cinemaFloorMap, duskSheen, hardenCanvasTex } from './cinemaSet';
-import { canUseBloom, probeWebGL } from './webgl';
+import { addUnrealLook, cinemaFloorMap, duskSheen, hardenCanvasTex, onDuskPhoto, visionStill } from './cinemaSet';
+import { probeWebGL } from './webgl';
 import {
   BANKS,
   CARD_STILL,
@@ -48,14 +43,36 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-function facetCanvas(i: number, on = false): HTMLCanvasElement {
+function drawVisionFire(
+  ctx: CanvasRenderingContext2D,
+  photo: HTMLImageElement | null,
+  i: number,
+  w: number,
+  h: number,
+): void {
+  if (!photo?.naturalWidth) return;
+  const cols = 4;
+  const fx = (i % cols) / cols;
+  const fy = ((i * 3) % 5) / 8;
+  const sx = fx * photo.naturalWidth;
+  const sy = fy * photo.naturalHeight;
+  const sw = Math.max(1, photo.naturalWidth * 0.42);
+  const sh = Math.max(1, photo.naturalHeight * 0.55);
+  ctx.save();
+  ctx.globalCompositeOperation = 'overlay';
+  ctx.globalAlpha = 0.7;
+  ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
+  ctx.restore();
+}
+
+function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const shades = [
-    ['#3d7bff', '#1557FF', '#061433'],
-    ['#ff4fa8', '#1557FF', '#02060f'],
-    ['#1ec9e8', '#1557FF', '#061433'],
-    ['#5b93ff', '#0d3fd4', '#02060f'],
-    ['#c84cff', '#1557FF', '#061433'],
-    ['#00d4aa', '#1557FF', '#02060f'],
+    ['#2458d8', '#0d3fd4', '#02060f'],
+    ['#c43a86', '#1557FF', '#02060f'],
+    ['#1299b4', '#1557FF', '#02060f'],
+    ['#3d72e0', '#0d3fd4', '#02060f'],
+    ['#8f2ed4', '#1557FF', '#02060f'],
+    ['#0aa888', '#1557FF', '#02060f'],
   ][i % 6];
   const c = document.createElement('canvas');
   c.width = 256;
@@ -89,6 +106,7 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   ctx.strokeStyle = 'rgba(234, 241, 255, 0.46)';
   ctx.lineWidth = 8;
   ctx.strokeRect(8, 8, 240, 496);
+  drawVisionFire(ctx, photo, i, 256, 512);
   if (i === 0) {
     ctx.fillStyle = 'rgba(244,247,251,0.96)';
     ctx.font = '800 132px Outfit, IBM Plex Sans, sans-serif';
@@ -96,13 +114,13 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
     ctx.textBaseline = 'middle';
     ctx.fillText('Q', 128, 268);
   } else if (i % 2 === 1) {
-    ctx.fillStyle = 'rgba(6, 20, 51, 0.22)';
+    ctx.fillStyle = 'rgba(6, 20, 51, 0.18)';
     ctx.fillRect(0, 0, 256, 512);
   }
   return c;
 }
 
-function pavCanvas(i: number): HTMLCanvasElement {
+function pavCanvas(i: number, photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = 256;
   c.height = 256;
@@ -126,10 +144,11 @@ function pavCanvas(i: number): HTMLCanvasElement {
   fire.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = fire;
   ctx.fillRect(0, 0, 256, 256);
+  drawVisionFire(ctx, photo, i + 8, 256, 256);
   return c;
 }
 
-function tableCanvas(): HTMLCanvasElement {
+function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = 256;
   c.height = 256;
@@ -141,6 +160,7 @@ function tableCanvas(): HTMLCanvasElement {
     g.addColorStop(1, '#061433');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
+    drawVisionFire(ctx, photo, 16, 256, 256);
     ctx.fillStyle = '#0B1F5C';
     ctx.font = '800 118px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
@@ -154,26 +174,53 @@ function facetMaterial(
   i: number,
   on: boolean,
   lite: boolean,
+  photo: HTMLImageElement | null = null,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
-  const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on)));
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on, photo)));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
     ? duskSheen({
         map: tex,
-        reflectivity: 0.24,
+        reflectivity: 0.4,
         combine: THREE.AddOperation,
         side: THREE.DoubleSide,
       })
     : new THREE.MeshPhysicalMaterial({
         map: tex,
         color: 0xffffff,
-        metalness: 0.82,
-        roughness: 0.12,
+        metalness: 0.55,
+        roughness: 0.08,
         iridescence: 1,
         clearcoat: 1,
         emissive: 0x1557ff,
-        emissiveIntensity: on ? 0.38 : 0.16,
-        envMapIntensity: 1.55,
+        emissiveIntensity: on ? 0.32 : 0.12,
+        envMapIntensity: 1.85,
+        side: THREE.DoubleSide,
+      });
+}
+
+function pavMaterial(
+  i: number,
+  lite: boolean,
+  photo: HTMLImageElement | null = null,
+): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(pavCanvas(i, photo)));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return lite
+    ? duskSheen({
+        map: tex,
+        reflectivity: 0.58,
+        combine: THREE.AddOperation,
+        side: THREE.DoubleSide,
+      })
+    : new THREE.MeshPhysicalMaterial({
+        map: tex,
+        color: 0xffffff,
+        metalness: 0.22,
+        roughness: 0.06,
+        iridescence: 1,
+        clearcoat: 1,
+        envMapIntensity: 1.75,
         side: THREE.DoubleSide,
       });
 }
@@ -298,15 +345,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  if (!lite) {
-    try {
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      pmrem.dispose();
-    } catch {
-      // Lights-only path if RoomEnvironment stalls.
-    }
-  }
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 7.4, 14);
   const camera = new THREE.PerspectiveCamera(lite ? 34 : 32, 1, 0.05, 40);
   const group = new THREE.Group();
@@ -397,14 +435,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const eqR = 0.48;
   const eqY = 0.48;
   const botY = -0.16;
-  const tableTex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas()));
+  const tableTex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas(visionStill())));
   tableTex.colorSpace = THREE.SRGBColorSpace;
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
       ? duskSheen({
           map: tableTex,
-          reflectivity: 0.32,
+          reflectivity: 0.48,
           combine: THREE.AddOperation,
           side: THREE.DoubleSide,
         })
@@ -412,8 +450,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           map: tableTex,
           color: 0xffffff,
           metalness: 0.18,
-          roughness: 0.08,
+          roughness: 0.06,
           clearcoat: 1,
+          envMapIntensity: 1.7,
           side: THREE.DoubleSide,
         }),
   );
@@ -442,7 +481,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     );
     upper.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], 2));
     upper.computeVertexNormals();
-    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite));
+    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite, visionStill()));
     face.userData.nodeId = 6;
     crystal.add(face);
     facets.push(face);
@@ -450,17 +489,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     lower.setAttribute('position', new THREE.Float32BufferAttribute([0, botY, 0, x1, eqY, z1, x0, eqY, z0], 3));
     lower.setAttribute('uv', new THREE.Float32BufferAttribute([0.5, 0, 1, 1, 0, 1], 2));
     lower.computeVertexNormals();
-    const pavTex = hardenCanvasTex(new THREE.CanvasTexture(pavCanvas(i)));
-    pavTex.colorSpace = THREE.SRGBColorSpace;
-    const pav = new THREE.Mesh(
-      lower,
-      duskSheen({
-        map: pavTex,
-        reflectivity: 0.46,
-        combine: THREE.AddOperation,
-        side: THREE.DoubleSide,
-      }),
-    );
+    const pav = new THREE.Mesh(lower, pavMaterial(i, lite, visionStill()));
     pav.userData.nodeId = 6;
     crystal.add(pav);
     facets.push(pav);
@@ -522,22 +551,42 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.16, lite ? 12 : 20, lite ? 10 : 16),
-    duskSheen({
-      color: 0x9cc4ff,
-      reflectivity: 0.48,
-      transparent: true,
-      opacity: 0.58,
-    }),
+    lite
+      ? duskSheen({
+          color: 0x9cc4ff,
+          reflectivity: 0.56,
+          transparent: true,
+          opacity: 0.58,
+        })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x9cc4ff,
+          metalness: 0.35,
+          roughness: 0.08,
+          transmission: 0.42,
+          thickness: 0.35,
+          clearcoat: 1,
+          envMapIntensity: 1.8,
+          transparent: true,
+          opacity: 0.7,
+        }),
   );
   core.position.y = 0.5;
   core.userData.nodeId = 6;
   crystal.add(core);
   const girdle = new THREE.Mesh(
     new THREE.TorusGeometry(eqR, 0.016, 8, 8),
-    duskSheen({
-      color: 0xeaf1ff,
-      reflectivity: 0.86,
-    }),
+    lite
+      ? duskSheen({
+          color: 0xeaf1ff,
+          reflectivity: 0.86,
+        })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0xeaf1ff,
+          metalness: 0.88,
+          roughness: 0.1,
+          clearcoat: 1,
+          envMapIntensity: 1.65,
+        }),
   );
   girdle.rotation.x = Math.PI / 2;
   girdle.position.y = eqY;
@@ -545,7 +594,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(girdle);
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.05, 0.08, 0.04, 8),
-    duskSheen({ color: 0xeaf1ff, reflectivity: 0.72 }),
+    lite
+      ? duskSheen({ color: 0xeaf1ff, reflectivity: 0.72 })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0xeaf1ff,
+          metalness: 0.9,
+          roughness: 0.12,
+          clearcoat: 1,
+          envMapIntensity: 1.5,
+        }),
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
@@ -694,18 +751,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let hover: NodeId | null = null;
   const t0 = performance.now();
   let raf = 0;
-  let composer: EffectComposer | null = null;
-
-  if (canUseBloom(renderer)) {
-    try {
-      composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.48, 0.5, 0.78));
-      composer.addPass(new OutputPass());
-    } catch {
-      composer = null;
-    }
-  }
+  const composer = addUnrealLook(renderer, scene, camera, lite);
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -728,6 +774,21 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   };
 
   let gateLit = false;
+  const stampJewel = (on: boolean): void => {
+    const photo = visionStill();
+    const ttex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas(photo)));
+    ttex.colorSpace = THREE.SRGBColorSpace;
+    const tmat = table.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+    tmat.map?.dispose();
+    tmat.map = ttex;
+    tmat.needsUpdate = true;
+    facets.forEach((mesh, i) => {
+      const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+      mesh.material = i % 2 === 1 ? pavMaterial((i - 1) / 2, lite, photo) : facetMaterial(i / 2, on, lite, photo);
+      prev.map?.dispose();
+      prev.dispose();
+    });
+  };
   const paintCards = (): void => {
     BANKS.forEach((bank, i) => {
       const on = selected === bank.id || hover === bank.id;
@@ -744,13 +805,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const gateOn = selected === 6 || hover === 6;
     if (gateOn !== gateLit) {
       gateLit = gateOn;
-      facets.forEach((mesh, i) => {
-        if (i % 2 === 1) return;
-        const next = facetMaterial(i / 2, gateOn, lite);
-        const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-        prev.map?.dispose();
-        mesh.material = next;
-      });
+      stampJewel(gateOn);
     }
     if (rt2.material instanceof THREE.MeshPhysicalMaterial) {
       rt2.material.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
@@ -764,6 +819,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     if (!img.complete) img.onload = () => paintCards();
   });
   paintCards();
+  onDuskPhoto(() => stampJewel(selected === 6 || hover === 6));
 
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;

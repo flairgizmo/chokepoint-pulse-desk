@@ -11,6 +11,7 @@ import { canUseBloom } from './webgl';
 type CubeFace = 'px' | 'nx' | 'py' | 'ny' | 'pz' | 'nz';
 
 const CUBE_FACES: CubeFace[] = ['px', 'nx', 'py', 'ny', 'pz', 'nz'];
+const FACE = 512;
 
 /** Unique Canary crops so each cube face reflects a different slice of the still. */
 const CANARY_CROP: Record<CubeFace, readonly [number, number, number, number]> = {
@@ -23,20 +24,20 @@ const CANARY_CROP: Record<CubeFace, readonly [number, number, number, number]> =
 };
 
 const CANARY_WASH: Record<CubeFace, string> = {
-  px: 'rgba(10, 22, 48, 0.28)',
-  nx: 'rgba(8, 16, 36, 0.36)',
-  py: 'rgba(8, 14, 28, 0.58)',
-  ny: 'rgba(2, 6, 15, 0.64)',
-  pz: 'rgba(12, 24, 52, 0.22)',
-  nz: 'rgba(6, 18, 44, 0.34)',
+  px: 'rgba(10, 22, 48, 0.16)',
+  nx: 'rgba(8, 16, 36, 0.22)',
+  py: 'rgba(8, 14, 28, 0.48)',
+  ny: 'rgba(2, 6, 15, 0.55)',
+  pz: 'rgba(12, 24, 52, 0.1)',
+  nz: 'rgba(6, 18, 44, 0.18)',
 };
 
 function paintDuskFace(kind: CubeFace, canvas = document.createElement('canvas')): HTMLCanvasElement {
-  canvas.width = 256;
-  canvas.height = 256;
+  canvas.width = FACE;
+  canvas.height = FACE;
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
-  const g = ctx.createLinearGradient(0, 0, kind === 'px' || kind === 'nx' ? 256 : 0, 256);
+  const g = ctx.createLinearGradient(0, 0, kind === 'px' || kind === 'nx' ? FACE : 0, FACE);
   if (kind === 'py') {
     g.addColorStop(0, '#8aa3c8');
     g.addColorStop(1, '#2a3d5c');
@@ -53,33 +54,53 @@ function paintDuskFace(kind: CubeFace, canvas = document.createElement('canvas')
     g.addColorStop(1, '#02060f');
   }
   ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillRect(0, 0, FACE, FACE);
   ctx.fillStyle = 'rgba(255, 228, 176, 0.42)';
   for (let i = 0; i < 48; i++) {
-    ctx.fillRect((i * 53) % 256, 150 + ((i * 23) % 90), 2, 2);
+    ctx.fillRect((i * 53) % FACE, 300 + ((i * 23) % 180), 3, 3);
   }
   return canvas;
 }
 
 function stampCanaryFace(ctx: CanvasRenderingContext2D, img: HTMLImageElement, kind: CubeFace): void {
+  const size = ctx.canvas.width;
   const [fx, fy, fw, fh] = CANARY_CROP[kind];
   const sx = fx * img.width;
   const sy = fy * img.height;
   const sw = Math.max(1, fw * img.width);
   const sh = Math.max(1, fh * img.height);
-  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 256, 256);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
   ctx.fillStyle = CANARY_WASH[kind];
-  ctx.fillRect(0, 0, 256, 256);
+  ctx.fillRect(0, 0, size, size);
   if (kind === 'py' || kind === 'ny') return;
-  ctx.fillStyle = 'rgba(255, 228, 176, 0.46)';
-  for (let i = 0; i < 36; i++) {
-    ctx.fillRect((i * 53) % 256, 142 + ((i * 23) % 78), 2, 2);
+  ctx.fillStyle = 'rgba(255, 228, 176, 0.38)';
+  for (let i = 0; i < 28; i++) {
+    ctx.fillRect((i * 53) % size, 280 + ((i * 23) % 160), 2, 2);
   }
 }
 
 const duskFaces = CUBE_FACES.map((kind) => paintDuskFace(kind));
 let duskEnv: THREE.CubeTexture | null = null;
 let canaryStampStarted = false;
+let canaryReady = false;
+let canaryImg: HTMLImageElement | null = null;
+const duskWaiters: Array<() => void> = [];
+
+export function visionStill(): HTMLImageElement | null {
+  return canaryImg;
+}
+
+/** Run after the Canary still is stamped, or immediately if it already is. */
+export function onDuskPhoto(cb: () => void): void {
+  if (canaryReady) cb();
+  else duskWaiters.push(cb);
+}
+
+function flushDuskPhoto(): void {
+  canaryReady = true;
+  const queued = duskWaiters.splice(0);
+  for (const fn of queued) fn();
+}
 
 /** Stamp the live Canary still onto the painted cube. Painted faces stay if the JPEG fails. */
 function stampCanaryOntoDusk(): void {
@@ -88,16 +109,18 @@ function stampCanaryOntoDusk(): void {
   const img = new Image();
   img.decoding = 'async';
   img.onload = () => {
+    canaryImg = img;
     CUBE_FACES.forEach((kind, i) => {
       const ctx = duskFaces[i]?.getContext('2d');
       if (ctx) stampCanaryFace(ctx, img, kind);
     });
     if (duskEnv) duskEnv.needsUpdate = true;
+    flushDuskPhoto();
   };
   img.src = '/visuals/topics/canary.jpg';
 }
 
-/** Canary-dusk cube. Painted sync fallback; Vision photograph stamped after load. No PMREM. */
+/** Canary-dusk cube. Painted sync fallback; Vision photograph stamped after load. */
 export function duskCubeMap(): THREE.CubeTexture {
   if (duskEnv) return duskEnv;
   duskEnv = new THREE.CubeTexture(duskFaces);
@@ -105,6 +128,33 @@ export function duskCubeMap(): THREE.CubeTexture {
   duskEnv.needsUpdate = true;
   stampCanaryOntoDusk();
   return duskEnv;
+}
+
+/** Hardware IBL from the Vision cube. Software GL stays fail-closed. RoomEnvironment is fallback only. */
+export function applyPhotoEnv(
+  renderer: THREE.WebGLRenderer,
+  scene: THREE.Scene,
+  lite: boolean,
+): void {
+  if (lite) return;
+  let gen: THREE.PMREMGenerator | null = null;
+  const bake = (): void => {
+    try {
+      gen ??= new THREE.PMREMGenerator(renderer);
+      const cube = duskCubeMap();
+      cube.needsUpdate = true;
+      scene.environment = gen.fromCubemap(cube).texture;
+    } catch {
+      try {
+        gen ??= new THREE.PMREMGenerator(renderer);
+        scene.environment = gen.fromScene(new RoomEnvironment(), 0.04).texture;
+      } catch {
+        // Lights-only path if both IBL routes stall.
+      }
+    }
+  };
+  bake();
+  onDuskPhoto(bake);
 }
 
 export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
@@ -217,14 +267,14 @@ export function plateMaterial(
   lite: boolean,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   return lite
-    ? duskSheen({ color: 0x1a2438, reflectivity: 0.55 })
+    ? duskSheen({ color: 0x1a2438, reflectivity: 0.62 })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
-        roughness: 0.22,
-        metalness: 0.1,
-        clearcoat: 0.62,
-        clearcoatRoughness: 0.22,
-        envMapIntensity: 1.15,
+        roughness: 0.18,
+        metalness: 0.12,
+        clearcoat: 0.72,
+        clearcoatRoughness: 0.16,
+        envMapIntensity: 1.45,
       });
 }
 
@@ -237,22 +287,14 @@ export function applyPlateMap(
   mat.needsUpdate = true;
 }
 
-/** Room IBL and bloom only on a named hardware GPU. Software GL stays fail-closed. */
+/** Photographic IBL and bloom only on a named hardware GPU. Software GL stays fail-closed. */
 export function addUnrealLook(
   renderer: THREE.WebGLRenderer,
   scene: THREE.Scene,
   camera: THREE.Camera,
   lite: boolean,
 ): EffectComposer | null {
-  if (!lite) {
-    try {
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-      pmrem.dispose();
-    } catch {
-      // Lights-only path if RoomEnvironment stalls.
-    }
-  }
+  applyPhotoEnv(renderer, scene, lite);
   if (!canUseBloom(renderer)) return null;
   try {
     const composer = new EffectComposer(renderer);
