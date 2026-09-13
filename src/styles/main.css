@@ -5258,7 +5258,8 @@ body.stage-open .grok {
 .cinema-chapter .text-link,
 .reveal-body .text-link,
 .chapter .text-link,
-.chapter.city-essay button.text-link {
+.chapter.city-essay button.text-link,
+button.text-link {
   appearance: none;
   background: transparent;
   border: 0;
