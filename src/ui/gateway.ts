@@ -217,16 +217,19 @@ function glassTex(photo: HTMLImageElement | null, on: boolean, cut: GlassCut): T
 function glassMat(
   tex: THREE.Texture,
   lite: boolean,
-  opts: { on?: boolean; transmission?: number; thickness?: number } = {},
-): CutMat {
+  opts: { on?: boolean; transmission?: number; thickness?: number; shade?: boolean } = {},
+): CutMat | THREE.MeshBasicMaterial {
+  if (lite && opts.shade === false) {
+    return new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide });
+  }
   return lite
     ? new THREE.MeshPhongMaterial({
         map: tex,
         color: 0xffffff,
-        shininess: 78,
-        specular: new THREE.Color(0xd8e6ff),
+        shininess: 38,
+        specular: new THREE.Color(0x8aa3c8),
         emissive: 0x071018,
-        emissiveIntensity: 0.12,
+        emissiveIntensity: 0.1,
         side: THREE.DoubleSide,
       })
     : diamondPhysical(tex, opts);
@@ -488,13 +491,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, { transmission: 0.82, thickness: 0.7 });
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
-    glassMat(glassTex(photo0, false, 'table'), lite, { transmission: 0.38, thickness: 0.28 }),
+    glassMat(glassTex(photo0, false, 'table'), lite, { transmission: 0.38, thickness: 0.28, shade: false }),
   );
   table.rotation.x = -Math.PI / 2;
   table.position.y = tableY;
   table.userData.nodeId = 6;
   crystal.add(table);
-  const addCut = (geo: THREE.BufferGeometry, mat: CutMat, list: THREE.Mesh[]): void => {
+  const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData.nodeId = 6;
     crystal.add(mesh);
@@ -580,11 +583,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
-      ? new THREE.MeshPhongMaterial({
-          map: (table.material as CutMat).map,
+      ? new THREE.MeshBasicMaterial({
+          map: (table.material as THREE.MeshBasicMaterial).map,
           color: 0xffffff,
-          shininess: 48,
-          specular: new THREE.Color(0xd8e6ff),
           transparent: true,
           opacity: 0.26,
         })
@@ -715,7 +716,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   let gateLit = false;
   const swapMap = (
-    mat: CutMat,
+    mat: CutMat | THREE.MeshBasicMaterial,
     next: THREE.CanvasTexture,
   ): void => {
     mat.map?.dispose();
@@ -724,7 +725,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   };
   const stampJewel = (on: boolean): void => {
     const photo = visionStill();
-    const tmat = table.material as CutMat;
+    const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     swapMap(tmat, glassTex(photo, on, 'table'));
     swapMap(crownMat, glassTex(photo, on, 'crown'));
     swapMap(pavMat, glassTex(photo, false, 'pav'));
