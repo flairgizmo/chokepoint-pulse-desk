@@ -190,13 +190,27 @@ export function printGradeStill(
   x = 0,
   y = 0,
 ): void {
+  let avg = 110;
+  try {
+    const img = ctx.getImageData(x, y, Math.max(1, w), Math.max(1, h));
+    let acc = 0;
+    let n = 0;
+    for (let i = 0; i < img.data.length; i += 32) {
+      acc += (img.data[i] + img.data[i + 1] + img.data[i + 2]) / 3;
+      n += 1;
+    }
+    if (n) avg = acc / n;
+  } catch {
+    avg = 110;
+  }
+  const t = Math.min(1, Math.max(0, (avg - 70) / 130));
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(16, 20, 32, 0.28)';
+  ctx.fillStyle = `rgba(16, 20, 32, ${(0.14 + t * 0.32).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = 'rgba(255, 188, 130, 0.06)';
+  ctx.fillStyle = `rgba(255, 188, 130, ${(0.04 + t * 0.05).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'source-over';
   ctx.restore();
