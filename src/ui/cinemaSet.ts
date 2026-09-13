@@ -275,7 +275,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.62;
   scene.add(floor);
-  scene.add(makeFloorPool());
+  scene.add(makeFloorPool(-0.605));
   onPhotoEnv(backdropSrc, () => {
     const prev = floorMat.map;
     floorMat.map = cinemaFloorMap(photoFor(backdropSrc) ?? visionStill());
@@ -333,7 +333,8 @@ export function makeFloorContact(w = 2.6, d = 1.55, y = -0.608): THREE.Mesh {
   return mesh;
 }
 
-function makeFloorPool(): THREE.Mesh {
+/** Additive warm/cyan pool just above a floor plane. */
+export function makeFloorPool(y = -0.605, size = 5.4): THREE.Mesh {
   const c = document.createElement('canvas');
   c.width = 256;
   c.height = 256;
@@ -347,7 +348,7 @@ function makeFloorPool(): THREE.Mesh {
     ctx.fillRect(0, 0, 256, 256);
   }
   const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(5.4, 5.4),
+    new THREE.PlaneGeometry(size, size),
     new THREE.MeshBasicMaterial({
       map: hardenCanvasTex(new THREE.CanvasTexture(c)),
       transparent: true,
@@ -357,7 +358,7 @@ function makeFloorPool(): THREE.Mesh {
     }),
   );
   mesh.rotation.x = -Math.PI / 2;
-  mesh.position.y = -0.605;
+  mesh.position.y = y;
   mesh.renderOrder = 1;
   return mesh;
 }

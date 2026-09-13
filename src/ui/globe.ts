@@ -53,13 +53,16 @@ function makeLabelSprite(text: string): THREE.Sprite {
   if (ctx) {
     ctx.clearRect(0, 0, 256, 64);
     ctx.font = '600 26px Outfit, "IBM Plex Sans", system-ui, sans-serif';
-    ctx.fillStyle = 'rgba(11, 18, 32, 0.88)';
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.82)';
     const w = Math.min(240, ctx.measureText(text).width + 24);
     ctx.beginPath();
-    if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 14, w, 36, 8);
+    if (typeof ctx.roundRect === 'function') ctx.roundRect(8, 14, w, 36, 6);
     else ctx.rect(8, 14, w, 36);
     ctx.fill();
-    ctx.fillStyle = '#f4f7fb';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.16)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillStyle = '#eaf1ff';
     ctx.fillText(text, 20, 40);
   }
   const tex = new THREE.CanvasTexture(canvas);
@@ -447,8 +450,8 @@ export class EarthGlobe {
       tex.needsUpdate = true;
     });
     skyTex.colorSpace = THREE.SRGBColorSpace;
-    scene.background = skyTex;
-    const skyMat = duskSheen({ map: skyTex, reflectivity: 0.1, side: THREE.BackSide });
+    scene.background = new THREE.Color(0x070b14);
+    const skyMat = duskSheen({ map: skyTex, color: 0x3f5168, reflectivity: 0.12, side: THREE.BackSide });
     skyMat.depthWrite = false;
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(16, 48, 28), skyMat));
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
@@ -461,7 +464,7 @@ export class EarthGlobe {
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
     const globeMat = this.lite
-      ? duskSheen({ color: 0x16384a, reflectivity: 0.38 })
+      ? duskSheen({ color: 0x16384a, reflectivity: 0.48 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x16384a,
           roughness: 0.28,

@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaFloorMap, climbUserData, duskSheen, hardenCanvasTex, makeCinemaPlate, makeFloorContact, onDuskPhoto, visionStill } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskSheen, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -77,10 +77,18 @@ function paintPhotoGlass(
     const bx = ((fx + 0.28) % 1) * photo.naturalWidth;
     const by = ((fy + 0.18) % 0.7) * photo.naturalHeight;
     ctx.save();
-    ctx.globalAlpha = cut === 'table' ? 0.26 : cut === 'pav' ? 0.4 : 0.3;
+    ctx.globalAlpha = cut === 'table' ? 0.3 : cut === 'pav' ? 0.46 : 0.36;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(photo, bx, by, sw * 0.72, sh * 0.72, 0, h * 0.1, w, h * 0.9);
+    ctx.restore();
+    const cx = ((fx + 0.62) % 1) * photo.naturalWidth;
+    const cy = ((fy + 0.42) % 0.62) * photo.naturalHeight;
+    ctx.save();
+    ctx.globalAlpha = cut === 'pav' ? 0.22 : 0.16;
+    ctx.translate(0, h);
+    ctx.scale(1, -1);
+    ctx.drawImage(photo, cx, cy, sw * 0.48, sh * 0.48, w * 0.08, h * 0.18, w * 0.84, h * 0.64);
     ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
@@ -101,7 +109,7 @@ function paintPhotoGlass(
   }
   ctx.globalCompositeOperation = 'screen';
   const catchL = ctx.createLinearGradient(0, 0, w * 0.58, h * 0.42);
-  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.16)' : 'rgba(234, 241, 255, 0.36)');
+  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.16)' : 'rgba(234, 241, 255, 0.42)');
   catchL.addColorStop(0.5, 'rgba(234, 241, 255, 0)');
   ctx.fillStyle = catchL;
   ctx.beginPath();
@@ -110,18 +118,27 @@ function paintPhotoGlass(
   ctx.lineTo(0, h * 0.4);
   ctx.closePath();
   ctx.fill();
-  const fire = ctx.createLinearGradient(w, 0, 0, h);
-  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.2)' : 'rgba(60, 230, 255, 0.18)');
-  fire.addColorStop(0.38, 'rgba(21, 87, 255, 0)');
+  const fire = ctx.createLinearGradient(w, 0, w * 0.42, h * 0.38);
+  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.34)' : 'rgba(60, 230, 255, 0.3)');
+  fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
   ctx.fillStyle = fire;
-  ctx.fillRect(0, 0, w, h);
+  ctx.beginPath();
+  ctx.moveTo(w, 0);
+  ctx.lineTo(w, h * 0.38);
+  ctx.lineTo(w * 0.42, 0);
+  ctx.closePath();
+  ctx.fill();
   ctx.globalCompositeOperation = 'source-over';
-  ctx.strokeStyle = i % 2 ? 'rgba(255, 92, 176, 0.52)' : 'rgba(90, 240, 255, 0.48)';
-  ctx.lineWidth = Math.max(3, w / 64);
-  ctx.strokeRect(5, 5, w - 10, h - 10);
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.26)';
+  ctx.strokeStyle = i % 2 ? 'rgba(255, 92, 176, 0.42)' : 'rgba(90, 240, 255, 0.4)';
   ctx.lineWidth = Math.max(2, w / 80);
-  ctx.strokeRect(12, 12, w - 24, h - 24);
+  ctx.beginPath();
+  ctx.moveTo(8, 8);
+  ctx.lineTo(w - 8, 8);
+  ctx.lineTo(w - 8, h * 0.22);
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.22)';
+  ctx.lineWidth = Math.max(1.5, w / 96);
+  ctx.strokeRect(14, 14, w - 28, h - 28);
 }
 
 function diamondPhysical(
@@ -163,7 +180,7 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, 512, 512);
   if (photo?.naturalWidth) {
-    ctx.globalAlpha = 0.5;
+    ctx.globalAlpha = 0.62;
     ctx.drawImage(
       photo,
       photo.naturalWidth * 0.26,
@@ -178,20 +195,20 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
     ctx.globalAlpha = 1;
   }
   ctx.globalCompositeOperation = 'screen';
-  const g = ctx.createRadialGradient(256, 256, 8, 256, 256, 244);
-  g.addColorStop(0, 'rgba(234, 241, 255, 0.72)');
-  g.addColorStop(0.2, 'rgba(90, 240, 255, 0.34)');
-  g.addColorStop(0.48, 'rgba(255, 72, 168, 0.16)');
+  const g = ctx.createRadialGradient(256, 256, 6, 256, 256, 248);
+  g.addColorStop(0, 'rgba(234, 241, 255, 0.88)');
+  g.addColorStop(0.16, 'rgba(90, 240, 255, 0.46)');
+  g.addColorStop(0.38, 'rgba(255, 72, 168, 0.22)');
   g.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 512, 512);
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.2)';
-  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.16)';
+  ctx.lineWidth = 2;
   for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2;
+    const a = (i / 8) * Math.PI * 2 + 0.18;
     ctx.beginPath();
-    ctx.moveTo(256, 256);
-    ctx.lineTo(256 + Math.cos(a) * 220, 256 + Math.sin(a) * 220);
+    ctx.moveTo(256 + Math.cos(a) * 28, 256 + Math.sin(a) * 28);
+    ctx.lineTo(256 + Math.cos(a) * 210, 256 + Math.sin(a) * 210);
     ctx.stroke();
   }
   ctx.globalCompositeOperation = 'source-over';
@@ -468,13 +485,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     map: causticTex,
     color: 0xffffff,
     transparent: true,
-    opacity: 0.42,
+    opacity: 0.58,
     depthWrite: false,
+    blending: THREE.AdditiveBlending,
   });
-  const caustic = new THREE.Mesh(new THREE.CircleGeometry(1.15, 48), causticMat);
+  const caustic = new THREE.Mesh(new THREE.CircleGeometry(1.28, 48), causticMat);
   caustic.rotation.x = -Math.PI / 2;
   caustic.position.y = -0.31;
   scene.add(caustic);
+  scene.add(makeFloorPool(-0.315, 3.2));
   const halo = new THREE.Mesh(
     new THREE.CircleGeometry(1.08, 48),
     new THREE.MeshBasicMaterial({
@@ -490,11 +509,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
-    scene.background = tex;
+    tex.needsUpdate = true;
   });
   backdropTex.colorSpace = THREE.SRGBColorSpace;
-  scene.background = backdropTex;
-  const cycMat = duskSheen({ map: backdropTex, reflectivity: 0.14 });
+  scene.background = new THREE.Color(0x070b14);
+  const cycMat = duskSheen({ map: backdropTex, color: 0x3f5168, reflectivity: 0.18 });
   cycMat.depthWrite = false;
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(32, 15.2), cycMat);
   backdrop.position.set(0, 1.45, -5.6);
@@ -598,7 +617,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.MeshBasicMaterial({
         color: i % 2 ? 0xff5cb0 : 0x5af0ff,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.32,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         side: THREE.DoubleSide,
@@ -705,16 +724,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
-    new THREE.TorusGeometry(0.22, 0.028, lite ? 8 : 16, lite ? 24 : 48),
+    new THREE.TorusGeometry(0.22, 0.014, lite ? 8 : 16, lite ? 24 : 48),
     lite
-      ? duskSheen({ color: 0x00d4aa, reflectivity: 0.55 })
+      ? cinemaChrome(true)
       : new THREE.MeshPhysicalMaterial({
-          color: 0x00a878,
-          metalness: 0.35,
-          roughness: 0.22,
-          emissive: 0x00a878,
-          emissiveIntensity: 0.55,
-          clearcoat: 0.7,
+          color: 0x3d4f6c,
+          metalness: 0.86,
+          roughness: 0.18,
+          emissive: 0x1557ff,
+          emissiveIntensity: 0.18,
+          clearcoat: 0.8,
         }),
   );
   rt2.rotation.x = Math.PI / 2;
@@ -724,13 +743,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const rt2Disk = new THREE.Mesh(
     new THREE.CircleGeometry(0.18, lite ? 24 : 32),
     lite
-      ? duskSheen({ color: 0xeaf1ff, reflectivity: 0.42, transparent: true, opacity: 0.88 })
+      ? duskSheen({ color: 0x1a2438, reflectivity: 0.38, transparent: true, opacity: 0.72 })
       : new THREE.MeshPhysicalMaterial({
-          color: 0xffffff,
-          roughness: 0.3,
-          metalness: 0.08,
+          color: 0x122038,
+          roughness: 0.22,
+          metalness: 0.28,
           transparent: true,
-          opacity: 0.92,
+          opacity: 0.78,
+          clearcoat: 0.7,
         }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
@@ -906,7 +926,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       rt2.material.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
     } else {
       (rt2.material as THREE.MeshBasicMaterial).color.setHex(
-        selected === 7 || hover === 7 ? 0x3cffc4 : 0x00d4aa,
+        selected === 7 || hover === 7 ? 0x8eb0ff : 0x3d4f6c,
       );
     }
   };
@@ -930,11 +950,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
-    causticMat.opacity = reduced ? 0.26 : 0.2 + Math.abs(Math.sin((now - t0) / 1600)) * 0.18;
+    causticMat.opacity = reduced ? 0.36 : 0.32 + Math.abs(Math.sin((now - t0) / 1600)) * 0.28;
     halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
     stars.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;
-      mat.opacity = reduced ? 0.3 : 0.2 + Math.abs(Math.sin((now - t0) / 720 + i)) * 0.45;
+      mat.opacity = reduced ? 0.18 : 0.12 + Math.abs(Math.sin((now - t0) / 720 + i)) * 0.28;
     });
     sparks.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;

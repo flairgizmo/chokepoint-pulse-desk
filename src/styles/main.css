@@ -5263,3 +5263,49 @@ body.stage-open .grok {
   border-color: rgba(234, 241, 255, 0.16);
   box-shadow: 0 22px 48px rgba(11, 31, 92, 0.18);
 }
+
+.earth-hero.cinema-earth {
+  border-color: #111827;
+  box-shadow: 0 32px 90px rgba(7, 11, 20, 0.28);
+}
+
+.earth-hud .hud-card,
+.earth-hud .hud-tools,
+.earth-hud .hud-more,
+.earth-hud .hud-city {
+  background: color-mix(in srgb, #0b1220 82%, transparent);
+  border-color: rgba(234, 241, 255, 0.14);
+  color: #eaf1ff;
+  backdrop-filter: blur(16px);
+}
+
+.earth-hud .hud-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.65rem 0.8rem;
+}
+
+.earth-hud .hud-card select {
+  background: #122038;
+  color: #eaf1ff;
+  border-color: rgba(234, 241, 255, 0.16);
+}
+
+.earth-hud .isr-line {
+  background: color-mix(in srgb, #0b1220 72%, transparent);
+  color: #8aa3c8;
+  border: 1px solid rgba(234, 241, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.35rem 0.65rem;
+}
+
+@media (max-width: 720px) {
+  .earth-hud .hud-help,
+  .earth-hud .hud-card .kicker {
+    display: none;
+  }
+
+  .earth-hud .hud-more {
+    display: none;
+  }
+}
