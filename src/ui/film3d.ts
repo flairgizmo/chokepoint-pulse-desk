@@ -308,8 +308,8 @@ function mountFilm3D(
     ay += (ty - ay) * 0.08;
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
-    camera.position.setFromSphericalCoords(lite ? 3.18 : 3.05, ax, ay);
-    camera.lookAt(0, -0.08, 0.18);
+    camera.position.setFromSphericalCoords(lite ? 3.52 : 3.32, ax, ay);
+    camera.lookAt(0, -0.14, 0.22);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };

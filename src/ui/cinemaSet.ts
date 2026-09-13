@@ -182,6 +182,10 @@ export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
   return tex;
 }
 
+function photoFor(src: string): HTMLImageElement | null {
+  return packs.get(src)?.img ?? (src === CANARY_STILL ? canaryImg : null);
+}
+
 export function cinemaFloorMap(photo: HTMLImageElement | null = visionStill()): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 512;
@@ -235,7 +239,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = tex;
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = duskSheen({ map: tex, reflectivity: 0.16, envSrc: backdropSrc });
+  const cycMat = duskSheen({ map: tex, reflectivity: 0.28, envSrc: backdropSrc });
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);
@@ -248,32 +252,36 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   right.rotation.y = -0.78;
   scene.add(right);
 
-  const floor = new THREE.Mesh(
-    new THREE.CircleGeometry(6.4, lite ? 48 : 96),
-    lite
-      ? duskSheen({
-          map: cinemaFloorMap(),
-          reflectivity: 0.48,
-          transparent: true,
-          opacity: 0.94,
-          envSrc: backdropSrc,
-        })
-      : new THREE.MeshPhysicalMaterial({
-          map: cinemaFloorMap(),
-          color: 0xffffff,
-          roughness: 0.06,
-          metalness: 0.42,
-          clearcoat: 1,
-          clearcoatRoughness: 0.04,
-          transparent: true,
-          opacity: 0.9,
-          envMapIntensity: 1.65,
-        }),
-  );
+  const floorMat = lite
+    ? duskSheen({
+        map: cinemaFloorMap(photoFor(backdropSrc)),
+        reflectivity: 0.58,
+        transparent: true,
+        opacity: 0.96,
+        envSrc: backdropSrc,
+      })
+    : new THREE.MeshPhysicalMaterial({
+        map: cinemaFloorMap(photoFor(backdropSrc)),
+        color: 0xffffff,
+        roughness: 0.06,
+        metalness: 0.42,
+        clearcoat: 1,
+        clearcoatRoughness: 0.04,
+        transparent: true,
+        opacity: 0.9,
+        envMapIntensity: 1.65,
+      });
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(6.4, lite ? 48 : 96), floorMat);
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.62;
   scene.add(floor);
   scene.add(makeFloorPool());
+  onPhotoEnv(backdropSrc, () => {
+    const prev = floorMat.map;
+    floorMat.map = cinemaFloorMap(photoFor(backdropSrc) ?? visionStill());
+    floorMat.needsUpdate = true;
+    prev?.dispose();
+  });
 
   scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.7 : 0.4));
   scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.68 : 0.52));
@@ -284,6 +292,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   rim.position.set(-2.4, 1.3, -1.6);
   scene.add(rim);
   addCinemaHaze(scene);
+  addPracticals(scene);
 }
 
 let contactMap: THREE.CanvasTexture | null = null;
@@ -353,6 +362,34 @@ function makeFloorPool(): THREE.Mesh {
   return mesh;
 }
 
+function addPracticals(scene: THREE.Scene): void {
+  const bulbs: Array<readonly [number, number, number, number]> = [
+    [2.85, 1.82, -2.15, 0xffc56a],
+    [-3.05, 1.48, -2.35, 0x6aa8ff],
+    [0.15, 2.35, -3.15, 0xeaf1ff],
+  ];
+  for (const [x, y, z, color] of bulbs) {
+    const lamp = new THREE.Mesh(
+      new THREE.SphereGeometry(0.055, 8, 8),
+      new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.9 }),
+    );
+    lamp.position.set(x, y, z);
+    scene.add(lamp);
+    const glow = new THREE.Mesh(
+      new THREE.SphereGeometry(0.26, 10, 10),
+      new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 0.16,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      }),
+    );
+    glow.position.set(x, y, z);
+    scene.add(glow);
+  }
+}
+
 /** Additive dusk shafts. Reads on software GL; hardware bloom picks them up. */
 export function addCinemaHaze(scene: THREE.Scene): void {
   const cool = new THREE.MeshBasicMaterial({
@@ -368,7 +405,7 @@ export function addCinemaHaze(scene: THREE.Scene): void {
   scene.add(wash);
   const warm = cool.clone();
   warm.color.setHex(0xffc56a);
-  warm.opacity = 0.055;
+  warm.opacity = 0.08;
   const shaft = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 15), warm);
   shaft.position.set(-2.6, 1.7, -3.5);
   shaft.rotation.z = 0.2;

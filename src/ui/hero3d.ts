@@ -1,7 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
-import { addUnrealLook, applyPlateMap, makeCinemaPlate } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, duskSheen, makeCinemaPlate, makeFloorContact } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -41,16 +41,27 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(28, 1, 0.08, 20);
-  camera.position.set(0, 0, 1.72);
+  camera.position.set(0, 0.14, 1.92);
 
   const tex = new THREE.TextureLoader().load(src, (next) => {
     next.colorSpace = THREE.SRGBColorSpace;
     next.needsUpdate = true;
   });
   tex.colorSpace = THREE.SRGBColorSpace;
+  scene.background = tex;
+
+  const cyc = new THREE.Mesh(
+    new THREE.PlaneGeometry(7.2, 3.4),
+    duskSheen({ map: tex, reflectivity: 0.24, envSrc: src }),
+  );
+  cyc.position.set(0, 0.2, -1.45);
+  scene.add(cyc);
+  addCinemaHaze(scene);
+  scene.add(makeFloorContact(2.9, 1.55, -0.56));
 
   const plate = makeCinemaPlate(2.42, 1.04, probe.lite, src);
   applyPlateMap(plate.mat, tex);
+  plate.root.position.y = 0.1;
   scene.add(plate.root);
 
   scene.add(new THREE.AmbientLight(0xffffff, probe.lite ? 1 : 0.55));
@@ -106,7 +117,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     if (!reduced) plate.root.position.z = Math.sin(now / 4200) * 0.025;
     camera.position.x = parx * 0.1;
     camera.position.y = -pary * 0.07;
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(0, 0.02, 0);
     if (composer) composer.render();
     else renderer.render(scene, camera);
     frames += 1;
