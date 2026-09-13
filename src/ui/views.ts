@@ -886,9 +886,9 @@ export function renderCbdc(): string {
   ${quoteRail('cbdc')}
   ${cinemaDiagram('liability', '/visuals/plates/liability-line.svg', 'Three liabilities: central-bank, commercial-bank deposit, private stablecoin')}
   <ol class="liability-cards">
-    <li data-kind="cbdc"><span class="n">01</span><div><h3>CBDC</h3><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> The Bank of England Synchronisation Lab is adjacent experimentation on wholesale rails.</p></div></li>
-    <li data-kind="deposit"><span class="n">02</span><div><h3>Tokenised deposit</h3><p><b>Who owes it.</b> A commercial bank.</p><p><b>Example.</b> GBTD tokens between ${GBTD_BANKS.map(bankDisplay).join(', ')}.</p><p><b>On this map.</b> The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</p></div></li>
-    <li data-kind="stable"><span class="n">03</span><div><h3>Stablecoin / crypto</h3><p><b>Who owes it.</b> Usually a private issuer or protocol.</p><p><b>Example.</b> x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</p><p><b>On this map.</b> Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</p></div></li>
+    <li data-kind="cbdc">${photoFigure(PLATES.payments, 'liability-still')}<span class="n">01</span><div><h3>CBDC</h3><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> The Bank of England Synchronisation Lab is adjacent experimentation on wholesale rails.</p></div></li>
+    <li data-kind="deposit">${photoFigure(PLATES.canary, 'liability-still')}<span class="n">02</span><div><h3>Tokenised deposit</h3><p><b>Who owes it.</b> A commercial bank.</p><p><b>Example.</b> GBTD tokens between ${GBTD_BANKS.map(bankDisplay).join(', ')}.</p><p><b>On this map.</b> The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</p></div></li>
+    <li data-kind="stable">${photoFigure(PLATES.exchange, 'liability-still')}<span class="n">03</span><div><h3>Stablecoin / crypto</h3><p><b>Who owes it.</b> Usually a private issuer or protocol.</p><p><b>Example.</b> x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</p><p><b>On this map.</b> Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</p></div></li>
   </ol>
   <section class="cbdc-models">
     ${kicker('Three models')}
@@ -939,10 +939,10 @@ export function renderStandards(): string {
     <h2 class="display">SATP’s two-phase commit sits inside stage 3 — not instead of the stages.</h2>
     <ol class="stages">${stages}</ol>
     <ul class="acid">
-      <li><strong>Atomicity</strong> The transfer commits on both networks or fails with no state change.</li>
-      <li><strong>Consistency</strong> When it ends, the asset lives in exactly one network.</li>
-      <li><strong>Isolation</strong> Origin state is not modified by anyone else while locked.</li>
-      <li><strong>Durability</strong> Once committed, a gateway crash does not undo it.</li>
+      <li>${photoFigure(PLATES.canary, 'acid-still')}<strong>Atomicity</strong><span>The transfer commits on both networks or fails with no state change.</span></li>
+      <li>${photoFigure(PLATES.geneva, 'acid-still')}<strong>Consistency</strong><span>When it ends, the asset lives in exactly one network.</span></li>
+      <li>${photoFigure(PLATES.fiber, 'acid-still')}<strong>Isolation</strong><span>Origin state is not modified by anyone else while locked.</span></li>
+      <li>${photoFigure(PLATES.ucl, 'acid-still')}<strong>Durability</strong><span>Once committed, a gateway crash does not undo it.</span></li>
     </ul>
   </section>
   <div class="chapter-stack cinema-room">${chaptersFor('standards').map(chapterCard).join('')}</div>
@@ -1250,19 +1250,19 @@ export function renderMarkets(print?: MarketPrint): string {
     <h2 class="display">Why QNT exists.</h2>
     <div class="tokencards">
       <details class="tokencard" open>
-        <summary><span class="n">01</span> Utility</summary>
+        <summary>${photoFigure(PLATES.fiber, 'token-still')}<span class="tokencard-label"><span class="n">01</span> Utility</span></summary>
         <p>Overledger licences settle in QNT. That is the product reason the token trades. It is the utility token of Quant Network, distinct from equity in Quant Network Ltd.</p>
       </details>
       <details class="tokencard">
-        <summary><span class="n">02</span> Scarcity</summary>
+        <summary>${photoFigure(PLATES.exchange, 'token-still')}<span class="tokencard-label"><span class="n">02</span> Scarcity</span></summary>
         <p>On 14 September 2018 Quant sent the unsold allocation to the contract itself. Their post records total supply 14,612,493.080826178 QNT. Bitstamp’s MiCA whitepaper cites a post-burn maximum of 14,881,364. Both figures sit on the record. Today’s circulating print is CoinGecko’s.</p>
       </details>
       <details class="tokencard">
-        <summary><span class="n">03</span> Licence lock</summary>
+        <summary>${photoFigure(PLATES.canary, 'token-still')}<span class="tokencard-label"><span class="n">03</span> Licence lock</span></summary>
         <p>Bitstamp’s MiCA filing (13 May 2026) records that licences can lock QNT for the term of the licence. Locked tokens are not a claim that a holder never sells. They are a contractual term on a utility token.</p>
       </details>
       <details class="tokencard">
-        <summary><span class="n">04</span> The contract</summary>
+        <summary>${photoFigure(PLATES.datacenter, 'token-still')}<span class="tokencard-label"><span class="n">04</span> The contract</span></summary>
         <p>ERC-20 on Ethereum. ${esc(QNT_CONTRACT)}. Check it on Etherscan before you send anything. Burn transaction ${extLink(sources.qntBurnTx, '0x763f32a0…')}.</p>
       </details>
     </div>

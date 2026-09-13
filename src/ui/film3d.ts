@@ -67,6 +67,7 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
         ctx.beginPath();
         ctx.rect(x, y, pw, ph);
         ctx.clip();
+        if (!portrait) ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
         ctx.drawImage(img, x + (pw - dw) / 2, y + (ph - dh) * (portrait ? 0.22 : 0.18), dw, dh);
         ctx.restore();
       }
@@ -149,7 +150,9 @@ function plateTexture(
         const dw = img.naturalWidth * scale;
         const dh = img.naturalHeight * scale;
         const faceBias = img.naturalHeight >= img.naturalWidth ? 0.16 : 0.42;
+        ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
         ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
+        ctx.filter = 'none';
       }
     }
     ctx.fillStyle = '#05070c';

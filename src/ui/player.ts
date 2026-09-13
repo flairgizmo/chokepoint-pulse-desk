@@ -18,6 +18,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
     .map(
       (item) => `<li>
         <a class="pod-item${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}">
+          <img class="pod-still" src="${esc(item.posterSrc)}" alt="" width="640" height="360" loading="lazy" decoding="async" />
           <span class="n">${String(item.n).padStart(2, '0')}</span>
           <span>
             <strong>${esc(item.title)}</strong>
