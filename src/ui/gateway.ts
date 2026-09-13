@@ -219,6 +219,30 @@ function diamondPhysical(
   });
 }
 
+function iceCatchTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.clearRect(0, 0, 256, 256);
+    const catchL = ctx.createRadialGradient(92, 78, 2, 92, 78, 96);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.62)');
+    catchL.addColorStop(0.28, 'rgba(234, 241, 255, 0.16)');
+    catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
+    ctx.fillStyle = catchL;
+    ctx.fillRect(0, 0, 256, 256);
+    const rim = ctx.createRadialGradient(128, 128, 78, 128, 128, 126);
+    rim.addColorStop(0, 'rgba(234, 241, 255, 0)');
+    rim.addColorStop(1, 'rgba(234, 241, 255, 0.22)');
+    ctx.fillStyle = rim;
+    ctx.fillRect(0, 0, 256, 256);
+  }
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = 512;
@@ -707,13 +731,25 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
-    glassMat(glassTex(photo0, false, 'table'), lite, {
-      transmission: 0.38,
-      thickness: 0.28,
-      shade: false,
-      tint: 0xf2f6fc,
-      window: lite ? 0.22 : undefined,
-    }),
+    lite
+      ? (() => {
+          const ice = new THREE.MeshBasicMaterial({
+            map: iceCatchTex(),
+            color: 0xe8f0fa,
+            transparent: true,
+            opacity: 0.16,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+          });
+          ice.toneMapped = false;
+          return ice;
+        })()
+      : glassMat(glassTex(photo0, false, 'table'), lite, {
+          transmission: 0.38,
+          thickness: 0.28,
+          shade: false,
+          tint: 0xf2f6fc,
+        }),
   );
   table.position.y = tableY;
   table.userData.nodeId = 6;
@@ -820,6 +856,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const heartStamp: Array<CutMat | THREE.MeshBasicMaterial> = [];
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
+  let flareRoot: THREE.Group | null = null;
   if (lite) {
     const heartCrownA = glassMat(glassTex(photo0, false, 'crown', 0, true), true, {
       tint: 0xffffff,
@@ -898,6 +935,25 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.add(ghost);
     ghostRoot = ghost;
+    const flare = heart.clone(true);
+    flare.scale.setScalar(0.7);
+    flare.rotation.set(-0.1, 0.48, 0.07);
+    flare.position.set(0.028, -0.018, -0.024);
+    flare.traverse((obj) => {
+      if (!(obj instanceof THREE.Mesh)) return;
+      const src = obj.material;
+      if (!(src instanceof THREE.MeshBasicMaterial)) return;
+      const mat = src.clone();
+      mat.color.setHex(0xb4dcff);
+      mat.transparent = true;
+      mat.opacity = 0.32;
+      mat.depthWrite = false;
+      mat.toneMapped = false;
+      obj.material = mat;
+      heartStamp.push(mat);
+    });
+    crystal.add(flare);
+    flareRoot = flare;
   }
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.028, 0.046, 0.028, sides),
@@ -994,8 +1050,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     base,
     rt2,
     ...cards,
+    table,
     ...(heartRoot ? [heartRoot] : []),
     ...(ghostRoot ? [ghostRoot] : []),
+    ...(flareRoot ? [flareRoot] : []),
   ];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -1045,7 +1103,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const stampJewel = (on: boolean): void => {
     const photo = visionStill();
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
-    swapMap(tmat, glassTex(photo, on, 'table'));
+    if (lite && tmat instanceof THREE.MeshBasicMaterial) {
+      tmat.opacity = on ? 0.22 : 0.16;
+      tmat.color.setHex(on ? 0xffffff : 0xe8f0fa);
+      tmat.needsUpdate = true;
+    } else {
+      swapMap(tmat, glassTex(photo, on, 'table'));
+    }
     swapMap(crownA, glassTex(photo, on, 'crown', 0));
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
@@ -1130,6 +1194,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }
     if (ghostRoot) {
       ghostRoot.rotation.y = -0.22 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 1.2) * 0.04);
+    }
+    if (flareRoot) {
+      flareRoot.rotation.y = 0.48 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 2.1) * 0.045);
     }
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;
