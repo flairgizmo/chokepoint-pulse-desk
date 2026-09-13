@@ -160,20 +160,20 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   const camera = new THREE.PerspectiveCamera(28, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
-  const composer = addUnrealLook(renderer, scene, camera, lite);
+  const composer = addUnrealLook(renderer, scene, camera, lite, '/visuals/topics/canary.jpg');
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const slabs: THREE.Mesh[] = [];
   let isolated: string | null = null;
 
   STACK_SLABS.forEach((layer) => {
-    const mat = plateMaterial(lite);
+    const mat = plateMaterial(lite, '/visuals/topics/canary.jpg');
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.36, 1.12, 0.05), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(2.48, 1.22, 0.02),
-      duskSheen({ color: 0xd7e4ff, reflectivity: 0.58 }),
+      duskSheen({ color: 0xd7e4ff, reflectivity: 0.58, envSrc: '/visuals/topics/canary.jpg' }),
     );
     chrome.position.z = -0.04;
     mesh.add(chrome);

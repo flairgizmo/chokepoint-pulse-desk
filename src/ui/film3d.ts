@@ -234,7 +234,7 @@ function mountFilm3D(
   const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
-  const composer = addUnrealLook(renderer, scene, camera, lite);
+  const composer = addUnrealLook(renderer, scene, camera, lite, backdrop);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const plates: THREE.Mesh[] = [];
@@ -243,7 +243,7 @@ function mountFilm3D(
   let featured = featuredBase;
 
   slides.forEach((slide) => {
-    const mat = plateMaterial(lite);
+    const mat = plateMaterial(lite, backdrop);
     const mesh = new THREE.Mesh(
       new THREE.BoxGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, 0.05),
       mat,
@@ -251,7 +251,7 @@ function mountFilm3D(
     mesh.userData.slide = slide;
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(portrait ? 1.14 : 2.24, portrait ? 1.48 : 1.3, 0.02),
-      duskSheen({ color: 0xd7e4ff, reflectivity: 0.62 }),
+      duskSheen({ color: 0xd7e4ff, reflectivity: 0.62, envSrc: backdrop }),
     );
     chrome.position.z = -0.04;
     mesh.add(chrome);

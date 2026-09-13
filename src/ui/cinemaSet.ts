@@ -79,69 +79,86 @@ function stampCanaryFace(ctx: CanvasRenderingContext2D, img: HTMLImageElement, k
   }
 }
 
-const duskFaces = CUBE_FACES.map((kind) => paintDuskFace(kind));
-let duskEnv: THREE.CubeTexture | null = null;
-let canaryStampStarted = false;
-let canaryReady = false;
+export const CANARY_STILL = '/visuals/topics/canary.jpg';
+
+type CubePack = {
+  faces: HTMLCanvasElement[];
+  env: THREE.CubeTexture;
+  started: boolean;
+  ready: boolean;
+  img: HTMLImageElement | null;
+  waiters: Array<() => void>;
+};
+
+const packs = new Map<string, CubePack>();
 let canaryImg: HTMLImageElement | null = null;
-const duskWaiters: Array<() => void> = [];
 
 export function visionStill(): HTMLImageElement | null {
   return canaryImg;
 }
 
-/** Run after the Canary still is stamped, or immediately if it already is. */
-export function onDuskPhoto(cb: () => void): void {
-  if (canaryReady) cb();
-  else duskWaiters.push(cb);
+function ensurePack(src: string): CubePack {
+  const hit = packs.get(src);
+  if (hit) return hit;
+  const faces = CUBE_FACES.map((kind) => paintDuskFace(kind));
+  const env = new THREE.CubeTexture(faces);
+  env.colorSpace = THREE.SRGBColorSpace;
+  env.needsUpdate = true;
+  const pack: CubePack = { faces, env, started: false, ready: false, img: null, waiters: [] };
+  packs.set(src, pack);
+  stampPhotoOntoPack(src, pack);
+  return pack;
 }
 
-function flushDuskPhoto(): void {
-  canaryReady = true;
-  const queued = duskWaiters.splice(0);
-  for (const fn of queued) fn();
-}
-
-/** Stamp the live Canary still onto the painted cube. Painted faces stay if the JPEG fails. */
-function stampCanaryOntoDusk(): void {
-  if (canaryStampStarted || typeof Image === 'undefined') return;
-  canaryStampStarted = true;
+function stampPhotoOntoPack(src: string, pack: CubePack): void {
+  if (pack.started || typeof Image === 'undefined') return;
+  pack.started = true;
   const img = new Image();
   img.decoding = 'async';
   img.onload = () => {
-    canaryImg = img;
+    pack.img = img;
+    if (src === CANARY_STILL) canaryImg = img;
     CUBE_FACES.forEach((kind, i) => {
-      const ctx = duskFaces[i]?.getContext('2d');
+      const ctx = pack.faces[i]?.getContext('2d');
       if (ctx) stampCanaryFace(ctx, img, kind);
     });
-    if (duskEnv) duskEnv.needsUpdate = true;
-    flushDuskPhoto();
+    pack.env.needsUpdate = true;
+    pack.ready = true;
+    const queued = pack.waiters.splice(0);
+    for (const fn of queued) fn();
   };
-  img.src = '/visuals/topics/canary.jpg';
+  img.src = src;
 }
 
-/** Canary-dusk cube. Painted sync fallback; Vision photograph stamped after load. */
-export function duskCubeMap(): THREE.CubeTexture {
-  if (duskEnv) return duskEnv;
-  duskEnv = new THREE.CubeTexture(duskFaces);
-  duskEnv.colorSpace = THREE.SRGBColorSpace;
-  duskEnv.needsUpdate = true;
-  stampCanaryOntoDusk();
-  return duskEnv;
+/** Run after that still is stamped onto its cube, or immediately if it already is. */
+export function onPhotoEnv(src: string, cb: () => void): void {
+  const pack = ensurePack(src);
+  if (pack.ready) cb();
+  else pack.waiters.push(cb);
 }
 
-/** Hardware IBL from the Vision cube. Software GL stays fail-closed. RoomEnvironment is fallback only. */
+export function onDuskPhoto(cb: () => void): void {
+  onPhotoEnv(CANARY_STILL, cb);
+}
+
+/** Vision cube for a still. Painted sync fallback; photograph stamped after load. */
+export function duskCubeMap(src = CANARY_STILL): THREE.CubeTexture {
+  return ensurePack(src).env;
+}
+
+/** Hardware IBL from a Vision cube. Software GL stays fail-closed. RoomEnvironment is fallback only. */
 export function applyPhotoEnv(
   renderer: THREE.WebGLRenderer,
   scene: THREE.Scene,
   lite: boolean,
+  src = CANARY_STILL,
 ): void {
   if (lite) return;
   let gen: THREE.PMREMGenerator | null = null;
   const bake = (): void => {
     try {
       gen ??= new THREE.PMREMGenerator(renderer);
-      const cube = duskCubeMap();
+      const cube = duskCubeMap(src);
       cube.needsUpdate = true;
       scene.environment = gen.fromCubemap(cube).texture;
     } catch {
@@ -154,7 +171,7 @@ export function applyPhotoEnv(
     }
   };
   bake();
-  onDuskPhoto(bake);
+  onPhotoEnv(src, bake);
 }
 
 export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
@@ -202,7 +219,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = tex;
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = duskSheen({ map: tex, reflectivity: 0.16 });
+  const cycMat = duskSheen({ map: tex, reflectivity: 0.16, envSrc: backdropSrc });
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);
@@ -218,7 +235,13 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(6.4, lite ? 48 : 96),
     lite
-      ? duskSheen({ map: cinemaFloorMap(), reflectivity: 0.48, transparent: true, opacity: 0.94 })
+      ? duskSheen({
+          map: cinemaFloorMap(),
+          reflectivity: 0.48,
+          transparent: true,
+          opacity: 0.94,
+          envSrc: backdropSrc,
+        })
       : new THREE.MeshPhysicalMaterial({
           color: 0x101826,
           roughness: 0.08,
@@ -250,11 +273,12 @@ export function duskSheen(opts: {
   transparent?: boolean;
   opacity?: number;
   combine?: THREE.Combine;
+  envSrc?: string;
 }): THREE.MeshBasicMaterial {
   return new THREE.MeshBasicMaterial({
     color: opts.color ?? 0xffffff,
     map: opts.map ?? null,
-    envMap: duskCubeMap(),
+    envMap: duskCubeMap(opts.envSrc),
     reflectivity: opts.reflectivity ?? 0.36,
     combine: opts.combine ?? THREE.MixOperation,
     side: opts.side ?? THREE.FrontSide,
@@ -265,9 +289,10 @@ export function duskSheen(opts: {
 
 export function plateMaterial(
   lite: boolean,
+  envSrc?: string,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   return lite
-    ? duskSheen({ color: 0x1a2438, reflectivity: 0.62 })
+    ? duskSheen({ color: 0x1a2438, reflectivity: 0.62, envSrc })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
         roughness: 0.18,
@@ -293,8 +318,9 @@ export function addUnrealLook(
   scene: THREE.Scene,
   camera: THREE.Camera,
   lite: boolean,
+  envSrc = CANARY_STILL,
 ): EffectComposer | null {
-  applyPhotoEnv(renderer, scene, lite);
+  applyPhotoEnv(renderer, scene, lite, envSrc);
   if (!canUseBloom(renderer)) return null;
   try {
     const composer = new EffectComposer(renderer);

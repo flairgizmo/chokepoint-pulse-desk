@@ -43,129 +43,96 @@ function containDraw(
   ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-function drawVisionFire(
+const GLASS_TINT = [
+  'rgba(21, 87, 255, 0.42)',
+  'rgba(196, 58, 134, 0.38)',
+  'rgba(18, 153, 180, 0.4)',
+  'rgba(61, 114, 224, 0.4)',
+  'rgba(143, 46, 212, 0.36)',
+  'rgba(10, 168, 136, 0.38)',
+];
+
+function paintPhotoGlass(
   ctx: CanvasRenderingContext2D,
   photo: HTMLImageElement | null,
   i: number,
   w: number,
   h: number,
+  on = false,
 ): void {
-  if (!photo?.naturalWidth) return;
-  const cols = 4;
-  const fx = (i % cols) / cols;
-  const fy = ((i * 3) % 5) / 8;
-  const sx = fx * photo.naturalWidth;
-  const sy = fy * photo.naturalHeight;
-  const sw = Math.max(1, photo.naturalWidth * 0.42);
-  const sh = Math.max(1, photo.naturalHeight * 0.55);
-  ctx.save();
-  ctx.globalCompositeOperation = 'overlay';
-  ctx.globalAlpha = 0.7;
-  ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
-  ctx.restore();
+  ctx.fillStyle = '#02060f';
+  ctx.fillRect(0, 0, w, h);
+  if (photo?.naturalWidth) {
+    const cols = 4;
+    const fx = (i % cols) / cols;
+    const fy = ((Math.floor(i / cols) * 3 + i) % 5) / 8;
+    const sx = fx * photo.naturalWidth;
+    const sy = fy * photo.naturalHeight;
+    const sw = Math.max(1, photo.naturalWidth * 0.5);
+    const sh = Math.max(1, photo.naturalHeight * 0.62);
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = on ? 'rgba(234, 241, 255, 0.55)' : GLASS_TINT[i % GLASS_TINT.length];
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = 'source-over';
+  } else {
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, on ? '#f4f7fb' : '#1557FF');
+    g.addColorStop(1, '#02060f');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+  }
+  ctx.globalCompositeOperation = 'screen';
+  const fire = ctx.createLinearGradient(w, 0, 0, h);
+  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.32)' : 'rgba(60, 230, 255, 0.28)');
+  fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
+  ctx.fillStyle = fire;
+  ctx.fillRect(0, 0, w, h);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.42)';
+  ctx.lineWidth = Math.max(4, w / 48);
+  ctx.strokeRect(6, 6, w - 12, h - 12);
 }
 
 function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = null): HTMLCanvasElement {
-  const shades = [
-    ['#2458d8', '#0d3fd4', '#02060f'],
-    ['#c43a86', '#1557FF', '#02060f'],
-    ['#1299b4', '#1557FF', '#02060f'],
-    ['#3d72e0', '#0d3fd4', '#02060f'],
-    ['#8f2ed4', '#1557FF', '#02060f'],
-    ['#0aa888', '#1557FF', '#02060f'],
-  ][i % 6];
   const c = document.createElement('canvas');
-  c.width = 256;
-  c.height = 512;
+  c.width = 512;
+  c.height = 1024;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  const g = ctx.createLinearGradient(20, 0, 240, 512);
-  g.addColorStop(0, on ? '#f4f7fb' : shades[0]);
-  g.addColorStop(0.28, shades[1]);
-  g.addColorStop(0.72, shades[2]);
-  g.addColorStop(1, '#02060f');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 256, 512);
-  const fire = ctx.createLinearGradient(256, 0, 0, 512);
-  fire.addColorStop(0, 'rgba(255, 72, 168, 0.72)');
-  fire.addColorStop(0.38, 'rgba(60, 230, 255, 0.5)');
-  fire.addColorStop(1, 'rgba(21, 87, 255, 0.12)');
-  ctx.fillStyle = fire;
-  ctx.fillRect(0, 0, 256, 512);
-  const sheen = ctx.createLinearGradient(0, 0, 200, 260);
-  sheen.addColorStop(0, 'rgba(255,255,255,0.18)');
-  sheen.addColorStop(0.45, 'rgba(255,255,255,0.06)');
-  sheen.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = sheen;
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(176, 0);
-  ctx.lineTo(0, 300);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.46)';
-  ctx.lineWidth = 8;
-  ctx.strokeRect(8, 8, 240, 496);
-  drawVisionFire(ctx, photo, i, 256, 512);
+  paintPhotoGlass(ctx, photo, i, 512, 1024, on);
   if (i === 0) {
     ctx.fillStyle = 'rgba(244,247,251,0.96)';
-    ctx.font = '800 132px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '800 260px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', 128, 268);
-  } else if (i % 2 === 1) {
-    ctx.fillStyle = 'rgba(6, 20, 51, 0.18)';
-    ctx.fillRect(0, 0, 256, 512);
+    ctx.fillText('Q', 256, 540);
   }
   return c;
 }
 
 function pavCanvas(i: number, photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  c.width = 256;
-  c.height = 256;
+  c.width = 512;
+  c.height = 512;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  const g = ctx.createLinearGradient(28, 0, 220, 256);
-  if (i % 2) {
-    g.addColorStop(0, '#b8d4ff');
-    g.addColorStop(0.38, '#1557FF');
-    g.addColorStop(1, '#02060f');
-  } else {
-    g.addColorStop(0, '#5b93ff');
-    g.addColorStop(0.48, '#061433');
-    g.addColorStop(1, '#02060f');
-  }
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, 256, 256);
-  const fire = ctx.createLinearGradient(256, 0, 0, 256);
-  fire.addColorStop(0, 'rgba(255, 88, 186, 0.52)');
-  fire.addColorStop(0.48, 'rgba(60, 230, 255, 0.28)');
-  fire.addColorStop(1, 'rgba(0, 0, 0, 0)');
-  ctx.fillStyle = fire;
-  ctx.fillRect(0, 0, 256, 256);
-  drawVisionFire(ctx, photo, i + 8, 256, 256);
+  paintPhotoGlass(ctx, photo, i + 8, 512, 512);
   return c;
 }
 
 function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  c.width = 256;
-  c.height = 256;
+  c.width = 512;
+  c.height = 512;
   const ctx = c.getContext('2d');
   if (ctx) {
-    const g = ctx.createRadialGradient(128, 128, 8, 128, 128, 128);
-    g.addColorStop(0, '#9cc4ff');
-    g.addColorStop(0.42, '#1557FF');
-    g.addColorStop(1, '#061433');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, 256, 256);
-    drawVisionFire(ctx, photo, 16, 256, 256);
+    paintPhotoGlass(ctx, photo, 16, 512, 512);
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '800 118px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '800 236px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', 128, 140);
+    ctx.fillText('Q', 256, 280);
   }
   return c;
 }
@@ -181,8 +148,8 @@ function facetMaterial(
   return lite
     ? duskSheen({
         map: tex,
-        reflectivity: 0.4,
-        combine: THREE.AddOperation,
+        reflectivity: 0.28,
+        combine: THREE.MixOperation,
         side: THREE.DoubleSide,
       })
     : new THREE.MeshPhysicalMaterial({
@@ -199,6 +166,48 @@ function facetMaterial(
       });
 }
 
+function quadGeo(
+  ax: number,
+  ay: number,
+  az: number,
+  bx: number,
+  by: number,
+  bz: number,
+  cx: number,
+  cy: number,
+  cz: number,
+  dx: number,
+  dy: number,
+  dz: number,
+): THREE.BufferGeometry {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz, ax, ay, az, cx, cy, cz, dx, dy, dz], 3),
+  );
+  g.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], 2));
+  g.computeVertexNormals();
+  return g;
+}
+
+function triGeo(
+  ax: number,
+  ay: number,
+  az: number,
+  bx: number,
+  by: number,
+  bz: number,
+  cx: number,
+  cy: number,
+  cz: number,
+): THREE.BufferGeometry {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz], 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute([0.5, 0, 1, 1, 0, 1], 2));
+  g.computeVertexNormals();
+  return g;
+}
+
 function pavMaterial(
   i: number,
   lite: boolean,
@@ -209,8 +218,8 @@ function pavMaterial(
   return lite
     ? duskSheen({
         map: tex,
-        reflectivity: 0.58,
-        combine: THREE.AddOperation,
+        reflectivity: 0.3,
+        combine: THREE.MixOperation,
         side: THREE.DoubleSide,
       })
     : new THREE.MeshPhysicalMaterial({
@@ -424,7 +433,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   scene.add(fill);
 
   const crystal = new THREE.Group();
-  const facets: THREE.Mesh[] = [];
+  const crowns: THREE.Mesh[] = [];
+  const pavs: THREE.Mesh[] = [];
   const stars: THREE.Mesh[] = [];
   const sparks: THREE.Mesh[] = [];
   const sides = 8;
@@ -435,6 +445,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const eqR = 0.48;
   const eqY = 0.48;
   const botY = -0.16;
+  const midR = tableR + (eqR - tableR) * 0.52;
+  const midY = tableY + (eqY - tableY) * 0.48;
+  const pavR = eqR * 0.42;
+  const pavY = eqY + (botY - eqY) * 0.52;
   const tableTex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas(visionStill())));
   tableTex.colorSpace = THREE.SRGBColorSpace;
   const table = new THREE.Mesh(
@@ -442,8 +456,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     lite
       ? duskSheen({
           map: tableTex,
-          reflectivity: 0.48,
-          combine: THREE.AddOperation,
+          reflectivity: 0.3,
+          combine: THREE.MixOperation,
           side: THREE.DoubleSide,
         })
       : new THREE.MeshPhysicalMaterial({
@@ -460,6 +474,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   table.position.y = tableY;
   table.userData.nodeId = 6;
   crystal.add(table);
+  const addCut = (geo: THREE.BufferGeometry, mat: THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial, list: THREE.Mesh[]): void => {
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData.nodeId = 6;
+    crystal.add(mesh);
+    list.push(mesh);
+  };
   for (let i = 0; i < sides; i++) {
     const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
     const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
@@ -467,32 +487,23 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const tz0 = Math.sin(a0) * tableR;
     const tx1 = Math.cos(a1) * tableR;
     const tz1 = Math.sin(a1) * tableR;
+    const mx0 = Math.cos(a0) * midR;
+    const mz0 = Math.sin(a0) * midR;
+    const mx1 = Math.cos(a1) * midR;
+    const mz1 = Math.sin(a1) * midR;
     const x0 = Math.cos(a0) * eqR;
     const z0 = Math.sin(a0) * eqR;
     const x1 = Math.cos(a1) * eqR;
     const z1 = Math.sin(a1) * eqR;
-    const upper = new THREE.BufferGeometry();
-    upper.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(
-        [tx0, tableY, tz0, x0, eqY, z0, x1, eqY, z1, tx0, tableY, tz0, x1, eqY, z1, tx1, tableY, tz1],
-        3,
-      ),
-    );
-    upper.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], 2));
-    upper.computeVertexNormals();
-    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite, visionStill()));
-    face.userData.nodeId = 6;
-    crystal.add(face);
-    facets.push(face);
-    const lower = new THREE.BufferGeometry();
-    lower.setAttribute('position', new THREE.Float32BufferAttribute([0, botY, 0, x1, eqY, z1, x0, eqY, z0], 3));
-    lower.setAttribute('uv', new THREE.Float32BufferAttribute([0.5, 0, 1, 1, 0, 1], 2));
-    lower.computeVertexNormals();
-    const pav = new THREE.Mesh(lower, pavMaterial(i, lite, visionStill()));
-    pav.userData.nodeId = 6;
-    crystal.add(pav);
-    facets.push(pav);
+    const px0 = Math.cos(a0) * pavR;
+    const pz0 = Math.sin(a0) * pavR;
+    const px1 = Math.cos(a1) * pavR;
+    const pz1 = Math.sin(a1) * pavR;
+    const photo = visionStill();
+    addCut(quadGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, mx1, midY, mz1), facetMaterial(i, false, lite, photo), crowns);
+    addCut(quadGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, tx1, tableY, tz1), facetMaterial(i + 8, false, lite, photo), crowns);
+    addCut(quadGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, x1, eqY, z1), pavMaterial(i, lite, photo), pavs);
+    addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1), pavMaterial(i + 8, lite, photo), pavs);
     const amid = (a0 + a1) / 2;
     const starR = tableR + (eqR - tableR) * 0.4;
     const starY = tableY + (eqY - tableY) * 0.4;
@@ -536,10 +547,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const z = Math.sin(a) * eqR;
     const tx = Math.cos(a) * tableR;
     const tz = Math.sin(a) * tableR;
+    const mx = Math.cos(a) * midR;
+    const mz = Math.sin(a) * midR;
+    const px = Math.cos(a) * pavR;
+    const pz = Math.sin(a) * pavR;
     edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
     edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
-    edgePts.push(tx, tableY, tz, x, eqY, z);
-    edgePts.push(x, eqY, z, 0, botY, 0);
+    edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
+    edgePts.push(tx, tableY, tz, mx, midY, mz);
+    edgePts.push(mx, midY, mz, x, eqY, z);
+    edgePts.push(x, eqY, z, px, pavY, pz);
+    edgePts.push(px, pavY, pz, 0, botY, 0);
   }
   const edgeGeo = new THREE.BufferGeometry();
   edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
@@ -736,7 +754,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [...facets, ...stars, ...sparks, core, base, girdle, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, girdle, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.24 : 1.3;
@@ -782,9 +800,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tmat.map?.dispose();
     tmat.map = ttex;
     tmat.needsUpdate = true;
-    facets.forEach((mesh, i) => {
+    crowns.forEach((mesh, i) => {
       const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mesh.material = i % 2 === 1 ? pavMaterial((i - 1) / 2, lite, photo) : facetMaterial(i / 2, on, lite, photo);
+      mesh.material = facetMaterial(i, on && i === 0, lite, photo);
+      prev.map?.dispose();
+      prev.dispose();
+    });
+    pavs.forEach((mesh, i) => {
+      const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+      mesh.material = pavMaterial(i, lite, photo);
       prev.map?.dispose();
       prev.dispose();
     });
