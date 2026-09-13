@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
@@ -28,8 +28,11 @@ describe('Topic plates', () => {
 
   it('ships the topic JPEGs used on Vision', () => {
     for (const file of ['ucl.jpg', 'fiber.jpg', 'canary.jpg', 'city.jpg', 'library.jpg', 'exchange.jpg', 'datacenter.jpg', 'cable.jpg', 'payments.jpg', 'radio.jpg', 'newsroom.jpg', 'patents-hall.jpg']) {
-      expect(existsSync(resolve(process.cwd(), 'public/visuals/topics', file)), file).toBe(true);
+      const path = resolve(process.cwd(), 'public/visuals/topics', file);
+      expect(existsSync(path), file).toBe(true);
     }
+    expect(statSync(resolve(process.cwd(), 'public/visuals/topics/canary.jpg')).size).toBeGreaterThan(200_000);
+    expect(statSync(resolve(process.cwd(), 'public/visuals/topics/ucl.jpg')).size).toBeGreaterThan(200_000);
   });
 
   it('maps each city id to that city’s Wikimedia still', () => {

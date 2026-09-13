@@ -199,22 +199,34 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         pctx.fillStyle = '#070b14';
         pctx.fillRect(0, 0, W, H);
         if (backdrop.complete && backdrop.naturalWidth) {
-          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight) * 1.2;
+          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight) * 1.18;
           const dw = backdrop.naturalWidth * scale;
           const dh = backdrop.naturalHeight * scale;
-          pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.22, dw, dh);
+          const dx = (W - dw) / 2;
+          const dy = (H - dh) / 2 - H * 0.2;
+          pctx.drawImage(backdrop, dx, dy, dw, dh);
+          pctx.save();
+          pctx.beginPath();
+          pctx.rect(0, H * 0.58, W, H * 0.42);
+          pctx.clip();
+          pctx.translate(0, H * 1.22);
+          pctx.scale(1, -0.42);
+          pctx.globalAlpha = 0.38;
+          pctx.filter = 'blur(1.2px)';
+          pctx.drawImage(backdrop, dx, dy, dw, dh);
+          pctx.restore();
         }
         const fade = pctx.createLinearGradient(0, 0, 0, H);
-        fade.addColorStop(0, 'rgba(6, 10, 20, 0.06)');
-        fade.addColorStop(0.36, 'rgba(6, 10, 20, 0.1)');
-        fade.addColorStop(0.58, 'rgba(6, 10, 20, 0.42)');
-        fade.addColorStop(0.78, 'rgba(6, 10, 20, 0.78)');
-        fade.addColorStop(1, 'rgba(6, 10, 20, 0.9)');
+        fade.addColorStop(0, 'rgba(6, 10, 20, 0.04)');
+        fade.addColorStop(0.32, 'rgba(6, 10, 20, 0.08)');
+        fade.addColorStop(0.54, 'rgba(6, 10, 20, 0.28)');
+        fade.addColorStop(0.7, 'rgba(6, 10, 20, 0.62)');
+        fade.addColorStop(1, 'rgba(6, 10, 20, 0.88)');
         pctx.fillStyle = fade;
         pctx.fillRect(0, 0, W, H);
-        const vignette = pctx.createRadialGradient(W * 0.5, H * 0.42, H * 0.12, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
-        vignette.addColorStop(0, 'rgba(21, 87, 255, 0.08)');
-        vignette.addColorStop(1, 'rgba(4, 8, 16, 0.42)');
+        const vignette = pctx.createRadialGradient(W * 0.5, H * 0.38, H * 0.1, W * 0.5, H * 0.48, Math.max(W, H) * 0.74);
+        vignette.addColorStop(0, 'rgba(21, 87, 255, 0.05)');
+        vignette.addColorStop(1, 'rgba(4, 8, 16, 0.38)');
         pctx.fillStyle = vignette;
         pctx.fillRect(0, 0, W, H);
       }
@@ -317,24 +329,32 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
-      const depth = 0.78 + Math.max(0, p[2] + 0.6) * 0.18;
-      const rw = Math.max(70, W / 11.2) * depth;
-      const rh = Math.max(30, W / 26) * depth;
+      const depth = 0.8 + Math.max(0, p[2] + 0.55) * 0.2;
+      const rw = Math.max(78, W / 10.4) * depth;
+      const rh = Math.max(34, W / 24) * depth;
+      const yaw = (p[0] - W / 2) / Math.max(1, W * 0.62);
       ctx.save();
       if (reflect) {
-        ctx.globalAlpha = 0.18;
-        ctx.translate(p[0], p[1] + rh * 0.95);
-        ctx.scale(1, -0.42);
+        ctx.globalAlpha = 0.16;
+        ctx.translate(p[0], p[1] + rh * 1.05);
+        ctx.scale(1, -0.38);
         ctx.translate(-p[0], -p[1]);
       }
-      ctx.shadowColor = on ? 'rgba(90, 150, 255, 0.45)' : 'rgba(5, 10, 20, 0.45)';
-      ctx.shadowBlur = on ? 32 : 20;
-      ctx.shadowOffsetY = reflect ? 0 : 10;
-      roundRect(p[0] - rw / 2, p[1] - rh / 2, rw, rh, 12);
-      ctx.fillStyle = '#FFFFFF';
+      ctx.translate(p[0], p[1]);
+      ctx.transform(1, 0, yaw * 0.18, 0.92 + depth * 0.08, 0, 0);
+      if (!reflect) {
+        ctx.shadowColor = on ? 'rgba(90, 150, 255, 0.5)' : 'rgba(5, 10, 20, 0.55)';
+        ctx.shadowBlur = on ? 28 : 18;
+        ctx.shadowOffsetY = 12;
+      }
+      ctx.fillStyle = '#c8d0e0';
+      roundRect(-rw / 2 + 5, -rh / 2 + 8, rw, rh, 11);
       ctx.fill();
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
+      roundRect(-rw / 2, -rh / 2, rw, rh, 11);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fill();
       ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
       ctx.lineWidth = on ? 2.2 : 1.1;
       ctx.stroke();
@@ -345,11 +365,11 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         const scale = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight);
         const dw = logo.naturalWidth * scale;
         const dh = logo.naturalHeight * scale;
-        ctx.drawImage(logo, p[0] - dw / 2, p[1] - dh / 2, dw, dh);
+        ctx.drawImage(logo, -dw / 2, -dh / 2, dw, dh);
       } else {
         ctx.fillStyle = '#0B1F5C';
         ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-        ctx.fillText(bank.short, p[0], p[1]);
+        ctx.fillText(bank.short, 0, 0);
       }
       ctx.restore();
     };

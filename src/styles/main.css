@@ -516,7 +516,7 @@ main {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 60%, #16324a 0%, #0b1016 62%);
+    radial-gradient(ellipse at 50% 58%, #10243c 0%, #070b12 64%);
 }
 
 .earth-canvas {
@@ -2781,11 +2781,12 @@ button.chip {
 .film-card img,
 .film-bed {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 21 / 9;
   object-fit: cover;
-  border-radius: 10px;
+  border-radius: 12px;
   margin-bottom: 0.75rem;
-  background: #dce8ff;
+  background: #0b1220;
+  filter: saturate(1.08) contrast(1.06);
 }
 
 .era-bed {

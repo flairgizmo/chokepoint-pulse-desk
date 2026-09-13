@@ -196,7 +196,9 @@ function filmRail(): string {
       .map(
         (f) => `<li>
           <button type="button" class="film-card${f.thumb ? ' has-thumb' : ''}" data-stage="source" data-stage-id="${esc(f.title)}" data-title="${esc(f.title)}" data-url="${esc(f.href)}" data-source="${esc(f.who)}">
-            ${diagramFigure(`film-${f.title}`, 'source', f.kind)}
+            ${f.thumb
+              ? `<img class="film-bed" src="${esc(f.thumb)}" alt="" width="640" height="360" loading="lazy" decoding="async" />`
+              : diagramFigure(`film-${f.title}`, 'source', f.kind)}
             <div>
               <p class="kicker">${esc(f.kind)}</p>
               <strong>${esc(f.title)}</strong>

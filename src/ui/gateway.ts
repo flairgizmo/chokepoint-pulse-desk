@@ -146,20 +146,20 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   scene.add(group);
 
   const floor = new THREE.Mesh(
-    new THREE.CircleGeometry(3.4, 72),
+    new THREE.CircleGeometry(4.4, 96),
     new THREE.MeshPhysicalMaterial({
-      color: 0x9aa8c4,
-      roughness: 0.08,
-      metalness: 0.28,
+      color: 0x1b2a44,
+      roughness: 0.05,
+      metalness: 0.58,
       clearcoat: 1,
-      clearcoatRoughness: 0.08,
+      clearcoatRoughness: 0.04,
       transparent: true,
-      opacity: 0.38,
-      envMapIntensity: 1.15,
+      opacity: 0.52,
+      envMapIntensity: 1.45,
     }),
   );
   floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -0.28;
+  floor.position.y = -0.3;
   scene.add(floor);
 
   const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg');
@@ -196,12 +196,12 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       metalness: 0.72,
       roughness: 0.1,
       iridescence: 1,
-      iridescenceIOR: 1.32,
+      iridescenceIOR: 1.34,
       clearcoat: 1,
-      clearcoatRoughness: 0.06,
+      clearcoatRoughness: 0.045,
       emissive: 0x1557ff,
-      emissiveIntensity: 0.38,
-      envMapIntensity: 1.35,
+      emissiveIntensity: 0.48,
+      envMapIntensity: 1.55,
     }),
   );
   hex.rotation.x = -Math.PI / 2;
@@ -265,7 +265,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       clearcoatRoughness: 0.18,
       transparent: true,
     });
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(0.86, 0.37), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.37, 0.05), mat);
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.18, z);
     mesh.userData.nodeId = bank.id;
