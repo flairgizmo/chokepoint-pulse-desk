@@ -83,12 +83,9 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   ctx.strokeStyle = 'rgba(234, 241, 255, 0.38)';
   ctx.lineWidth = 8;
   ctx.strokeRect(8, 8, 240, 496);
-  if (i === 0) {
-    ctx.fillStyle = 'rgba(244,247,251,0.94)';
-    ctx.font = '800 108px Outfit, IBM Plex Sans, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Q', 128, 268);
+  if (i % 2 === 1) {
+    ctx.fillStyle = 'rgba(6, 20, 51, 0.55)';
+    ctx.fillRect(0, 0, 256, 512);
   }
   return c;
 }
@@ -417,16 +414,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   core.position.y = 0.5;
   core.userData.nodeId = 6;
   crystal.add(core);
+  const girdle = new THREE.Mesh(
+    new THREE.TorusGeometry(eqR, 0.016, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0xeaf1ff }),
+  );
+  girdle.rotation.x = Math.PI / 2;
+  girdle.position.y = eqY;
+  girdle.userData.nodeId = 6;
+  crystal.add(girdle);
   const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.18, 0.26, 0.06, 8),
-    lite
-      ? new THREE.MeshBasicMaterial({ color: 0x9eb6e8 })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0x9eb6e8,
-          metalness: 0.7,
-          roughness: 0.22,
-          clearcoat: 0.7,
-        }),
+    new THREE.CylinderGeometry(0.05, 0.08, 0.04, 8),
+    new THREE.MeshBasicMaterial({ color: 0x0b1f5c }),
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
@@ -554,7 +552,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [...facets, core, base, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...facets, core, base, girdle, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 0.98 : 1.05;
