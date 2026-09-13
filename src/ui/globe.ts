@@ -450,6 +450,18 @@ export class EarthGlobe {
       }
     }
     scene.add(stars(this.lite ? 600 : 1800));
+    const skyTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.needsUpdate = true;
+    });
+    skyTex.colorSpace = THREE.SRGBColorSpace;
+    scene.background = skyTex;
+    scene.add(
+      new THREE.Mesh(
+        new THREE.SphereGeometry(16, 48, 28),
+        new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, depthWrite: false }),
+      ),
+    );
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
 
@@ -460,9 +472,9 @@ export class EarthGlobe {
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
     const globeMat = this.lite
-      ? new THREE.MeshBasicMaterial({ color: 0x0b2a32 })
+      ? new THREE.MeshBasicMaterial({ color: 0x16384a })
       : new THREE.MeshPhysicalMaterial({
-          color: 0x0b2a32,
+          color: 0x16384a,
           roughness: 0.38,
           metalness: 0.22,
           emissive: 0x031016,
@@ -565,7 +577,7 @@ export class EarthGlobe {
       );
     }
 
-    scene.add(new THREE.AmbientLight(0x6b7c8c, 0.32));
+    scene.add(new THREE.AmbientLight(0x8ea0b8, this.lite ? 0.62 : 0.36));
     const key = new THREE.DirectionalLight(0xfff4e5, 1.85);
     key.position.set(-2.6, 1.2, 2.4);
     this.sun = key;

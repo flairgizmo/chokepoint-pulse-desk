@@ -86,14 +86,19 @@ export function upgradeStack3D(canvas: HTMLCanvasElement): Stack3DHandle | null 
 }
 
 function paintTitle(ctx: CanvasRenderingContext2D, title: string, maxW: number, x: number, y: number): void {
-  let size = 46;
+  let size = 52;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.font = `800 ${size}px Arial, sans-serif`;
-  while (size > 28 && ctx.measureText(title).width > maxW) {
+  while (size > 30 && ctx.measureText(title).width > maxW) {
     size -= 2;
     ctx.font = `800 ${size}px Arial, sans-serif`;
   }
+  ctx.lineJoin = 'round';
+  ctx.miterLimit = 2;
+  ctx.strokeStyle = '#05070c';
+  ctx.lineWidth = 8;
+  ctx.strokeText(title, x, y);
   ctx.fillText(title, x, y);
 }
 
@@ -117,10 +122,10 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.filter = 'saturate(1.12) contrast(1.08) brightness(1.08)';
     ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) / 2, dw, dh);
     ctx.filter = 'none';
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
-    ctx.fillRect(0, 628, 1280, 92);
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
+    ctx.fillRect(0, 600, 1280, 120);
     ctx.fillStyle = '#EAF1FF';
-    paintTitle(ctx, title, 1180, 48, 690);
+    paintTitle(ctx, title, 1180, 48, 684);
     tex.needsUpdate = true;
     onReady(tex);
   };

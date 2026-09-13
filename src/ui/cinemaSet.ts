@@ -8,7 +8,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { canUseBloom } from './webgl';
 
-function duskFloor(): THREE.CanvasTexture {
+export function cinemaFloorMap(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 512;
   c.height = 512;
@@ -61,7 +61,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(6.4, lite ? 48 : 96),
     lite
-      ? new THREE.MeshBasicMaterial({ map: duskFloor(), transparent: true, opacity: 0.94 })
+      ? new THREE.MeshBasicMaterial({ map: cinemaFloorMap(), transparent: true, opacity: 0.94 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x101826,
           roughness: 0.08,

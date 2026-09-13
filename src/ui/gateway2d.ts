@@ -74,8 +74,8 @@ export const RTGS: { id: NodeId; name: string; note: string } = {
 
 export function bankXYZ(i: number, pulse: number): [number, number, number] {
   const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
-  const r = 1.18 + pulse;
-  return [Math.cos(a) * r, 0.04 + Math.sin(a) * 0.04, Math.sin(a) * r];
+  const r = 1.22 + pulse;
+  return [Math.cos(a) * r * 1.36, 0.02 + Math.sin(a) * 0.03, Math.sin(a) * r * 0.44];
 }
 
 export function paintHint(canvas: HTMLCanvasElement, selected: NodeId | null, hover: NodeId | null): void {
@@ -290,66 +290,82 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const onGate = selected === 6 || hover === 6;
     const cx = gate[0];
     const cy = gate[1] - Math.max(28, H * 0.05);
-    const crystalW = Math.max(40, W * 0.055);
-    const crystalH = Math.max(110, H * 0.32);
+    const crystalW = Math.max(46, W * 0.064);
+    const crystalH = Math.max(118, H * 0.34);
     ctx.save();
     ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
     ctx.shadowBlur = onGate ? 36 : 22;
-    const apexY = cy - crystalH * 0.18;
-    const waistY = cy + crystalH * 0.38;
+    const tableY = cy - crystalH * 0.04;
+    const waistY = cy + crystalH * 0.34;
     const baseY = cy + crystalH;
-    ctx.beginPath();
-    ctx.moveTo(cx - crystalW * 0.72, waistY);
-    ctx.lineTo(cx, apexY);
-    ctx.lineTo(cx, baseY);
-    ctx.lineTo(cx - crystalW * 0.55, baseY - crystalH * 0.1);
-    ctx.closePath();
-    ctx.fillStyle = onGate ? '#1557FF' : '#0d3fd4';
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(cx + crystalW * 0.72, waistY);
-    ctx.lineTo(cx, apexY);
-    ctx.lineTo(cx, baseY);
-    ctx.lineTo(cx + crystalW * 0.55, baseY - crystalH * 0.1);
-    ctx.closePath();
-    ctx.fillStyle = onGate ? '#9CC4FF' : '#5B93FF';
-    ctx.fill();
+    const girdle: Array<[number, number]> = [];
+    const table: Array<[number, number]> = [];
+    for (let i = 0; i < 8; i++) {
+      const a = -Math.PI / 2 + (i * Math.PI) / 4;
+      girdle.push([cx + Math.cos(a) * crystalW, waistY + Math.sin(a) * crystalW * 0.2]);
+      table.push([cx + Math.cos(a) * crystalW * 0.32, tableY + Math.sin(a) * crystalW * 0.08]);
+    }
+    for (let i = 0; i < 8; i++) {
+      const a = girdle[i];
+      const b = girdle[(i + 1) % 8];
+      ctx.beginPath();
+      ctx.moveTo(a[0], a[1]);
+      ctx.lineTo(b[0], b[1]);
+      ctx.lineTo(cx, baseY);
+      ctx.closePath();
+      ctx.fillStyle = i % 2 ? (onGate ? '#1557FF' : '#0d3fd4') : '#061433';
+      ctx.fill();
+    }
     ctx.shadowBlur = 0;
+    for (let i = 0; i < 8; i++) {
+      const t0 = table[i];
+      const t1 = table[(i + 1) % 8];
+      const e0 = girdle[i];
+      const e1 = girdle[(i + 1) % 8];
+      ctx.beginPath();
+      ctx.moveTo(t0[0], t0[1]);
+      ctx.lineTo(t1[0], t1[1]);
+      ctx.lineTo(e1[0], e1[1]);
+      ctx.lineTo(e0[0], e0[1]);
+      ctx.closePath();
+      ctx.fillStyle = i === 2 || i === 3 ? '#EAF1FF' : i % 2 ? (onGate ? '#9CC4FF' : '#5B93FF') : '#7eb0ff';
+      ctx.globalAlpha = i === 2 || i === 3 ? 0.78 : 0.92;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
     ctx.beginPath();
-    ctx.moveTo(cx, apexY);
-    ctx.lineTo(cx + crystalW * 0.72, waistY);
-    ctx.lineTo(cx, waistY + crystalH * 0.06);
-    ctx.lineTo(cx - crystalW * 0.72, waistY);
+    table.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
     ctx.closePath();
-    ctx.fillStyle = '#EAF1FF';
-    ctx.globalAlpha = 0.62;
+    ctx.fillStyle = '#F4F7FB';
+    ctx.globalAlpha = 0.88;
     ctx.fill();
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.8)';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.86)';
     ctx.lineWidth = Math.max(1.4, W / 420);
     ctx.beginPath();
-    ctx.moveTo(cx - crystalW * 0.72, waistY);
-    ctx.lineTo(cx, apexY);
-    ctx.lineTo(cx + crystalW * 0.72, waistY);
-    ctx.lineTo(cx + crystalW * 0.55, baseY - crystalH * 0.1);
-    ctx.lineTo(cx, baseY);
-    ctx.lineTo(cx - crystalW * 0.55, baseY - crystalH * 0.1);
+    girdle.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
     ctx.closePath();
     ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx, apexY);
-    ctx.lineTo(cx, baseY);
-    ctx.stroke();
+    for (let i = 0; i < 8; i++) {
+      ctx.beginPath();
+      ctx.moveTo(table[i][0], table[i][1]);
+      ctx.lineTo(girdle[i][0], girdle[i][1]);
+      ctx.lineTo(cx, baseY);
+      ctx.stroke();
+    }
     ctx.fillStyle = '#F4F7FB';
     ctx.font = `800 ${Math.max(22, W / 28)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', cx, cy + crystalH * 0.4);
+    ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
+    ctx.shadowBlur = 10;
+    ctx.fillText('Q', cx, (tableY + waistY) / 2);
+    ctx.shadowBlur = 0;
     ctx.restore();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `800 ${Math.max(12, W / 46)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('OVERLEDGER', cx, cy - crystalH * 0.22);
+    ctx.fillText('OVERLEDGER', cx, cy - crystalH * 0.2);
 
     ctx.beginPath();
     ctx.moveTo(gate[0], gate[1]);

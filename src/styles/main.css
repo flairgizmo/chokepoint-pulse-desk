@@ -531,7 +531,8 @@ main {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 58%, #10243c 0%, #070b12 64%);
+    radial-gradient(ellipse at 50% 58%, rgba(16, 36, 60, 0.35) 0%, rgba(7, 11, 18, 0.55) 64%),
+    url('/visuals/topics/canary.jpg') center / cover;
 }
 
 .earth-canvas {
@@ -2734,7 +2735,7 @@ button.chip {
 .page-hero .page-bed,
 .featured-note .visual-bed {
   width: 100%;
-  max-height: 220px;
+  max-height: 320px;
   margin: 0 0 1.5rem;
 }
 
@@ -4214,9 +4215,9 @@ body.stage-open .grok {
 }
 
 .hero-stage.cinema-stage {
-  aspect-ratio: 21 / 9;
-  min-height: 460px;
-  max-height: min(82dvh, 920px);
+  aspect-ratio: 16 / 9;
+  min-height: 560px;
+  max-height: min(86dvh, 980px);
   background:
     radial-gradient(ellipse at 50% 38%, #2a3d62 0%, #141c2e 52%, #0a101c 100%);
   border-color: #111827;
@@ -4251,7 +4252,9 @@ body.stage-open .grok {
 }
 
 .earth-hero.cinema-earth {
-  background: radial-gradient(ellipse at 50% 42%, #14305c 0%, #071018 62%, #04070c 100%);
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(20, 48, 92, 0.42) 0%, rgba(7, 16, 24, 0.55) 62%, #04070c 100%),
+    url('/visuals/topics/canary.jpg') center / cover;
 }
 
 .stack-stage-wrap.cinema-stage,
@@ -4402,7 +4405,7 @@ body.stage-open .grok {
 .triptych .photo-plate img,
 .compare .photo-plate img {
   aspect-ratio: 16 / 9;
-  max-height: 11rem;
+  max-height: 20rem;
 }
 
 .term .photo-plate,
@@ -4413,7 +4416,7 @@ body.stage-open .grok {
 .term .photo-plate img,
 .headline .photo-plate img {
   aspect-ratio: 21 / 9;
-  max-height: 6.4rem;
+  max-height: 10rem;
 }
 
 .cinema-diagram {
@@ -4422,13 +4425,13 @@ body.stage-open .grok {
   overflow: hidden;
   border-radius: 22px;
   background: #0b1220;
-  min-height: 22rem;
+  min-height: 28rem;
 }
 
 .cinema-diagram-still {
   display: block;
   width: 100%;
-  height: 24rem;
+  height: 28rem;
   object-fit: cover;
   filter: saturate(1.05) contrast(1.06) brightness(0.55);
 }
@@ -4447,7 +4450,7 @@ body.stage-open .grok {
 
 .markets-still img {
   aspect-ratio: 21 / 9;
-  max-height: 14rem;
+  max-height: 20rem;
 }
 
 .patent-still,
@@ -4460,7 +4463,7 @@ body.stage-open .grok {
 .cal-still img,
 .month-still img {
   aspect-ratio: 21 / 9;
-  max-height: 7.2rem;
+  max-height: 12rem;
 }
 
 .cinema-tape,
@@ -4475,7 +4478,7 @@ body.stage-open .grok {
 }
 
 .headline .photo-plate img {
-  max-height: 7.4rem;
+  max-height: 10rem;
 }
 
 .voice.cinema-voice {
@@ -4574,7 +4577,7 @@ body.stage-open .grok {
 
   .hero-stage.cinema-stage {
     aspect-ratio: 16 / 10;
-    min-height: 240px;
+    min-height: 320px;
   }
 
   .earth-hero {
