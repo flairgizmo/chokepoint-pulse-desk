@@ -48,8 +48,9 @@ function displayTitle(title: string, mute = ''): string {
   return `${esc(title)} <span class="display-mute">${esc(mute)}</span>`;
 }
 
-export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId): string {
+export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId, film?: string): string {
   return `<header class="page-hero enterprise-hero cinema-hero">
+    ${film ? filmStageMarkup(film, title) : ''}
     ${heroPlate(k, title, mute, bed)}
     ${kicker(k)}
     <div class="hero-split">
@@ -745,7 +746,8 @@ export function renderVision(): string {
     'The 2018 whitepaper calls Overledger a technology for multi-ledger applications. The live programme is UK Finance’s tokenised sterling deposits. The next public dates sit in IETF SATP drafts, ISO/TS 23516:2026, and the Bank of England Synchronisation Lab — simulated RT2, not a live digital pound.',
     'the gateway OS.',
     'future',
-  )}${filmStageMarkup('vision', 'Vision stills. Click a plate.')}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
+    'vision',
+  )}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
 }
 
 export function renderProgrammes(): string {
@@ -778,7 +780,9 @@ export function renderProgrammes(): string {
     'Where Quant is already',
     'Status, owner, institutions, related tech. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never added as a timeline fact without a source.',
     'in the room.',
-  )}${filmStageMarkup('programmes', 'Programme stills. Click a plate.')}
+    undefined,
+    'programmes',
+  )}
     <div class="cohort-marks">
       ${kicker('The six commercial banks named by UK Finance, 26 September 2025')}
       <ul class="wordmarks">${GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('')}</ul>
@@ -834,7 +838,9 @@ export function renderCbdc(): string {
     'What a CBDC rail needs that isolated chains do not.',
     'Issuance, wholesale finality, and a way for commercial-bank tokens to meet that finality without becoming a new money. Overledger, SATP and identity sit as adjacency — never as a fake central-bank endorsement.',
     '',
-  )}${filmStageMarkup('cbdc', 'Three liabilities as film plates. Click a plate.')}
+    undefined,
+    'cbdc',
+  )}
   ${quoteRail('cbdc')}
   ${cinemaDiagram('liability', '/visuals/plates/liability-line.svg', 'Three liabilities: central-bank, commercial-bank deposit, private stablecoin')}
   <ol class="liability-cards">
@@ -863,7 +869,9 @@ export function renderStandards(): string {
     'Treat the treaty as product.',
     'IETF SATP and the rooms Quant has actually touched. Status chips, editors, dates. The day SATP is an RFC, a bank can implement a gateway-to-gateway transfer without buying a brand. Adjacent ISO, INATBA and MIT work only where sourced.',
     '',
-  )}${filmStageMarkup('standards', 'SATP stages as film plates. Click a plate.')}
+    undefined,
+    'standards',
+  )}
   ${quoteRail('standards')}
   ${cinemaDiagram('standards', '/visuals/plates/satp-stages.svg', 'SATP stages 0 verify, 1 init, 2 lock, 3 two-phase commit')}
   <section class="treaty-table">
@@ -903,7 +911,9 @@ export function renderPeople(): string {
     'The names on the papers,',
     'Verdian left Vocalink to build a gateway OS. The others wrote the taxonomy, the ordering claim, the SATP drafts. Official portraits where Quant or the person published them; a monogram when they did not.',
     'and in the rooms.',
-  )}${filmStageMarkup('people', 'Official rooms behind the portraits. Click a plate.')}
+    undefined,
+    'people',
+  )}
   <div class="toolbar filter-bar">
     <input type="search" id="people-search" placeholder="Search names, roles, rooms…" />
   </div>
@@ -1018,7 +1028,8 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     'Primary sources, standards drafts, patents, books, surveys, and briefs — each lane uses a different plate. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
     'grouped by what they are.',
     'london',
-  )}${filmStageMarkup('research', 'Library stills. Click a plate.')}
+    'research',
+  )}
   ${quoteRail('research')}
   <div class="toolbar filter-bar">
     <input type="search" id="lib-search" placeholder="Search titles, authors, venues" value="${esc(filter)}" />
@@ -1087,8 +1098,7 @@ export function renderGlossary(filter = ''): string {
       return `<section class="letter"><h3>${esc(L)}</h3>${items}</section>`;
     })
     .join('');
-  return `${pageHero('Language', 'The language of', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition stage.', 'programmable money.')}
-    ${filmStageMarkup('glossary', 'Five terms as film plates. Click a plate.')}
+  return `${pageHero('Language', 'The language of', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition stage.', 'programmable money.', undefined, 'glossary')}
     <div class="toolbar">
       <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
       <p class="mono subtle">${terms.length} terms</p>
@@ -1134,7 +1144,9 @@ export function renderMarkets(print?: MarketPrint): string {
     'QNT — the token of',
     'Research presentation, not advice. Overledger licences settle in QNT — that is why it trades. Live quotes from Coinbase, Kraken or Binance; market cap, supply and venues from CoinGecko. As-of timestamps on every print. Utility token, not equity.',
     'a network of networks.',
-  )}${filmStageMarkup('markets', 'QNT rooms as film plates. Click a plate.')}
+    undefined,
+    'markets',
+  )}
   ${quoteRail('markets')}
   <section class="tape cinema-tape" data-mk data-proof="ticker">
     ${photoFigure(plateFor('markets', 'qnt'), 'markets-still')}
@@ -1263,7 +1275,9 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
     'Quant, as the story',
     'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. Each headline is a briefing. Quiet weeks keep this month’s sourced notes on the page.',
     'unfolds.',
-  )}${filmStageMarkup('news', 'The wire as film plates. Click a plate.')}
+    undefined,
+    'news',
+  )}
   ${filterBox('news-filter', 'Search headlines…', filter)}
   <section class="wire cinema-wire">
     <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
@@ -1371,7 +1385,9 @@ export function renderDonate(): string {
     'Donations keep the research',
     'Optional. Buys no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
     'on the air.',
-  )}${filmStageMarkup('donate', 'Research stills. Click a plate.')}
+    undefined,
+    'donate',
+  )}
   <article class="chapter">
     ${photoFigure(plateFor('donate', 'support'), 'markets-still')}
     <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
@@ -1401,7 +1417,9 @@ export function renderPodcast(): string {
     'Twenty conversations on Quant,',
     'Twenty sourced conversations, in order. James Hale and Amelia Crowe walk ISO, the 2018 whitepaper, SATP, QNT, and the six banks that already issue tokenised sterling. Quotes keep their titles. Dates stay on the page.',
     'from the beginning.',
-  )}${filmStageMarkup('podcast', 'Twenty conversations as film plates. Click a plate.')}${playerMarkup(first)}${filmRail()}`;
+    undefined,
+    'podcast',
+  )}${playerMarkup(first)}${filmRail()}`;
 }
 
 export function renderEpisode(id: string): string {

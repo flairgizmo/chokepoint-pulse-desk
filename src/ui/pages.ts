@@ -33,8 +33,9 @@ export function heroPlate(k: string, title: string, mute = '', bed?: VisualId): 
   </figure>`;
 }
 
-function hero(k: string, title: string, lede: string, seed: string): string {
+function hero(k: string, title: string, lede: string, seed: string, film?: string): string {
   return `<header class="page-hero enterprise-hero cinema-hero">
+    ${film ? filmStageMarkup(film, title) : ''}
     ${heroPlate(k, title, seed)}
     ${kicker(k)}
     <div class="hero-split">
@@ -124,8 +125,7 @@ export function renderStory(): string {
       </li>`,
     )
     .join('');
-  return `${hero('Story / Timeline', 'History as a scored film.', 'Search and filter. Quiet months collapse — there are no empty holes. Each node opens a stage with the stake, the filing, and the source.', 'story-hero')}
-    ${filmStageMarkup('story', 'Five dates on the rail as film plates. Click a plate.')}
+  return `${hero('Story / Timeline', 'History as a scored film.', 'Search and filter. Quiet months collapse — there are no empty holes. Each node opens a stage with the stake, the filing, and the source.', 'story-hero', 'story')}
     <div class="toolbar filter-bar">
       <input type="search" id="story-search" placeholder="Search the rail…" />
       <div class="chip-row" id="story-themes">${chips}</div>
@@ -152,13 +152,13 @@ export function renderStack(): string {
     { id: 'gate', title: 'Overledger · QuantNet', job: 'Gateway OS. The bank-facing name for the same architecture.', analogy: 'This layer is the correspondent: it speaks every domain and replaces none.', std: 'ACM gateway cell. SATP-implementable. Not SATP.' },
     { id: 'ledgers', title: 'Ledgers & rails', job: 'Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments.', analogy: 'This layer is the SWIFT message and the RTGS book — the things the gate maps onto.', std: 'ISO 20022 adjacency via QuantNet’s published claim.' },
   ];
-  return `${hero('Stack', 'How the layers compose.', 'Isolate a rung. Dim the rest. Each layer opens a stage with the job and the standards mapping.', 'stack-hero')}
-    <section class="stack-stage-wrap cinema-stage" aria-label="Exploded Overledger stack">
+  return `<section class="stack-stage-wrap cinema-stage" aria-label="Exploded Overledger stack">
       <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
       <span class="cinema-grain" aria-hidden="true"></span>
       <canvas id="stack-stage" class="stack-stage" role="img" aria-label="Five Overledger layers as film plates. Click a plate."></canvas>
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     </section>
+    ${hero('Stack', 'How the layers compose.', 'Isolate a rung. Dim the rest. Each layer opens a stage with the job and the standards mapping.', 'stack-hero')}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
       <div class="stack-tools">
@@ -202,8 +202,7 @@ export function renderTechnology(): string {
       </details>
     </article>`,
   ).join('');
-  return `${hero('Technology', 'Every layer Quant built or productised.', 'Isolated ledgers were the problem. Overledger is the operating layer. The network, the standards capture, and what that unlocks for tokenised deposits in 2026–27 sit in the chapters below.', 'tech-hero')}
-    ${filmStageMarkup('technology', 'Five technology stills. Click a plate.')}
+  return `${hero('Technology', 'Every layer Quant built or productised.', 'Isolated ledgers were the problem. Overledger is the operating layer. The network, the standards capture, and what that unlocks for tokenised deposits in 2026–27 sit in the chapters below.', 'tech-hero', 'technology')}
     <p class="lede">Problem of isolated ledgers → Overledger as the operating layer → network effects → standards capture → CBDCs and tokenised deposits as adjacency, not slogans.</p>
     <div class="toolbar filter-bar">
       <input type="search" id="tech-search" placeholder="Search chapters…" />
@@ -226,8 +225,7 @@ export function renderPatents(): string {
       </button>
     </article>`,
   ).join('');
-  return `${hero('Patents', 'The estate, in plain language.', 'Numbers match the public file. A patent is a claim, not a live rail. Each card opens why it matters to Overledger, SATP, or Fusion.', 'patents-hero')}
-    ${filmStageMarkup('patents', 'Patent hall stills. Click a plate.')}
+  return `${hero('Patents', 'The estate, in plain language.', 'Numbers match the public file. A patent is a claim, not a live rail. Each card opens why it matters to Overledger, SATP, or Fusion.', 'patents-hero', 'patents')}
     <div class="toolbar filter-bar">
       <input type="search" id="patent-search" placeholder="Search numbers, inventors, claims…" />
     </div>
@@ -253,8 +251,7 @@ export function renderInstitutions(): string {
       </button>
     </article>`;
   }).join('');
-  return `${hero('Institutions & boards', 'Who they still sit with.', 'Current, historical, and adjacency — labelled. Official marks where they are on file. A typeset caption where they are not.', 'inst-hero')}
-    ${filmStageMarkup('institutions', 'Rooms on the record as film plates. Click a plate.')}
+  return `${hero('Institutions & boards', 'Who they still sit with.', 'Current, historical, and adjacency — labelled. Official marks where they are on file. A typeset caption where they are not.', 'inst-hero', 'institutions')}
     <div class="toolbar filter-bar">
       <input type="search" id="inst-search" placeholder="Search institutions…" />
       <div class="chip-row" id="inst-status">
