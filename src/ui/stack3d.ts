@@ -97,8 +97,6 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   if (ctx) {
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, 1280, 720);
-    ctx.fillStyle = '#EAF1FF';
-    paintTitle(ctx, title, 1180, 48, 676);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -157,7 +155,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   STACK_SLABS.forEach((layer) => {
     const mat = plateMaterial(lite);
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.28, 0.04, 1.08), mat);
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.36, 1.12), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     group.add(mesh);
@@ -172,7 +170,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
       const t = i - mid;
       mesh.position.set(t * 0.36 + 0.18 + drift, 2.02 - i * 0.7, i * 0.12);
-      mesh.rotation.set(0.16, -0.14, 0);
+      mesh.rotation.set(-Math.PI / 2 + 0.18, -0.12, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
       const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
       mat.opacity = dim ? 0.28 : 1;
@@ -235,7 +233,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   resize();
   const first = performance.now();
   tick(first);
-  if (lite && performance.now() - first > 2500) {
+  if (lite && performance.now() - first > 8000) {
     renderer.dispose();
     throw new Error('software-gl-slow');
   }

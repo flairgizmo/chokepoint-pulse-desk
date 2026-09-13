@@ -88,8 +88,12 @@ export function paintHint(canvas: HTMLCanvasElement, selected: NodeId | null, ho
         ? [...BANKS, GATE, RTGS].find((n) => n.id === hover)
         : null;
   hint.textContent = node
-    ? `${node.name} — ${node.note}`
-    : 'Six commercial banks. One gateway plane. A lock leaves one book and a release lands in another. Click a node.';
+    ? node.id === 6
+      ? 'Overledger — gateway OS. Not a seventh chain.'
+      : node.id === 7
+        ? 'Simulated RT2 — Bank of England lab. Not live RTGS.'
+        : `${node.name === 'Lloyds Banking Group' ? 'Lloyds' : node.name} — GBTD issuer. Click for the filing.`
+    : 'Six commercial banks. One gateway plane. Click a node.';
 }
 
 export function remountCanvas(canvas: HTMLCanvasElement): HTMLCanvasElement {
@@ -291,49 +295,56 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.save();
     ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
     ctx.shadowBlur = onGate ? 36 : 22;
+    const apexY = cy - crystalH * 0.16;
+    const waistY = cy + crystalH * 0.08;
+    const baseY = cy + crystalH;
     ctx.beginPath();
-    ctx.moveTo(cx - crystalW, cy);
-    ctx.lineTo(cx, cy - crystalH * 0.14);
-    ctx.lineTo(cx, cy + crystalH);
-    ctx.lineTo(cx - crystalW, cy + crystalH * 0.86);
+    ctx.moveTo(cx - crystalW * 0.72, waistY);
+    ctx.lineTo(cx, apexY);
+    ctx.lineTo(cx, baseY);
+    ctx.lineTo(cx - crystalW * 0.55, baseY - crystalH * 0.1);
     ctx.closePath();
     ctx.fillStyle = onGate ? '#1557FF' : '#0d3fd4';
     ctx.fill();
     ctx.beginPath();
-    ctx.moveTo(cx + crystalW, cy);
-    ctx.lineTo(cx, cy - crystalH * 0.14);
-    ctx.lineTo(cx, cy + crystalH);
-    ctx.lineTo(cx + crystalW, cy + crystalH * 0.86);
+    ctx.moveTo(cx + crystalW * 0.72, waistY);
+    ctx.lineTo(cx, apexY);
+    ctx.lineTo(cx, baseY);
+    ctx.lineTo(cx + crystalW * 0.55, baseY - crystalH * 0.1);
     ctx.closePath();
     ctx.fillStyle = onGate ? '#9CC4FF' : '#5B93FF';
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.beginPath();
-    ctx.moveTo(cx, cy - crystalH * 0.14);
-    ctx.lineTo(cx + crystalW, cy);
-    ctx.lineTo(cx, cy + crystalH * 0.1);
-    ctx.lineTo(cx - crystalW, cy);
+    ctx.moveTo(cx, apexY);
+    ctx.lineTo(cx + crystalW * 0.72, waistY);
+    ctx.lineTo(cx, waistY + crystalH * 0.06);
+    ctx.lineTo(cx - crystalW * 0.72, waistY);
     ctx.closePath();
     ctx.fillStyle = '#EAF1FF';
-    ctx.globalAlpha = 0.55;
+    ctx.globalAlpha = 0.62;
     ctx.fill();
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.75)';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.8)';
     ctx.lineWidth = Math.max(1.4, W / 420);
     ctx.beginPath();
-    ctx.moveTo(cx - crystalW, cy);
-    ctx.lineTo(cx, cy - crystalH * 0.14);
-    ctx.lineTo(cx + crystalW, cy);
-    ctx.lineTo(cx + crystalW, cy + crystalH * 0.86);
-    ctx.lineTo(cx, cy + crystalH);
-    ctx.lineTo(cx - crystalW, cy + crystalH * 0.86);
+    ctx.moveTo(cx - crystalW * 0.72, waistY);
+    ctx.lineTo(cx, apexY);
+    ctx.lineTo(cx + crystalW * 0.72, waistY);
+    ctx.lineTo(cx + crystalW * 0.55, baseY - crystalH * 0.1);
+    ctx.lineTo(cx, baseY);
+    ctx.lineTo(cx - crystalW * 0.55, baseY - crystalH * 0.1);
     ctx.closePath();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, apexY);
+    ctx.lineTo(cx, baseY);
     ctx.stroke();
     ctx.fillStyle = '#F4F7FB';
     ctx.font = `800 ${Math.max(22, W / 28)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', cx, cy + crystalH * 0.36);
+    ctx.fillText('Q', cx, cy + crystalH * 0.4);
     ctx.restore();
     ctx.fillStyle = '#FFFFFF';
     ctx.font = `800 ${Math.max(12, W / 46)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;

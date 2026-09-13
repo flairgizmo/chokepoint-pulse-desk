@@ -109,9 +109,43 @@ function looksCutout(img: HTMLImageElement): boolean {
   let bright = 0;
   for (const i of [0, 7, 56, 63]) {
     const o = i * 4;
-    if (d[o] > 228 && d[o + 1] > 228 && d[o + 2] > 228) bright += 1;
+    if (d[o] > 200 && d[o + 1] > 200 && d[o + 2] > 200) bright += 1;
   }
   return bright >= 3;
+}
+
+function punchStudioWhite(img: HTMLImageElement, dw: number, dh: number): HTMLCanvasElement {
+  const tmp = document.createElement('canvas');
+  tmp.width = Math.max(1, Math.round(dw));
+  tmp.height = Math.max(1, Math.round(dh));
+  const tctx = tmp.getContext('2d', { willReadFrequently: true });
+  if (!tctx) return tmp;
+  tctx.drawImage(img, 0, 0, tmp.width, tmp.height);
+  const data = tctx.getImageData(0, 0, tmp.width, tmp.height);
+  const px = data.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const r = px[i];
+    const g = px[i + 1];
+    const b = px[i + 2];
+    if (r > 228 && g > 228 && b > 228) {
+      px[i + 3] = 0;
+    } else if (r > 200 && g > 200 && b > 200) {
+      const t = (Math.min(r, g, b) - 200) / 28;
+      px[i + 3] = Math.round(px[i + 3] * (1 - t));
+    }
+  }
+  tctx.putImageData(data, 0, 0);
+  return tmp;
+}
+
+function drawPortrait(ctx: CanvasRenderingContext2D, img: HTMLImageElement, w: number, h: number): void {
+  ctx.fillStyle = '#101828';
+  ctx.fillRect(0, 0, w, h);
+  const scale = Math.min((w * 0.88) / img.naturalWidth, (h * 0.8) / img.naturalHeight);
+  const dw = img.naturalWidth * scale;
+  const dh = img.naturalHeight * scale;
+  const cut = punchStudioWhite(img, dw, dh);
+  ctx.drawImage(cut, (w - dw) / 2, (h - dh) * 0.2);
 }
 
 function plateTexture(
@@ -129,24 +163,17 @@ function plateTexture(
   if (ctx) {
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 28, h - 28);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image();
   img.onload = () => {
     if (!ctx) return;
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0, 0, w, h);
     if (img.naturalWidth && img.naturalHeight) {
-      const cutout = portrait || looksCutout(img);
-      if (cutout) {
-        ctx.fillStyle = '#101828';
-        ctx.fillRect(0, 0, w, h);
-        const scale = Math.min((w * 0.92) / img.naturalWidth, (h * 0.88) / img.naturalHeight);
-        const dw = img.naturalWidth * scale;
-        const dh = img.naturalHeight * scale;
-        ctx.drawImage(img, (w - dw) / 2, (h - dh) * 0.22, dw, dh);
+      if (portrait || looksCutout(img)) {
+        drawPortrait(ctx, img, w, h);
       } else {
         const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
         const dw = img.naturalWidth * scale;
@@ -159,6 +186,8 @@ function plateTexture(
     ctx.fillRect(0, h - 92, w, 92);
     ctx.fillStyle = '#EAF1FF';
     ctx.font = `700 ${portrait ? 34 : 40}px Outfit, IBM Plex Sans, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
     ctx.fillText(title, 28, h - 34);
     tex.needsUpdate = true;
     onReady(tex);
@@ -294,7 +323,7 @@ function mountFilm3D(
   resize();
   const first = performance.now();
   tick(first);
-  if (lite && performance.now() - first > 2500) {
+  if (lite && performance.now() - first > 8000) {
     renderer.dispose();
     throw new Error('software-gl-slow');
   }

@@ -546,10 +546,10 @@ export class QntDesk {
       .then(({ upgradeGateway3D }) => {
         const live = this.root.querySelector<HTMLCanvasElement>('#gateway');
         if (!live || !this.root.contains(live)) return;
-        const upgraded = upgradeGateway3D(live);
-        if (!upgraded) return;
         this.tessDispose?.();
-        this.tessDispose = upgraded;
+        this.tessDispose = null;
+        const upgraded = upgradeGateway3D(live);
+        this.tessDispose = upgraded ?? mountGateway2D(live);
       })
       .catch(() => undefined);
   }

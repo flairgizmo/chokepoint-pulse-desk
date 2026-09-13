@@ -659,7 +659,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   paintCards();
   const first = performance.now();
   tick(first);
-  if (lite && performance.now() - first > 2500) {
+  if (lite && performance.now() - first > 8000) {
     renderer.dispose();
     throw new Error('software-gl-slow');
   }
