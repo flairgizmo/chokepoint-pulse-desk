@@ -97,52 +97,33 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
   return out;
 }
 
-/** Software GL has no lighting on MeshBasic. Bake a dusk terminator + night cities into the day still. */
-function paintLitEarth(day: HTMLImageElement, night: HTMLImageElement | null): HTMLCanvasElement {
-  const w = Math.min(2048, day.naturalWidth || 2048);
-  const h = Math.min(1024, day.naturalHeight || 1024);
+/** Sun-locked dusk wedge. White leaves the day still; dusk multiplies the night side. */
+function terminatorTex(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = w;
-  c.height = h;
+  c.width = 1024;
+  c.height = 512;
   const ctx = c.getContext('2d');
-  if (!ctx) return c;
-  ctx.drawImage(day, 0, 0, w, h);
-  ctx.globalCompositeOperation = 'multiply';
-  const term = ctx.createLinearGradient(0, 0, w, 0);
-  term.addColorStop(0, '#141018');
-  term.addColorStop(0.32, '#2a1c12');
-  term.addColorStop(0.46, '#c4a070');
-  term.addColorStop(0.56, '#ffffff');
-  term.addColorStop(1, '#ffffff');
-  ctx.fillStyle = term;
-  ctx.fillRect(0, 0, w, h);
-  const poles = ctx.createLinearGradient(0, 0, 0, h);
-  poles.addColorStop(0, 'rgba(8, 14, 28, 0.46)');
+  if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
+  const g = ctx.createLinearGradient(0, 0, c.width, 0);
+  g.addColorStop(0, '#121018');
+  g.addColorStop(0.34, '#2a1c12');
+  g.addColorStop(0.47, '#c4a070');
+  g.addColorStop(0.56, '#ffffff');
+  g.addColorStop(1, '#ffffff');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, c.width, c.height);
+  const poles = ctx.createLinearGradient(0, 0, 0, c.height);
+  poles.addColorStop(0, 'rgba(8, 14, 28, 0.42)');
   poles.addColorStop(0.2, 'rgba(255, 255, 255, 0)');
   poles.addColorStop(0.8, 'rgba(255, 255, 255, 0)');
-  poles.addColorStop(1, 'rgba(8, 14, 28, 0.5)');
+  poles.addColorStop(1, 'rgba(8, 14, 28, 0.46)');
+  ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = poles;
-  ctx.fillRect(0, 0, w, h);
-  if (night?.naturalWidth) {
-    const n = document.createElement('canvas');
-    n.width = w;
-    n.height = h;
-    const nctx = n.getContext('2d');
-    if (nctx) {
-      nctx.drawImage(night, 0, 0, w, h);
-      nctx.globalCompositeOperation = 'destination-in';
-      const mask = nctx.createLinearGradient(0, 0, w, 0);
-      mask.addColorStop(0, 'rgba(255, 255, 255, 0.92)');
-      mask.addColorStop(0.38, 'rgba(255, 255, 255, 0.28)');
-      mask.addColorStop(0.5, 'rgba(255, 255, 255, 0)');
-      nctx.fillStyle = mask;
-      nctx.fillRect(0, 0, w, h);
-      ctx.globalCompositeOperation = 'screen';
-      ctx.drawImage(n, 0, 0);
-    }
-  }
+  ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
-  return c;
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 function stars(count = 1800): THREE.Points {
@@ -200,8 +181,9 @@ export class EarthGlobe {
   private composer: EffectComposer | null = null;
   private dayTex: THREE.Texture | null = null;
   private nightTex: THREE.Texture | null = null;
-  private litTex: THREE.Texture | null = null;
+  private terminator: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
+  private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
   private hoverId: string | undefined;
   private lastHudHover: string | undefined;
   private hudClock = 0;
@@ -223,6 +205,7 @@ export class EarthGlobe {
     for (const l of this.corridorLines) l.visible = this.overlays.corridors;
     if (this.pulse) this.pulse.visible = this.overlays.activity;
     for (const s of this.labelSprites) s.visible = this.overlays.labels;
+    if (this.terminator) this.terminator.visible = this.overlays.day;
     this.applyMaps();
   }
 
@@ -253,7 +236,6 @@ export class EarthGlobe {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.frame);
-    this.litTex?.dispose();
     this.composer?.dispose();
     this.renderer?.dispose();
     this.root.replaceChildren();
@@ -541,6 +523,7 @@ export class EarthGlobe {
       }),
     );
     this.lightsMesh = lights;
+    lights.renderOrder = 2;
     group.add(lights);
 
     const atmo = new THREE.Mesh(
@@ -570,7 +553,25 @@ export class EarthGlobe {
         blending: THREE.AdditiveBlending,
       }),
     );
+    atmo.renderOrder = 3;
     group.add(atmo);
+
+    if (this.lite) {
+      const term = new THREE.Mesh(
+        new THREE.SphereGeometry(1.006, segs, rings),
+        new THREE.MeshBasicMaterial({
+          map: terminatorTex(),
+          color: 0xffffff,
+          transparent: true,
+          blending: THREE.MultiplyBlending,
+          depthWrite: false,
+        }),
+      );
+      term.renderOrder = 1;
+      term.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.sunDir.clone().negate());
+      scene.add(term);
+      this.terminator = term;
+    }
 
     const paintTex = (src: string, assign: (tex: THREE.Texture) => void): void => {
       const img = new Image();
@@ -680,10 +681,10 @@ export class EarthGlobe {
 
     const arcSegs = this.lite ? 32 : 64;
     this.routeLines = SETTLEMENT_ROUTES.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, 0.32, arcSegs),
+      this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, this.lite ? 0.16 : 0.32, arcSegs),
     );
     this.corridorLines = TOKEN_CORRIDORS.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x8eb0ff, 0.7, arcSegs),
+      this.addArc(cityById(a)!, cityById(b)!, 0x8eb0ff, this.lite ? 0.38 : 0.7, arcSegs),
     );
 
     window.addEventListener('resize', () => this.resize());
@@ -922,16 +923,8 @@ export class EarthGlobe {
 
   private applyMaps(): void {
     const mat = this.globeMesh?.material as (THREE.MeshStandardMaterial | THREE.MeshBasicMaterial) | undefined;
-    const dayImg = this.dayTex?.image instanceof HTMLImageElement ? this.dayTex.image : null;
-    const nightImg = this.nightTex?.image instanceof HTMLImageElement ? this.nightTex.image : null;
     if (mat) {
-      if (this.lite && this.overlays.day && dayImg?.naturalWidth) {
-        this.litTex?.dispose();
-        this.litTex = hardenCanvasTex(new THREE.CanvasTexture(paintLitEarth(dayImg, this.overlays.night ? nightImg : null)));
-        this.litTex.colorSpace = THREE.SRGBColorSpace;
-        mat.map = this.litTex;
-        mat.color = new THREE.Color(0xffffff);
-      } else if (this.overlays.day && this.dayTex) {
+      if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
         mat.color = new THREE.Color(0xffffff);
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
@@ -942,12 +935,13 @@ export class EarthGlobe {
       }
       mat.needsUpdate = true;
     }
+    if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
-      if (!this.lite && this.overlays.night && this.nightTex) {
+      if (this.overlays.night && this.nightTex) {
         lm.map = this.nightTex;
         this.lightsMesh.visible = true;
-        lm.opacity = this.overlays.day ? 0.72 : 1;
+        lm.opacity = this.overlays.day ? (this.lite ? 0.82 : 0.72) : 1;
         lm.needsUpdate = true;
       } else {
         this.lightsMesh.visible = false;

@@ -662,14 +662,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   core.position.y = 0.5;
   core.userData.nodeId = 6;
   crystal.add(core);
-  const girdle = new THREE.Mesh(
-    new THREE.TorusGeometry(eqR, 0.012, lite ? 8 : 12, sides),
-    cinemaChrome(lite),
-  );
-  girdle.rotation.x = Math.PI / 2;
-  girdle.position.y = eqY;
-  girdle.userData.nodeId = 6;
-  crystal.add(girdle);
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.05, 0.08, 0.04, sides),
     cinemaChrome(lite),
@@ -787,7 +779,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(releaseLabel);
   releaseLabel.visible = false;
 
-  const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, girdle, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.24 : 1.3;
@@ -909,6 +901,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
+    caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.3 : 0.26 + Math.abs(Math.sin((now - t0) / 1600)) * 0.22;
     halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
     sparks.forEach((mesh, i) => {
