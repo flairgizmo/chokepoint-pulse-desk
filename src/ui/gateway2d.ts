@@ -471,39 +471,39 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         ctx.restore();
         roundRect(-rw / 2, -rh / 2, rw, rh, 12);
       }
-      ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.28)' : 'rgba(7, 11, 20, 0.46)';
-      ctx.fillRect(-rw / 2, rh / 2 - rh * 0.46, rw, rh * 0.46);
-      ctx.strokeStyle = on ? '#1557FF' : 'rgba(234, 241, 255, 0.18)';
-      ctx.lineWidth = on ? 2.4 : 1.2;
+      ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.4)' : 'rgba(7, 11, 20, 0.56)';
+      ctx.fillRect(-rw / 2, rh / 2 - rh * 0.28, rw, rh * 0.28);
+      ctx.strokeStyle = on ? '#1557FF' : 'rgba(234, 241, 255, 0.14)';
+      ctx.lineWidth = on ? 1.6 : 0.8;
       ctx.stroke();
-      ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const logo = logos[i];
       const wide = Boolean(logo && logo.naturalWidth / Math.max(1, logo.naturalHeight) > 6);
-      const pw = rw * 0.58;
-      const ph = rh * 0.22;
+      const pw = rw * 0.34;
+      const ph = rh * 0.16;
+      const px = -rw / 2 + pw * 0.58;
+      const py = rh / 2 - rh * 0.2;
       ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
-      roundRect(-pw / 2, -rh * 0.18, pw, ph, 8);
+      roundRect(px - pw / 2, py - ph / 2, pw, ph, 6);
       ctx.fill();
+      ctx.textAlign = 'center';
       if (logo?.complete && logo.naturalWidth && !wide) {
-        const maxW = pw - 16;
-        const maxH = ph - 10;
+        const maxW = pw - 10;
+        const maxH = ph - 6;
         const scale = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight);
         const dw = logo.naturalWidth * scale;
         const dh = logo.naturalHeight * scale;
-        ctx.drawImage(logo, -dw / 2, -rh * 0.18 + (ph - dh) / 2, dw, dh);
+        ctx.drawImage(logo, px - dw / 2, py - dh / 2, dw, dh);
       } else {
         ctx.fillStyle = '#0B1F5C';
-        ctx.font = `800 ${Math.max(13, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-        ctx.fillText(wide ? 'Lloyds' : bank.short, 0, -rh * 0.18 + ph / 2);
+        ctx.font = `700 ${Math.max(9, W / 64)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+        ctx.fillText(wide ? 'Lloyds' : bank.short, px, py);
       }
       const label = bank.name === 'Lloyds Banking Group' ? 'Lloyds' : bank.name;
-      ctx.fillStyle = '#F4F7FB';
-      ctx.font = `800 ${Math.max(13, W / (label.length > 10 ? 48 : 42))}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.fillText(label, 0, rh * 0.22);
-      ctx.fillStyle = 'rgba(234, 241, 255, 0.7)';
-      ctx.font = `600 ${Math.max(8, W / 78)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.fillText('GBTD issuer', 0, rh * 0.36);
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
+      ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+      ctx.fillText(label, px + pw * 0.62, py);
       ctx.restore();
     };
     const ordered = banks

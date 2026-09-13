@@ -366,50 +366,44 @@ function logoCanvas(
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
   ctx.fillStyle = '#05070c';
-  ctx.fillRect(0, 0, CARD_W, 28);
-  ctx.fillRect(0, CARD_H - 28, CARD_W, 28);
-  ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.34)' : 'rgba(7, 11, 20, 0.52)';
-  ctx.fillRect(0, CARD_H - 196, CARD_W, 168);
-  const bw = 292;
-  const bh = 64;
-  const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 176;
+  ctx.fillRect(0, 0, CARD_W, 18);
+  ctx.fillRect(0, CARD_H - 18, CARD_W, 18);
+  ctx.fillStyle = on ? 'rgba(7, 11, 20, 0.4)' : 'rgba(7, 11, 20, 0.58)';
+  ctx.fillRect(0, CARD_H - 72, CARD_W, 54);
+  const bw = 156;
+  const bh = 34;
+  const bx = 20;
+  const by = CARD_H - 62;
   ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
-  ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
-  ctx.shadowBlur = 16;
-  ctx.shadowOffsetY = 6;
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 14);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 10);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
-  ctx.shadowColor = 'transparent';
-  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.18)';
-  ctx.lineWidth = on ? 3 : 1.5;
+  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
+  ctx.lineWidth = on ? 2 : 1;
   ctx.stroke();
   const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
-    containDraw(ctx, img, bx + 18, by + 12, bw - 36, bh - 24);
+    containDraw(ctx, img, bx + 10, by + 6, bw - 20, bh - 12);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '800 28px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(wide ? 'Lloyds' : short, CARD_W / 2, by + bh / 2);
+    ctx.font = '700 16px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(wide ? 'Lloyds' : short, bx + bw / 2, by + bh / 2);
   }
   const label = name === 'Lloyds Banking Group' ? 'Lloyds' : name;
-  ctx.fillStyle = '#F4F7FB';
-  ctx.font = `800 ${label.length > 10 ? 36 : 44}px Outfit, IBM Plex Sans, sans-serif`;
-  ctx.fillText(label, CARD_W / 2, CARD_H - 72);
-  ctx.fillStyle = 'rgba(234, 241, 255, 0.72)';
-  ctx.font = '600 20px Outfit, IBM Plex Sans, sans-serif';
-  ctx.fillText('GBTD issuer', CARD_W / 2, CARD_H - 32);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
+  ctx.font = '700 22px Outfit, IBM Plex Sans, sans-serif';
+  ctx.fillText(label, bx + bw + 14, CARD_H - 44);
   return c;
 }
 
 function sitIssuerStill(card: THREE.Group, x: number, z: number): void {
-  card.position.set(x, -0.22, z);
+  card.position.set(x, -0.278, z);
   card.lookAt(0, 0.28, 5);
-  card.rotateX(-0.92);
+  card.rotateX(-1.28);
 }
 
 function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
