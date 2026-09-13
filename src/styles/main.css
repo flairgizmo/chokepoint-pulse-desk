@@ -4218,7 +4218,7 @@ body.stage-open .grok {
   min-height: 460px;
   max-height: min(82dvh, 920px);
   background:
-    radial-gradient(ellipse at 50% 40%, #1a2a48 0%, #0a1220 58%, #070b14 100%);
+    radial-gradient(ellipse at 50% 38%, #2a3d62 0%, #141c2e 52%, #0a101c 100%);
   border-color: #111827;
   box-shadow: 0 32px 90px rgba(7, 11, 20, 0.28);
 }
@@ -4265,7 +4265,7 @@ body.stage-open .grok {
   overflow: hidden;
   border-radius: 22px;
   background:
-    radial-gradient(ellipse at 50% 40%, #1a2a48 0%, #0a1220 58%, #070b14 100%);
+    radial-gradient(ellipse at 50% 38%, #2a3d62 0%, #141c2e 52%, #0a101c 100%);
 }
 
 .stack-stage,

@@ -435,7 +435,7 @@ export class EarthGlobe {
     renderer.setPixelRatio(this.lite ? 1 : Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = this.lite ? 1.08 : 1.2;
+    renderer.toneMappingExposure = this.lite ? 1.2 : 1.28;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();

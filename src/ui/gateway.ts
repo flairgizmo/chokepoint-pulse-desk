@@ -365,6 +365,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
+  crystal.scale.setScalar(1.28);
   group.add(base);
   group.add(crystal);
 
@@ -576,7 +577,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     camera.lookAt(0, lite ? 0.54 : 0.58, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x * 1.1, y + 0.28, z * 1.1);
+      cards[i].position.set(x * 1.04, y + 0.24, z * 1.04);
       cards[i].lookAt(camera.position.x, y + 0.36, camera.position.z);
     });
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2600) * 0.16;

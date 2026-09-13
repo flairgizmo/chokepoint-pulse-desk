@@ -33,7 +33,7 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, w, h);
     if (bed.complete && bed.naturalWidth) {
-      ctx.filter = 'brightness(0.38) saturate(0.85)';
+      ctx.filter = 'brightness(0.58) saturate(0.95)';
       ctx.drawImage(bed, 0, 0, w, h);
       ctx.filter = 'none';
     }
@@ -222,7 +222,7 @@ function mountFilm3D(
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.1 : 1.22;
+  renderer.toneMappingExposure = lite ? 1.22 : 1.3;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -259,9 +259,9 @@ function mountFilm3D(
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let raf = 0;
-  let ax = 1.18;
+  let ax = 1.24;
   let ay = 0;
-  let tx = 1.18;
+  let tx = 1.24;
   let ty = 0;
 
   const layout = (): void => {
@@ -299,8 +299,8 @@ function mountFilm3D(
     ay += (ty - ay) * 0.08;
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
-    camera.position.setFromSphericalCoords(lite ? 3.85 : 3.45, ax, ay);
-    camera.lookAt(0, -0.02, 0.12);
+    camera.position.setFromSphericalCoords(lite ? 4.2 : 3.7, ax, ay);
+    camera.lookAt(0, 0.04, 0.18);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
@@ -310,7 +310,7 @@ function mountFilm3D(
     const nx = (ev.clientX - rect.left) / rect.width - 0.5;
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
     ty = nx * 0.22;
-    tx = 1.18 + ny * 0.1;
+    tx = 1.24 + ny * 0.1;
     featured = Math.max(0, Math.min(slides.length - 1, featuredBase + nx * 2.2));
     canvas.style.cursor = pick(ev.clientX, ev.clientY) ? 'pointer' : 'grab';
   };

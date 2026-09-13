@@ -23,6 +23,8 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
   canvas.dataset.engine = 'canvas2d';
   const ctx = canvas.getContext('2d');
   if (!ctx) return () => undefined;
+  const bed = new Image();
+  bed.src = '/visuals/topics/canary.jpg';
   const imgs = STACK_SLABS.map((l) => {
     const img = new Image();
     img.src = l.src;
@@ -39,6 +41,11 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
     }
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, w, h);
+    if (bed.complete && bed.naturalWidth) {
+      ctx.filter = 'brightness(0.55) saturate(0.92)';
+      ctx.drawImage(bed, 0, 0, w, h);
+      ctx.filter = 'none';
+    }
     imgs.forEach((img, i) => {
       const pw = w * 0.58;
       const ph = h * 0.155;
@@ -57,6 +64,7 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
       ctx.restore();
     });
   };
+  bed.onload = paint;
   imgs.forEach((img) => {
     img.onload = paint;
   });
@@ -139,7 +147,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.2 : 1.34;
+  renderer.toneMappingExposure = lite ? 1.28 : 1.38;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -158,6 +166,12 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.36, 1.12), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
+    mesh.add(
+      new THREE.LineSegments(
+        new THREE.EdgesGeometry(mesh.geometry),
+        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.35 }),
+      ),
+    );
     group.add(mesh);
     slabs.push(mesh);
     plateTexture(layer.src, layer.title, (tex) => applyPlateMap(mat, tex));
@@ -169,8 +183,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     slabs.forEach((mesh, i) => {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
       const t = i - mid;
-      mesh.position.set(t * 0.36 + 0.18 + drift, 2.02 - i * 0.7, i * 0.12);
-      mesh.rotation.set(-Math.PI / 2 + 0.18, -0.12, 0);
+      mesh.position.set(t * 0.28 + 0.06 + drift, 1.55 - i * 0.48, -0.12 + i * 0.05);
+      mesh.rotation.set(-Math.PI / 2 + 0.22, -0.1, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
       const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
       mat.opacity = dim ? 0.28 : 1;
@@ -181,10 +195,10 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let raf = 0;
-  let ax = 0.56;
-  let ay = 0.4;
-  let tx = 0.56;
-  let ty = 0.4;
+  let ax = 0.68;
+  let ay = 0.36;
+  let tx = 0.68;
+  let ty = 0.36;
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -210,8 +224,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 6.95 : 6.25, ax, ay);
-    camera.lookAt(0.12, 1.08, 0.16);
+    camera.position.setFromSphericalCoords(lite ? 6.15 : 5.55, ax, ay);
+    camera.lookAt(0.04, 0.68, 0.04);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
@@ -220,8 +234,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     const rect = canvas.getBoundingClientRect();
     const nx = (ev.clientX - rect.left) / rect.width - 0.5;
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
-    ty = 0.4 + nx * 0.22;
-    tx = 0.56 + ny * 0.1;
+    ty = 0.36 + nx * 0.2;
+    tx = 0.68 + ny * 0.1;
     canvas.style.cursor = pick(ev.clientX, ev.clientY) ? 'pointer' : 'grab';
   };
 
