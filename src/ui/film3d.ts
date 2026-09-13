@@ -182,10 +182,10 @@ function plateTexture(
         ctx.drawImage(img, (w - dw) / 2, (h - dh) * faceBias, dw, dh);
       }
     }
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
     ctx.fillRect(0, h - 92, w, 92);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = `800 ${portrait ? 36 : 44}px Arial, sans-serif`;
+    ctx.font = `800 ${portrait ? 28 : 34}px Arial, sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.lineJoin = 'round';
@@ -245,18 +245,18 @@ function mountFilm3D(
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);
     const mesh = new THREE.Mesh(
-      new THREE.PlaneGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18),
+      new THREE.BoxGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, 0.05),
       mat,
     );
     mesh.userData.slide = slide;
     const chrome = new THREE.Mesh(
-      new THREE.PlaneGeometry(portrait ? 1.1 : 2.24, portrait ? 1.44 : 1.3),
+      new THREE.BoxGeometry(portrait ? 1.14 : 2.24, portrait ? 1.48 : 1.3, 0.02),
       duskSheen({ color: 0xd7e4ff, reflectivity: 0.62 }),
     );
-    chrome.position.z = -0.032;
+    chrome.position.z = -0.04;
     mesh.add(chrome);
     const frame = new THREE.Mesh(
-      new THREE.PlaneGeometry(portrait ? 1.06 : 2.18, portrait ? 1.4 : 1.24),
+      new THREE.BoxGeometry(portrait ? 1.08 : 2.18, portrait ? 1.42 : 1.24, 0.02),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
     frame.position.z = -0.018;
@@ -315,7 +315,7 @@ function mountFilm3D(
     ay += (ty - ay) * 0.08;
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
-    camera.position.setFromSphericalCoords(lite ? 3.72 : 3.55, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 3.18 : 3.05, ax, ay);
     camera.lookAt(0, 0.04, 0.18);
     if (composer) composer.render();
     else renderer.render(scene, camera);

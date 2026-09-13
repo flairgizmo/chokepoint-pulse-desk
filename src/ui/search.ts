@@ -72,7 +72,7 @@ export function searchMarkup(): string {
   return `<div class="desk-search" id="desk-search" hidden>
     <div class="desk-search-backdrop" data-search-close></div>
     <div class="desk-search-panel" role="dialog" aria-modal="true" aria-labelledby="desk-search-title">
-      <h2 id="desk-search-title" class="sr-only">Search the desk</h2>
+      <h2 id="desk-search-title" class="sr-only">Search the record</h2>
       <label class="sr-only" for="desk-search-input">Search</label>
       <input id="desk-search-input" type="search" placeholder="Search people, patents, terms, programmes…" />
       <ul id="desk-search-hits"></ul>

@@ -457,12 +457,9 @@ export class EarthGlobe {
     });
     skyTex.colorSpace = THREE.SRGBColorSpace;
     scene.background = skyTex;
-    scene.add(
-      new THREE.Mesh(
-        new THREE.SphereGeometry(16, 48, 28),
-        new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, depthWrite: false }),
-      ),
-    );
+    const skyMat = duskSheen({ map: skyTex, reflectivity: 0.1, side: THREE.BackSide });
+    skyMat.depthWrite = false;
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(16, 48, 28), skyMat));
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
 
@@ -473,7 +470,7 @@ export class EarthGlobe {
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
     const globeMat = this.lite
-      ? duskSheen({ color: 0x16384a, reflectivity: 0.14 })
+      ? duskSheen({ color: 0x16384a, reflectivity: 0.3 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x16384a,
           roughness: 0.38,

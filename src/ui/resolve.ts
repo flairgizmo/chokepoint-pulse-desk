@@ -234,7 +234,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       kind: 'paper',
       title: p.title,
       kicker: `${p.kind} · ${p.year}`,
-      stake: p.id === 'synchro' ? 'A neighbouring research thread, with a verification chip.' : 'Read the publisher. This stage is the brief.',
+      stake: p.id === 'synchro' ? 'A neighbouring research thread, with a verification chip.' : 'Read the publisher. This stage is the filing.',
       body:
         p.id === 'synchro'
           ? `${p.lede} Distinct from Quant’s February 2026 Synchronisation Lab note (simulated RT2). Bank of England pages describe synchronisation as locking an RTGS movement to an external event. This file is not a BoE publication naming Quant as operator of “Synthorus.”`
@@ -242,7 +242,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       analogy:
         p.id === 'synchro'
           ? 'A neighbouring research thread, not the 2026 Synchronisation Lab press note.'
-          : 'Read the publisher. This stage is the brief.',
+          : 'Read the publisher. This stage is the filing.',
       fact: factLine('Venue', `${p.year} · ${p.venue}`),
       facts: [
         { label: 'Venue', value: p.venue },
@@ -384,7 +384,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       kind: 'source',
       title,
       kicker: who || 'On the record',
-      stake: 'The publisher keeps the original. The brief stays here.',
+      stake: 'The publisher keeps the original. The filing stays here.',
       body: `${who}. The citation is filed so the sentence can be read next to the rest of the record. Open original for the first room. A cited neighbour is not an endorsement.`,
       analogy: 'A doorway, not a redirect.',
       original: href ? { href, label: 'Open original' } : undefined,

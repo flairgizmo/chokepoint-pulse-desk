@@ -96,7 +96,7 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
     ctx.textBaseline = 'middle';
     ctx.fillText('Q', 128, 268);
   } else if (i % 2 === 1) {
-    ctx.fillStyle = 'rgba(6, 20, 51, 0.55)';
+    ctx.fillStyle = 'rgba(6, 20, 51, 0.22)';
     ctx.fillRect(0, 0, 256, 512);
   }
   return c;
@@ -160,7 +160,8 @@ function facetMaterial(
   return lite
     ? duskSheen({
         map: tex,
-        reflectivity: 0.12,
+        reflectivity: 0.24,
+        combine: THREE.AddOperation,
         side: THREE.DoubleSide,
       })
     : new THREE.MeshPhysicalMaterial({
@@ -314,7 +315,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(5.2, lite ? 48 : 96),
     lite
-      ? new THREE.MeshBasicMaterial({ map: cinemaFloorMap(), transparent: true, opacity: 0.94 })
+      ? duskSheen({ map: cinemaFloorMap(), reflectivity: 0.42, transparent: true, opacity: 0.94 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x1b2a44,
           roughness: 0.05,
@@ -358,7 +359,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   scene.background = backdropTex;
-  const cycMat = new THREE.MeshBasicMaterial({ map: backdropTex, color: 0xffffff, depthWrite: false });
+  const cycMat = duskSheen({ map: backdropTex, reflectivity: 0.14 });
+  cycMat.depthWrite = false;
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(32, 15.2), cycMat);
   backdrop.position.set(0, 1.45, -5.6);
   scene.add(backdrop);
@@ -400,8 +402,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
-      ? new THREE.MeshBasicMaterial({
+      ? duskSheen({
           map: tableTex,
+          reflectivity: 0.32,
+          combine: THREE.AddOperation,
           side: THREE.DoubleSide,
         })
       : new THREE.MeshPhysicalMaterial({
@@ -452,7 +456,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       lower,
       duskSheen({
         map: pavTex,
-        reflectivity: 0.38,
+        reflectivity: 0.46,
+        combine: THREE.AddOperation,
         side: THREE.DoubleSide,
       }),
     );
@@ -540,7 +545,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(girdle);
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.05, 0.08, 0.04, 8),
-    new THREE.MeshBasicMaterial({ color: 0x0b1f5c }),
+    duskSheen({ color: 0xeaf1ff, reflectivity: 0.72 }),
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;

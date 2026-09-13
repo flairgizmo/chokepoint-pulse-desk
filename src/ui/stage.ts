@@ -123,7 +123,7 @@ function paint(root: HTMLElement, doc: StageDoc): void {
   const original = doc.original
     ? `<p class="stage-original">${extLink(doc.original.href.startsWith('http') ? doc.original.href : sourceUrl(doc.original.href), doc.original.label || 'Open original')}</p>`
     : '';
-  foot.innerHTML = `${crumb}${related}<div class="stage-actions"><button type="button" class="btn btn-primary" data-stage-close>Stay</button>${original}</div>`;
+  foot.innerHTML = `${crumb}${related}<div class="stage-actions"><button type="button" class="btn btn-primary" data-stage-close>Close</button>${original}</div>`;
 
   wrap.hidden = false;
   wrap.dataset.kind = doc.kind;

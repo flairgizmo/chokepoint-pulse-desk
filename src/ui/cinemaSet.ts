@@ -102,7 +102,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = tex;
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = new THREE.MeshBasicMaterial({ map: tex });
+  const cycMat = duskSheen({ map: tex, reflectivity: 0.16 });
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);
@@ -118,7 +118,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(6.4, lite ? 48 : 96),
     lite
-      ? new THREE.MeshBasicMaterial({ map: cinemaFloorMap(), transparent: true, opacity: 0.94 })
+      ? duskSheen({ map: cinemaFloorMap(), reflectivity: 0.48, transparent: true, opacity: 0.94 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x101826,
           roughness: 0.08,
@@ -149,13 +149,14 @@ export function duskSheen(opts: {
   side?: THREE.Side;
   transparent?: boolean;
   opacity?: number;
+  combine?: THREE.Combine;
 }): THREE.MeshBasicMaterial {
   return new THREE.MeshBasicMaterial({
     color: opts.color ?? 0xffffff,
     map: opts.map ?? null,
     envMap: duskCubeMap(),
     reflectivity: opts.reflectivity ?? 0.36,
-    combine: THREE.MixOperation,
+    combine: opts.combine ?? THREE.MixOperation,
     side: opts.side ?? THREE.FrontSide,
     transparent: opts.transparent,
     opacity: opts.opacity,

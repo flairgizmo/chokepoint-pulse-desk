@@ -41,7 +41,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(28, 1, 0.08, 20);
-  camera.position.set(0, 0, 2.05);
+  camera.position.set(0, 0, 1.72);
 
   const tex = new THREE.TextureLoader().load(src, (next) => {
     next.colorSpace = THREE.SRGBColorSpace;
@@ -52,7 +52,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   const plate = new THREE.Mesh(
     new THREE.BoxGeometry(2.42, 1.04, 0.045),
     probe.lite
-      ? duskSheen({ map: tex, reflectivity: 0.22 })
+      ? duskSheen({ map: tex, reflectivity: 0.38 })
       : new THREE.MeshPhysicalMaterial({
           map: tex,
           roughness: 0.3,
@@ -65,7 +65,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
 
   const frame = new THREE.Mesh(
     new THREE.BoxGeometry(2.52, 1.14, 0.03),
-    new THREE.MeshBasicMaterial({ color: 0x05070c }),
+    duskSheen({ color: 0xd7e4ff, reflectivity: 0.55 }),
   );
   frame.position.z = -0.028;
   scene.add(frame);

@@ -275,7 +275,7 @@ export class QntDesk {
           </nav>
           <div class="top-tools">
             <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
-            <button type="button" class="icon-btn" data-open-search aria-label="Search the desk">Search</button>
+            <button type="button" class="icon-btn" data-open-search aria-label="Search the record">Search</button>
             <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Start the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>
@@ -605,7 +605,9 @@ export class QntDesk {
   }
 
   private wireHeroes(): void {
-    if (this.root.querySelector('#stack-stage, #film-stage')) return;
+    if (this.root.querySelector('#stack-stage, #film-stage') && !this.root.querySelector('.hero-plate.cinema-frame')) {
+      return;
+    }
     this.root.querySelectorAll<HTMLElement>('.hero-plate.cinema-frame').forEach((figure) => {
       void import('./hero3d')
         .then(({ upgradeHero3D }) => {
@@ -820,7 +822,7 @@ export class QntDesk {
               return `<li><button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}"><span class="kicker">${esc(h.lane)}</span> ${esc(h.title)}</button></li>`;
             })
             .join('')
-        : `<li class="empty-note">${esc(this.news.error ?? 'The river is quiet. Filings stay on the news desk.')}</li>`;
+        : `<li class="empty-note">${esc(this.news.error ?? 'The river is quiet. Sourced notes stay on the wire.')}</li>`;
     }
     const price = this.root.querySelector('[data-home-price]');
     const meta = this.root.querySelector('[data-home-meta]');

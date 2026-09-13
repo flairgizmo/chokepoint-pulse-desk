@@ -490,7 +490,7 @@ export function notesReel(): string {
   return `<section class="notes-strip">
     ${kicker('News')}
     <div class="section-head">
-      <h2 class="display">Scroll the record. <span class="display-mute">A card is a briefing.</span></h2>
+      <h2 class="display">Scroll the record. <span class="display-mute">A card is a filing.</span></h2>
       <a class="text-link" href="/news">The wire →</a>
     </div>
     <div class="notes-reel" tabindex="0">${cards}</div>
@@ -643,7 +643,7 @@ export function renderHome(): string {
       <div class="earth-hud">
         <div class="hud-card">
           <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · orbit</p>
-          <p class="hud-help">Pins stay on published lat/lon. Drag to orbit. Scroll to zoom. Click a city for the brief.</p>
+          <p class="hud-help">Pins stay on published lat/lon. Drag to orbit. Scroll to zoom. Click a city for the still.</p>
           <label class="sr-only" for="city-select">Cities</label>
           <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
         </div>
@@ -1069,6 +1069,12 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     'london',
     'research',
   )}
+    <section class="still-strip" aria-label="Photographs in the library">
+      ${photoFigure(plateFor('overledger-2018', '2018 paper'), 'strip-still')}
+      ${photoFigure(plateFor('satp-core', 'SATP'), 'strip-still')}
+      ${photoFigure(plateFor('patent-us', 'US patent'), 'strip-still')}
+      ${photoFigure(plateFor('gbtd-ukf', 'UK Finance'), 'strip-still')}
+    </section>
   ${quoteRail('research')}
   <div class="toolbar filter-bar">
     <input type="search" id="lib-search" placeholder="Search titles, authors, venues" value="${esc(filter)}" />
@@ -1097,7 +1103,7 @@ function paperCard(p: Paper): string {
       <summary>What the document says</summary>
       ${essayParas(p.lede)}
     </details>
-    <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read the brief →</button>
+    <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read the filing →</button>
   </article>`;
 }
 
@@ -1452,7 +1458,7 @@ export function renderCity(city: City): string {
 export function renderDonate(): string {
   return `${pageHero(
     'Support',
-    'Optional. The desk stays free.',
+    'Optional. The pages stay free.',
     'If you want the filings to stay online, these are the only published addresses. Donations buy no tokens and no yield. Nothing in a DM. Nothing that looks like this page.',
     '',
     undefined,
