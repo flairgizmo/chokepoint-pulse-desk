@@ -348,6 +348,9 @@ export class QntDesk {
     this.wireStack();
     this.wireFilm();
     this.wireHeroes();
+    void import('./faces')
+      .then(({ hydrateFaces }) => hydrateFaces(this.root))
+      .catch(() => undefined);
     this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
     if (this.root.querySelector('#earth-stage')) {

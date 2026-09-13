@@ -815,7 +815,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 0.92 : 0.98;
+  const restAx = lite ? 1.16 : 1.2;
   const restAy = 0.72;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
@@ -919,8 +919,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 3.72 : 3.56, ax, ay);
-    camera.lookAt(0, lite ? 0.38 : 0.4, 0);
+    camera.position.setFromSphericalCoords(lite ? 3.48 : 3.36, ax, ay);
+    camera.lookAt(0, lite ? 0.46 : 0.48, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);

@@ -2466,7 +2466,8 @@ button.chip {
   object-position: center 16%;
   border: 0;
   border-radius: 0;
-  transform: none;
+  transform: scale(1.22);
+  transform-origin: center 24%;
   box-shadow: none;
   background: #0b1220;
   filter: contrast(1.06) saturate(0.94) brightness(1.02);

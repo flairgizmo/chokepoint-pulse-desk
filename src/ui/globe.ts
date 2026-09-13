@@ -104,14 +104,14 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.28) saturate(0.58) brightness(0.84)';
+  ctx.filter = 'contrast(1.32) saturate(0.54) brightness(0.8)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(32, 22, 36, 0.22)';
+  ctx.fillStyle = 'rgba(28, 18, 32, 0.26)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = 'rgba(255, 178, 108, 0.1)';
+  ctx.fillStyle = 'rgba(255, 172, 100, 0.11)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -208,7 +208,7 @@ export class EarthGlobe {
   private phi = 1.08;
   private theta = 2.05;
   private earthSpin = 0.42;
-  private distance = 2.18;
+  private distance = 2.08;
   private velTheta = 0;
   private velPhi = 0;
   private followId: string | undefined;
@@ -280,7 +280,7 @@ export class EarthGlobe {
     this.velTheta = 0;
     this.velPhi = 0;
     this.panX = 0;
-    this.distance = 2.18;
+    this.distance = 2.08;
     const london = cityById('london');
     if (london) this.lookAtCity(london);
   }
