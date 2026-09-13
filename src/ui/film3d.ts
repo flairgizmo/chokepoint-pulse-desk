@@ -92,7 +92,7 @@ export function upgradeFilm3D(canvas: HTMLCanvasElement): Film3DHandle | null {
   const next = remountCanvas(canvas);
   next.dataset.filmSet = set;
   try {
-    return mountFilm3D(next, slides, filmBackdrop(set), probe.lite, set === 'people');
+    return mountFilm3D(next, slides, filmBackdrop(set), probe.lite, set);
   } catch {
     return null;
   }
@@ -172,8 +172,9 @@ function mountFilm3D(
   slides: FilmSlide[],
   backdrop: string,
   lite: boolean,
-  portrait = false,
+  set = '',
 ): Film3DHandle {
+  const portrait = set === 'people';
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = new THREE.WebGLRenderer({
@@ -205,7 +206,7 @@ function mountFilm3D(
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const plates: THREE.Mesh[] = [];
   const mid = (slides.length - 1) / 2;
-  let featured = mid;
+  let featured = set.startsWith('city:') ? 0 : mid;
 
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);

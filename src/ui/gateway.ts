@@ -319,12 +319,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.28, z);
     mesh.userData.nodeId = bank.id;
-    const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(1.12, 0.76, 0.028),
-      new THREE.MeshBasicMaterial({ color: 0x05070c }),
-    );
-    frame.position.z = -0.028;
-    mesh.add(frame);
     group.add(mesh);
     cards.push(mesh);
     cardMats.push(mat);
@@ -445,7 +439,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     camera.lookAt(0, lite ? 0.28 : 0.32, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x * 1.28, y + 0.32, z * 1.28);
+      cards[i].position.set(x * 1.22, y + 0.3, z * 1.22);
       cards[i].lookAt(camera.position.x, y + 0.38, camera.position.z);
     });
     hex.rotation.z = reduced ? 0 : now / 18000;
