@@ -50,12 +50,12 @@ function containDraw(
 
 function facetCanvas(i: number, on = false): HTMLCanvasElement {
   const shades = [
-    ['#e8f0ff', '#7eb0ff', '#1557FF'],
-    ['#9cc4ff', '#3d7bff', '#0d3fd4'],
-    ['#5b93ff', '#1557FF', '#061433'],
-    ['#c8dcff', '#5b93ff', '#0b1f5c'],
-    ['#7aa6ff', '#1557FF', '#02060f'],
-    ['#d4e4ff', '#3d7bff', '#061433'],
+    ['#3d7bff', '#1557FF', '#061433'],
+    ['#ff4fa8', '#1557FF', '#02060f'],
+    ['#1ec9e8', '#1557FF', '#061433'],
+    ['#5b93ff', '#0d3fd4', '#02060f'],
+    ['#c84cff', '#1557FF', '#061433'],
+    ['#00d4aa', '#1557FF', '#02060f'],
   ][i % 6];
   const c = document.createElement('canvas');
   c.width = 256;
@@ -70,13 +70,13 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 512);
   const fire = ctx.createLinearGradient(256, 0, 0, 512);
-  fire.addColorStop(0, 'rgba(255, 72, 168, 0.48)');
-  fire.addColorStop(0.38, 'rgba(60, 230, 255, 0.32)');
-  fire.addColorStop(1, 'rgba(21, 87, 255, 0.08)');
+  fire.addColorStop(0, 'rgba(255, 72, 168, 0.72)');
+  fire.addColorStop(0.38, 'rgba(60, 230, 255, 0.5)');
+  fire.addColorStop(1, 'rgba(21, 87, 255, 0.12)');
   ctx.fillStyle = fire;
   ctx.fillRect(0, 0, 256, 512);
   const sheen = ctx.createLinearGradient(0, 0, 200, 260);
-  sheen.addColorStop(0, 'rgba(255,255,255,0.42)');
+  sheen.addColorStop(0, 'rgba(255,255,255,0.18)');
   sheen.addColorStop(0.45, 'rgba(255,255,255,0.06)');
   sheen.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = sheen;
@@ -91,7 +91,7 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   ctx.strokeRect(8, 8, 240, 496);
   if (i === 0) {
     ctx.fillStyle = 'rgba(244,247,251,0.96)';
-    ctx.font = '800 160px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '800 132px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Q', 128, 268);
@@ -136,9 +136,9 @@ function tableCanvas(): HTMLCanvasElement {
   const ctx = c.getContext('2d');
   if (ctx) {
     const g = ctx.createRadialGradient(128, 128, 8, 128, 128, 128);
-    g.addColorStop(0, '#f4f7fb');
-    g.addColorStop(0.55, '#b8d4ff');
-    g.addColorStop(1, '#3d7bff');
+    g.addColorStop(0, '#9cc4ff');
+    g.addColorStop(0.42, '#1557FF');
+    g.addColorStop(1, '#061433');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 256, 256);
     ctx.fillStyle = '#0B1F5C';
@@ -160,7 +160,7 @@ function facetMaterial(
   return lite
     ? duskSheen({
         map: tex,
-        reflectivity: 0.3,
+        reflectivity: 0.12,
         side: THREE.DoubleSide,
       })
     : new THREE.MeshPhysicalMaterial({
@@ -400,9 +400,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
-      ? duskSheen({
+      ? new THREE.MeshBasicMaterial({
           map: tableTex,
-          reflectivity: 0.2,
           side: THREE.DoubleSide,
         })
       : new THREE.MeshPhysicalMaterial({
@@ -471,9 +470,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const star = new THREE.Mesh(
       starGeo,
       new THREE.MeshBasicMaterial({
-        color: i % 2 ? 0x9ad4ff : 0xffffff,
+        color: i % 2 ? 0xff5cb0 : 0x5af0ff,
         transparent: true,
-        opacity: 0.38,
+        opacity: 0.55,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         side: THREE.DoubleSide,
@@ -484,7 +483,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     stars.push(star);
     const spark = new THREE.Mesh(
       new THREE.SphereGeometry(0.016, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88 }),
+      new THREE.MeshBasicMaterial({
+        color: i % 2 ? 0xff5cb0 : 0x5af0ff,
+        transparent: true,
+        opacity: 0.92,
+      }),
     );
     spark.position.set(x0, eqY, z0);
     spark.userData.nodeId = 6;
