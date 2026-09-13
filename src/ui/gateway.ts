@@ -514,7 +514,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
   rim.position.set(-2.8, 1.2, -2.4);
   scene.add(rim);
-  const fill = new THREE.PointLight(0x00a878, 0.7, 6);
+  const fill = new THREE.PointLight(0x6aa8ff, 0.55, 6);
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
 
@@ -523,7 +523,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavs: THREE.Mesh[] = [];
   const stars: THREE.Mesh[] = [];
   const sparks: THREE.Mesh[] = [];
-  const sides = 8;
+  const sides = 12;
   const restAyFace = 0.5;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
   const tableR = 0.18;
@@ -596,7 +596,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.MeshBasicMaterial({
         color: i % 2 ? 0xff5cb0 : 0x5af0ff,
         transparent: true,
-        opacity: 0.55,
+        opacity: 0.28,
       }),
     );
     spark.position.set(x0, eqY, z0);
@@ -629,7 +629,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(
     new THREE.LineSegments(
       edgeGeo,
-      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.28 }),
+      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.14 }),
     ),
   );
   const core = new THREE.Mesh(
@@ -647,35 +647,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   core.userData.nodeId = 6;
   crystal.add(core);
   const girdle = new THREE.Mesh(
-    new THREE.TorusGeometry(eqR, 0.016, 8, 8),
-    lite
-      ? duskSheen({
-          color: 0xeaf1ff,
-          reflectivity: 0.86,
-        })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0xeaf1ff,
-          metalness: 0.88,
-          roughness: 0.1,
-          clearcoat: 1,
-          envMapIntensity: 1.65,
-        }),
+    new THREE.TorusGeometry(eqR, 0.012, lite ? 8 : 12, sides),
+    cinemaChrome(lite),
   );
   girdle.rotation.x = Math.PI / 2;
   girdle.position.y = eqY;
   girdle.userData.nodeId = 6;
   crystal.add(girdle);
   const base = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.05, 0.08, 0.04, 8),
-    lite
-      ? duskSheen({ color: 0xeaf1ff, reflectivity: 0.72 })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0xeaf1ff,
-          metalness: 0.9,
-          roughness: 0.12,
-          clearcoat: 1,
-          envMapIntensity: 1.5,
-        }),
+    new THREE.CylinderGeometry(0.05, 0.08, 0.04, sides),
+    cinemaChrome(lite),
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
@@ -778,17 +759,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(stem);
 
   const bead = new THREE.Mesh(
-    new THREE.SphereGeometry(0.045, lite ? 12 : 24, lite ? 12 : 24),
-    lite
-      ? duskSheen({ color: 0x00d4aa, reflectivity: 0.62 })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0x00a878,
-          emissive: 0x00a878,
-          emissiveIntensity: 1.4,
-          roughness: 0.18,
-          metalness: 0.35,
-          clearcoat: 1,
-        }),
+    new THREE.SphereGeometry(0.038, lite ? 12 : 24, lite ? 12 : 24),
+    cinemaChrome(lite),
   );
   group.add(bead);
   const lockLabel = labelSprite('LOCK', '#EAF1FF');

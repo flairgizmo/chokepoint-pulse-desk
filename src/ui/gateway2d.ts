@@ -306,8 +306,9 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const girdle: Array<[number, number]> = [];
     const table: Array<[number, number]> = [];
     const mid: Array<[number, number]> = [];
-    for (let i = 0; i < 8; i++) {
-      const a = -Math.PI / 2 + (i * Math.PI) / 4;
+    const sides2d = 12;
+    for (let i = 0; i < sides2d; i++) {
+      const a = -Math.PI / 2 + (i * Math.PI * 2) / sides2d;
       girdle.push([cx + Math.cos(a) * crystalW, waistY + Math.sin(a) * crystalW * 0.2]);
       table.push([cx + Math.cos(a) * crystalW * 0.32, tableY + Math.sin(a) * crystalW * 0.08]);
       mid.push([cx + Math.cos(a) * crystalW * 0.68, midY + Math.sin(a) * crystalW * 0.14]);
@@ -341,12 +342,12 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         ctx.fill();
       }
     };
-    for (let i = 0; i < 8; i++) {
-      const n = (i + 1) % 8;
+    for (let i = 0; i < sides2d; i++) {
+      const n = (i + 1) % sides2d;
       fillGlass([girdle[i], girdle[n], [cx, baseY]], i, i % 2 ? 'rgba(8, 22, 56, 0.72)' : 'rgba(6, 14, 36, 0.78)');
       fillGlass([table[i], mid[i], mid[n]], i + 8, 'rgba(21, 87, 255, 0.28)');
       fillGlass([mid[i], girdle[i], girdle[n], mid[n]], i + 16, 'rgba(21, 87, 255, 0.22)');
-      fillGlass([table[i], table[n], mid[n], mid[i]], i + 24, i === 2 || i === 3 ? 'rgba(234, 241, 255, 0.2)' : 'rgba(61, 114, 224, 0.24)');
+      fillGlass([table[i], table[n], mid[n], mid[i]], i + 24, i === 3 || i === 4 ? 'rgba(234, 241, 255, 0.2)' : 'rgba(61, 114, 224, 0.24)');
     }
     ctx.beginPath();
     table.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
@@ -381,7 +382,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     girdle.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
     ctx.closePath();
     ctx.stroke();
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < sides2d; i++) {
       ctx.beginPath();
       ctx.moveTo(table[i][0], table[i][1]);
       ctx.lineTo(girdle[i][0], girdle[i][1]);
@@ -517,9 +518,9 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       local < 0.5
         ? [a[0] + (b[0] - a[0]) * (local * 2), a[1] + (b[1] - a[1]) * (local * 2)]
         : [b[0] + (c[0] - b[0]) * ((local - 0.5) * 2), b[1] + (c[1] - b[1]) * ((local - 0.5) * 2)];
-    ctx.fillStyle = '#00A878';
-    ctx.shadowColor = '#00A878';
-    ctx.shadowBlur = 16;
+    ctx.fillStyle = '#3d4f6c';
+    ctx.shadowColor = 'rgba(142, 176, 255, 0.45)';
+    ctx.shadowBlur = 12;
     ctx.beginPath();
     ctx.arc(bead[0], bead[1], Math.max(4.2, W / 170), 0, Math.PI * 2);
     ctx.fill();

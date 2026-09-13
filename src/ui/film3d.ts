@@ -76,6 +76,11 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
       ctx.fillText(slide.title, x + 14, y + ph - 14);
       ctx.restore();
     });
+    const vig = ctx.createRadialGradient(w * 0.5, h * 0.42, h * 0.12, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
+    vig.addColorStop(0, 'rgba(7, 11, 20, 0)');
+    vig.addColorStop(1, 'rgba(7, 11, 20, 0.42)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, w, h);
   };
   bed.onload = paint;
   imgs.forEach((img) => {
