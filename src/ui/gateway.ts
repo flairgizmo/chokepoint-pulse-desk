@@ -63,30 +63,30 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
-  ctx.fillRect(0, CARD_H - 168, CARD_W, 168);
-  const bw = 580;
-  const bh = 112;
+  ctx.fillStyle = 'rgba(7, 11, 20, 0.38)';
+  ctx.fillRect(0, CARD_H - 150, CARD_W, 150);
+  const bw = 400;
+  const bh = 78;
   const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 136;
-  ctx.fillStyle = on ? '#ffffff' : '#f7f9ff';
-  ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
-  ctx.shadowBlur = 18;
-  ctx.shadowOffsetY = 6;
+  const by = CARD_H - 108;
+  ctx.fillStyle = on ? '#ffffff' : '#f4f7fb';
+  ctx.shadowColor = 'rgba(7, 11, 20, 0.4)';
+  ctx.shadowBlur = 14;
+  ctx.shadowOffsetY = 5;
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 20);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 16);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
   ctx.shadowColor = 'transparent';
-  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.28)';
-  ctx.lineWidth = on ? 6 : 3;
+  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.22)';
+  ctx.lineWidth = on ? 5 : 2;
   ctx.stroke();
   const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
   if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
-    containDraw(ctx, img, bx + 28, by + 18, bw - 56, bh - 36);
+    containDraw(ctx, img, bx + 22, by + 14, bw - 44, bh - 28);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '700 48px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(wide ? 'LLOYDS' : short, CARD_W / 2, by + bh / 2);

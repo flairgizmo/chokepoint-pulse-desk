@@ -150,7 +150,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
           metalness: 0.08,
           clearcoat: 0.4,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.55, 0.034, 1.42), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.05, 0.03, 0.96), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     group.add(mesh);
@@ -168,8 +168,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     slabs.forEach((mesh, i) => {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
       const t = i - mid;
-      mesh.position.set(t * 0.28 + drift, 1.72 - i * 0.5, i * 0.1);
-      mesh.rotation.set(0.18, -0.28, 0);
+      mesh.position.set(t * 0.46 + drift, 2.1 - i * 0.74, i * 0.12);
+      mesh.rotation.set(0.24, -0.3, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
       const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
       mat.opacity = dim ? 0.28 : 1;
@@ -180,10 +180,10 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let raf = 0;
-  let ax = 0.72;
-  let ay = 0.36;
-  let tx = 0.72;
-  let ty = 0.36;
+  let ax = 0.56;
+  let ay = 0.4;
+  let tx = 0.56;
+  let ty = 0.4;
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -208,8 +208,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 6.35 : 5.7, ax, ay);
-    camera.lookAt(0.04, 0.72, 0.18);
+    camera.position.setFromSphericalCoords(lite ? 7.15 : 6.45, ax, ay);
+    camera.lookAt(0.02, 0.9, 0.2);
     renderer.render(scene, camera);
   };
 
@@ -217,8 +217,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     const rect = canvas.getBoundingClientRect();
     const nx = (ev.clientX - rect.left) / rect.width - 0.5;
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
-    ty = 0.36 + nx * 0.24;
-    tx = 0.72 + ny * 0.12;
+    ty = 0.4 + nx * 0.22;
+    tx = 0.56 + ny * 0.1;
     canvas.style.cursor = pick(ev.clientX, ev.clientY) ? 'pointer' : 'grab';
   };
 

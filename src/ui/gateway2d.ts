@@ -90,6 +90,7 @@ export function remountCanvas(canvas: HTMLCanvasElement): HTMLCanvasElement {
   const label = canvas.getAttribute('aria-label');
   if (label) next.setAttribute('aria-label', label);
   delete next.dataset.engine;
+  if (canvas.dataset.filmSet) next.dataset.filmSet = canvas.dataset.filmSet;
   canvas.replaceWith(next);
   return next;
 }
