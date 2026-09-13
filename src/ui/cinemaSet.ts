@@ -16,8 +16,8 @@ function paintDuskFace(kind: 'px' | 'nx' | 'py' | 'ny' | 'pz' | 'nz'): HTMLCanva
   if (!ctx) return c;
   const g = ctx.createLinearGradient(0, 0, kind === 'px' || kind === 'nx' ? 256 : 0, 256);
   if (kind === 'py') {
-    g.addColorStop(0, '#d7e4ff');
-    g.addColorStop(1, '#5b7aad');
+    g.addColorStop(0, '#8aa3c8');
+    g.addColorStop(1, '#2a3d5c');
   } else if (kind === 'ny') {
     g.addColorStop(0, '#0b1220');
     g.addColorStop(1, '#02060f');
@@ -132,8 +132,8 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   floor.position.y = -0.62;
   scene.add(floor);
 
-  scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.95 : 0.4));
-  scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.88 : 0.52));
+  scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.7 : 0.4));
+  scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.68 : 0.52));
   const key = new THREE.DirectionalLight(0xfff1dc, lite ? 2.15 : 1.95);
   key.position.set(1.8, 2.9, 2.4);
   scene.add(key);
@@ -142,11 +142,31 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.add(rim);
 }
 
+export function duskSheen(opts: {
+  color?: number;
+  map?: THREE.Texture | null;
+  reflectivity?: number;
+  side?: THREE.Side;
+  transparent?: boolean;
+  opacity?: number;
+}): THREE.MeshBasicMaterial {
+  return new THREE.MeshBasicMaterial({
+    color: opts.color ?? 0xffffff,
+    map: opts.map ?? null,
+    envMap: duskCubeMap(),
+    reflectivity: opts.reflectivity ?? 0.36,
+    combine: THREE.MixOperation,
+    side: opts.side ?? THREE.FrontSide,
+    transparent: opts.transparent,
+    opacity: opts.opacity,
+  });
+}
+
 export function plateMaterial(
   lite: boolean,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   return lite
-    ? new THREE.MeshBasicMaterial({ color: 0x1a2438, envMap: duskCubeMap(), reflectivity: 0.28 })
+    ? duskSheen({ color: 0x1a2438, reflectivity: 0.55 })
     : new THREE.MeshPhysicalMaterial({
         color: 0x1a2438,
         roughness: 0.22,

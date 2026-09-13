@@ -6,7 +6,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { cinemaFloorMap, duskCubeMap, hardenCanvasTex } from './cinemaSet';
+import { cinemaFloorMap, duskSheen, hardenCanvasTex } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import {
   BANKS,
@@ -70,14 +70,14 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 512);
   const fire = ctx.createLinearGradient(256, 0, 0, 512);
-  fire.addColorStop(0, 'rgba(255, 92, 176, 0.28)');
-  fire.addColorStop(0.42, 'rgba(90, 230, 255, 0.16)');
-  fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
+  fire.addColorStop(0, 'rgba(255, 72, 168, 0.48)');
+  fire.addColorStop(0.38, 'rgba(60, 230, 255, 0.32)');
+  fire.addColorStop(1, 'rgba(21, 87, 255, 0.08)');
   ctx.fillStyle = fire;
   ctx.fillRect(0, 0, 256, 512);
   const sheen = ctx.createLinearGradient(0, 0, 200, 260);
-  sheen.addColorStop(0, 'rgba(255,255,255,0.58)');
-  sheen.addColorStop(0.45, 'rgba(255,255,255,0.08)');
+  sheen.addColorStop(0, 'rgba(255,255,255,0.42)');
+  sheen.addColorStop(0.45, 'rgba(255,255,255,0.06)');
   sheen.addColorStop(1, 'rgba(255,255,255,0)');
   ctx.fillStyle = sheen;
   ctx.beginPath();
@@ -121,8 +121,8 @@ function pavCanvas(i: number): HTMLCanvasElement {
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 256);
   const fire = ctx.createLinearGradient(256, 0, 0, 256);
-  fire.addColorStop(0, 'rgba(255, 120, 200, 0.3)');
-  fire.addColorStop(0.5, 'rgba(80, 230, 255, 0.14)');
+  fire.addColorStop(0, 'rgba(255, 88, 186, 0.52)');
+  fire.addColorStop(0.48, 'rgba(60, 230, 255, 0.28)');
   fire.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = fire;
   ctx.fillRect(0, 0, 256, 256);
@@ -154,16 +154,13 @@ function facetMaterial(
   i: number,
   on: boolean,
   lite: boolean,
-  env?: THREE.CubeTexture,
 ): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
   const tex = hardenCanvasTex(new THREE.CanvasTexture(facetCanvas(i, on)));
   tex.colorSpace = THREE.SRGBColorSpace;
   return lite
-    ? new THREE.MeshBasicMaterial({
+    ? duskSheen({
         map: tex,
-        envMap: env ?? duskCubeMap(),
-        reflectivity: 0.58,
-        combine: THREE.MixOperation,
+        reflectivity: 0.3,
         side: THREE.DoubleSide,
       })
     : new THREE.MeshPhysicalMaterial({
@@ -296,11 +293,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.18 : 1.28;
+  renderer.toneMappingExposure = lite ? 1.06 : 1.28;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const env = duskCubeMap();
   if (!lite) {
     try {
       const pmrem = new THREE.PMREMGenerator(renderer);
@@ -404,11 +400,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     new THREE.CircleGeometry(tableR, sides),
     lite
-      ? new THREE.MeshBasicMaterial({
+      ? duskSheen({
           map: tableTex,
-          envMap: env,
-          reflectivity: 0.72,
-          combine: THREE.MixOperation,
+          reflectivity: 0.2,
           side: THREE.DoubleSide,
         })
       : new THREE.MeshPhysicalMaterial({
@@ -445,7 +439,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     );
     upper.setAttribute('uv', new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1], 2));
     upper.computeVertexNormals();
-    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite, env));
+    const face = new THREE.Mesh(upper, facetMaterial(i, false, lite));
     face.userData.nodeId = 6;
     crystal.add(face);
     facets.push(face);
@@ -457,11 +451,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     pavTex.colorSpace = THREE.SRGBColorSpace;
     const pav = new THREE.Mesh(
       lower,
-      new THREE.MeshBasicMaterial({
+      duskSheen({
         map: pavTex,
-        envMap: env,
-        reflectivity: 0.7,
-        combine: THREE.MixOperation,
+        reflectivity: 0.38,
         side: THREE.DoubleSide,
       }),
     );
@@ -522,10 +514,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.16, lite ? 12 : 20, lite ? 10 : 16),
-    new THREE.MeshBasicMaterial({
-      color: 0xdce8ff,
+    duskSheen({
+      color: 0x9cc4ff,
+      reflectivity: 0.48,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.58,
     }),
   );
   core.position.y = 0.5;
@@ -533,11 +526,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(core);
   const girdle = new THREE.Mesh(
     new THREE.TorusGeometry(eqR, 0.016, 8, 8),
-    new THREE.MeshBasicMaterial({
+    duskSheen({
       color: 0xeaf1ff,
-      envMap: env,
-      reflectivity: 0.92,
-      combine: THREE.MixOperation,
+      reflectivity: 0.86,
     }),
   );
   girdle.rotation.x = Math.PI / 2;
@@ -550,7 +541,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   base.position.y = 0.02;
   base.userData.nodeId = 6;
-  crystal.scale.setScalar(1.08);
+  crystal.scale.setScalar(1.14);
   group.add(base);
   group.add(crystal);
 
@@ -561,14 +552,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const rt2 = new THREE.Mesh(
     new THREE.TorusGeometry(0.22, 0.028, lite ? 8 : 16, lite ? 24 : 48),
-    new THREE.MeshPhysicalMaterial({
-      color: 0x00a878,
-      metalness: 0.35,
-      roughness: 0.22,
-      emissive: 0x00a878,
-      emissiveIntensity: 0.55,
-      clearcoat: 0.7,
-    }),
+    lite
+      ? duskSheen({ color: 0x00d4aa, reflectivity: 0.55 })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x00a878,
+          metalness: 0.35,
+          roughness: 0.22,
+          emissive: 0x00a878,
+          emissiveIntensity: 0.55,
+          clearcoat: 0.7,
+        }),
   );
   rt2.rotation.x = Math.PI / 2;
   rt2.position.y = 1.52;
@@ -576,13 +569,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
     new THREE.CircleGeometry(0.18, lite ? 24 : 32),
-    new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      roughness: 0.3,
-      metalness: 0.08,
-      transparent: true,
-      opacity: 0.92,
-    }),
+    lite
+      ? duskSheen({ color: 0xeaf1ff, reflectivity: 0.42, transparent: true, opacity: 0.88 })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0xffffff,
+          roughness: 0.3,
+          metalness: 0.08,
+          transparent: true,
+          opacity: 0.92,
+        }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
   rt2Disk.position.y = 1.52;
@@ -609,7 +604,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
     const mat = lite
-      ? new THREE.MeshBasicMaterial({ map: tex, envMap: env, reflectivity: 0.22, combine: THREE.MixOperation })
+      ? duskSheen({ map: tex, reflectivity: 0.38 })
       : new THREE.MeshPhysicalMaterial({
           map: tex,
           roughness: 0.22,
@@ -656,14 +651,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const bead = new THREE.Mesh(
     new THREE.SphereGeometry(0.045, lite ? 12 : 24, lite ? 12 : 24),
-    new THREE.MeshPhysicalMaterial({
-      color: 0x00a878,
-      emissive: 0x00a878,
-      emissiveIntensity: 1.4,
-      roughness: 0.18,
-      metalness: 0.35,
-      clearcoat: 1,
-    }),
+    lite
+      ? duskSheen({ color: 0x00d4aa, reflectivity: 0.62 })
+      : new THREE.MeshPhysicalMaterial({
+          color: 0x00a878,
+          emissive: 0x00a878,
+          emissiveIntensity: 1.4,
+          roughness: 0.18,
+          metalness: 0.35,
+          clearcoat: 1,
+        }),
   );
   group.add(bead);
   const lockLabel = labelSprite('LOCK', '#EAF1FF');
@@ -741,14 +738,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       gateLit = gateOn;
       facets.forEach((mesh, i) => {
         if (i % 2 === 1) return;
-        const next = facetMaterial(i / 2, gateOn, lite, env);
+        const next = facetMaterial(i / 2, gateOn, lite);
         const prev = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
         prev.map?.dispose();
         mesh.material = next;
       });
     }
-    const rtMat = rt2.material as THREE.MeshPhysicalMaterial;
-    rtMat.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
+    if (rt2.material instanceof THREE.MeshPhysicalMaterial) {
+      rt2.material.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
+    } else {
+      (rt2.material as THREE.MeshBasicMaterial).color.setHex(
+        selected === 7 || hover === 7 ? 0x3cffc4 : 0x00d4aa,
+      );
+    }
   };
   stills.forEach((img) => {
     if (!img.complete) img.onload = () => paintCards();
@@ -758,7 +760,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 4.55 : 3.95, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 4.12 : 3.95, ax, ay);
     camera.lookAt(0, lite ? 0.46 : 0.5, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);

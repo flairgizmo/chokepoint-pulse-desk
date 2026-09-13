@@ -33,10 +33,10 @@ export function heroPlate(k: string, title: string, mute = '', bed?: VisualId): 
   </figure>`;
 }
 
-function hero(k: string, title: string, lede: string, seed: string, film?: string): string {
+function hero(k: string, title: string, lede: string, seed: string, film?: string, plate = true): string {
   return `<header class="page-hero enterprise-hero cinema-hero">
     ${film ? filmStageMarkup(film, title) : ''}
-    ${heroPlate(k, title, seed)}
+    ${film || !plate ? '' : heroPlate(k, title, seed)}
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${title}</h1>
@@ -125,7 +125,13 @@ export function renderStory(): string {
       </li>`,
     )
     .join('');
-  return `${hero('Story / Timeline', 'First the committee. Then the operating system. Then the sterling.', 'Quiet months collapse — there are no empty holes. Each node opens the stake, the filing, and the source. Start at ISO 2015. End at live tokenised sterling.', 'story-hero', 'story')}
+  return `${hero('Story / Timeline', 'First the committee. Then the operating system. Then the sterling.', 'Quiet months collapse. There are no empty holes. Each node opens the stake, the filing, and the source. Start at ISO 2015. End at live tokenised sterling.', 'story-hero', 'story')}
+    <section class="still-strip" aria-label="Photographs on this rail">
+      ${photoFigure(plateFor('iso-2015', 'ISO 2015'), 'strip-still')}
+      ${photoFigure(plateFor('whitepaper-2018', '2018 paper'), 'strip-still')}
+      ${photoFigure(plateFor('gbtd-2025', 'GBTD live'), 'strip-still')}
+      ${photoFigure(plateFor('boe-lab-2026', 'Synchronisation Lab'), 'strip-still')}
+    </section>
     <div class="toolbar filter-bar">
       <input type="search" id="story-search" placeholder="Search the rail…" />
       <div class="chip-row" id="story-themes">${chips}</div>
@@ -158,7 +164,7 @@ export function renderStack(): string {
       <canvas id="stack-stage" class="stack-stage" role="img" aria-label="Five Overledger layers as film plates. Click a plate."></canvas>
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     </section>
-    ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero')}
+    ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero', undefined, false)}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
       <div class="stack-tools">
@@ -185,12 +191,12 @@ export function renderTechnology(): string {
     (t) => `<button type="button" class="tech-spine-hit" data-stage="tech" data-stage-id="${esc(t.id)}">${esc(t.name)}</button>`,
   ).join('');
   const chapters = TECH.map(
-    (t) => `<article class="tech-chapter" id="${esc(t.id)}" data-q="${esc(`${t.name} ${t.purpose} ${t.does}`)}">
+    (t, i) => `<article class="tech-chapter" id="${esc(t.id)}" data-q="${esc(`${t.name} ${t.purpose} ${t.does}`)}">
       ${diagramFigure(t.id, 'tech', t.era)}
       <p class="kicker">${esc(t.era)}</p>
       <h2>${esc(t.name)}</h2>
       <p class="lede-sm">${esc(t.purpose)}</p>
-      <details class="card-more">
+      <details class="card-more"${i < 2 ? ' open' : ''}>
         <summary>Chapter</summary>
         <div class="tech-grid">
           <div><h3>What it does</h3><p>${esc(t.does)}</p></div>
@@ -203,7 +209,13 @@ export function renderTechnology(): string {
     </article>`,
   ).join('');
   return `${hero('Technology', 'Not another chain. The layer that makes the others usable.', 'The books already exist. Isolated ledgers were the 2018 problem. Overledger was filed as the operating layer. Then the network, the standards, and the sterling that is already live.', 'tech-hero', 'technology')}
-    <p class="lede">The problem of isolated ledgers → Overledger as the operating layer → the network of counterparties → standards that outlive a brand → tokenised deposits as a live example, not a slogan.</p>
+    <section class="still-strip" aria-label="Photographs in the stack">
+      ${photoFigure(plateFor('overledger', 'Overledger'), 'strip-still')}
+      ${photoFigure(plateFor('satp', 'SATP'), 'strip-still')}
+      ${photoFigure(plateFor('fusion', 'Fusion'), 'strip-still')}
+      ${photoFigure(plateFor('payscript', 'PayScript'), 'strip-still')}
+      ${photoFigure(plateFor('connectors', 'Rails'), 'strip-still')}
+    </section>
     <div class="toolbar filter-bar">
       <input type="search" id="tech-search" placeholder="Search chapters…" />
     </div>

@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, hardenCanvasTex, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, duskSheen, hardenCanvasTex, plateMaterial } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -168,13 +168,19 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   STACK_SLABS.forEach((layer) => {
     const mat = plateMaterial(lite);
-    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(2.36, 1.12), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.36, 1.12, 0.05), mat);
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
+    const chrome = new THREE.Mesh(
+      new THREE.BoxGeometry(2.48, 1.22, 0.02),
+      duskSheen({ color: 0xd7e4ff, reflectivity: 0.58 }),
+    );
+    chrome.position.z = -0.04;
+    mesh.add(chrome);
     mesh.add(
       new THREE.LineSegments(
         new THREE.EdgesGeometry(mesh.geometry),
-        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.35 }),
+        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.55 }),
       ),
     );
     group.add(mesh);
@@ -229,7 +235,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
     place(now);
-    camera.position.setFromSphericalCoords(lite ? 6.15 : 5.55, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 5.22 : 5.05, ax, ay);
     camera.lookAt(0.04, 0.68, 0.04);
     if (composer) composer.render();
     else renderer.render(scene, camera);

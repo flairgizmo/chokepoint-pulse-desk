@@ -49,7 +49,7 @@ function displayTitle(title: string, mute = ''): string {
 }
 
 export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId, film?: string): string {
-  const skipPlate = film === 'people' || Boolean(film?.startsWith('city:'));
+  const skipPlate = Boolean(film) && film !== 'vision';
   return `<header class="page-hero enterprise-hero cinema-hero">
     ${film ? filmStageMarkup(film, title) : ''}
     ${skipPlate ? '' : heroPlate(k, title, mute, bed)}
@@ -99,7 +99,7 @@ export function constellation(): string {
     ${kicker('Open the sources')}
     <div class="section-head">
       <h2 class="display">The original pages. Not a recap.</h2>
-      <p class="lede-sm">If a sentence on this desk matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. The original, not a recap.</p>
+      <p class="lede-sm">If a sentence matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. The original, not a recap.</p>
     </div>
     <ul class="constellation-grid">${nodes
       .map(
@@ -193,7 +193,7 @@ function filmRail(): string {
     ${kicker('Watch and read')}
     <div class="section-head">
       <h2 class="display">Interviews, conferences, the original pages.</h2>
-      <p class="lede-sm">Each card opens a briefing. The original filing is one click further.</p>
+      <p class="lede-sm">Each card opens a briefing. The original is one click further.</p>
     </div>
     <ul class="film-grid">${films
       .map(
@@ -368,7 +368,7 @@ function dykBlock(): string {
     .join('');
   return `<section class="dyk">
     ${kicker('Did you know')}
-    <h2 class="display">Facts that sit next to the record.</h2>
+    <h2 class="display">Facts that sit beside the record.</h2>
     <ul class="dyk-list">${list}</ul>
     <p><a class="text-link" href="/news">The official wire →</a></p>
   </section>`;
@@ -431,7 +431,7 @@ export function featuredStory(): string {
       <div class="featured-aside">
         <p class="kicker">On the record</p>
         <h2 class="display">What most coverage skips.</h2>
-        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order of the story: the 2018 paper, the IETF drafts, the bank names — latest first, titles on every quote.</p>
+        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order: the 2018 paper, the IETF drafts, the bank names. Latest first. A title on every quote.</p>
         <div class="cta-row">
           ${pill('/news', 'Open the news', 'Official wire')}
           ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
@@ -490,7 +490,7 @@ export function notesReel(): string {
   return `<section class="notes-strip">
     ${kicker('News')}
     <div class="section-head">
-      <h2 class="display">Scroll the record. <span class="display-mute">Each card opens a briefing.</span></h2>
+      <h2 class="display">Scroll the record. <span class="display-mute">A card is a briefing.</span></h2>
       <a class="text-link" href="/news">The wire →</a>
     </div>
     <div class="notes-reel" tabindex="0">${cards}</div>
@@ -589,7 +589,7 @@ export function renderHome(): string {
       <div class="hero-split">
         <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
         <div>
-          <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. This desk walks that story in order, from the public record. Independent research. Not Quant’s corporate site.</p>
+          <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. The public record, in order. Independent research. Not Quant’s corporate site.</p>
           <div class="cta-row">
             ${pill('/technology', 'See how the gate works', 'Product theatre')}
             ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')}
@@ -695,9 +695,7 @@ export function renderHome(): string {
 
     ${latestStrip()}
 
-    ${fold(
-      'Essays, layers, and the scored timeline',
-      `<section class="essays">
+    <section class="essays">
       ${kicker('Essays')}
       <h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>
       <div class="essay-grid">${essays}</div>
@@ -712,12 +710,9 @@ export function renderHome(): string {
       <h2 class="display">From ISO in 2015 <span class="display-mute">to live sterling in 2025.</span></h2>
       <ol class="timeline">${beats}</ol>
       <p><a class="text-link" href="/story">Open the scored rail →</a></p>
-    </section>`,
-    )}
+    </section>
 
-    ${fold(
-      'This month, the calendar, and six briefs',
-      `${renderThisMonth(true)}${renderCalendar(true)}${renderVoices()}
+    ${renderThisMonth(true)}${renderCalendar(true)}${renderVoices()}
     <section class="triptych hex">
       <article class="panel"><span class="panel-n">01</span>${diagramFigure('home-thesis', 'page', 'Thesis')}${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Overledger connects DLT domains and legacy cores without minting a native settlement chain. The 2018 whitepaper’s problem is single-ledger dependency. Tasca called interoperability a risky necessity. Verdian incorporated a company to ship the gate.</p><a class="text-link" href="/vision">Vision →</a></article>
       <article class="panel"><span class="panel-n">02</span>${diagramFigure('home-satp', 'page', 'SATP')}${kicker('SATP')}<h2 class="display">How an asset leaves one network</h2><p>Secure Asset Transfer Protocol is IETF work. Quant authors appear on the drafts; Facer is a co-chair. Stage 3 is burn-and-mint under two-phase commit, so the asset exists in one network when the transfer ends. SATP is not a Quant SKU.</p><a class="text-link" href="/standards">Standards →</a></article>
@@ -725,13 +720,9 @@ export function renderHome(): string {
       <article class="panel"><span class="panel-n">04</span>${diagramFigure('home-tokenomics', 'page', 'QNT')}${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>QNT is an ERC-20 at 0x4a220E6096B25EADb88358cb44068A3248254675. Unsold allocation was burned in 2018. Overledger licences settle in it. Live circulating comes from CoinGecko. Utility token, not equity in Quant Network.</p><a class="text-link" href="/markets#tokenomics">Markets →</a></article>
       <article class="panel"><span class="panel-n">05</span>${diagramFigure('home-stack', 'page', 'Stack')}${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, Layer 2.5 rollup (Fusion mainnet, 2 June 2026), programmability on the deposit. Oracle and Murex are named vendors sitting on that stack, not on a new chain.</p><a class="text-link" href="/technology">The stack →</a></article>
       <article class="panel"><span class="panel-n">06</span>${diagramFigure('home-programmes', 'page', 'Rooms')}${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2><p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source.</p><a class="text-link" href="/programmes">Programmes →</a></article>
-    </section>`,
-    )}
+    </section>
 
-    ${fold(
-      'Voices, the series, and the wire',
-      `${constellation()}${featuredStory()}${notesReel()}${podcastTease()}${quoteRail('home', 10)}${eraStrip()}${dykBlock()}`,
-    )}
+    ${constellation()}${featuredStory()}${notesReel()}${podcastTease()}${quoteRail('home', 10)}${eraStrip()}${dykBlock()}
   `;
 }
 
@@ -825,7 +816,7 @@ export function renderProgrammes(): string {
   return `${pageHero(
     'Programme cockpit',
     'Where the gate is already',
-    'Look at the rooms before the slogans. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never added as a timeline fact without a source.',
+    'Look at the rooms. Then the slogans. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip. It is never added as a timeline fact without a source.',
     'in the room.',
     undefined,
     'programmes',
@@ -964,7 +955,7 @@ export function renderPeople(): string {
   <div class="toolbar filter-bar">
     <input type="search" id="people-search" placeholder="Search names, roles, rooms…" />
   </div>
-  ${peopleRail()}${overledgerRoster()}${quoteRail('people')}${fold('Full records by role', blocks)}${dykBlock()}`;
+  ${peopleRail()}${overledgerRoster()}${quoteRail('people')}${fold('Full records by role', blocks, true)}${dykBlock()}`;
 }
 
 function peoplePoster(p: Person): string {
@@ -1192,7 +1183,7 @@ export function renderMarkets(print?: MarketPrint): string {
   return `${pageHero(
     'QNT',
     'QNT licences the network.',
-    'Research presentation, not advice. Overledger licences settle in QNT — that is why it trades. Live quotes from Coinbase, Kraken or Binance; market cap, supply and venues from CoinGecko. As-of timestamps on every print. Utility token, not equity in Quant Network.',
+    'Research presentation. Not advice. Overledger licences settle in QNT — that is why it trades. Live quotes from Coinbase, Kraken or Binance. Market cap, supply and venues from CoinGecko. As-of timestamps on every print. Utility token, not equity in Quant Network.',
     'Not the story. The meter.',
     undefined,
     'markets',
@@ -1333,7 +1324,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
     <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
     <ul class="headlines" data-news-list>${list.html}</ul>
   </section>
-  ${fold('Sourced notes, this month, and the calendar', `${sourcedNews()}${renderThisMonth()}${renderCalendar()}${renderVoices()}`)}`;
+  ${sourcedNews()}${renderThisMonth()}${renderCalendar()}${renderVoices()}`;
 }
 
 function renderCalendar(compact = false): string {

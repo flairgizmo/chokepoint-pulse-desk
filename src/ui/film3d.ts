@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, hardenCanvasTex, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, duskSheen, hardenCanvasTex, plateMaterial } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
@@ -251,7 +251,7 @@ function mountFilm3D(
     mesh.userData.slide = slide;
     const chrome = new THREE.Mesh(
       new THREE.PlaneGeometry(portrait ? 1.1 : 2.24, portrait ? 1.44 : 1.3),
-      new THREE.MeshBasicMaterial({ color: 0xd7e4ff }),
+      duskSheen({ color: 0xd7e4ff, reflectivity: 0.62 }),
     );
     chrome.position.z = -0.032;
     mesh.add(chrome);
@@ -315,7 +315,7 @@ function mountFilm3D(
     ay += (ty - ay) * 0.08;
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
-    camera.position.setFromSphericalCoords(lite ? 4.2 : 3.7, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 3.72 : 3.55, ax, ay);
     camera.lookAt(0, 0.04, 0.18);
     if (composer) composer.render();
     else renderer.render(scene, camera);

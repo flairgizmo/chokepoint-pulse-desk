@@ -4,6 +4,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { duskSheen } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import { latLonToVec, vecToLatLon } from './latlon';
 import {
@@ -472,7 +473,7 @@ export class EarthGlobe {
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
     const globeMat = this.lite
-      ? new THREE.MeshBasicMaterial({ color: 0x16384a })
+      ? duskSheen({ color: 0x16384a, reflectivity: 0.14 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x16384a,
           roughness: 0.38,
@@ -590,14 +591,16 @@ export class EarthGlobe {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
         new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, this.lite ? 8 : 12, this.lite ? 8 : 12),
-        new THREE.MeshPhysicalMaterial({
-          color: kindColor(city.kind),
-          emissive: kindColor(city.kind),
-          emissiveIntensity: 0.85,
-          roughness: 0.22,
-          metalness: 0.35,
-          clearcoat: 0.7,
-        }),
+        this.lite
+          ? duskSheen({ color: kindColor(city.kind), reflectivity: 0.48 })
+          : new THREE.MeshPhysicalMaterial({
+              color: kindColor(city.kind),
+              emissive: kindColor(city.kind),
+              emissiveIntensity: 0.85,
+              roughness: 0.22,
+              metalness: 0.35,
+              clearcoat: 0.7,
+            }),
       );
       pin.position.copy(pos);
       pin.userData.cityId = city.id;

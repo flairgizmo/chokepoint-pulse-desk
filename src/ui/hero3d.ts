@@ -1,7 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
-import { addUnrealLook } from './cinemaSet';
+import { addUnrealLook, duskSheen } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -52,7 +52,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   const plate = new THREE.Mesh(
     new THREE.BoxGeometry(2.42, 1.04, 0.045),
     probe.lite
-      ? new THREE.MeshBasicMaterial({ map: tex })
+      ? duskSheen({ map: tex, reflectivity: 0.22 })
       : new THREE.MeshPhysicalMaterial({
           map: tex,
           roughness: 0.3,
