@@ -4411,7 +4411,9 @@ body.stage-open .grok {
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  box-shadow: inset 0 0 120px 24px rgba(4, 8, 18, 0.42);
+  box-shadow:
+    inset 0 0 140px 36px rgba(4, 8, 18, 0.52),
+    inset 0 -80px 80px rgba(4, 8, 18, 0.28);
 }
 
 .stack-stage-wrap.cinema-stage,

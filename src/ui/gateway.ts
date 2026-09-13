@@ -298,18 +298,49 @@ function glassTex(
 function glassMat(
   tex: THREE.Texture,
   lite: boolean,
-  opts: { on?: boolean; transmission?: number; thickness?: number; shade?: boolean; tint?: number } = {},
+  opts: {
+    on?: boolean;
+    transmission?: number;
+    thickness?: number;
+    shade?: boolean;
+    tint?: number;
+    vertexColors?: boolean;
+  } = {},
 ): CutMat | THREE.MeshBasicMaterial {
   if (lite) {
     const mat = new THREE.MeshBasicMaterial({
       map: tex,
       color: opts.tint ?? (opts.shade === false ? 0x5a6c88 : 0x93a6c0),
       side: THREE.DoubleSide,
+      vertexColors: Boolean(opts.vertexColors),
     });
     mat.toneMapped = false;
     return mat;
   }
   return diamondPhysical(tex, opts);
+}
+
+const KEY_DIR = new THREE.Vector3(2.4, 3.2, 2.1).normalize();
+const RIM_DIR = new THREE.Vector3(-2.8, 1.2, -2.4).normalize();
+
+/** Flat facet luminance for lite MeshBasic. Not Phong — no camera-facing paper lid. */
+function facetShade(
+  ax: number,
+  ay: number,
+  az: number,
+  bx: number,
+  by: number,
+  bz: number,
+  cx: number,
+  cy: number,
+  cz: number,
+): number {
+  const n = new THREE.Vector3(bx - ax, by - ay, bz - az)
+    .cross(new THREE.Vector3(cx - ax, cy - ay, cz - az))
+    .normalize();
+  const key = Math.max(0, Math.abs(n.dot(KEY_DIR)));
+  const rim = Math.max(0, Math.abs(n.dot(RIM_DIR)));
+  return Math.min(1, 0.64 + key * 0.3 + rim * 0.12);
 }
 
 function wrapU(x: number, z: number): number {
@@ -373,6 +404,8 @@ function triGeo(
       2,
     ),
   );
+  const s = facetShade(ax, ay, az, bx, by, bz, cx, cy, cz);
+  g.setAttribute('color', new THREE.Float32BufferAttribute([s, s, s, s, s, s, s, s, s], 3));
   g.computeVertexNormals();
   return g;
 }
@@ -602,21 +635,25 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: 0xc4d2e4,
+    vertexColors: lite,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
     tint: 0x8a9cb4,
+    vertexColors: lite,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
     tint: 0x6a7c94,
+    vertexColors: lite,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
     tint: 0x4a5c74,
+    vertexColors: lite,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
