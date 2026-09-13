@@ -68,11 +68,11 @@ function paintPhotoGlass(
     ctx.filter =
       cut === 'table'
         ? 'contrast(1.28) brightness(0.36) saturate(0.62)'
-        : 'contrast(1.18) brightness(0.48) saturate(0.7)';
+        : 'contrast(1.16) brightness(0.62) saturate(0.74)';
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.filter = 'none';
     ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.4 : cut === 'table' ? 0.12 : 0.2;
+    ctx.globalAlpha = cut === 'pav' ? 0.4 : cut === 'table' ? 0.12 : 0.18;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
@@ -84,7 +84,7 @@ function paintPhotoGlass(
         ? 'rgba(4, 10, 28, 0.5)'
         : cut === 'table'
           ? 'rgba(3, 8, 20, 0.78)'
-          : 'rgba(6, 16, 40, 0.58)';
+          : 'rgba(6, 16, 40, 0.38)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -94,21 +94,42 @@ function paintPhotoGlass(
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
   }
+  if (cut === 'table') {
+    ctx.globalCompositeOperation = 'screen';
+    const catchL = ctx.createRadialGradient(w * 0.34, h * 0.28, 2, w * 0.34, h * 0.28, w * 0.12);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.28)');
+    catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
+    ctx.fillStyle = catchL;
+    ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = 'source-over';
+  } else {
+    scoreCut(ctx, w, h, 16);
+  }
+}
+
+function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: number): void {
+  const bw = w / sides;
+  for (let i = 0; i < sides; i++) {
+    const x0 = i * bw;
+    if (i % 2) {
+      ctx.fillStyle = 'rgba(2, 6, 14, 0.2)';
+      ctx.fillRect(x0, 0, bw, h);
+    }
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.07)';
+    ctx.fillRect(x0, 0, 1.25, h);
+    ctx.fillStyle = 'rgba(2, 6, 14, 0.32)';
+    ctx.fillRect(x0 + bw - 1.25, 0, 1.25, h);
+  }
   ctx.globalCompositeOperation = 'screen';
-  const cx = cut === 'table' ? w * 0.34 : w * 0.3;
-  const cy = cut === 'table' ? h * 0.28 : h * 0.2;
-  const catchL = ctx.createRadialGradient(cx, cy, 2, cx, cy, cut === 'table' ? w * 0.12 : w * 0.46);
-  catchL.addColorStop(
-    0,
-    cut === 'pav'
-      ? 'rgba(234, 241, 255, 0.22)'
-      : cut === 'table'
-        ? 'rgba(255, 236, 210, 0.28)'
-        : 'rgba(234, 241, 255, 0.34)',
-  );
-  catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
-  ctx.fillStyle = catchL;
-  ctx.fillRect(0, 0, w, h);
+  for (let i = 0; i < sides; i++) {
+    const cx = (i + 0.38) * bw;
+    const cy = 36 + (i % 5) * 78;
+    const g = ctx.createRadialGradient(cx, cy, 1, cx, cy, 26);
+    g.addColorStop(0, i % 3 === 0 ? 'rgba(255, 236, 210, 0.38)' : 'rgba(170, 200, 255, 0.24)');
+    g.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(cx - 28, cy - 28, 56, 56);
+  }
   ctx.globalCompositeOperation = 'source-over';
 }
 
@@ -231,24 +252,18 @@ function glassTex(photo: HTMLImageElement | null, on: boolean, cut: GlassCut): T
 function glassMat(
   tex: THREE.Texture,
   lite: boolean,
-  opts: { on?: boolean; transmission?: number; thickness?: number; shade?: boolean } = {},
+  opts: { on?: boolean; transmission?: number; thickness?: number; shade?: boolean; tint?: number } = {},
 ): CutMat | THREE.MeshBasicMaterial {
-  if (lite && opts.shade === false) {
-    const mat = new THREE.MeshBasicMaterial({ map: tex, color: 0x5a6c88, side: THREE.DoubleSide });
+  if (lite) {
+    const mat = new THREE.MeshBasicMaterial({
+      map: tex,
+      color: opts.tint ?? (opts.shade === false ? 0x5a6c88 : 0x93a6c0),
+      side: THREE.DoubleSide,
+    });
     mat.toneMapped = false;
     return mat;
   }
-  return lite
-    ? new THREE.MeshPhongMaterial({
-        map: tex,
-        color: 0x3d5068,
-        shininess: 80,
-        specular: new THREE.Color(0xc8d8ee),
-        emissive: 0x071018,
-        emissiveIntensity: 0.08,
-        side: THREE.DoubleSide,
-      })
-    : diamondPhysical(tex, opts);
+  return diamondPhysical(tex, opts);
 }
 
 function wrapU(x: number, z: number): number {
@@ -532,8 +547,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavR = eqR * 0.42;
   const pavY = eqY + (botY - eqY) * 0.52;
   const photo0 = visionStill();
-  const crownMat = glassMat(glassTex(photo0, false, 'crown'), lite, { transmission: 0.7, thickness: 0.52 });
-  const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, { transmission: 0.82, thickness: 0.7 });
+  const crownMat = glassMat(glassTex(photo0, false, 'crown'), lite, {
+    transmission: 0.7,
+    thickness: 0.52,
+    tint: 0x93a6c0,
+  });
+  const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, {
+    transmission: 0.82,
+    thickness: 0.7,
+    tint: 0x4a5c78,
+  });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
     glassMat(glassTex(photo0, false, 'table'), lite, { transmission: 0.38, thickness: 0.28, shade: false }),
