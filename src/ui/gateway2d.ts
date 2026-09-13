@@ -290,8 +290,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const onGate = selected === 6 || hover === 6;
     const cx = gate[0];
     const cy = gate[1] - Math.max(28, H * 0.05);
-    const crystalW = Math.max(58, W * 0.078);
-    const crystalH = Math.max(78, H * 0.22);
+    const crystalW = Math.max(52, W * 0.07);
+    const crystalH = Math.max(96, H * 0.26);
     ctx.save();
     ctx.shadowColor = 'rgba(61, 123, 255, 0.7)';
     ctx.shadowBlur = onGate ? 36 : 22;

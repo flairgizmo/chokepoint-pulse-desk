@@ -317,13 +317,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crystal = new THREE.Group();
   const facets: THREE.Mesh[] = [];
   const sides = 8;
-  const restAyFace = 0.28;
+  const restAyFace = 0.45;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
-  const tableR = 0.24;
-  const tableY = 0.74;
-  const eqR = 0.62;
-  const eqY = 0.4;
-  const botY = 0.04;
+  const tableR = 0.2;
+  const tableY = 0.86;
+  const eqR = 0.5;
+  const eqY = 0.5;
+  const botY = -0.2;
   const tableTex = hardenCanvasTex(new THREE.CanvasTexture(tableCanvas()));
   tableTex.colorSpace = THREE.SRGBColorSpace;
   const table = new THREE.Mesh(
@@ -433,7 +433,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(crystal);
 
   const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
-  gateLabel.position.set(0, 1.08, 0);
+  gateLabel.position.set(0, 1.26, 0.18);
   gateLabel.scale.set(1.18, 0.2, 1);
   group.add(gateLabel);
 
@@ -449,7 +449,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.36;
+  rt2.position.y = 1.52;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -463,11 +463,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.36;
+  rt2Disk.position.y = 1.52;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.36, 0);
+  rt2Label.position.set(0, 1.52, 0.12);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
 
@@ -526,7 +526,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const stem = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.74, 0), new THREE.Vector3(0, 1.32, 0)]),
+    new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0.86, 0), new THREE.Vector3(0, 1.48, 0)]),
     new THREE.LineDashedMaterial({ color: 0x0b1f5c, dashSize: 0.06, gapSize: 0.04, transparent: true, opacity: 0.35 }),
   );
   stem.computeLineDistances();
@@ -555,8 +555,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [...facets, core, base, girdle, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 0.98 : 1.05;
-  const restAy = 0.28;
+  const restAx = lite ? 1.1 : 1.14;
+  const restAy = 0.45;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -636,14 +636,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
-    camera.position.setFromSphericalCoords(lite ? 5.15 : 4.45, ax, ay);
-    camera.lookAt(0, lite ? 0.36 : 0.4, 0);
+    camera.position.setFromSphericalCoords(lite ? 4.72 : 4.15, ax, ay);
+    camera.lookAt(0, lite ? 0.42 : 0.46, 0);
     BANKS.forEach((_, i) => {
       const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x, y + 0.2, z);
-      cards[i].lookAt(camera.position.x, y + 0.3, camera.position.z);
+      cards[i].position.set(x, y + 0.18, z);
+      cards[i].lookAt(camera.position.x, y + 0.28, camera.position.z);
     });
-    crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
+    crystal.rotation.x = 0.36;
+    crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.08;
     rt2.rotation.z = reduced ? 0 : now / 2400;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;

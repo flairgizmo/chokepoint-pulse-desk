@@ -49,9 +49,10 @@ function displayTitle(title: string, mute = ''): string {
 }
 
 export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId, film?: string): string {
+  const skipPlate = film === 'people' || Boolean(film?.startsWith('city:'));
   return `<header class="page-hero enterprise-hero cinema-hero">
     ${film ? filmStageMarkup(film, title) : ''}
-    ${film === 'people' ? '' : heroPlate(k, title, mute, bed)}
+    ${skipPlate ? '' : heroPlate(k, title, mute, bed)}
     ${kicker(k)}
     <div class="hero-split">
       <h1 class="display">${displayTitle(title, mute)}</h1>
@@ -1421,10 +1422,37 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
   )}<p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
 }
 
+function essayParas(text: string): string {
+  return text
+    .split(/(?<=\.)\s+(?=[A-Z“"])/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((s) => `<p>${esc(s)}</p>`)
+    .join('');
+}
+
 export function renderCity(city: City): string {
+  const neighbors = CITIES.filter((c) => c.id !== city.id)
+    .slice(0, 4)
+    .map(
+      (c) => `<a class="city-neighbor" href="/${esc(c.id)}">
+        <img src="${esc(c.photo ?? `/visuals/cities/${c.id}.jpg`)}" alt="${esc(c.name)}" width="720" height="405" decoding="async" />
+        <span>${esc(c.name)}</span>
+      </a>`,
+    )
+    .join('');
   return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
     <p class="mono subtle">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
-    <article class="chapter"><p>${esc(city.body)}</p><p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p></article>
+    <article class="chapter city-essay">
+      ${photoFigure(plateFor(city.id, city.name), 'city-essay-still')}
+      ${essayParas(city.body)}
+      <p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>
+    </article>
+    <section class="city-neighbors" aria-label="Other rooms on the map">
+      ${kicker('Other rooms')}
+      <h2 class="display">The same story, in another postcode.</h2>
+      <div class="city-neighbor-grid">${neighbors}</div>
+    </section>
     <p><a class="text-link" href="/">← Earth</a></p>`;
 }
 
@@ -1432,7 +1460,7 @@ export function renderDonate(): string {
   return `${pageHero(
     'Support',
     'Optional. The desk stays free.',
-    'Donations buy no tokens and no yield. Never send funds to an address that appeared in a DM or a lookalike site.',
+    'If you want the filings to stay online, these are the only published addresses. Donations buy no tokens and no yield. Nothing in a DM. Nothing that looks like this page.',
     '',
     undefined,
     'donate',
@@ -1464,7 +1492,7 @@ export function renderPodcast(): string {
   return `${pageHero(
     'Podcast',
     'Twenty conversations. Start at the beginning.',
-    'James Hale and Amelia Crowe walk the same order as the desk: ISO, the 2018 whitepaper, SATP, QNT, and the six banks that already issue tokenised sterling. Quotes keep their titles. Dates stay on the page.',
+    'We’ve gotten used to hearing the sector as slogans. Hale and Crowe walk it in order instead: ISO, the 2018 paper, SATP, QNT, then the six banks that already issue tokenised sterling. Quotes keep their titles. Dates stay on the page.',
     '',
     undefined,
     'podcast',

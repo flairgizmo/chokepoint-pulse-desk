@@ -4416,7 +4416,7 @@ body.stage-open .grok {
 .term .photo-plate img,
 .headline .photo-plate img {
   aspect-ratio: 21 / 9;
-  max-height: 10rem;
+  max-height: 16rem;
 }
 
 .cinema-diagram {
@@ -4463,7 +4463,7 @@ body.stage-open .grok {
 .cal-still img,
 .month-still img {
   aspect-ratio: 21 / 9;
-  max-height: 12rem;
+  max-height: 16rem;
 }
 
 .cinema-tape,
@@ -4478,7 +4478,7 @@ body.stage-open .grok {
 }
 
 .headline .photo-plate img {
-  max-height: 10rem;
+  max-height: 16rem;
 }
 
 .voice.cinema-voice {
@@ -4498,7 +4498,7 @@ body.stage-open .grok {
 
 .voice-still img {
   aspect-ratio: 16 / 9;
-  max-height: 9.5rem;
+  max-height: 16rem;
 }
 
 .people-tile,
@@ -4520,7 +4520,62 @@ body.stage-open .grok {
 
 .desk-stage-object .stage-photo {
   aspect-ratio: 16 / 9;
-  max-height: 18rem;
+  max-height: 22rem;
+}
+
+.city-essay-still {
+  margin: 0 0 1.6rem;
+}
+
+.city-essay-still img {
+  aspect-ratio: 21 / 9;
+  max-height: 28rem;
+  animation: ken-burns 42s ease-in-out infinite alternate;
+}
+
+.city-essay p {
+  max-width: 40rem;
+  font-size: 1.12rem;
+  line-height: 1.55;
+}
+
+.city-neighbors {
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin: 0 auto 2.4rem;
+}
+
+.city-neighbor-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.city-neighbor {
+  display: grid;
+  gap: 0.45rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.city-neighbor img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 16px;
+  filter: saturate(1.06) contrast(1.05);
+}
+
+.city-neighbor span {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 720px) {
+  .city-neighbor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .masthead h1,
