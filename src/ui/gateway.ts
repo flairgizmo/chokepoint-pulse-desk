@@ -81,7 +81,7 @@ function paintPhotoGlass(
         ? 'rgba(4, 10, 28, 0.5)'
         : cut === 'table'
           ? 'rgba(3, 8, 20, 0.78)'
-          : 'rgba(8, 20, 48, 0.3)';
+          : 'rgba(6, 16, 40, 0.42)';
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
@@ -231,14 +231,14 @@ function glassMat(
   opts: { on?: boolean; transmission?: number; thickness?: number; shade?: boolean } = {},
 ): CutMat | THREE.MeshBasicMaterial {
   if (lite && opts.shade === false) {
-    const mat = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, side: THREE.DoubleSide });
+    const mat = new THREE.MeshBasicMaterial({ map: tex, color: 0x5a6c88, side: THREE.DoubleSide });
     mat.toneMapped = false;
     return mat;
   }
   return lite
     ? new THREE.MeshPhongMaterial({
         map: tex,
-        color: 0xffffff,
+        color: 0xc5d0e0,
         shininess: 56,
         specular: new THREE.Color(0xb4c8e4),
         emissive: 0x071018,
@@ -261,6 +261,29 @@ function seamUv(us: number[]): number[] {
   const max = Math.max(...us);
   if (max - min <= 0.5) return us;
   return us.map((u) => (u < 0.5 ? u + 1 : u));
+}
+
+function tableFan(r: number, sides: number): THREE.BufferGeometry {
+  const pos: number[] = [];
+  const uv: number[] = [];
+  for (let i = 0; i < sides; i++) {
+    const a0 = (i / sides) * Math.PI * 2;
+    const a1 = ((i + 1) / sides) * Math.PI * 2;
+    pos.push(0, 0, 0, Math.cos(a0) * r, 0, Math.sin(a0) * r, Math.cos(a1) * r, 0, Math.sin(a1) * r);
+    uv.push(
+      0.5,
+      0.5,
+      0.5 + Math.cos(a0) * 0.5,
+      0.5 + Math.sin(a0) * 0.5,
+      0.5 + Math.cos(a1) * 0.5,
+      0.5 + Math.sin(a1) * 0.5,
+    );
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.computeVertexNormals();
+  return g;
 }
 
 function triGeo(
@@ -472,7 +495,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   scene.add(new THREE.AmbientLight(0x8ea0c0, lite ? 0.72 : 0.38));
   scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, lite ? 0.85 : 0.55));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 2.45 : 2.05);
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.55 : 2.05);
   key.position.set(2.4, 3.2, 2.1);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
@@ -509,10 +532,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crownMat = glassMat(glassTex(photo0, false, 'crown'), lite, { transmission: 0.7, thickness: 0.52 });
   const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, { transmission: 0.82, thickness: 0.7 });
   const table = new THREE.Mesh(
-    new THREE.CircleGeometry(tableR, sides),
+    tableFan(tableR, sides),
     glassMat(glassTex(photo0, false, 'table'), lite, { transmission: 0.38, thickness: 0.28, shade: false }),
   );
-  table.rotation.x = -Math.PI / 2;
   table.position.y = tableY;
   table.userData.nodeId = 6;
   crystal.add(table);

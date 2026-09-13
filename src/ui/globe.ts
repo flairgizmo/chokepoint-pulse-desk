@@ -626,12 +626,12 @@ export class EarthGlobe {
       this.terminator = term;
     }
     const glint = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.52, 0.34),
+      new THREE.PlaneGeometry(0.28, 0.18),
       new THREE.MeshBasicMaterial({
         map: sunGlintTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.62 : 0.78,
+        opacity: this.lite ? 0.72 : 0.84,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
