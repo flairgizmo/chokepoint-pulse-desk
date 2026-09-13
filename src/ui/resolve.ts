@@ -78,7 +78,7 @@ function personStage(id: string): StageDoc | null {
       p.id === 'hargreaves' || p.id === 'facer' || p.id === 'chiriac' || p.id === 'belchior' ? 'satp' : 'overledger-platform',
     ]),
     original: p.href ? { href: sourceUrl(p.href), label: 'Open original' } : undefined,
-    visual: diagramSvg(p.id, 'person', p.initials),
+    visual: `${p.photo ? `<img class="stage-photo" src="${p.photo}" alt="" />` : ''}${diagramSvg(p.id, 'person', p.initials)}`,
   };
 }
 

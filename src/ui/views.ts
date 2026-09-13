@@ -607,7 +607,6 @@ export function renderHome(): string {
     <section class="strip partner-strip">
       ${kicker('GBTD cohort — names as UK Finance printed them, 26 September 2025')}
       <ul class="wordmarks wordmarks-banks">${banks}</ul>
-      <figure class="beat-figure plate-figure"><img src="/visuals/plates/corridor.svg" alt="Six-bank sterling corridor around Overledger" width="640" height="360" /></figure>
       <p class="cohort-note">Captions follow the press list: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, Santander. Marks are each bank’s public wordmark. Quant, EY and Linklaters are named as support, not as issuers.</p>
       ${kicker('Institutions around that cohort')}
       <ul class="wordmarks wordmarks-inst muted">

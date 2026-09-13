@@ -2967,6 +2967,10 @@ button.chip {
   color: var(--accent-ink);
 }
 
+.desk-stage-object .stage-photo + svg {
+  display: none;
+}
+
 .stage-photo,
 .city-plate img,
 .hud-photo {
