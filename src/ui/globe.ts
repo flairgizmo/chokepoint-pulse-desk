@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -104,7 +105,7 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
 }
 
 function stars(): THREE.Points {
-  const count = 900;
+  const count = 1800;
   const pos = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
     const v = new THREE.Vector3().randomDirection().multiplyScalar(14 + Math.random() * 10);
@@ -116,7 +117,7 @@ function stars(): THREE.Points {
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   return new THREE.Points(
     geo,
-    new THREE.PointsMaterial({ color: 0xc9d4e4, size: 0.032, transparent: true, opacity: 0.8 }),
+    new THREE.PointsMaterial({ color: 0xe8eef8, size: 0.028, transparent: true, opacity: 0.88, sizeAttenuation: true }),
   );
 }
 
@@ -356,11 +357,14 @@ export class EarthGlobe {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.12;
+    renderer.toneMappingExposure = 1.2;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     const scene = new THREE.Scene();
     this.scene = scene;
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    pmrem.dispose();
     scene.add(stars());
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
@@ -373,12 +377,12 @@ export class EarthGlobe {
       new THREE.SphereGeometry(1, 96, 64),
       new THREE.MeshPhysicalMaterial({
         color: 0x0b2a32,
-        roughness: 0.48,
-        metalness: 0.18,
+        roughness: 0.38,
+        metalness: 0.22,
         emissive: 0x031016,
-        clearcoat: 0.28,
-        clearcoatRoughness: 0.42,
-        envMapIntensity: 0.7,
+        clearcoat: 0.42,
+        clearcoatRoughness: 0.28,
+        envMapIntensity: 1.05,
       }),
     );
     this.globeMesh = globe;
@@ -401,7 +405,7 @@ export class EarthGlobe {
     const atmo = new THREE.Mesh(
       new THREE.SphereGeometry(1.09, 64, 48),
       new THREE.ShaderMaterial({
-        uniforms: { color: { value: new THREE.Color(0x6ea6ff) } },
+        uniforms: { color: { value: new THREE.Color(0x8ec0ff) } },
         vertexShader: `
           varying vec3 vN;
           varying vec3 vV;
@@ -416,8 +420,8 @@ export class EarthGlobe {
           varying vec3 vV;
           uniform vec3 color;
           void main(){
-            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.15);
-            gl_FragColor = vec4(color, fresnel * 0.55);
+            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 1.85);
+            gl_FragColor = vec4(color, fresnel * 0.72);
           }`,
         transparent: true,
         side: THREE.BackSide,
@@ -489,11 +493,13 @@ export class EarthGlobe {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
         new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.016 : 0.011, 12, 12),
-        new THREE.MeshStandardMaterial({
+        new THREE.MeshPhysicalMaterial({
           color: kindColor(city.kind),
           emissive: kindColor(city.kind),
-          emissiveIntensity: 0.55,
-          roughness: 0.35,
+          emissiveIntensity: 0.85,
+          roughness: 0.22,
+          metalness: 0.35,
+          clearcoat: 0.7,
         }),
       );
       pin.position.copy(pos);
@@ -582,7 +588,7 @@ export class EarthGlobe {
       try {
         const composer = new EffectComposer(renderer);
         composer.addPass(new RenderPass(scene, camera));
-        composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.32, 0.46, 0.78));
+        composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.42, 0.52, 0.72));
         composer.addPass(new OutputPass());
         this.composer = composer;
       } catch {

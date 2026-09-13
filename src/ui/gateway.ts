@@ -1,6 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
@@ -48,7 +49,7 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
   return c;
 }
 
-function labelSprite(text: string, color = '#0B1F5C'): THREE.Sprite {
+function labelSprite(text: string, color = '#EAF1FF'): THREE.Sprite {
   const c = document.createElement('canvas');
   c.width = 512;
   c.height = 128;
@@ -130,13 +131,16 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
 
   canvas.dataset.engine = 'webgl';
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-  renderer.setClearColor(0xeef2f8, 1);
+  renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.08;
+  renderer.toneMappingExposure = 1.22;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xeef2f8, 4.2, 9.5);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  pmrem.dispose();
+  scene.fog = new THREE.Fog(0x0a1220, 4.2, 9.2);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 40);
   const group = new THREE.Group();
   scene.add(group);
@@ -144,28 +148,38 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(3.4, 72),
     new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      roughness: 0.28,
-      metalness: 0.04,
-      clearcoat: 0.55,
-      clearcoatRoughness: 0.35,
+      color: 0x9aa8c4,
+      roughness: 0.08,
+      metalness: 0.28,
+      clearcoat: 1,
+      clearcoatRoughness: 0.08,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.38,
+      envMapIntensity: 1.15,
     }),
   );
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = -0.28;
   scene.add(floor);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
-  scene.add(new THREE.HemisphereLight(0xf4f7fb, 0xd7deeb, 0.55));
-  const key = new THREE.DirectionalLight(0xfff6ea, 1.55);
+  const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg');
+  backdropTex.colorSpace = THREE.SRGBColorSpace;
+  const backdrop = new THREE.Mesh(
+    new THREE.PlaneGeometry(14, 7.2),
+    new THREE.MeshBasicMaterial({ map: backdropTex, color: 0x6b7c96 }),
+  );
+  backdrop.position.set(0, 1.15, -4.6);
+  scene.add(backdrop);
+
+  scene.add(new THREE.AmbientLight(0x8ea0c0, 0.38));
+  scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, 0.55));
+  const key = new THREE.DirectionalLight(0xfff1dc, 2.05);
   key.position.set(2.4, 3.2, 2.1);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x1557ff, 0.55);
+  const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
   rim.position.set(-2.8, 1.2, -2.4);
   scene.add(rim);
-  const fill = new THREE.PointLight(0x00a878, 0.55, 6);
+  const fill = new THREE.PointLight(0x00a878, 0.7, 6);
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
 
@@ -178,15 +192,16 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
       bevelSegments: 2,
     }),
     new THREE.MeshPhysicalMaterial({
-      color: 0x1557ff,
-      metalness: 0.62,
-      roughness: 0.16,
+      color: 0x3b7bff,
+      metalness: 0.72,
+      roughness: 0.1,
       iridescence: 1,
-      iridescenceIOR: 1.28,
+      iridescenceIOR: 1.32,
       clearcoat: 1,
-      clearcoatRoughness: 0.12,
-      emissive: 0x0b1f5c,
-      emissiveIntensity: 0.22,
+      clearcoatRoughness: 0.06,
+      emissive: 0x1557ff,
+      emissiveIntensity: 0.38,
+      envMapIntensity: 1.35,
     }),
   );
   hex.rotation.x = -Math.PI / 2;
@@ -194,7 +209,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   hex.userData.nodeId = 6;
   group.add(hex);
 
-  const gateLabel = labelSprite('OVERLEDGER');
+  const gateLabel = labelSprite('OVERLEDGER', '#FFFFFF');
   gateLabel.position.set(0, 0.16, 0);
   group.add(gateLabel);
 
@@ -227,7 +242,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
   rt2Disk.position.y = 0.86;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
-  const rt2Label = labelSprite('SIM RT2', '#0B1F5C');
+  const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
   rt2Label.position.set(0, 0.86, 0);
   rt2Label.scale.set(0.62, 0.16, 1);
   group.add(rt2Label);
@@ -290,8 +305,8 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
     }),
   );
   group.add(bead);
-  const lockLabel = labelSprite('LOCK', '#0B1220');
-  const releaseLabel = labelSprite('RELEASE', '#0B1220');
+  const lockLabel = labelSprite('LOCK', '#EAF1FF');
+  const releaseLabel = labelSprite('RELEASE', '#EAF1FF');
   lockLabel.scale.set(0.42, 0.11, 1);
   releaseLabel.scale.set(0.52, 0.12, 1);
   group.add(lockLabel);
@@ -319,7 +334,7 @@ function mountGateway3D(canvas: HTMLCanvasElement): () => void {
     try {
       composer = new EffectComposer(renderer);
       composer.addPass(new RenderPass(scene, camera));
-      composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.38, 0.42, 0.84));
+      composer.addPass(new UnrealBloomPass(new THREE.Vector2(8, 8), 0.48, 0.5, 0.78));
       composer.addPass(new OutputPass());
     } catch {
       composer = null;

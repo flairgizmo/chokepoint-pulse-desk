@@ -24,7 +24,8 @@ function hero(k: string, title: string, lede: string, seed: string): string {
   const plate = plateFor(k, seed, title);
   return `<header class="page-hero enterprise-hero cinema-hero">
     <figure class="hero-plate">
-      <img src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
+      <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
+      <span class="hero-wash" aria-hidden="true"></span>
       <figcaption>${esc(plate.credit)}</figcaption>
     </figure>
     ${kicker(k)}

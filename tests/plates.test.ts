@@ -25,7 +25,7 @@ describe('Topic plates', () => {
   });
 
   it('ships the topic JPEGs used on Vision', () => {
-    for (const file of ['ucl.jpg', 'fiber.jpg', 'canary.jpg', 'city.jpg', 'library.jpg', 'exchange.jpg', 'datacenter.jpg', 'cable.jpg', 'payments.jpg']) {
+    for (const file of ['ucl.jpg', 'fiber.jpg', 'canary.jpg', 'city.jpg', 'library.jpg', 'exchange.jpg', 'datacenter.jpg', 'cable.jpg', 'payments.jpg', 'radio.jpg', 'newsroom.jpg', 'patents-hall.jpg']) {
       expect(existsSync(resolve(process.cwd(), 'public/visuals/topics', file)), file).toBe(true);
     }
   });
@@ -36,5 +36,7 @@ describe('Topic plates', () => {
     expect(html).toContain('/visuals/topics/fiber.jpg');
     expect(html).toContain('cinema-hero');
     expect(html).toContain('hero-plate');
+    expect(html).toContain('hero-still');
+    expect(html).toContain('hero-wash');
   });
 });

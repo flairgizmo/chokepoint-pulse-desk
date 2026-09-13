@@ -121,6 +121,14 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     img.src = MARK[b.name];
     return img;
   });
+  const backdrop = new Image();
+  backdrop.onload = () => {
+    plateDirty = true;
+    draw(performance.now());
+  };
+  backdrop.src = '/visuals/topics/canary.jpg';
+  const plate = document.createElement('canvas');
+  let plateDirty = true;
 
   const roundRect = (x: number, y: number, w: number, h: number, r: number): void => {
     const rad = Math.min(r, w / 2, h / 2);
@@ -138,6 +146,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = Math.max(1, Math.floor(r.width * dpr));
     canvas.height = Math.max(1, Math.floor(r.height * dpr));
+    plateDirty = true;
   };
 
   const project = (x: number, y: number, z: number): [number, number, number] => {
@@ -182,8 +191,50 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       return project(Math.cos(a) * (0.42 + pulse * 0.4), 0, Math.sin(a) * (0.42 + pulse * 0.4));
     });
 
+    if (plateDirty || plate.width !== W || plate.height !== H) {
+      plate.width = W;
+      plate.height = H;
+      const pctx = plate.getContext('2d');
+      if (pctx) {
+        pctx.fillStyle = '#070b14';
+        pctx.fillRect(0, 0, W, H);
+        if (backdrop.complete && backdrop.naturalWidth) {
+          const scale = Math.max(W / backdrop.naturalWidth, H / backdrop.naturalHeight);
+          const dw = backdrop.naturalWidth * scale;
+          const dh = backdrop.naturalHeight * scale;
+          pctx.save();
+          pctx.globalAlpha = 0.42;
+          pctx.filter = 'saturate(0.85) contrast(1.15) blur(1.2px)';
+          pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.06, dw, dh);
+          pctx.restore();
+          pctx.filter = 'none';
+        }
+        const studio = pctx.createRadialGradient(W * 0.5, H * 0.36, 16, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
+        studio.addColorStop(0, 'rgba(26, 48, 88, 0.28)');
+        studio.addColorStop(0.45, 'rgba(10, 18, 32, 0.72)');
+        studio.addColorStop(1, 'rgba(5, 8, 16, 0.92)');
+        pctx.fillStyle = studio;
+        pctx.fillRect(0, 0, W, H);
+      }
+      plateDirty = false;
+    }
+    ctx.drawImage(plate, 0, 0);
+
     ctx.save();
-    ctx.strokeStyle = 'rgba(11, 31, 92, 0.06)';
+    ctx.translate(gate[0], gate[1] + H * 0.14);
+    ctx.scale(1, 0.26);
+    const floor = ctx.createRadialGradient(0, 0, 8, 0, 0, Math.min(W, H) * 0.62);
+    floor.addColorStop(0, 'rgba(234, 241, 255, 0.22)');
+    floor.addColorStop(0.4, 'rgba(21, 87, 255, 0.16)');
+    floor.addColorStop(1, 'rgba(5, 8, 16, 0)');
+    ctx.fillStyle = floor;
+    ctx.beginPath();
+    ctx.arc(0, 0, Math.min(W, H) * 0.62, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.08)';
     ctx.lineWidth = 1;
     for (const ring of [0.55, 0.9, 1.25]) {
       const a = project(ring, 0, 0);
@@ -195,11 +246,14 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.restore();
 
     banks.forEach(({ p }) => {
+      const spoke = ctx.createLinearGradient(gate[0], gate[1], p[0], p[1]);
+      spoke.addColorStop(0, 'rgba(90, 150, 255, 0.72)');
+      spoke.addColorStop(1, 'rgba(21, 87, 255, 0.05)');
       ctx.beginPath();
       ctx.moveTo(gate[0], gate[1]);
       ctx.lineTo(p[0], p[1]);
-      ctx.strokeStyle = 'rgba(21, 87, 255, 0.28)';
-      ctx.lineWidth = Math.max(1.4, W / 420);
+      ctx.strokeStyle = spoke;
+      ctx.lineWidth = Math.max(1.6, W / 380);
       ctx.stroke();
     });
 
@@ -209,16 +263,23 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       else ctx.lineTo(pt[0], pt[1]);
     });
     ctx.closePath();
-    ctx.fillStyle = selected === 6 || hover === 6 ? 'rgba(21, 87, 255, 0.16)' : 'rgba(21, 87, 255, 0.08)';
+    const hexFill = ctx.createLinearGradient(hex[0][0], hex[0][1], hex[3][0], hex[3][1]);
+    hexFill.addColorStop(0, selected === 6 || hover === 6 ? '#7EB0FF' : '#3B7BFF');
+    hexFill.addColorStop(0.55, '#1557FF');
+    hexFill.addColorStop(1, '#061433');
+    ctx.shadowColor = 'rgba(61, 140, 255, 0.7)';
+    ctx.shadowBlur = 42;
+    ctx.fillStyle = hexFill;
     ctx.fill();
-    ctx.strokeStyle = selected === 6 || hover === 6 ? '#1557FF' : '#0B1F5C';
-    ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.6, W / 200) : Math.max(1.8, W / 280);
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = '#EAF1FF';
+    ctx.lineWidth = selected === 6 || hover === 6 ? Math.max(2.8, W / 190) : Math.max(1.8, W / 260);
     ctx.stroke();
 
     ctx.beginPath();
     ctx.moveTo(gate[0], gate[1]);
     ctx.lineTo(rt2[0], rt2[1]);
-    ctx.strokeStyle = 'rgba(11, 31, 92, 0.28)';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.28)';
     ctx.setLineDash([6, 7]);
     ctx.lineWidth = Math.max(1.2, W / 420);
     ctx.stroke();
@@ -229,10 +290,10 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.arc(rt2[0], rt2[1], Math.max(16, W / 42), 0, Math.PI * 2);
     ctx.fillStyle = onRt ? 'rgba(0, 168, 120, 0.18)' : 'rgba(0, 168, 120, 0.08)';
     ctx.fill();
-    ctx.strokeStyle = onRt ? '#00A878' : '#0B1F5C';
+    ctx.strokeStyle = onRt ? '#00A878' : 'rgba(234, 241, 255, 0.55)';
     ctx.lineWidth = onRt ? 2.4 : 1.5;
     ctx.stroke();
-    ctx.fillStyle = '#0B1F5C';
+    ctx.fillStyle = '#EAF1FF';
     ctx.font = `600 ${Math.max(9, W / 72)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -242,12 +303,14 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       const on = selected === bank.id || hover === bank.id;
       const rw = Math.max(86, W / 8.2);
       const rh = Math.max(36, W / 22);
-      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.28)' : 'rgba(11, 31, 92, 0.08)';
-      ctx.shadowBlur = on ? 16 : 8;
-      roundRect(p[0] - rw / 2, p[1] - rh / 2, rw, rh, 10);
+      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.38)' : 'rgba(11, 31, 92, 0.16)';
+      ctx.shadowBlur = on ? 28 : 18;
+      ctx.shadowOffsetY = 8;
+      roundRect(p[0] - rw / 2, p[1] - rh / 2, rw, rh, 12);
       ctx.fillStyle = '#FFFFFF';
       ctx.fill();
       ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
       ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.18)';
       ctx.lineWidth = on ? 2.2 : 1.2;
       ctx.stroke();
@@ -266,7 +329,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       }
     });
 
-    ctx.fillStyle = '#0B1F5C';
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = `700 ${Math.max(11, W / 48)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
     ctx.fillText('OVERLEDGER', gate[0], gate[1] + 2);
 
@@ -287,8 +350,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.arc(bead[0], bead[1], Math.max(4.2, W / 170), 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
-    ctx.fillStyle = '#0B1220';
-    ctx.font = `500 ${Math.max(8, W / 80)}px "IBM Plex Mono", ui-monospace, monospace`;
+    ctx.fillStyle = '#EAF1FF';
+    ctx.font = `600 ${Math.max(8, W / 80)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.fillText(local < 0.5 ? 'LOCK' : 'RELEASE', bead[0], bead[1] - Math.max(14, W / 50));
   };
 
