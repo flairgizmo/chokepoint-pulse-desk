@@ -287,9 +287,9 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.fill();
     ctx.restore();
     ctx.save();
-    const tableY = cy - crystalH * 0.04;
-    const waistY = cy + crystalH * 0.34;
-    const baseY = cy + crystalH;
+    const tableY = cy - crystalH * 0.02;
+    const waistY = cy + crystalH * 0.42;
+    const baseY = cy + crystalH * 1.08;
     const midY = (tableY + waistY) / 2;
     const girdle: Array<[number, number]> = [];
     const table: Array<[number, number]> = [];
@@ -298,8 +298,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     for (let i = 0; i < sides2d; i++) {
       const a = -Math.PI / 2 + (i * Math.PI * 2) / sides2d;
       girdle.push([cx + Math.cos(a) * crystalW, waistY + Math.sin(a) * crystalW * 0.2]);
-      table.push([cx + Math.cos(a) * crystalW * 0.32, tableY + Math.sin(a) * crystalW * 0.08]);
-      mid.push([cx + Math.cos(a) * crystalW * 0.68, midY + Math.sin(a) * crystalW * 0.14]);
+      table.push([cx + Math.cos(a) * crystalW * 0.54, tableY + Math.sin(a) * crystalW * 0.1]);
+      mid.push([cx + Math.cos(a) * crystalW * 0.78, midY + Math.sin(a) * crystalW * 0.14]);
     }
     const fillGlass = (pts: Array<[number, number]>, i: number, tint: string): void => {
       ctx.beginPath();
@@ -444,8 +444,8 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;
       const depth = 0.82 + Math.max(0, p[2] + 0.55) * 0.22;
-      const rw = Math.max(96, W / 8.2) * depth;
-      const rh = Math.max(68, W / 12.2) * depth;
+      const rw = Math.max(78, W / 10.4) * depth;
+      const rh = Math.max(54, W / 15.2) * depth;
       const yaw = (p[0] - W / 2) / Math.max(1, W * 0.62);
       ctx.save();
       if (reflect) {

@@ -71,8 +71,8 @@ function paintPhotoGlass(
     const fy = ((Math.floor(i / cols) * 3 + i) % 5) / 8;
     const sx = fx * photo.naturalWidth;
     const sy = fy * photo.naturalHeight;
-    const sw = Math.max(1, photo.naturalWidth * 0.5);
-    const sh = Math.max(1, photo.naturalHeight * 0.62);
+    const sw = Math.max(1, photo.naturalWidth * 0.68);
+    const sh = Math.max(1, photo.naturalHeight * 0.74);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     const bx = ((fx + 0.28) % 1) * photo.naturalWidth;
     const by = ((fy + 0.18) % 0.7) * photo.naturalHeight;
@@ -135,8 +135,8 @@ function paintPhotoGlass(
   ctx.closePath();
   ctx.fill();
   const fire = ctx.createLinearGradient(w, 0, w * 0.42, h * 0.38);
-  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.48)' : 'rgba(60, 230, 255, 0.44)');
-  fire.addColorStop(0.55, i % 3 ? 'rgba(255, 196, 72, 0.16)' : 'rgba(21, 87, 255, 0.12)');
+  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.28)' : 'rgba(60, 230, 255, 0.26)');
+  fire.addColorStop(0.55, i % 3 ? 'rgba(255, 196, 72, 0.1)' : 'rgba(21, 87, 255, 0.08)');
   fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
   ctx.fillStyle = fire;
   ctx.beginPath();
@@ -292,8 +292,8 @@ function tableCanvas(photo: HTMLImageElement | null = null): HTMLCanvasElement {
   const ctx = c.getContext('2d');
   if (ctx) {
     paintPhotoGlass(ctx, photo, 16, 512, 512, false, 'table');
-    ctx.fillStyle = '#0B1F5C';
-    ctx.font = '800 236px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillStyle = 'rgba(11, 31, 92, 0.48)';
+    ctx.font = '800 168px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Q', 256, 280);
@@ -358,7 +358,7 @@ function logoCanvas(
   if (!ctx) return c;
   ctx.clearRect(0, 0, CARD_W, CARD_H);
   if (still?.complete && still.naturalWidth) {
-    ctx.filter = 'saturate(1.08) contrast(1.14) brightness(0.72)';
+    ctx.filter = 'saturate(0.95) contrast(1.18) brightness(0.56)';
     coverDraw(ctx, still, CARD_W, CARD_H);
     ctx.filter = 'none';
   } else {
@@ -562,11 +562,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const sides = 12;
   const restAyFace = 0.5;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
-  const tableR = 0.16;
-  const tableY = 0.92;
-  const eqR = 0.48;
-  const eqY = 0.48;
-  const botY = -0.22;
+  const tableR = 0.26;
+  const tableY = 0.82;
+  const eqR = 0.5;
+  const eqY = 0.36;
+  const botY = -0.4;
   const midR = tableR + (eqR - tableR) * 0.52;
   const midY = tableY + (eqY - tableY) * 0.48;
   const pavR = eqR * 0.42;
@@ -635,34 +635,36 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(spark);
     sparks.push(spark);
   }
-  const edgePts: number[] = [];
-  for (let i = 0; i < sides; i++) {
-    const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-    const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-    const x = Math.cos(a) * eqR;
-    const z = Math.sin(a) * eqR;
-    const tx = Math.cos(a) * tableR;
-    const tz = Math.sin(a) * tableR;
-    const mx = Math.cos(a) * midR;
-    const mz = Math.sin(a) * midR;
-    const px = Math.cos(a) * pavR;
-    const pz = Math.sin(a) * pavR;
-    edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
-    edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
-    edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
-    edgePts.push(tx, tableY, tz, mx, midY, mz);
-    edgePts.push(mx, midY, mz, x, eqY, z);
-    edgePts.push(x, eqY, z, px, pavY, pz);
-    edgePts.push(px, pavY, pz, 0, botY, 0);
+  if (!lite) {
+    const edgePts: number[] = [];
+    for (let i = 0; i < sides; i++) {
+      const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const x = Math.cos(a) * eqR;
+      const z = Math.sin(a) * eqR;
+      const tx = Math.cos(a) * tableR;
+      const tz = Math.sin(a) * tableR;
+      const mx = Math.cos(a) * midR;
+      const mz = Math.sin(a) * midR;
+      const px = Math.cos(a) * pavR;
+      const pz = Math.sin(a) * pavR;
+      edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
+      edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
+      edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
+      edgePts.push(tx, tableY, tz, mx, midY, mz);
+      edgePts.push(mx, midY, mz, x, eqY, z);
+      edgePts.push(x, eqY, z, px, pavY, pz);
+      edgePts.push(px, pavY, pz, 0, botY, 0);
+    }
+    const edgeGeo = new THREE.BufferGeometry();
+    edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
+    crystal.add(
+      new THREE.LineSegments(
+        edgeGeo,
+        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.04 }),
+      ),
+    );
   }
-  const edgeGeo = new THREE.BufferGeometry();
-  edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
-  crystal.add(
-    new THREE.LineSegments(
-      edgeGeo,
-      new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.03 }),
-    ),
-  );
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
@@ -681,9 +683,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     new THREE.CylinderGeometry(0.05, 0.08, 0.04, sides),
     cinemaChrome(lite),
   );
-  base.position.y = 0.02;
-  base.userData.nodeId = 6;
+  crystal.position.y = 0.28;
   crystal.scale.setScalar(1.36);
+  base.position.y = -0.26;
+  base.userData.nodeId = 6;
   group.add(base);
   group.add(crystal);
 
@@ -707,7 +710,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.72;
+  rt2.position.y = 1.58;
   rt2.userData.nodeId = 7;
   group.add(rt2);
   const rt2Disk = new THREE.Mesh(
@@ -724,11 +727,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         }),
   );
   rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.72;
+  rt2Disk.position.y = 1.58;
   rt2Disk.userData.nodeId = 7;
   group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.72, 0.12);
+  rt2Label.position.set(0, 1.58, 0.12);
   rt2Label.scale.set(0.42, 0.1, 1);
   rt2Label.material.opacity = 0.48;
   group.add(rt2Label);
@@ -749,16 +752,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const plate = makeCinemaPlate(0.74, 0.48, lite, undefined, 0.016, true);
+    const plate = makeCinemaPlate(0.56, 0.36, lite, undefined, 0.014, true);
     applyPlateMap(plate.mat, tex);
-    const [x, y, z] = bankXYZ(i, 0);
-    plate.root.position.set(x, y + 0.08, z);
+    const [x, , z] = bankXYZ(i, 0);
+    plate.root.position.set(x, -0.14, z);
+    plate.root.lookAt(0, 0.55, 0);
     plate.root.userData.nodeId = bank.id;
     plate.face.userData.nodeId = bank.id;
     group.add(plate.root);
     cards.push(plate.root);
     cardMats.push(plate.mat);
-    const puddle = makeFloorContact(0.88, 0.64, -0.318);
+    const puddle = makeFloorContact(0.68, 0.48, -0.318);
     scene.add(puddle);
     puddles.push(puddle);
     const paintOne = (): void => {
@@ -898,11 +902,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 4.18 : 4.02, ax, ay);
-    camera.lookAt(0, lite ? 0.32 : 0.36, 0);
+    camera.lookAt(0, lite ? 0.5 : 0.54, 0);
     BANKS.forEach((_, i) => {
-      const [x, y, z] = bankXYZ(i, pulse);
-      cards[i].position.set(x, y + 0.08, z);
-      cards[i].lookAt(camera.position.x, y + 0.16, camera.position.z);
+      const [x, , z] = bankXYZ(i, pulse);
+      cards[i].position.set(x, -0.14, z);
+      cards[i].lookAt(0, 0.55, 0);
       puddles[i].position.x = x;
       puddles[i].position.z = z;
     });
