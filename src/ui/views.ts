@@ -659,8 +659,8 @@ export function renderHome(): string {
             <legend class="sr-only">Globe overlays</legend>
             <label><input type="checkbox" data-globe-opt="spin" checked /> Auto-spin</label>
             <label><input type="checkbox" data-globe-opt="labels" /> City labels</label>
-            <label><input type="checkbox" data-globe-opt="day" checked /> Day marble</label>
-            <label><input type="checkbox" data-globe-opt="night" checked /> Night lights</label>
+            <label><input type="checkbox" data-globe-opt="day" checked /> Daylight</label>
+            <label><input type="checkbox" data-globe-opt="night" checked /> Night</label>
             <label><input type="checkbox" data-globe-opt="routes" /> Settlement routes</label>
             <label><input type="checkbox" data-globe-opt="corridors" /> Token corridors</label>
             <label><input type="checkbox" data-globe-opt="activity" /> Activity</label>

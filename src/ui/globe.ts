@@ -428,7 +428,7 @@ export class EarthGlobe {
         const hq = city.kind === 'Headquarters';
         const hex = `#${kindColor(city.kind).toString(16).padStart(6, '0')}`;
         ctx.beginPath();
-        ctx.fillStyle = hq ? 'rgba(30, 201, 176, 0.22)' : 'rgba(212, 180, 131, 0.16)';
+        ctx.fillStyle = hq ? 'rgba(232, 212, 176, 0.18)' : 'rgba(196, 210, 228, 0.12)';
         ctx.arc(x, y, hq ? 14 : 9, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
@@ -708,16 +708,16 @@ export class EarthGlobe {
     for (const city of CITIES) {
       const pos = latLonToVec(city.lat, city.lon, 1.012);
       const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.012 : 0.008, this.lite ? 8 : 12, this.lite ? 8 : 12),
+        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.009 : 0.006, this.lite ? 8 : 12, this.lite ? 8 : 12),
         this.lite
           ? new THREE.MeshBasicMaterial({ color: kindColor(city.kind) })
           : new THREE.MeshPhysicalMaterial({
               color: kindColor(city.kind),
               emissive: kindColor(city.kind),
-              emissiveIntensity: 0.85,
-              roughness: 0.22,
-              metalness: 0.35,
-              clearcoat: 0.7,
+              emissiveIntensity: 0.32,
+              roughness: 0.28,
+              metalness: 0.42,
+              clearcoat: 0.55,
             }),
       );
       pin.position.copy(pos);
@@ -1030,16 +1030,16 @@ export class EarthGlobe {
 function kindColor(kind: City['kind']): number {
   switch (kind) {
     case 'Headquarters':
-      return 0x1ec9b0;
+      return 0xe8d4b0;
     case 'Banking':
-      return 0xd4b483;
+      return 0xd2c2a4;
     case 'Lab':
-      return 0x7ab0ff;
+      return 0x9eb4d0;
     case 'Standards':
-      return 0xc4a8ff;
+      return 0xb8c4d8;
     case 'Research':
-      return 0x9ad7c2;
+      return 0xa8c0bc;
     default:
-      return 0xe8edf2;
+      return 0xeaf1ff;
   }
 }
