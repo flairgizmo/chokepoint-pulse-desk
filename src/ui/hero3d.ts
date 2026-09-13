@@ -113,8 +113,9 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     const t0 = performance.now();
     parx += (tx - parx) * 0.08;
     pary += (ty - pary) * 0.08;
-    plate.rotation.y = parx * 0.16;
-    plate.rotation.x = -pary * 0.09;
+    const idle = reduced ? 0 : Math.sin(now / 3800) * 0.03;
+    plate.rotation.y = 0.1 + parx * 0.16 + idle;
+    plate.rotation.x = -0.05 - pary * 0.09;
     frame.rotation.copy(plate.rotation);
     if (!reduced) plate.position.z = Math.sin(now / 4200) * 0.025;
     camera.position.x = parx * 0.1;

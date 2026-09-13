@@ -56,15 +56,15 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
   if (!ctx) return c;
   ctx.clearRect(0, 0, CARD_W, CARD_H);
   if (duskPlate.complete && duskPlate.naturalWidth) {
-    ctx.filter = 'saturate(1.18) contrast(1.12) brightness(0.62)';
+    ctx.filter = 'saturate(1.22) contrast(1.14) brightness(0.88)';
     coverDraw(ctx, duskPlate, CARD_W, CARD_H);
     ctx.filter = 'none';
   } else {
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  const bw = 720;
-  const bh = 132;
+  const bw = 620;
+  const bh = 108;
   const bx = (CARD_W - bw) / 2;
   const by = (CARD_H - bh) / 2;
   ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.94)';
