@@ -17,8 +17,8 @@ import {
   remountCanvas,
 } from './gateway2d';
 
-const CARD_W = 1024;
-const CARD_H = 300;
+const CARD_W = 768;
+const CARD_H = 512;
 const duskPlate = new Image();
 duskPlate.src = '/visuals/topics/canary.jpg';
 
@@ -63,10 +63,10 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  const bw = 620;
-  const bh = 108;
+  const bw = 700;
+  const bh = 92;
   const bx = (CARD_W - bw) / 2;
-  const by = (CARD_H - bh) / 2;
+  const by = CARD_H - 118;
   ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.94)';
   ctx.beginPath();
   if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 18);
@@ -83,7 +83,7 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.font = '700 52px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(wide ? 'LLOYDS' : short, CARD_W / 2, CARD_H / 2);
+    ctx.fillText(wide ? 'LLOYDS' : short, CARD_W / 2, by + bh / 2);
   }
   return c;
 }
@@ -302,7 +302,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           clearcoatRoughness: 0.18,
           transparent: true,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.287, 0.048), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.48, 0.04), mat);
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.18, z);
     mesh.userData.nodeId = bank.id;

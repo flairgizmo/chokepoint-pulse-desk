@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { diagramFigure } from '../src/ui/diagrams';
-import { renderPatents } from '../src/ui/pages';
+import { renderPatents, renderStack } from '../src/ui/pages';
 import { renderCity, renderPeople, renderVision } from '../src/ui/views';
 import { cityById } from '../src/data/cities';
 
@@ -96,6 +96,15 @@ describe('Topic plates', () => {
     expect(html).toContain('cinema-letterbox');
     expect(html).toContain('/visuals/topics/ucl.jpg');
     expect(html).toContain('/visuals/stories/canary.jpg');
+    expect(html).not.toContain('hero-bed');
+  });
+
+  it('stands the exploded stack on a film stage with real stills', () => {
+    const html = renderStack();
+    expect(html).toContain('id="stack-stage"');
+    expect(html).toContain('cinema-letterbox');
+    expect(html).toContain('/visuals/topics/fiber.jpg');
+    expect(html).toContain('/visuals/topics/cable.jpg');
     expect(html).not.toContain('hero-bed');
   });
 

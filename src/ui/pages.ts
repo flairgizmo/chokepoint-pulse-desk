@@ -151,6 +151,12 @@ export function renderStack(): string {
     { id: 'ledgers', title: 'Ledgers & rails', job: 'Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments.', analogy: 'This layer is the SWIFT message and the RTGS book — the things the gate maps onto.', std: 'ISO 20022 adjacency via QuantNet’s published claim.' },
   ];
   return `${hero('Stack', 'How the layers compose.', 'Isolate a rung. Dim the rest. Each layer opens a stage with the job and the standards mapping.', 'stack-hero')}
+    <section class="stack-stage-wrap cinema-stage" aria-label="Exploded Overledger stack">
+      <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+      <span class="cinema-grain" aria-hidden="true"></span>
+      <canvas id="stack-stage" class="stack-stage" role="img" aria-label="Five Overledger layers as film plates. Click a plate."></canvas>
+      <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+    </section>
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
       <div class="stack-tools">

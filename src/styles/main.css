@@ -4191,6 +4191,60 @@ body.stage-open .grok {
   background: radial-gradient(ellipse at 50% 42%, #14305c 0%, #071018 62%, #04070c 100%);
 }
 
+.stack-stage-wrap.cinema-stage {
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin: 0.4rem auto 2.2rem;
+  aspect-ratio: 16 / 9;
+  min-height: 400px;
+  max-height: min(70dvh, 760px);
+  overflow: hidden;
+  border-radius: 22px;
+}
+
+.stack-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tech-stack,
+.chapter-stack,
+.essay-grid,
+.proof-grid,
+.triptych,
+.stack-visual,
+.stack-rungs.exploded,
+.stack-rungs.cinema-rungs,
+.people-tiles,
+.research-grid,
+.notes-reel {
+  perspective: 1600px;
+}
+
+.photo-plate.cinema-frame:not(.hero-plate),
+.beat-figure.photo-plate,
+.people-still-wrap.cinema-frame {
+  transform: rotateX(3.5deg) rotateY(-5.5deg);
+  transform-origin: 50% 80%;
+  box-shadow:
+    0 26px 54px rgba(7, 11, 20, 0.26),
+    0 0 0 1px rgba(234, 241, 255, 0.06);
+  transition: transform 0.55s ease;
+}
+
+.tech-chapter:hover .photo-plate,
+.essay-card:hover .photo-plate,
+.proof-chip:hover .photo-plate,
+.cinema-chapter:hover .photo-plate,
+.story-hit:hover .photo-plate,
+.paper:hover .photo-plate,
+.prog-card:hover .photo-plate,
+.inst-card:hover .photo-plate,
+.stack-rungs li:hover .photo-plate,
+.people-tile:hover .people-still-wrap {
+  transform: rotateX(1deg) rotateY(4deg) translateZ(16px);
+}
+
 .cinema-chapter summary .photo-plate,
 .cinema-chapter summary .beat-figure {
   margin: 0 0 0.85rem;
@@ -4398,6 +4452,15 @@ body.stage-open .grok {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .photo-plate.cinema-frame:not(.hero-plate),
+  .beat-figure.photo-plate,
+  .people-still-wrap.cinema-frame,
+  .tech-chapter:hover .photo-plate,
+  .people-tile:hover .people-still-wrap {
+    transform: none;
+    transition: none;
+  }
+
   .hero-still,
   .people-tile .people-bed,
   .proof-chip .photo-plate img,

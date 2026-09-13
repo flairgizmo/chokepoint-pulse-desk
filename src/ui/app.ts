@@ -51,6 +51,8 @@ export class QntDesk {
   private globe: EarthGlobe | null = null;
   private tessDispose: (() => void) | null = null;
   private heroDispose: Array<() => void> = [];
+  private stackDispose: (() => void) | null = null;
+  private stackIsolate: ((id: string | null) => void) | null = null;
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
@@ -149,6 +151,9 @@ export class QntDesk {
     this.tessDispose = null;
     for (const d of this.heroDispose) d();
     this.heroDispose = [];
+    this.stackDispose?.();
+    this.stackDispose = null;
+    this.stackIsolate = null;
     this.lastHoverId = undefined;
     const route = this.parse();
     try {
@@ -329,6 +334,7 @@ export class QntDesk {
     }
     this.wireMotionBeds();
     this.wireHeroes();
+    this.wireStack();
     this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
     if (this.root.querySelector('#earth-stage')) {
@@ -513,10 +519,12 @@ export class QntDesk {
           this.root.querySelectorAll('.stack-rungs li').forEach((el) => {
             el.classList.toggle('is-dim', el.getAttribute('data-rung') !== id);
           });
+          this.stackIsolate?.(id ?? null);
         });
       });
       this.root.querySelector('[data-stack-all]')?.addEventListener('click', () => {
         this.root.querySelectorAll('.stack-rungs li').forEach((el) => el.classList.remove('is-dim'));
+        this.stackIsolate?.(null);
       });
     }
   }
@@ -548,6 +556,23 @@ export class QntDesk {
       });
       card.tabIndex = 0;
     });
+  }
+
+  private wireStack(): void {
+    const canvas = this.root.querySelector<HTMLCanvasElement>('#stack-stage');
+    if (!canvas) return;
+    void import('./stack3d')
+      .then(({ mountStack2D, upgradeStack3D }) => {
+        const live = this.root.querySelector<HTMLCanvasElement>('#stack-stage');
+        if (!live || !this.root.contains(live)) return;
+        this.stackDispose = mountStack2D(live);
+        const upgraded = upgradeStack3D(live);
+        if (!upgraded) return;
+        this.stackDispose?.();
+        this.stackDispose = upgraded.dispose;
+        this.stackIsolate = upgraded.isolate;
+      })
+      .catch(() => undefined);
   }
 
   private wireHeroes(): void {
