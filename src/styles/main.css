@@ -2734,7 +2734,7 @@ button.chip {
   object-fit: cover;
   border-radius: 0;
   display: block;
-  filter: saturate(0.8) contrast(1.12) brightness(0.58);
+  filter: saturate(0.84) contrast(1.14) brightness(0.72);
 }
 
 .pod-item.is-on {
