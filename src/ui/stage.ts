@@ -56,6 +56,15 @@ export function stageMarkup(): string {
   </div>`;
 }
 
+function stageParas(text: string): string {
+  return text
+    .split(/(?<=\.)\s+(?=[A-Z“"])/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((s) => `<p>${esc(s)}</p>`)
+    .join('');
+}
+
 function parseStageHash(): { kind: string; id: string } | null {
   if (!location.hash.startsWith('#stage/')) return null;
   const raw = location.hash.replace(/^#stage\//, '');
@@ -97,7 +106,7 @@ function paint(root: HTMLElement, doc: StageDoc): void {
   const facts = doc.facts?.length
     ? `<dl class="stage-facts">${doc.facts.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`
     : '';
-  body.innerHTML = `<p>${esc(doc.body)}</p>${sourced}${facts}`;
+  body.innerHTML = `${stageParas(doc.body)}${sourced}${facts}`;
 
   const crumb = stack.length
     ? `<button type="button" class="stage-crumb" data-stage-back>← ${esc(stack[stack.length - 1].title)}</button>`

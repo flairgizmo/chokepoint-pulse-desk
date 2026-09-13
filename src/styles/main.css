@@ -3582,7 +3582,7 @@ button.chip {
 .desk-stage-object {
   background: #0b1220;
   border: 1px solid var(--line);
-  min-height: 16rem;
+  min-height: 22rem;
   overflow: hidden;
   border-radius: 18px;
 }
@@ -3596,7 +3596,7 @@ button.chip {
 .desk-stage-object .stage-photo,
 .desk-stage-object .photo-plate img {
   aspect-ratio: 16 / 9;
-  max-height: 22rem;
+  max-height: 32rem;
   width: 100%;
   object-fit: cover;
 }
@@ -4520,7 +4520,7 @@ body.stage-open .grok {
 
 .desk-stage-object .stage-photo {
   aspect-ratio: 16 / 9;
-  max-height: 22rem;
+  max-height: 32rem;
 }
 
 .city-essay-still {

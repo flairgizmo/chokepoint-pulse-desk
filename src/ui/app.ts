@@ -33,6 +33,7 @@ import {
   renderInstitutions,
   renderTechnology,
   renderVision,
+  renderNote,
 } from './views';
 import { revealStage, setStageNavigator, stageMarkup, syncStageFromLocation, wireStages } from './stage';
 import { searchMarkup, wireSearch } from './search';
@@ -142,6 +143,7 @@ export class QntDesk {
     if (!parts[1] && CITIES.some((c) => c.id === head)) return { name: 'city', id: head };
     if (head === 'read' && parts[1]) return { name: 'read', id: parts[1] };
     if (head === 'podcast' && parts[1]) return { name: 'episode', id: parts[1] };
+    if (head === 'news' && parts[1]) return { name: 'note', id: parts[1] };
     if (head === 'people' && parts[1]) return { name: 'people', id: parts[1] };
     return { name: head };
   }
@@ -215,6 +217,8 @@ export class QntDesk {
         return renderMarkets(this.markets ?? undefined);
       case 'news':
         return renderNews(this.news ?? undefined);
+      case 'note':
+        return route.id ? renderNote(route.id) : renderNews(this.news ?? undefined);
       case 'city': {
         const city = CITIES.find((c) => c.id === route.id);
         return city ? renderCity(city) : renderNotFound();
@@ -767,6 +771,7 @@ export class QntDesk {
     const list = this.root.querySelector('[data-news-list]');
     const prev = this.root.querySelector<HTMLInputElement>('#news-filter')?.value ?? '';
     if (!list) {
+      if (this.parse().name === 'note') return;
       const main = this.root.querySelector('main');
       if (main) main.innerHTML = renderNews(this.news ?? undefined, prev);
       this.bindNewsFilter();
