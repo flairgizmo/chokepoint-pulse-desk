@@ -46,9 +46,37 @@ function containDraw(
 type GlassCut = 'crown' | 'pav' | 'table';
 
 const TABLE_Y = 0.42;
+const EQ_Y = 0.18;
 const BOT_Y = -0.24;
 
 type CutMat = THREE.MeshPhongMaterial | THREE.MeshPhysicalMaterial;
+type GlassLane = 0 | 1;
+
+type GlassGrade = {
+  sx: number;
+  sy: number;
+  sw: number;
+  sh: number;
+  brightness: number;
+  contrast: number;
+  saturate: number;
+  multiply: number;
+};
+
+/** Two shared Canary crops — not a per-facet quilt. Lane A is the bright window; B is the dusk kite. */
+function glassGrade(cut: GlassCut, lane: GlassLane): GlassGrade {
+  if (cut === 'table') {
+    return { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 0.66, contrast: 1.2, saturate: 0.72, multiply: 0.3 };
+  }
+  if (cut === 'crown') {
+    return lane === 0
+      ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.92, contrast: 1.12, saturate: 0.86, multiply: 0.08 }
+      : { sx: 0.4, sy: 0.32, sw: 0.48, sh: 0.42, brightness: 0.48, contrast: 1.22, saturate: 0.62, multiply: 0.38 };
+  }
+  return lane === 0
+    ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.5, contrast: 1.16, saturate: 0.64, multiply: 0.42 }
+    : { sx: 0.46, sy: 0.48, sw: 0.4, sh: 0.32, brightness: 0.34, contrast: 1.2, saturate: 0.52, multiply: 0.54 };
+}
 
 function paintPhotoGlass(
   ctx: CanvasRenderingContext2D,
@@ -57,22 +85,21 @@ function paintPhotoGlass(
   h: number,
   on = false,
   cut: GlassCut = 'crown',
+  lane: GlassLane = 0,
 ): void {
+  const grade = glassGrade(cut, lane);
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
-    const sx = photo.naturalWidth * (cut === 'table' ? 0.2 : 0.18);
-    const sy = photo.naturalHeight * (cut === 'table' ? 0.3 : 0.22);
-    const sw = Math.max(1, photo.naturalWidth * (cut === 'table' ? 0.48 : 0.64));
-    const sh = Math.max(1, photo.naturalHeight * (cut === 'table' ? 0.22 : 0.55));
-    ctx.filter =
-      cut === 'table'
-        ? 'contrast(1.22) brightness(0.52) saturate(0.68)'
-        : 'contrast(1.14) brightness(0.78) saturate(0.8)';
+    const sx = photo.naturalWidth * grade.sx;
+    const sy = photo.naturalHeight * grade.sy;
+    const sw = Math.max(1, photo.naturalWidth * grade.sw);
+    const sh = Math.max(1, photo.naturalHeight * grade.sh);
+    ctx.filter = `contrast(${grade.contrast}) brightness(${grade.brightness}) saturate(${grade.saturate})`;
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
     ctx.filter = 'none';
     ctx.save();
-    ctx.globalAlpha = cut === 'pav' ? 0.4 : cut === 'table' ? 0.12 : 0.18;
+    ctx.globalAlpha = cut === 'pav' ? 0.36 : cut === 'table' ? 0.14 : lane === 0 ? 0.16 : 0.22;
     ctx.translate(w, 0);
     ctx.scale(-1, 1);
     ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, w, h);
@@ -80,55 +107,51 @@ function paintPhotoGlass(
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
       ? 'rgba(234, 241, 255, 0.35)'
-      : cut === 'pav'
-        ? 'rgba(4, 10, 28, 0.5)'
-        : cut === 'table'
-          ? 'rgba(3, 8, 20, 0.52)'
-          : 'rgba(6, 16, 40, 0.22)';
+      : `rgba(6, 16, 40, ${grade.multiply})`;
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
     const g = ctx.createLinearGradient(0, 0, w, h);
-    g.addColorStop(0, on ? '#f4f7fb' : '#1557FF');
+    g.addColorStop(0, on ? '#f4f7fb' : lane === 0 ? '#8eb0ff' : '#1557FF');
     g.addColorStop(1, '#02060f');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
   }
   if (cut === 'table') {
     ctx.globalCompositeOperation = 'screen';
-    const catchL = ctx.createRadialGradient(w * 0.34, h * 0.28, 2, w * 0.34, h * 0.28, w * 0.12);
-    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.28)');
+    const catchL = ctx.createRadialGradient(w * 0.34, h * 0.28, 2, w * 0.34, h * 0.28, w * 0.14);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.32)');
     catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
     ctx.fillStyle = catchL;
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
-    scoreCut(ctx, w, h, 16);
+    scoreCut(ctx, w, h, 16, lane);
   }
 }
 
-function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: number): void {
+function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: number, lane: GlassLane = 0): void {
   const bw = w / sides;
   for (let i = 0; i < sides; i++) {
     const x0 = i * bw;
     if (i % 2) {
-      ctx.fillStyle = 'rgba(2, 6, 14, 0.2)';
+      ctx.fillStyle = lane === 0 ? 'rgba(2, 6, 14, 0.12)' : 'rgba(2, 6, 14, 0.28)';
       ctx.fillRect(x0, 0, bw, h);
     }
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.07)';
+    ctx.fillStyle = lane === 0 ? 'rgba(234, 241, 255, 0.1)' : 'rgba(234, 241, 255, 0.05)';
     ctx.fillRect(x0, 0, 1.25, h);
-    ctx.fillStyle = 'rgba(2, 6, 14, 0.32)';
+    ctx.fillStyle = 'rgba(2, 6, 14, 0.36)';
     ctx.fillRect(x0 + bw - 1.25, 0, 1.25, h);
   }
   ctx.globalCompositeOperation = 'screen';
   for (let i = 0; i < sides; i++) {
     const cx = (i + 0.38) * bw;
     const cy = 36 + (i % 5) * 78;
-    const g = ctx.createRadialGradient(cx, cy, 1, cx, cy, 26);
-    g.addColorStop(0, i % 3 === 0 ? 'rgba(255, 236, 210, 0.38)' : 'rgba(170, 200, 255, 0.24)');
+    const g = ctx.createRadialGradient(cx, cy, 1, cx, cy, lane === 0 ? 32 : 20);
+    g.addColorStop(0, i % 3 === 0 ? 'rgba(255, 236, 210, 0.42)' : 'rgba(170, 200, 255, 0.22)');
     g.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = g;
-    ctx.fillRect(cx - 28, cy - 28, 56, 56);
+    ctx.fillRect(cx - 32, cy - 32, 64, 64);
   }
   ctx.globalCompositeOperation = 'source-over';
 }
@@ -223,16 +246,21 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   return c;
 }
 
-function glassCanvas(photo: HTMLImageElement | null, on: boolean, cut: GlassCut): HTMLCanvasElement {
+function glassCanvas(
+  photo: HTMLImageElement | null,
+  on: boolean,
+  cut: GlassCut,
+  lane: GlassLane = 0,
+): HTMLCanvasElement {
   const wrap = cut === 'crown';
   const c = document.createElement('canvas');
   c.width = wrap ? 1024 : 512;
   c.height = 512;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  paintPhotoGlass(ctx, photo, c.width, c.height, on, cut);
+  paintPhotoGlass(ctx, photo, c.width, c.height, on, cut, lane);
   if (cut === 'table') {
-    ctx.fillStyle = 'rgba(11, 31, 92, 0.16)';
+    ctx.fillStyle = 'rgba(11, 31, 92, 0.14)';
     ctx.font = '600 72px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -241,8 +269,13 @@ function glassCanvas(photo: HTMLImageElement | null, on: boolean, cut: GlassCut)
   return c;
 }
 
-function glassTex(photo: HTMLImageElement | null, on: boolean, cut: GlassCut): THREE.CanvasTexture {
-  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, cut)));
+function glassTex(
+  photo: HTMLImageElement | null,
+  on: boolean,
+  cut: GlassCut,
+  lane: GlassLane = 0,
+): THREE.CanvasTexture {
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, cut, lane)));
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -270,8 +303,9 @@ function wrapU(x: number, z: number): number {
   return (Math.atan2(x, z) / (Math.PI * 2) + 0.875) % 1;
 }
 
-function wrapV(y: number): number {
-  return Math.min(1, Math.max(0, (y - BOT_Y) / (TABLE_Y - BOT_Y)));
+function wrapV(y: number, band: 'crown' | 'pav' = 'crown'): number {
+  if (band === 'pav') return Math.min(1, Math.max(0, (y - BOT_Y) / (EQ_Y - BOT_Y)));
+  return Math.min(1, Math.max(0, (y - EQ_Y) / (TABLE_Y - EQ_Y)));
 }
 
 function seamUv(us: number[]): number[] {
@@ -314,13 +348,17 @@ function triGeo(
   cx: number,
   cy: number,
   cz: number,
+  band: 'crown' | 'pav' = 'crown',
 ): THREE.BufferGeometry {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz], 3));
   const us = seamUv([wrapU(ax, az), wrapU(bx, bz), wrapU(cx, cz)]);
   g.setAttribute(
     'uv',
-    new THREE.Float32BufferAttribute([us[0], wrapV(ay), us[1], wrapV(by), us[2], wrapV(cy)], 2),
+    new THREE.Float32BufferAttribute(
+      [us[0], wrapV(ay, band), us[1], wrapV(by, band), us[2], wrapV(cy, band)],
+      2,
+    ),
   );
   g.computeVertexNormals();
   return g;
@@ -540,26 +578,41 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tableR = 0.36;
   const tableY = TABLE_Y;
   const eqR = 0.56;
-  const eqY = 0.18;
+  const eqY = EQ_Y;
   const botY = BOT_Y;
   const midR = tableR + (eqR - tableR) * 0.52;
   const midY = tableY + (eqY - tableY) * 0.48;
   const pavR = eqR * 0.42;
   const pavY = eqY + (botY - eqY) * 0.52;
   const photo0 = visionStill();
-  const crownMat = glassMat(glassTex(photo0, false, 'crown'), lite, {
+  const crownA = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xa8b8d0,
+    tint: 0xe4ecf4,
   });
-  const pavMat = glassMat(glassTex(photo0, false, 'pav'), lite, {
+  const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
+    transmission: 0.7,
+    thickness: 0.52,
+    tint: 0x5a6c84,
+  });
+  const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x4a5c78,
+    tint: 0x6a7c94,
+  });
+  const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
+    transmission: 0.82,
+    thickness: 0.7,
+    tint: 0x2c3c54,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
-    glassMat(glassTex(photo0, false, 'table'), lite, { transmission: 0.38, thickness: 0.28, shade: false }),
+    glassMat(glassTex(photo0, false, 'table'), lite, {
+      transmission: 0.38,
+      thickness: 0.28,
+      shade: false,
+      tint: 0x8a9cb4,
+    }),
   );
   table.position.y = tableY;
   table.userData.nodeId = 6;
@@ -589,19 +642,21 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pz0 = Math.sin(a0) * pavR;
     const px1 = Math.cos(a1) * pavR;
     const pz1 = Math.sin(a1) * pavR;
-    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1), crownMat, crowns);
-    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1), crownMat, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1), crownMat, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1), crownMat, crowns);
-    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1), pavMat, pavs);
-    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1), pavMat, pavs);
-    addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1), pavMat, pavs);
+    const crown = i % 2 ? crownB : crownA;
+    const pav = i % 2 ? pavB : pavA;
+    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, 'crown'), crown, crowns);
+    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1, 'crown'), crown, crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns);
+    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
+    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav, pavs);
+    addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav, pavs);
     const amid = (a0 + a1) / 2;
     const starR = tableR + (eqR - tableR) * 0.4;
     const starY = tableY + (eqY - tableY) * 0.4;
     const sx = Math.cos(amid) * starR;
     const sz = Math.sin(amid) * starR;
-    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz), crownMat, stars);
+    addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz, 'crown'), crownA, stars);
     if (!lite) {
       const spark = new THREE.Mesh(
         new THREE.SphereGeometry(0.016, 8, 8),
@@ -794,11 +849,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const photo = visionStill();
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     swapMap(tmat, glassTex(photo, on, 'table'));
-    swapMap(crownMat, glassTex(photo, on, 'crown'));
-    swapMap(pavMat, glassTex(photo, false, 'pav'));
-    if (crownMat instanceof THREE.MeshPhysicalMaterial) {
-      crownMat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
-      crownMat.emissiveIntensity = on ? 0.16 : 0.035;
+    swapMap(crownA, glassTex(photo, on, 'crown', 0));
+    swapMap(crownB, glassTex(photo, on, 'crown', 1));
+    swapMap(pavA, glassTex(photo, false, 'pav', 0));
+    swapMap(pavB, glassTex(photo, false, 'pav', 1));
+    for (const mat of [crownA, crownB]) {
+      if (mat instanceof THREE.MeshPhysicalMaterial) {
+        mat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
+        mat.emissiveIntensity = on ? 0.16 : 0.035;
+      }
     }
     const nextCaustic = hardenCanvasTex(new THREE.CanvasTexture(causticCanvas(photo)));
     nextCaustic.colorSpace = THREE.SRGBColorSpace;
