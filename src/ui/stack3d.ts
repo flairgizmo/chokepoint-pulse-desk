@@ -130,7 +130,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  addCinemaSet(scene, lite, '/visuals/topics/datacenter.jpg');
+  addCinemaSet(scene, lite, '/visuals/topics/canary.jpg');
   const camera = new THREE.PerspectiveCamera(30, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);

@@ -155,10 +155,10 @@ function mountFilm3D(
 
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.05, 1.16, 0.045), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.92, 1.08, 0.045), mat);
     mesh.userData.slide = slide;
     const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(2.14, 1.25, 0.03),
+      new THREE.BoxGeometry(2.0, 1.16, 0.03),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
     frame.position.z = -0.03;
@@ -180,8 +180,8 @@ function mountFilm3D(
     plates.forEach((mesh, i) => {
       const d = i - featured;
       const mag = Math.abs(d);
-      const scale = mag === 0 ? 1.12 : mag === 1 ? 0.72 : 0.48;
-      mesh.position.set(d * 1.55, -0.02 - mag * 0.04, mag * 0.55);
+      const scale = mag === 0 ? 1 : mag === 1 ? 0.7 : 0.46;
+      mesh.position.set(d * 1.58, -0.1 - mag * 0.03, mag * 0.5);
       mesh.rotation.set(-0.08, -d * 0.2, 0);
       mesh.scale.setScalar(scale);
     });
@@ -210,8 +210,8 @@ function mountFilm3D(
     ay += (ty - ay) * 0.08;
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
-    camera.position.setFromSphericalCoords(lite ? 3.85 : 3.45, ax, ay);
-    camera.lookAt(0, 0.02, 0.12);
+    camera.position.setFromSphericalCoords(lite ? 4.15 : 3.75, ax, ay);
+    camera.lookAt(0, -0.04, 0.1);
     renderer.render(scene, camera);
   };
 
