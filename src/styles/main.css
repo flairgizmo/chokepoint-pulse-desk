@@ -814,24 +814,29 @@ main {
 
 .wordmark {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
   min-height: 6.4rem;
-  padding: 0.95rem 0.7rem 0.8rem;
+  padding: 0;
   border-radius: 16px;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
   text-align: center;
   box-shadow: 0 8px 20px rgba(11, 31, 92, 0.04);
+  overflow: hidden;
 }
 
+.wordmark-link,
 .wordmark a {
   color: inherit;
   text-decoration: none;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 6.4rem;
+  padding: 0.95rem 0.7rem 0.8rem;
 }
 
 .wm {
@@ -2908,11 +2913,11 @@ button.chip {
 
 .wm-logo {
   flex: 0 0 auto;
-  width: 7.4rem;
-  height: 2.35rem;
+  width: 8.2rem;
+  height: 2.55rem;
   object-fit: contain;
   object-position: center;
-  background: #fff;
+  background: transparent;
   border-radius: 0;
   padding: 0;
 }

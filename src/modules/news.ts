@@ -2,6 +2,8 @@ import { fetchText } from './liveHttp';
 import {
   BOE_NEWS_RSS,
   GNEWS_GBTD,
+  GNEWS_SATP,
+  GNEWS_SYNC,
   GNEWS_URL,
   IETF_BLOG_RSS,
   OVERLEDGER_CHANGELOG,
@@ -28,9 +30,9 @@ export interface NewsRiver {
   error?: string;
 }
 
-const CACHE_KEY = 'qntdesk.news.v4';
+const CACHE_KEY = 'qntdesk.news.v5';
 const RE =
-  /\b(quant network|overledger|qnt\b|gilbert verdian|gbtd|payscript|quantnet|tokenised sterling|tokenized sterling|trusted node)\b/i;
+  /\b(quant network|overledger|qnt\b|gilbert verdian|gbtd|payscript|quantnet|tokenised sterling|tokenized sterling|tokenised deposit|tokenized deposit|trusted node|satp|synchronisation lab)\b/i;
 
 function cached(): NewsRiver | null {
   try {
@@ -197,6 +199,8 @@ export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
     fetchText(IETF_BLOG_RSS, signal).then((xml) =>
       parseNamedRss(xml, { source: 'IETF', lane: 'Industry', requireMatch: true }),
     ),
+    fetchText(GNEWS_SATP, signal).then((xml) => parseGoogleNewsRss(xml)),
+    fetchText(GNEWS_SYNC, signal).then((xml) => parseGoogleNewsRss(xml)),
   ]);
   const items = dedupeHeadlines(settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))).slice(0, 40);
   const failed = settled.filter((r) => r.status === 'rejected').length;
@@ -209,7 +213,7 @@ export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
       items: [],
       updated: new Date().toISOString(),
       error:
-        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay visible.',
     };
   }
   const river: NewsRiver = {
@@ -263,7 +267,7 @@ export async function fetchNews(signal?: AbortSignal): Promise<NewsRiver> {
       items: [],
       updated: new Date().toISOString(),
       error:
-        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay visible.',
     };
   }
 }

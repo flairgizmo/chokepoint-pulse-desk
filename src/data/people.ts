@@ -56,7 +56,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'ashtonPeople',
     photo: '/people/ashton.jpg',
-    bio: 'Joined Quant in 2022. People, employer brand and talent. Nearly thirty years in international HR. Portrait from Quant’s people page.',
+    bio: 'Joined Quant in 2022. People, employer brand and talent. Nearly thirty years in international HR.',
   },
   {
     id: 'riley',
@@ -78,7 +78,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'sentelidisPeople',
     photo: '/people/sentelidis.jpg',
-    bio: 'Leads Quant’s engineering organisation. Public about-us title; joined 2020. Not a whitepaper-era author. Portrait from Quant’s people page.',
+    bio: 'Leads Quant’s engineering organisation. Public about-us title; joined 2020. Not a whitepaper-era author.',
   },
   {
     id: 'facer',
@@ -100,7 +100,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'chiriacPeople',
     photo: '/people/chiriac.jpg',
-    bio: 'Overledger architect since 2018. Named SATP core author. Public bio lists connectors including Hyperledger Fabric, Corda, Polkadot and the XRP Ledger. Quant credits him with RLN delivery and vendor work on Project Rosalind — a concluded experiment, not a standing Basel mandate. Portrait from Quant’s people page.',
+    bio: 'Overledger architect since 2018. Named SATP core author. Public bio lists connectors including Hyperledger Fabric, Corda, Polkadot and the XRP Ledger. Quant credits him with RLN delivery and vendor work on Project Rosalind — a concluded experiment, not a standing Basel mandate.',
   },
   {
     id: 'rawel',
@@ -111,7 +111,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'rawelPeople',
     photo: '/people/rawel.jpg',
-    bio: 'Joined 2023 from Finastra, Santander UK, Accenture, Citi and Google. Leads Quant’s sales organisation. Portrait from Quant’s people page.',
+    bio: 'Joined 2023 from Finastra, Santander UK, Accenture, Citi and Google. Leads Quant’s sales organisation.',
   },
   {
     id: 'alves',
@@ -122,7 +122,7 @@ export const PEOPLE: Person[] = [
     current: true,
     href: 'alvesPeople',
     photo: '/people/alves.jpg',
-    bio: 'Listed on Quant’s about page as Lead Sales Engineer — the technical counterpart to the sales organisation. Portrait from Quant’s people page.',
+    bio: 'Listed on Quant’s about page as Lead Sales Engineer — the technical counterpart to the sales organisation.',
   },
   {
     id: 'baugh',

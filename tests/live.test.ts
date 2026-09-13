@@ -5,6 +5,8 @@ import {
   QUANT_FEED,
   SATP_ATOM,
   GNEWS_GBTD,
+  GNEWS_SATP,
+  GNEWS_SYNC,
   BOE_NEWS_RSS,
 } from '../src/modules/liveSources';
 import { parseAtomFeed, parseGoogleNewsRss, parseNamedRss } from '../src/modules/news';
@@ -19,6 +21,8 @@ describe('Live source URLs', () => {
     expect(OVERLEDGER_CHANGELOG).toContain('docs.overledger.dev');
     expect(SATP_ATOM).toContain('datatracker.ietf.org/group/satp');
     expect(GNEWS_GBTD).toContain('tokenised');
+    expect(GNEWS_SATP).toContain('SATP');
+    expect(GNEWS_SYNC).toContain('Synchronisation');
     expect(BOE_NEWS_RSS).toContain('bankofengland.co.uk');
   });
 });
@@ -103,6 +107,11 @@ describe('Brand mark', () => {
     expect(existsSync('public/people/rawel.jpg')).toBe(true);
     expect(existsSync('public/people/alves.jpg')).toBe(true);
     expect(existsSync('public/visuals/cities/london.jpg')).toBe(true);
+    expect(existsSync('public/visuals/cities/paris.jpg')).toBe(true);
+    expect(existsSync('public/visuals/cities/new-york.jpg')).toBe(true);
+    expect(existsSync('public/marks/nationwide.svg')).toBe(true);
+    expect(existsSync('public/marks/ukfinance.svg')).toBe(true);
+    expect(existsSync('public/marks/linklaters.svg')).toBe(true);
   });
 });
 
@@ -117,6 +126,9 @@ describe('Public desk', () => {
     expect(html).toContain('data-stage="proof"');
     expect(html).toContain('Lloyds Banking Group');
     expect(html).toContain('/marks/lloyds.svg');
+    expect(html).toContain('/marks/nationwide.svg');
+    expect(html).toContain('/marks/ukfinance.svg');
+    expect(html).toContain('/marks/ey.svg');
     expect(html).not.toContain('This chip is a stage');
     expect(html).not.toContain('The scarce resource is not another chain');
     expect(html).not.toContain('Orbit the Q');

@@ -197,16 +197,18 @@ export const INSTITUTIONS: Institution[] = [
   {
     id: 'dentsu',
     name: 'Dentsu Soken',
+    mark: 'Dentsu Soken',
     wordmark: true,
     role: 'partner',
     status: 'current',
     dates: '14 January 2026',
-    body: 'Tokyo / London announcement on tokenised deposits, bank-issued stablecoins and programmable settlement. StreamR is BOJ-NET compatible. Announced go-to-market. No licensed mark is on file.',
+    body: 'Tokyo / London announcement on tokenised deposits, bank-issued stablecoins and programmable settlement. StreamR is BOJ-NET compatible. Announced go-to-market.',
     hrefKey: 'dentsuSoken',
   },
   {
     id: 'ey',
     name: 'EY',
+    mark: 'EY',
     wordmark: true,
     role: 'advisor',
     status: 'current',
@@ -217,6 +219,7 @@ export const INSTITUTIONS: Institution[] = [
   {
     id: 'linklaters',
     name: 'Linklaters',
+    mark: 'Linklaters',
     wordmark: true,
     role: 'advisor',
     status: 'current',

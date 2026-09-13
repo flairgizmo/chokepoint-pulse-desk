@@ -131,6 +131,8 @@ export class EarthGlobe {
   private theta = 2.05;
   private earthSpin = 0.42;
   private distance = 2.85;
+  private velTheta = 0;
+  private velPhi = 0;
   private followId: string | undefined;
   private overlays: GlobeOverlays = {
     routes: true,
@@ -194,6 +196,8 @@ export class EarthGlobe {
     this.theta = 2.05;
     this.distance = 2.85;
     this.earthSpin = 0.42;
+    this.velTheta = 0;
+    this.velPhi = 0;
   }
 
   dispose(): void {
@@ -398,8 +402,10 @@ export class EarthGlobe {
       const dy = e.clientY - this.lastY;
       this.lastX = e.clientX;
       this.lastY = e.clientY;
-      this.theta -= dx * 0.0088;
-      this.phi = THREE.MathUtils.clamp(this.phi + dy * 0.0066, 0.18, Math.PI - 0.18);
+      this.velTheta = -dx * 0.012;
+      this.velPhi = dy * 0.009;
+      this.theta += this.velTheta;
+      this.phi = THREE.MathUtils.clamp(this.phi + this.velPhi, 0.18, Math.PI - 0.18);
     });
     const endDrag = (e: PointerEvent) => {
       if (!this.dragging) return;
@@ -506,7 +512,15 @@ export class EarthGlobe {
 
   private tick(): void {
     if (!this.renderer || !this.scene || !this.camera || !this.earth) return;
-    if (!this.reduced && !this.dragging && this.overlays.spin) this.earthSpin += 0.0026;
+    if (!this.dragging) {
+      this.theta += this.velTheta;
+      this.phi = THREE.MathUtils.clamp(this.phi + this.velPhi, 0.18, Math.PI - 0.18);
+      this.velTheta *= 0.9;
+      this.velPhi *= 0.9;
+      if (Math.abs(this.velTheta) < 0.00008) this.velTheta = 0;
+      if (Math.abs(this.velPhi) < 0.00008) this.velPhi = 0;
+    }
+    if (!this.reduced && !this.dragging && this.overlays.spin && !this.followId) this.earthSpin += 0.0034;
     this.earth.rotation.set(0, this.earthSpin, 0);
     if (this.followId && !this.dragging) {
       const city = cityById(this.followId);

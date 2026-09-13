@@ -281,9 +281,9 @@ function wordmarkLi(label: string, href: string): string {
   const caption = bankDisplay(label);
   const mark = markFor(label);
   const tile = mark
-    ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="160" height="48" />`
+    ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="160" height="48" />`
     : `<span class="wm" aria-hidden="true">${esc(caption[0] ?? '?')}</span>`;
-  return `<li class="wordmark">${tile}<a href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}><span class="wordmark-caption">${esc(caption)}</span></a></li>`;
+  return `<li class="wordmark"><a class="wordmark-link" href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${tile}<span class="wordmark-caption">${esc(caption)}</span></a></li>`;
 }
 
 function fold(title: string, inner: string, open = false): string {
@@ -564,7 +564,7 @@ export function renderHome(): string {
       ${kicker('Pulse')}
       <div class="section-head">
         <h2 class="display">The wire, as headlines.</h2>
-        <a class="text-link" href="/news">News desk →</a>
+        <a class="text-link" href="/news">The wire →</a>
       </div>
       <ul class="pulse-list" data-home-pulse><li class="empty-note">Headlines load when the ingest answers.</li></ul>
     </section>
@@ -576,7 +576,7 @@ export function renderHome(): string {
       <div class="earth-hud">
         <div class="hud-card">
           <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · orbit</p>
-          <p class="hud-help">Pins stay on published lat/lon. Drag to orbit. Scroll to zoom. Click a city for the filing.</p>
+          <p class="hud-help">Pins stay on published lat/lon. Drag to orbit. Scroll to zoom. Click a city for the brief.</p>
           <label class="sr-only" for="city-select">Cities</label>
           <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
         </div>
@@ -618,6 +618,9 @@ export function renderHome(): string {
         ${wordmarkLi('Linux Foundation', sources.linuxX402)}
         ${wordmarkLi('Oracle', sources.oracleBlog)}
         ${wordmarkLi('Murex', sources.murexNews)}
+        ${wordmarkLi('EY', sources.ukFinanceRln)}
+        ${wordmarkLi('Linklaters', sources.linklatersGbtd)}
+        ${wordmarkLi('Dentsu Soken', sources.dentsuSoken)}
       </ul>
     </section>
 
@@ -707,7 +710,7 @@ export function renderVision(): string {
     </blockquote>
     <div class="compare">
       <article class="panel"><h3>The 2018 problem</h3><p>The UCL Discovery abstract states the problem as single-ledger dependency: applications bound to one DLT cannot execute across others without a layer above those books.</p></article>
-      <article class="panel"><h3>What Overledger files</h3><p>A gateway operating system for multi-ledger applications. Fabric, Ethereum, Corda, or a bank core remain the settlement domains. The gate maps the request. It does not replace the book.</p></article>
+      <article class="panel"><h3>What Overledger is</h3><p>A gateway operating system for multi-ledger applications. Fabric, Ethereum, Corda, or a bank core remain the settlement domains. The gate maps the request. It does not replace the book.</p></article>
     </div>
     <section class="vision-deck">
       ${kicker('Three essays')}
@@ -717,7 +720,7 @@ export function renderVision(): string {
   return `${pageHero(
     'Vision',
     'A network of networks,',
-    'The 2018 whitepaper calls Overledger a technology for multi-ledger applications. The present filing is UK Finance’s live tokenised sterling deposits. The next public dates sit in IETF SATP drafts, ISO/TS 23516:2026, and the Bank of England Synchronisation Lab — simulated RT2, not a live digital pound.',
+    'The 2018 whitepaper calls Overledger a technology for multi-ledger applications. The live programme is UK Finance’s tokenised sterling deposits. The next public dates sit in IETF SATP drafts, ISO/TS 23516:2026, and the Bank of England Synchronisation Lab — simulated RT2, not a live digital pound.',
     'the gateway OS.',
     'future',
   )}${quoteRail('vision')}${extra}<div class="chapter-stack">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
@@ -751,7 +754,7 @@ export function renderProgrammes(): string {
   return `${pageHero(
     'Programme cockpit',
     'Where Quant is already',
-    'Status, owner, institutions, related tech. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never auto-filed as timeline fact.',
+    'Status, owner, institutions, related tech. GBTD is live commercial-bank sterling. Murex is a named integration. Rosalind concluded. The 2026 Bank of England lab is a simulated RT2. A mention on the wire can light a chip — it is never added as a timeline fact without a source.',
     'in the room.',
   )}
     <div class="cohort-marks">
@@ -772,8 +775,7 @@ export function renderProgrammes(): string {
     </div>
     <p class="empty-note" id="prog-empty" hidden>No programme matches. Try GBTD, Murex, or Sibos.</p>
     <div class="prog-grid" id="prog-grid">${cards}</div>
-    ${renderThisMonth()}
-    ${renderCalendar()}
+    ${fold('This month and the calendar', `${renderThisMonth()}${renderCalendar()}`)}
     ${dykBlock()}`;
 }
 
@@ -835,7 +837,7 @@ export function renderStandards(): string {
     </li>`,
   ).join('');
   return `${pageHero(
-    'Standards desk',
+    'Standards',
     'Treat the treaty as product.',
     'IETF SATP and the rooms Quant has actually touched. Status chips, editors, dates. The day SATP is an RFC, a bank can implement a gateway-to-gateway transfer without buying a brand. Adjacent ISO, INATBA and MIT work only where sourced.',
     '',
@@ -883,7 +885,7 @@ export function renderPeople(): string {
   <div class="toolbar filter-bar">
     <input type="search" id="people-search" placeholder="Search names, roles, rooms…" />
   </div>
-  ${peopleRail()}${overledgerRoster()}${quoteRail('people')}${blocks}${dykBlock()}`;
+  ${peopleRail()}${overledgerRoster()}${quoteRail('people')}${fold('Full records by role', blocks)}${dykBlock()}`;
 }
 
 function peopleRail(): string {
@@ -945,7 +947,7 @@ const RESEARCH_LANES: Array<{ id: string; title: string; lede: string }> = [
   { id: 'patent', title: 'Patents', lede: 'Sequence and method claims. A grant is not a deployment.' },
   { id: 'book', title: 'Books', lede: 'Long-form work cited on the record.' },
   { id: 'survey', title: 'Surveys', lede: 'Taxonomies that place the gateway among other interoperability options.' },
-  { id: 'note', title: 'Desk notes', lede: 'Sourced briefs filed here. A note is not a press-release copy.' },
+  { id: 'note', title: 'Briefs', lede: 'Sourced notes. A brief is not a press-release copy.' },
 ];
 
 export function renderResearch(filter = '', region = 'ALL'): string {
@@ -983,7 +985,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
   return `${pageHero(
     'Library',
     'Forty-eight documents,',
-    'Primary sources, standards drafts, patents, books, surveys, and desk notes — each lane uses a different plate. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
+    'Primary sources, standards drafts, patents, books, surveys, and briefs — each lane uses a different plate. Filter by region or kind without leaving the page. Open original is secondary: UCL, IETF, ACM, Quant, the patent offices.',
     'grouped by what they are.',
     'london',
   )}
@@ -1201,7 +1203,7 @@ export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; 
     count: rows.length,
     html:
       grouped ||
-      `<p class="empty-note">${esc(river?.error ?? 'The river is quiet. This month’s sourced filings stay on the desk.')}</p>`,
+      `<p class="empty-note">${esc(river?.error ?? 'No live headlines yet. This month’s sourced notes stay on the page.')}</p>`,
   };
 }
 
@@ -1213,7 +1215,7 @@ function sourcedNews(): string {
     .join('');
   return `<section class="notes-strip">
     ${kicker('On the record')}
-    <h2 class="display">Sourced filings. <span class="display-mute">The desk when the river is quiet.</span></h2>
+    <h2 class="display">Sourced notes. <span class="display-mute">When the wire is quiet, these stay visible.</span></h2>
     <div class="notes-index">${cards}</div>
   </section>`;
 }
@@ -1223,7 +1225,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
   return `${pageHero(
     'Wire',
     'Quant, as the story',
-    'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. Each headline is a briefing so the reader can stay. Quiet weeks keep this month’s sourced filings on the desk.',
+    'Official Quant, Overledger docs, IETF SATP, quality news and filings — newest first. Each headline is a briefing. Quiet weeks keep this month’s sourced notes on the page.',
     'unfolds.',
   )}
   ${filterBox('news-filter', 'Search headlines…', filter)}
@@ -1231,10 +1233,7 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
     <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
     <ul class="headlines" data-news-list>${list.html}</ul>
   </section>
-  ${sourcedNews()}
-  ${renderThisMonth()}
-  ${renderCalendar()}
-  ${renderVoices()}`;
+  ${fold('Sourced notes, this month, and the calendar', `${sourcedNews()}${renderThisMonth()}${renderCalendar()}${renderVoices()}`)}`;
 }
 
 function renderCalendar(compact = false): string {
@@ -1310,7 +1309,7 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
   return `${pageHero(
     'Moved',
     'This page now lives',
-    'The live desk is News, Programmes, Research and the twenty-part podcast.',
+    'The live pages are News, Programmes, Research and the twenty-part podcast.',
     'with the record.',
   )}<p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
 }

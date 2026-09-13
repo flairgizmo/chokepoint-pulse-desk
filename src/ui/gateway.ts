@@ -41,6 +41,15 @@ const BANKS: Array<{ id: NodeId; name: string; short: string; note: string }> = 
   },
 ];
 
+const MARK: Record<string, string> = {
+  Barclays: '/marks/barclays.svg',
+  HSBC: '/marks/hsbc.svg',
+  'Lloyds Banking Group': '/marks/lloyds.svg',
+  NatWest: '/marks/natwest.svg',
+  Nationwide: '/marks/nationwide.svg',
+  Santander: '/marks/santander.svg',
+};
+
 const GATE: { id: NodeId; name: string; note: string } = {
   id: 6,
   name: 'Overledger',
@@ -80,6 +89,23 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   let parx = 0;
   let pary = 0;
   const projected: Array<{ id: NodeId; x: number; y: number; z: number }> = [];
+  const logos = BANKS.map((b) => {
+    const img = new Image();
+    img.onload = () => draw(performance.now());
+    img.src = MARK[b.name];
+    return img;
+  });
+
+  const roundRect = (x: number, y: number, w: number, h: number, r: number): void => {
+    const rad = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + rad, y);
+    ctx.arcTo(x + w, y, x + w, y + h, rad);
+    ctx.arcTo(x + w, y + h, x, y + h, rad);
+    ctx.arcTo(x, y + h, x, y, rad);
+    ctx.arcTo(x, y, x + w, y, rad);
+    ctx.closePath();
+  };
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -199,21 +225,32 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     ctx.textBaseline = 'middle';
     ctx.fillText('SIM RT2', rt2[0], rt2[1]);
 
-    banks.forEach(({ bank, p }) => {
+    banks.forEach(({ bank, p }, i) => {
       const on = selected === bank.id || hover === bank.id;
-      ctx.beginPath();
-      ctx.arc(p[0], p[1], on ? Math.max(18, W / 36) : Math.max(14, W / 44), 0, Math.PI * 2);
-      ctx.fillStyle = on ? '#1557FF' : '#FFFFFF';
+      const rw = Math.max(86, W / 8.2);
+      const rh = Math.max(36, W / 22);
+      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.28)' : 'rgba(11, 31, 92, 0.08)';
+      ctx.shadowBlur = on ? 16 : 8;
+      roundRect(p[0] - rw / 2, p[1] - rh / 2, rw, rh, 10);
+      ctx.fillStyle = '#FFFFFF';
       ctx.fill();
-      ctx.strokeStyle = on ? '#0B1F5C' : '#1557FF';
-      ctx.lineWidth = on ? 2.6 : 1.8;
-      ctx.shadowColor = on ? 'rgba(21, 87, 255, 0.35)' : 'transparent';
-      ctx.shadowBlur = on ? 14 : 0;
-      ctx.stroke();
       ctx.shadowBlur = 0;
-      ctx.fillStyle = on ? '#FFFFFF' : '#0B1F5C';
-      ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
-      ctx.fillText(bank.short, p[0], p[1]);
+      ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.18)';
+      ctx.lineWidth = on ? 2.2 : 1.2;
+      ctx.stroke();
+      const logo = logos[i];
+      if (logo?.complete && logo.naturalWidth) {
+        const maxW = rw - 18;
+        const maxH = rh - 12;
+        const scale = Math.min(maxW / logo.naturalWidth, maxH / logo.naturalHeight);
+        const dw = logo.naturalWidth * scale;
+        const dh = logo.naturalHeight * scale;
+        ctx.drawImage(logo, p[0] - dw / 2, p[1] - dh / 2, dw, dh);
+      } else {
+        ctx.fillStyle = '#0B1F5C';
+        ctx.font = `700 ${Math.max(10, W / 58)}px Outfit, "IBM Plex Sans", system-ui, sans-serif`;
+        ctx.fillText(bank.short, p[0], p[1]);
+      }
     });
 
     ctx.fillStyle = '#0B1F5C';
@@ -269,7 +306,7 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     let dist = Infinity;
     for (const n of projected) {
       const d = Math.hypot(n.x - x, n.y - y);
-      const hit = n.id === 6 ? Math.max(28, canvas.width / 18) : n.id === 7 ? Math.max(22, canvas.width / 24) : Math.max(24, canvas.width / 20);
+      const hit = n.id === 6 ? Math.max(28, canvas.width / 18) : n.id === 7 ? Math.max(22, canvas.width / 24) : Math.max(40, canvas.width / 16);
       if (d < hit && d < dist) {
         dist = d;
         best = n.id;
@@ -295,8 +332,8 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     const nx = (ev.clientX - rect.left) / rect.width - 0.5;
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
     if (!dragging) {
-      ay = restAy + nx * 2 * orbit;
-      ax = restAx + ny * 2 * orbit;
+      ay += (restAy + nx * 2 * orbit - ay) * 0.22;
+      ax += (restAx + ny * 2 * orbit - ax) * 0.22;
       if (reduced) {
         parx = nx * 12;
         pary = ny * 8;
@@ -304,8 +341,8 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     }
     paintHint();
     if (!dragging) return;
-    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.012));
-    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.01));
+    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.018));
+    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.014));
     lastX = ev.clientX;
     lastY = ev.clientY;
   };
