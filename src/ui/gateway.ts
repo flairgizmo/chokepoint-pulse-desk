@@ -1,26 +1,11 @@
-/** Three-layer digital money, with Overledger as the connecting lattice. */
+/** Quant Q / Overledger lattice — instrument, not mascot. */
 
 type LayerId = 0 | 1 | 2;
 
-const LAYERS: Array<{ id: LayerId; name: string; note: string; color: string }> = [
-  {
-    id: 0,
-    name: 'Wholesale · RTGS',
-    note: 'Layer 1 — central-bank money and finality. The Synchronisation Lab sits here.',
-    color: '#7C5CFF',
-  },
-  {
-    id: 1,
-    name: 'Commercial deposits',
-    note: 'Layer 2 — GBTD. Six UK banks. The banks owe the holder. Overledger runs the rails.',
-    color: '#1550FF',
-  },
-  {
-    id: 2,
-    name: 'Tokens · agents',
-    note: 'Layer 3 — programmable instructions, x402, Flow. The gate maps; it does not replace.',
-    color: '#00C9A7',
-  },
+const NOTES: Array<{ id: LayerId; name: string; note: string }> = [
+  { id: 0, name: 'Outer ledger', note: 'One disciplined ring. A domain Overledger can map onto — Fabric, Ethereum, a bank core.' },
+  { id: 1, name: 'Inner ledger', note: 'A second book. The gate’s job is that both books can be true at once, then settle as one.' },
+  { id: 2, name: 'Light path', note: 'The Q tail. A single instruction walking from application to settlement without minting a new chain.' },
 ];
 
 export function mountGateway(canvas: HTMLCanvasElement): () => void {
@@ -30,15 +15,19 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const hint = canvas.parentElement?.querySelector<HTMLElement>('[data-gateway-hint]');
   let raf = 0;
-  let ax = 0.62;
-  let ay = 0.18;
-  let spin = reduced ? 0 : 0.0042;
+  const restAx = 1.08;
+  const restAy = 0.28;
+  const orbit = (12 * Math.PI) / 180;
+  let ax = restAx;
+  let ay = restAy;
   let dragging = false;
   let lastX = 0;
   let lastY = 0;
-  let selected: LayerId | null = 1;
+  let selected: LayerId | null = 2;
   let hover: LayerId | null = null;
   const t0 = performance.now();
+  let parx = 0;
+  let pary = 0;
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -56,58 +45,51 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
     let z1 = -x * sy + z * cy;
     const y1 = y * cx - z1 * sx;
     z1 = y * sx + z1 * cx;
-    const k = 2.15 / (3.35 - z1);
+    const k = 2.05 / (3.2 - z1);
     const { width: W, height: H } = canvas;
-    const scale = Math.min(W, H) * 0.34;
-    return [W / 2 + x1 * k * scale, H * 0.52 + y1 * k * scale, z1];
-  };
-
-  const ring = (y: number, r: number, n: number): Array<[number, number, number]> => {
-    const pts: Array<[number, number, number]> = [];
-    for (let i = 0; i < n; i += 1) {
-      const a = (i / n) * Math.PI * 2;
-      pts.push([Math.cos(a) * r, y, Math.sin(a) * r]);
-    }
-    return pts;
+    const scale = Math.min(W, H) * 0.44;
+    return [W / 2 + x1 * k * scale + parx, H * 0.5 + y1 * k * scale + pary, z1];
   };
 
   const paintHint = (): void => {
     if (!hint) return;
-    const layer = selected != null ? LAYERS[selected] : hover != null ? LAYERS[hover] : null;
+    const layer = selected != null ? NOTES[selected] : hover != null ? NOTES[hover] : null;
     hint.textContent = layer
       ? `${layer.name} — ${layer.note}`
-      : 'Drag to orbit the three layers. Click a ring. Overledger is the lattice.';
+      : 'Orbit the Q. A lattice of ledgers, one light path. Overledger is the instrument.';
+  };
+
+  const ring = (y: number, r: number, n: number, tilt = 0): Array<[number, number, number]> => {
+    const pts: Array<[number, number, number]> = [];
+    for (let i = 0; i < n; i += 1) {
+      const a = (i / n) * Math.PI * 2 + tilt;
+      pts.push([Math.cos(a) * r, y + Math.sin(a) * 0.08, Math.sin(a) * r]);
+    }
+    return pts;
   };
 
   const draw = (now: number): void => {
     const { width: W, height: H } = canvas;
     ctx.clearRect(0, 0, W, H);
-    const pulse = reduced ? 0 : Math.sin((now - t0) / 700) * 0.04;
+    const pulse = reduced ? 0 : Math.sin(((now - t0) / 8000) * Math.PI * 2) * 0.018;
+    const travel = reduced ? 0.35 : ((now - t0) / 8000) % 1;
 
-    const layers = [
-      { id: 0 as LayerId, y: -0.78, r: 1.05 + pulse },
-      { id: 1 as LayerId, y: 0.02, r: 0.92 + pulse * 0.6 },
-      { id: 2 as LayerId, y: 0.78, r: 0.72 + pulse * 0.4 },
-    ];
-
-    const projected = layers.map((L) => ({
-      ...L,
-      pts: ring(L.y, L.r, 14).map(([x, y, z]) => project(x, y, z)),
-    }));
+    const outer = ring(-0.08, 1.12 + pulse, 22);
+    const mid = ring(0.02, 0.86 + pulse * 0.4, 16, 0.22);
+    const inner = ring(0.1, 0.58 + pulse * 0.5, 14, 0.4);
+    const po = outer.map(([x, y, z]) => project(x, y, z));
+    const pm = mid.map(([x, y, z]) => project(x, y, z));
+    const pi = inner.map(([x, y, z]) => project(x, y, z));
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    for (let i = 0; i < 14; i += 1) {
-      const a = projected[0].pts[i];
-      const b = projected[1].pts[i];
-      const c = projected[2].pts[i];
-      const g = ctx.createLinearGradient(a[0], a[1], c[0], c[1]);
-      g.addColorStop(0, 'rgba(124, 92, 255, 0.35)');
-      g.addColorStop(0.5, 'rgba(21, 80, 255, 0.55)');
-      g.addColorStop(1, 'rgba(0, 201, 167, 0.45)');
-      ctx.strokeStyle = g;
-      ctx.lineWidth = Math.max(1, W / 520);
+    for (let i = 0; i < 12; i += 1) {
+      const a = po[i * 2 % po.length];
+      const b = pm[i % pm.length];
+      const c = pi[i % pi.length];
+      ctx.strokeStyle = 'rgba(126, 224, 200, 0.28)';
+      ctx.lineWidth = Math.max(1, W / 560);
       ctx.beginPath();
       ctx.moveTo(a[0], a[1]);
       ctx.lineTo(b[0], b[1]);
@@ -115,69 +97,70 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
       ctx.stroke();
     }
 
-    for (const L of projected) {
-      const on = selected === L.id || hover === L.id;
-      const meta = LAYERS[L.id];
+    const strokeRing = (pts: Array<[number, number, number]>, color: string, on: boolean): void => {
       ctx.beginPath();
-      L.pts.forEach((p, i) => {
+      pts.forEach((p, i) => {
         if (i === 0) ctx.moveTo(p[0], p[1]);
         else ctx.lineTo(p[0], p[1]);
       });
       ctx.closePath();
-      ctx.strokeStyle = on ? meta.color : `${meta.color}cc`;
-      ctx.lineWidth = on ? Math.max(2.6, W / 240) : Math.max(1.6, W / 340);
-      ctx.shadowColor = on ? meta.color : 'transparent';
-      ctx.shadowBlur = on ? 18 : 0;
+      ctx.strokeStyle = on ? color : `${color}99`;
+      ctx.lineWidth = on ? Math.max(2.4, W / 220) : Math.max(1.4, W / 320);
+      ctx.shadowColor = on ? color : 'transparent';
+      ctx.shadowBlur = on ? 16 : 0;
       ctx.stroke();
       ctx.shadowBlur = 0;
-      ctx.fillStyle = on ? `${meta.color}22` : `${meta.color}10`;
+      ctx.fillStyle = on ? `${color}18` : `${color}0c`;
       ctx.fill();
-      for (const p of L.pts) {
-        ctx.beginPath();
-        ctx.fillStyle = meta.color;
-        ctx.arc(p[0], p[1], on ? Math.max(3.2, W / 220) : Math.max(2.1, W / 280), 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
+    };
 
-    const core = project(0, 0.02, 0);
-    const cg = ctx.createRadialGradient(core[0], core[1], 2, core[0], core[1], Math.min(W, H) * 0.12);
-    cg.addColorStop(0, 'rgba(255,255,255,0.95)');
-    cg.addColorStop(0.35, 'rgba(21,80,255,0.55)');
-    cg.addColorStop(1, 'rgba(21,80,255,0)');
-    ctx.fillStyle = cg;
+    strokeRing(po, '#8b7cff', selected === 0 || hover === 0);
+    strokeRing(pm, '#c9b48a', false);
+    strokeRing(pi, '#7ee0c8', selected === 1 || hover === 1);
+
+    const tail = [
+      project(0.85, 0.55, 0.15),
+      project(1.05, 0.82, 0.05),
+      project(1.22, 1.05, -0.05),
+    ];
     ctx.beginPath();
-    ctx.arc(core[0], core[1], Math.min(W, H) * 0.12, 0, Math.PI * 2);
+    ctx.moveTo(tail[0][0], tail[0][1]);
+    ctx.lineTo(tail[1][0], tail[1][1]);
+    ctx.lineTo(tail[2][0], tail[2][1]);
+    ctx.strokeStyle = selected === 2 || hover === 2 ? '#e8e4dc' : 'rgba(232,228,220,0.55)';
+    ctx.lineWidth = Math.max(2.2, W / 260);
+    ctx.stroke();
+
+    const pathPts = [...po.slice(0, 12), tail[0], tail[1], tail[2]];
+    const idx = Math.min(pathPts.length - 1, Math.floor(travel * (pathPts.length - 1)));
+    const bead = pathPts[idx];
+    ctx.fillStyle = '#7ee0c8';
+    ctx.shadowColor = '#7ee0c8';
+    ctx.shadowBlur = 18;
+    ctx.beginPath();
+    ctx.arc(bead[0], bead[1], Math.max(3.4, W / 200), 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#04101f';
-    ctx.font = `600 ${Math.max(11, W / 62)}px "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.shadowBlur = 0;
+
+    const core = project(0, 0, 0);
+    ctx.fillStyle = '#e8e4dc';
+    ctx.font = `600 ${Math.max(28, W / 22)}px "IBM Plex Sans", system-ui, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('Overledger', core[0], core[1] + 4);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Q', core[0], core[1] + 2);
   };
 
   const pick = (clientX: number, clientY: number): LayerId | null => {
     const rect = canvas.getBoundingClientRect();
-    const x = ((clientX - rect.left) / rect.width) * canvas.width;
-    const y = ((clientY - rect.top) / rect.height) * canvas.height;
-    const bands: Array<[LayerId, number]> = [
-      [0, canvas.height * 0.28],
-      [1, canvas.height * 0.52],
-      [2, canvas.height * 0.72],
-    ];
-    let best: LayerId | null = null;
-    let dist = 1e9;
-    for (const [id, cy] of bands) {
-      const d = Math.abs(y - cy);
-      if (d < dist && d < canvas.height * 0.16 && x > canvas.width * 0.12 && x < canvas.width * 0.88) {
-        dist = d;
-        best = id;
-      }
-    }
-    return best;
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
+    if (x > 0.62 && y > 0.58) return 2;
+    if (Math.hypot(x - 0.5, y - 0.5) < 0.18) return 1;
+    if (Math.hypot(x - 0.5, y - 0.5) < 0.36) return 0;
+    return null;
   };
 
   const tick = (): void => {
-    if (spin) ay += spin;
     draw(performance.now());
     raf = requestAnimationFrame(tick);
   };
@@ -190,10 +173,21 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   };
   const onMove = (ev: PointerEvent): void => {
     hover = pick(ev.clientX, ev.clientY);
+    const rect = canvas.getBoundingClientRect();
+    const nx = (ev.clientX - rect.left) / rect.width - 0.5;
+    const ny = (ev.clientY - rect.top) / rect.height - 0.5;
+    if (!dragging) {
+      ay = restAy + nx * 2 * orbit;
+      ax = restAx + ny * 2 * orbit;
+      if (reduced) {
+        parx = nx * 12;
+        pary = ny * 8;
+      }
+    }
     paintHint();
     if (!dragging) return;
-    ay += (ev.clientX - lastX) * 0.007;
-    ax = Math.max(0.2, Math.min(1.25, ax + (ev.clientY - lastY) * 0.006));
+    ay = Math.max(restAy - orbit, Math.min(restAy + orbit, ay + (ev.clientX - lastX) * 0.007));
+    ax = Math.max(restAx - orbit, Math.min(restAx + orbit, ax + (ev.clientY - lastY) * 0.006));
     lastX = ev.clientX;
     lastY = ev.clientY;
   };
@@ -214,7 +208,8 @@ export function mountGateway(canvas: HTMLCanvasElement): () => void {
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointercancel', onUp);
   canvas.addEventListener('click', onClick);
-  raf = requestAnimationFrame(tick);
+  if (reduced) draw(performance.now());
+  else raf = requestAnimationFrame(tick);
 
   return () => {
     cancelAnimationFrame(raf);
