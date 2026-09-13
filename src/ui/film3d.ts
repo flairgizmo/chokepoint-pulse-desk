@@ -70,10 +70,10 @@ export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () 
         ctx.restore();
       }
       ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
-      ctx.fillRect(x, y + ph - 38, pw, 38);
-      ctx.fillStyle = '#EAF1FF';
-      ctx.font = '700 15px Outfit, IBM Plex Sans, sans-serif';
-      ctx.fillText(slide.title, x + 14, y + ph - 14);
+      ctx.fillRect(x, y + ph - 28, pw, 28);
+      ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
+      ctx.font = '600 12px Outfit, IBM Plex Sans, sans-serif';
+      ctx.fillText(slide.title, x + 12, y + ph - 10);
       ctx.restore();
     });
     const vig = ctx.createRadialGradient(w * 0.5, h * 0.42, h * 0.12, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
@@ -194,17 +194,13 @@ function plateTexture(
     ctx.fillStyle = '#05070c';
     ctx.fillRect(0, 0, w, portrait ? 36 : 28);
     ctx.fillRect(0, h - (portrait ? 36 : 28), w, portrait ? 36 : 28);
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
-    ctx.fillRect(0, h - 92, w, 64);
-    ctx.fillStyle = '#EAF1FF';
-    ctx.font = `800 ${portrait ? 28 : 34}px Arial, sans-serif`;
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
+    ctx.fillRect(0, h - 58, w, 30);
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
+    ctx.font = `700 ${portrait ? 16 : 18}px Outfit, IBM Plex Sans, sans-serif`;
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#05070c';
-    ctx.lineWidth = 7;
-    ctx.strokeText(title, 28, h - 34);
-    ctx.fillText(title, 28, h - 34);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, 22, h - 42);
     tex.needsUpdate = true;
     onReady(tex);
   };

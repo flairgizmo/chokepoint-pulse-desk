@@ -508,19 +508,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pool = makeFloorPool(-0.315, 2.6);
   (pool.material as THREE.MeshBasicMaterial).opacity = 0.28;
   scene.add(pool);
-  const halo = new THREE.Mesh(
-    new THREE.CircleGeometry(1.08, 48),
-    new THREE.MeshBasicMaterial({
-      color: 0x6aa8ff,
-      transparent: true,
-      opacity: 0.08,
-      depthWrite: false,
-      side: THREE.DoubleSide,
-    }),
-  );
-  halo.position.set(0, 0.5, -0.58);
-  scene.add(halo);
-
   const backdropTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.needsUpdate = true;
@@ -697,7 +684,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   group.add(gateLabel);
 
   const rt2 = new THREE.Mesh(
-    new THREE.TorusGeometry(0.22, 0.014, lite ? 8 : 16, lite ? 24 : 48),
+    new THREE.TorusGeometry(0.92, 0.016, lite ? 8 : 16, lite ? 48 : 72),
     lite
       ? cinemaChrome(true)
       : new THREE.MeshPhysicalMaterial({
@@ -710,30 +697,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         }),
   );
   rt2.rotation.x = Math.PI / 2;
-  rt2.position.y = 1.58;
+  rt2.position.y = -0.305;
   rt2.userData.nodeId = 7;
   group.add(rt2);
-  const rt2Disk = new THREE.Mesh(
-    new THREE.CircleGeometry(0.18, lite ? 24 : 32),
-    lite
-      ? duskSheen({ color: 0x1a2438, reflectivity: 0.38, transparent: true, opacity: 0.72 })
-      : new THREE.MeshPhysicalMaterial({
-          color: 0x122038,
-          roughness: 0.22,
-          metalness: 0.28,
-          transparent: true,
-          opacity: 0.78,
-          clearcoat: 0.7,
-        }),
-  );
-  rt2Disk.rotation.x = -Math.PI / 2;
-  rt2Disk.position.y = 1.58;
-  rt2Disk.userData.nodeId = 7;
-  group.add(rt2Disk);
   const rt2Label = labelSprite('SIM RT2', '#EAF1FF');
-  rt2Label.position.set(0, 1.58, 0.12);
-  rt2Label.scale.set(0.42, 0.1, 1);
-  rt2Label.material.opacity = 0.48;
+  rt2Label.position.set(0, -0.22, 1.02);
+  rt2Label.scale.set(0.36, 0.08, 1);
+  rt2Label.material.opacity = 0.32;
   group.add(rt2Label);
 
   const logos = BANKS.map((b) => {
@@ -780,17 +750,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     cinemaChrome(lite),
   );
   group.add(bead);
-  const lockLabel = labelSprite('LOCK', '#EAF1FF');
-  const releaseLabel = labelSprite('RELEASE', '#EAF1FF');
-  lockLabel.scale.set(0.36, 0.09, 1);
-  releaseLabel.scale.set(0.44, 0.1, 1);
-  lockLabel.material.opacity = 0.48;
-  releaseLabel.material.opacity = 0.48;
-  group.add(lockLabel);
-  group.add(releaseLabel);
-  releaseLabel.visible = false;
-
-  const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, rt2Disk, ...cards];
+  const pickables: THREE.Object3D[] = [...crowns, ...pavs, ...stars, ...sparks, core, base, rt2, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const restAx = lite ? 1.48 : 1.5;
@@ -914,14 +874,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.3 : 0.26 + Math.abs(Math.sin((now - t0) / 1600)) * 0.22;
-    halo.scale.setScalar(reduced ? 1 : 1 + Math.sin((now - t0) / 1900) * 0.06);
     sparks.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;
       const pulse = reduced ? 0.4 : 0.22 + Math.abs(Math.sin((now - t0) / 640 + i * 0.7)) * 0.38;
       mat.opacity = pulse;
       mesh.scale.setScalar(0.55 + pulse * 0.45);
     });
-    rt2.rotation.z = reduced ? 0 : now / 2400;
+    rt2.rotation.z = 0;
     const from = Math.floor(travel * 6) % 6;
     const to = (from + 1) % 6;
     const local = (travel * 6) % 1;
@@ -933,15 +892,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         ? a.clone().lerp(gate, local * 2)
         : gate.clone().lerp(c, (local - 0.5) * 2);
     bead.position.copy(beadPos);
-    const lockOn = local < 0.5;
-    lockLabel.visible = lockOn;
-    releaseLabel.visible = !lockOn;
-    lockLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
-    releaseLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
-    lockLabel.lookAt(camera.position);
-    releaseLabel.lookAt(camera.position);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };

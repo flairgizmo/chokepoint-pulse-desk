@@ -204,7 +204,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
 
     const gate = project(0, 0, 0);
     projected.push({ id: 6, x: gate[0], y: gate[1], z: gate[2] });
-    const rt2 = project(0, -1.32, 0);
+    const rt2 = project(0, 0.2, 0.92);
     projected.push({ id: 7, x: rt2[0], y: rt2[1], z: rt2[2] });
 
     if (plateDirty || plate.width !== W || plate.height !== H) {
@@ -418,28 +418,17 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
     ctx.textAlign = 'center';
     ctx.fillText('OVERLEDGER', cx, cy + crystalH + 22);
 
-    ctx.beginPath();
-    ctx.moveTo(gate[0], gate[1]);
-    ctx.lineTo(rt2[0], rt2[1]);
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.08)';
-    ctx.setLineDash([6, 7]);
-    ctx.lineWidth = Math.max(0.8, W / 560);
-    ctx.stroke();
-    ctx.setLineDash([]);
-
     const onRt = selected === 7 || hover === 7;
     ctx.beginPath();
-    ctx.arc(rt2[0], rt2[1], Math.max(16, W / 42), 0, Math.PI * 2);
-    ctx.fillStyle = onRt ? 'rgba(26, 36, 56, 0.72)' : 'rgba(11, 18, 32, 0.62)';
-    ctx.fill();
-    ctx.strokeStyle = onRt ? '#8eb0ff' : 'rgba(61, 79, 108, 0.95)';
-    ctx.lineWidth = onRt ? 2.2 : 1.4;
+    ctx.ellipse(cx, cy + crystalH + 16, crystalW * 1.82, crystalW * 0.4, 0, 0, Math.PI * 2);
+    ctx.strokeStyle = onRt ? '#8eb0ff' : 'rgba(61, 79, 108, 0.88)';
+    ctx.lineWidth = onRt ? 2.4 : 1.5;
     ctx.stroke();
-    ctx.fillStyle = '#EAF1FF';
-    ctx.font = `600 ${Math.max(9, W / 72)}px "IBM Plex Mono", ui-monospace, monospace`;
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.38)';
+    ctx.font = `600 ${Math.max(8, W / 78)}px "IBM Plex Mono", ui-monospace, monospace`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('SIM RT2', rt2[0], rt2[1]);
+    ctx.fillText('SIM RT2', cx, cy + crystalH + 40);
 
     const paintCard = (bank: (typeof BANKS)[number], p: [number, number, number], i: number, reflect = false): void => {
       const on = selected === bank.id || hover === bank.id;

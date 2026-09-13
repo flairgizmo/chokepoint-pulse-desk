@@ -5278,7 +5278,8 @@ button.text-link {
 }
 
 .earth-hud .hud-help,
-.earth-hud .isr-line {
+.earth-hud .isr-line,
+.earth-hud .hud-card .kicker {
   display: none;
 }
 
