@@ -909,12 +909,16 @@ export function renderPeople(): string {
 
 function peopleRail(): string {
   const faces = PEOPLE.filter((p) => p.photo)
-    .map(
-      (p) => `<button type="button" class="people-tile" data-stage="person" data-stage-id="${esc(p.id)}">
-        <img src="${esc(p.photo ?? '')}" alt="${esc(p.name)}" width="160" height="160" />
+    .map((p) => {
+      const bed = plateFor(p.group, 'people', p.id);
+      return `<button type="button" class="people-tile" data-stage="person" data-stage-id="${esc(p.id)}">
+        <span class="people-still-wrap">
+          <img class="people-bed" src="${esc(bed.src)}" alt="" width="640" height="800" />
+          <img class="people-face" src="${esc(p.photo ?? '')}" alt="${esc(p.name)}" width="160" height="160" />
+        </span>
         <span><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
-      </button>`,
-    )
+      </button>`;
+    })
     .join('');
   return `<nav class="people-rail" aria-label="Official portraits">
     ${kicker('On the record')}
