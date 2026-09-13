@@ -81,10 +81,10 @@ function paintTitle(ctx: CanvasRenderingContext2D, title: string, maxW: number, 
   let size = 46;
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
-  ctx.font = `800 ${size}px Outfit, IBM Plex Sans, sans-serif`;
+  ctx.font = `800 ${size}px Arial, sans-serif`;
   while (size > 28 && ctx.measureText(title).width > maxW) {
     size -= 2;
-    ctx.font = `800 ${size}px Outfit, IBM Plex Sans, sans-serif`;
+    ctx.font = `800 ${size}px Arial, sans-serif`;
   }
   ctx.fillText(title, x, y);
 }

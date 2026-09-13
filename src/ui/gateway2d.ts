@@ -89,7 +89,7 @@ export function paintHint(canvas: HTMLCanvasElement, selected: NodeId | null, ho
         : null;
   hint.textContent = node
     ? node.id === 6
-      ? 'Overledger — gateway OS. Not a seventh chain.'
+      ? 'Overledger — gateway OS.'
       : node.id === 7
         ? 'Simulated RT2 — Bank of England lab. Not live RTGS.'
         : `${node.name === 'Lloyds Banking Group' ? 'Lloyds' : node.name} — GBTD issuer. Click for the filing.`

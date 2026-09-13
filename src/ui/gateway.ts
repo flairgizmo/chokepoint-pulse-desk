@@ -61,21 +61,33 @@ function facetCanvas(i: number, on = false): HTMLCanvasElement {
   c.height = 512;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  const g = ctx.createLinearGradient(0, 0, 256, 512);
-  g.addColorStop(0, on ? '#ffffff' : shades[0]);
-  g.addColorStop(0.42, shades[1]);
-  g.addColorStop(1, shades[2]);
+  const g = ctx.createLinearGradient(20, 0, 240, 512);
+  g.addColorStop(0, on ? '#f4f7fb' : shades[0]);
+  g.addColorStop(0.28, shades[1]);
+  g.addColorStop(0.72, shades[2]);
+  g.addColorStop(1, '#02060f');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 512);
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.55)';
-  ctx.lineWidth = 10;
-  ctx.strokeRect(6, 6, 244, 500);
+  const sheen = ctx.createLinearGradient(0, 0, 200, 260);
+  sheen.addColorStop(0, 'rgba(255,255,255,0.42)');
+  sheen.addColorStop(0.45, 'rgba(255,255,255,0.04)');
+  sheen.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sheen;
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(168, 0);
+  ctx.lineTo(0, 280);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.38)';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(8, 8, 240, 496);
   if (i === 0) {
-    ctx.fillStyle = '#F4F7FB';
-    ctx.font = '800 120px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillStyle = 'rgba(244,247,251,0.94)';
+    ctx.font = '800 108px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Q', 128, 256);
+    ctx.fillText('Q', 128, 268);
   }
   return c;
 }
@@ -278,7 +290,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const facets: THREE.Mesh[] = [];
   const facetH = 1.02;
   const facetR = 0.4;
-  const face0 = 0.5;
+  const face0 = Math.PI / 2 - 0.5;
   for (let i = 0; i < 6; i++) {
     const a0 = (i / 6) * Math.PI * 2 + face0 - Math.PI / 6;
     const a1 = ((i + 1) / 6) * Math.PI * 2 + face0 - Math.PI / 6;
@@ -312,7 +324,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const lid = new THREE.Mesh(
       capGeo,
       new THREE.MeshBasicMaterial({
-        color: i % 2 ? 0x9cc4ff : 0x3d7bff,
+        color: i % 2 ? 0x3d7bff : 0x0d3fd4,
         side: THREE.DoubleSide,
       }),
     );
@@ -322,8 +334,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     facets.push(lid);
   }
   const body = new THREE.Mesh(
-    new THREE.CylinderGeometry(facetR * 0.9, facetR * 0.9, facetH * 0.96, 6),
-    new THREE.MeshBasicMaterial({ color: 0x0a1848 }),
+    new THREE.CylinderGeometry(facetR * 0.62, facetR * 0.62, facetH * 0.88, 6),
+    new THREE.MeshBasicMaterial({ color: 0x061028 }),
   );
   body.position.y = facetH / 2 + 0.08;
   body.rotation.y = face0;

@@ -185,7 +185,7 @@ function plateTexture(
     ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
     ctx.fillRect(0, h - 92, w, 92);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = `700 ${portrait ? 34 : 40}px Outfit, IBM Plex Sans, sans-serif`;
+    ctx.font = `700 ${portrait ? 34 : 40}px Arial, sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
     ctx.fillText(title, 28, h - 34);
@@ -241,15 +241,15 @@ function mountFilm3D(
   slides.forEach((slide) => {
     const mat = plateMaterial(lite);
     const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, 0.05),
+      new THREE.PlaneGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18),
       mat,
     );
     mesh.userData.slide = slide;
     const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.0 : 2.0, portrait ? 1.3 : 1.16, 0.03),
+      new THREE.PlaneGeometry(portrait ? 1.06 : 2.18, portrait ? 1.4 : 1.24),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
-    frame.position.z = -0.03;
+    frame.position.z = -0.02;
     mesh.add(frame);
     group.add(mesh);
     plates.push(mesh);
