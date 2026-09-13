@@ -147,7 +147,7 @@ function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boole
           metalness: 0.06,
           clearcoat: 0.35,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.62, 0.04), mat);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.38, 0.78, 0.04), mat);
     mesh.userData.slide = slide;
     group.add(mesh);
     plates.push(mesh);
@@ -157,8 +157,8 @@ function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boole
       mat.needsUpdate = true;
     });
     const t = i - mid;
-    mesh.position.set(t * 1.34, -Math.abs(t) * 0.03, Math.abs(t) * 0.16);
-    mesh.rotation.set(-0.04, -t * 0.1, 0);
+    mesh.position.set(t * 1.56, -Math.abs(t) * 0.02, Math.abs(t) * 0.12);
+    mesh.rotation.set(-0.04, -t * 0.08, 0);
   });
 
   const raycaster = new THREE.Raycaster();
@@ -192,7 +192,7 @@ function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boole
     ay += (ty - ay) * 0.08;
     const drift = reduced ? 0 : Math.sin(now / 3800) * 0.04;
     group.rotation.y = drift;
-    camera.position.setFromSphericalCoords(lite ? 6.45 : 5.85, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 5.2 : 4.75, ax, ay);
     camera.lookAt(0, 0.02, 0.08);
     renderer.render(scene, camera);
   };

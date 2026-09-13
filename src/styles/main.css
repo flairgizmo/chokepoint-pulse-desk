@@ -4067,8 +4067,8 @@ body.stage-open .grok {
 .page-hero.cinema-hero .film-stage-wrap.cinema-stage {
   width: 100%;
   margin: 0 0 1.4rem;
-  min-height: 320px;
-  max-height: min(64dvh, 620px);
+  min-height: 360px;
+  max-height: min(70dvh, 680px);
   box-shadow: 0 32px 80px rgba(11, 31, 92, 0.18);
 }
 
