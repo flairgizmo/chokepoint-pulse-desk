@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskSheen, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, visionStill } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -541,7 +541,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(5.2, lite ? 48 : 96),
     lite
-      ? duskSheen({ map: cinemaFloorMap(), reflectivity: 0.42, transparent: true, opacity: 0.94 })
+      ? new THREE.MeshBasicMaterial({
+          map: cinemaFloorMap(),
+          transparent: true,
+          opacity: 0.94,
+        })
       : new THREE.MeshPhysicalMaterial({
           map: cinemaFloorMap(),
           color: 0xffffff,
@@ -580,7 +584,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   scene.background = new THREE.Color(0x070b14);
-  const cycMat = duskSheen({ map: backdropTex, color: 0x3f5168, reflectivity: 0.18 });
+  const cycMat = duskWall(backdropTex, 0x3f5168);
   cycMat.depthWrite = false;
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(32, 15.2), cycMat);
   backdrop.position.set(0, 1.45, -5.6);

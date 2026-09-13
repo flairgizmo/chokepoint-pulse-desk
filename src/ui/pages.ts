@@ -209,7 +209,7 @@ export function renderTechnology(): string {
       <input type="search" id="tech-search" placeholder="Search chapters…" />
     </div>
     <nav class="tech-spine" aria-label="Technology chapters">${spine}</nav>
-    <div class="tech-stack" id="tech-stack">${chapters}</div>
+    <div class="tech-stack cinema-room" id="tech-stack">${chapters}</div>
     <p class="empty-note" id="tech-empty" hidden>No chapter matches. Try SATP, Fusion, or PayScript.</p>`;
 }
 

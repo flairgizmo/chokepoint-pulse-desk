@@ -3,7 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { applyPhotoEnv, duskSheen, hardenCanvasTex } from './cinemaSet';
+import { applyPhotoEnv, duskWall, hardenCanvasTex } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import { latLonToVec, vecToLatLon } from './latlon';
 import {
@@ -104,14 +104,14 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.32) saturate(0.54) brightness(0.8)';
+  ctx.filter = 'contrast(1.36) saturate(0.5) brightness(0.78)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(28, 18, 32, 0.26)';
+  ctx.fillStyle = 'rgba(28, 18, 32, 0.28)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = 'rgba(255, 172, 100, 0.11)';
+  ctx.fillStyle = 'rgba(255, 172, 100, 0.1)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -536,7 +536,7 @@ export class EarthGlobe {
     });
     skyTex.colorSpace = THREE.SRGBColorSpace;
     scene.background = new THREE.Color(0x070b14);
-    const skyMat = duskSheen({ map: skyTex, color: 0x3f5168, reflectivity: 0.12, side: THREE.BackSide });
+    const skyMat = duskWall(skyTex, 0x243044, THREE.BackSide);
     skyMat.depthWrite = false;
     scene.add(new THREE.Mesh(new THREE.SphereGeometry(16, 48, 28), skyMat));
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);

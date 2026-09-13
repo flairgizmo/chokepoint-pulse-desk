@@ -4098,21 +4098,23 @@ body.stage-open .grok {
 }
 
 .status-active {
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, #122038);
+  color: #8eb0ff;
 }
 
 .status-incubating {
-  background: color-mix(in srgb, var(--violet) 18%, var(--surface));
+  background: color-mix(in srgb, var(--violet) 28%, #122038);
+  color: #c4b4ff;
 }
 
 .status-completed {
-  background: var(--bg-2);
+  background: #122038;
+  color: #8aa3c8;
 }
 
 .status-upcoming {
-  background: color-mix(in srgb, var(--gold) 16%, var(--surface));
-  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 22%, #122038);
+  color: #e8d4b0;
 }
 
 @media (max-width: 900px) {

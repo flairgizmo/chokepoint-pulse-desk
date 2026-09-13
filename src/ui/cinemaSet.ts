@@ -239,7 +239,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = new THREE.Color(0x070b14);
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = duskSheen({ map: tex, color: 0x3f5168, reflectivity: 0.18, envSrc: backdropSrc });
+  const cycMat = duskWall(tex, 0x3f5168);
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);
@@ -253,12 +253,10 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.add(right);
 
   const floorMat = lite
-    ? duskSheen({
+    ? new THREE.MeshBasicMaterial({
         map: cinemaFloorMap(photoFor(backdropSrc)),
-        reflectivity: 0.58,
         transparent: true,
         opacity: 0.96,
-        envSrc: backdropSrc,
       })
     : new THREE.MeshPhysicalMaterial({
         map: cinemaFloorMap(photoFor(backdropSrc)),
@@ -430,6 +428,16 @@ export function cinemaChrome(
       });
 }
 
+/** Darkened photograph on a wall. No Mix — env on a photo map double-exposes. */
+export function duskWall(
+  map: THREE.Texture | null = null,
+  color = 0x3f5168,
+  side: THREE.Side = THREE.FrontSide,
+): THREE.MeshBasicMaterial {
+  return new THREE.MeshBasicMaterial({ map, color, side });
+}
+
+/** Env sheen on unmapped metal only. Do not pass a photograph as `map`. */
 export function duskSheen(opts: {
   color?: number;
   map?: THREE.Texture | null;
@@ -443,8 +451,8 @@ export function duskSheen(opts: {
   return new THREE.MeshBasicMaterial({
     color: opts.color ?? 0xffffff,
     map: opts.map ?? null,
-    envMap: duskCubeMap(opts.envSrc),
-    reflectivity: opts.reflectivity ?? 0.36,
+    envMap: opts.map ? null : duskCubeMap(opts.envSrc),
+    reflectivity: opts.map ? 0 : (opts.reflectivity ?? 0.36),
     combine: opts.combine ?? THREE.MixOperation,
     side: opts.side ?? THREE.FrontSide,
     transparent: opts.transparent,
