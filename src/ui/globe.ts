@@ -5,6 +5,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { canUseBloom, probeWebGL } from './webgl';
+import { latLonToVec, vecToLatLon } from './latlon';
 import {
   CITIES,
   SETTLEMENT_ROUTES,
@@ -12,6 +13,8 @@ import {
   cityById,
   type City,
 } from '../data/cities';
+
+export { latLonToVec, vecToLatLon } from './latlon';
 
 export interface GlobeHud {
   lat: number;
@@ -66,19 +69,6 @@ function makeLabelSprite(text: string): THREE.Sprite {
   sprite.scale.set(0.42, 0.105, 1);
   sprite.center.set(0, 0.5);
   return sprite;
-}
-
-function latLonToVec(lat: number, lon: number, r: number): THREE.Vector3 {
-  const phi = THREE.MathUtils.degToRad(90 - lat);
-  const theta = THREE.MathUtils.degToRad(lon + 180);
-  return new THREE.Vector3().setFromSphericalCoords(r, phi, theta);
-}
-
-function vecToLatLon(v: THREE.Vector3): { lat: number; lon: number } {
-  const n = v.clone().normalize();
-  const lat = 90 - THREE.MathUtils.radToDeg(Math.acos(THREE.MathUtils.clamp(n.y, -1, 1)));
-  const lon = THREE.MathUtils.radToDeg(Math.atan2(n.x, n.z)) - 180;
-  return { lat, lon };
 }
 
 function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[] {
@@ -198,14 +188,14 @@ export class EarthGlobe {
   }
 
   reset(): void {
-    this.followId = undefined;
-    this.phi = 1.08;
-    this.theta = 2.05;
-    this.distance = 2.85;
+    this.followId = 'london';
     this.earthSpin = 0.42;
     this.velTheta = 0;
     this.velPhi = 0;
     this.panX = 0;
+    this.distance = 2.85;
+    const london = cityById('london');
+    if (london) this.lookAtCity(london);
   }
 
   dispose(): void {
@@ -619,6 +609,7 @@ export class EarthGlobe {
     }
 
     const london = CITIES.find((c) => c.id === 'london')!;
+    this.followId = london.id;
     this.lookAtCity(london);
     this.pulse = new THREE.Mesh(
       new THREE.SphereGeometry(0.028, 16, 16),
@@ -802,7 +793,7 @@ export class EarthGlobe {
       if (Math.abs(this.velTheta) < 0.00008) this.velTheta = 0;
       if (Math.abs(this.velPhi) < 0.00008) this.velPhi = 0;
     }
-    if (!this.reduced && !this.dragging && this.overlays.spin && !this.followId) this.earthSpin += 0.0034;
+    if (!this.reduced && !this.dragging && this.overlays.spin) this.earthSpin += 0.0034;
     this.earth.rotation.set(0, this.earthSpin, 0);
     if (this.followId && !this.dragging) {
       const city = cityById(this.followId);

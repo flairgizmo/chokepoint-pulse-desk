@@ -4064,6 +4064,16 @@ body.stage-open .grok {
   box-shadow: 0 32px 80px rgba(11, 31, 92, 0.18);
 }
 
+.hero-gl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: block;
+  pointer-events: none;
+}
+
 .hero-plate img,
 .photo-plate img,
 .beat-figure.photo-plate img {

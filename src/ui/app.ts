@@ -50,6 +50,7 @@ export class QntDesk {
   private root: HTMLElement;
   private globe: EarthGlobe | null = null;
   private tessDispose: (() => void) | null = null;
+  private heroDispose: Array<() => void> = [];
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
@@ -146,6 +147,8 @@ export class QntDesk {
     this.globe = null;
     this.tessDispose?.();
     this.tessDispose = null;
+    for (const d of this.heroDispose) d();
+    this.heroDispose = [];
     this.lastHoverId = undefined;
     const route = this.parse();
     try {
@@ -325,6 +328,7 @@ export class QntDesk {
       /* corridor is optional */
     }
     this.wireMotionBeds();
+    this.wireHeroes();
     this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
     if (this.root.querySelector('#earth-stage')) {
@@ -543,6 +547,18 @@ export class QntDesk {
         }
       });
       card.tabIndex = 0;
+    });
+  }
+
+  private wireHeroes(): void {
+    this.root.querySelectorAll<HTMLElement>('.hero-plate.cinema-frame').forEach((figure) => {
+      void import('./hero3d')
+        .then(({ upgradeHero3D }) => {
+          if (!this.root.contains(figure)) return;
+          const dispose = upgradeHero3D(figure);
+          if (dispose) this.heroDispose.push(dispose);
+        })
+        .catch(() => undefined);
     });
   }
 

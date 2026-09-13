@@ -288,18 +288,20 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     return img;
   });
   const cards: THREE.Mesh[] = [];
-  const cardMats: THREE.MeshPhysicalMaterial[] = [];
+  const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
   BANKS.forEach((bank, i) => {
     const tex = new THREE.CanvasTexture(logoCanvas(null, bank.short, false));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const mat = new THREE.MeshPhysicalMaterial({
-      map: tex,
-      roughness: 0.22,
-      metalness: 0.08,
-      clearcoat: 0.85,
-      clearcoatRoughness: 0.18,
-      transparent: true,
-    });
+    const mat = lite
+      ? new THREE.MeshBasicMaterial({ map: tex })
+      : new THREE.MeshPhysicalMaterial({
+          map: tex,
+          roughness: 0.22,
+          metalness: 0.08,
+          clearcoat: 0.85,
+          clearcoatRoughness: 0.18,
+          transparent: true,
+        });
     const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.287, 0.048), mat);
     const [x, y, z] = bankXYZ(i, 0);
     mesh.position.set(x, y + 0.18, z);
@@ -351,8 +353,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pickables: THREE.Object3D[] = [hex, rt2, rt2Disk, ...cards];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
-  const restAx = lite ? 1.18 : 1.1;
-  const restAy = lite ? 0.58 : 0.48;
+  const restAx = lite ? 0.96 : 0.9;
+  const restAy = lite ? 0.26 : 0.2;
   const orbit = (18 * Math.PI) / 180;
   let ax = restAx;
   let ay = restAy;
@@ -403,8 +405,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       next.colorSpace = THREE.SRGBColorSpace;
       cardMats[i].map?.dispose();
       cardMats[i].map = next;
-      cardMats[i].emissive = new THREE.Color(on ? 0x1557ff : 0x000000);
-      cardMats[i].emissiveIntensity = on ? 0.12 : 0;
+      if (cardMats[i] instanceof THREE.MeshPhysicalMaterial) {
+        cardMats[i].emissive = new THREE.Color(on ? 0x1557ff : 0x000000);
+        cardMats[i].emissiveIntensity = on ? 0.12 : 0;
+      }
       cardMats[i].needsUpdate = true;
     });
     const hexMat = hex.material as THREE.MeshPhysicalMaterial;
@@ -442,7 +446,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     releaseLabel.visible = !lockOn;
     lockLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
     releaseLabel.position.copy(beadPos).add(new THREE.Vector3(0, 0.12, 0));
-    camera.position.setFromSphericalCoords(lite ? 4.55 : 3.7, ax, ay);
+    camera.position.setFromSphericalCoords(lite ? 4.95 : 4.1, ax, ay);
     camera.lookAt(0, lite ? 0.14 : 0.12, 0);
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
