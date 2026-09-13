@@ -203,7 +203,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
           const dw = backdrop.naturalWidth * scale;
           const dh = backdrop.naturalHeight * scale;
           pctx.save();
-          pctx.globalAlpha = 0.42;
+          pctx.globalAlpha = 0.62;
           pctx.filter = 'saturate(0.85) contrast(1.15) blur(1.2px)';
           pctx.drawImage(backdrop, (W - dw) / 2, (H - dh) / 2 - H * 0.06, dw, dh);
           pctx.restore();

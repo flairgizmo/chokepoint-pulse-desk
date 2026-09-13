@@ -16,7 +16,7 @@ import {
   type Paper,
   type Quote,
 } from '../data/catalog';
-import { CITIES, cityVisual, type City } from '../data/cities';
+import { CITIES, type City } from '../data/cities';
 import { GROUP_LABEL, PEOPLE, type Person, type PersonGroup } from '../data/people';
 import { GLOSSARY } from '../data/glossary';
 import { featuredNote, notesForEra, notesFromDesk, noteById, type NoteEra, type NotePost } from '../data/notes';
@@ -1344,12 +1344,7 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
 }
 
 export function renderCity(city: City): string {
-  const vis = cityVisual(city);
-  return `${pageHero(city.kind, city.name, city.lede)}
-    <figure class="city-plate">
-      <img src="${esc(vis.src)}" alt="${esc(city.name)}" width="960" height="540" />
-      ${vis.credit ? `<figcaption class="tiny">${esc(vis.credit)}</figcaption>` : ''}
-    </figure>
+  return `${pageHero(city.id, city.name, city.lede)}
     <p class="mono subtle">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
     <article class="chapter"><p>${esc(city.body)}</p><p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p></article>
     <p><a class="text-link" href="/">← Earth</a></p>`;
