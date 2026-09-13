@@ -241,8 +241,8 @@ function glassMat(
   return lite
     ? new THREE.MeshPhongMaterial({
         map: tex,
-        color: 0x8aa0b8,
-        shininess: 72,
+        color: 0x3d5068,
+        shininess: 80,
         specular: new THREE.Color(0xc8d8ee),
         emissive: 0x071018,
         emissiveIntensity: 0.08,
@@ -496,9 +496,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   scene.add(right);
   addCinemaHaze(scene);
 
-  scene.add(new THREE.AmbientLight(0x8ea0c0, lite ? 0.72 : 0.38));
-  scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, lite ? 0.85 : 0.55));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.18 : 2.05);
+  scene.add(new THREE.AmbientLight(0x8ea0c0, lite ? 0.36 : 0.38));
+  scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, lite ? 0.42 : 0.55));
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 0.88 : 2.05);
   key.position.set(2.4, 3.2, 2.1);
   scene.add(key);
   const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
