@@ -198,6 +198,7 @@ export class EarthGlobe {
     this.earthSpin = 0.42;
     this.velTheta = 0;
     this.velPhi = 0;
+    this.panX = 0;
   }
 
   dispose(): void {
@@ -208,11 +209,118 @@ export class EarthGlobe {
   }
 
   private lookAtCity(city: City): void {
+    if (this.flat) {
+      this.panX = ((city.lon + 180) / 360) * this.flatWidth - this.flatWidth / 2;
+      return;
+    }
     const local = latLonToVec(city.lat, city.lon, 1);
     local.applyAxisAngle(Y_AXIS, this.earthSpin);
     const sph = new THREE.Spherical().setFromVector3(local);
     this.phi = THREE.MathUtils.clamp(sph.phi, 0.18, Math.PI - 0.18);
     this.theta = sph.theta;
+  }
+
+  private flat = false;
+  private flatImg: HTMLImageElement | null = null;
+  private panX = 0;
+  private flatWidth = 1;
+
+  private mountFlat(canvas: HTMLCanvasElement): void {
+    this.flat = true;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      this.root.innerHTML =
+        '<p class="earth-fallback">The globe could not start. Use the city list beside the map.</p>';
+      return;
+    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      this.flatImg = img;
+    };
+    img.src = DAY_TEX;
+    const resize = (): void => {
+      const { width, height } = this.root.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      canvas.width = Math.max(1, Math.floor(width * dpr));
+      canvas.height = Math.max(1, Math.floor(height * dpr));
+      this.flatWidth = canvas.width;
+    };
+    const project = (lat: number, lon: number): [number, number] => {
+      const { width: W, height: H } = canvas;
+      const x = ((((lon + 180) / 360) * W - this.panX) % W + W) % W;
+      const y = ((90 - lat) / 180) * H;
+      return [x, y];
+    };
+    const paint = (): void => {
+      const { width: W, height: H } = canvas;
+      ctx.fillStyle = '#0b1016';
+      ctx.fillRect(0, 0, W, H);
+      if (this.flatImg) {
+        const shift = ((-this.panX % W) + W) % W;
+        ctx.drawImage(this.flatImg, shift - W, 0, W, H);
+        ctx.drawImage(this.flatImg, shift, 0, W, H);
+      } else {
+        ctx.fillStyle = '#16324a';
+        ctx.fillRect(0, H * 0.28, W, H * 0.44);
+      }
+      for (const city of CITIES) {
+        const [x, y] = project(city.lat, city.lon);
+        ctx.beginPath();
+        ctx.fillStyle = city.id === 'london' ? '#1ec9b0' : '#d4b483';
+        ctx.arc(x, y, city.kind === 'Headquarters' ? 6 : 4, 0, Math.PI * 2);
+        ctx.fill();
+        if (this.overlays.labels) {
+          ctx.font = `600 ${Math.max(11, W / 92)}px Outfit, system-ui, sans-serif`;
+          ctx.fillStyle = '#f4f7fb';
+          ctx.fillText(city.name, x + 8, y + 4);
+        }
+      }
+    };
+    canvas.addEventListener('pointerdown', (e) => {
+      this.dragging = true;
+      this.followId = undefined;
+      this.lastX = e.clientX;
+      this.startX = e.clientX;
+      this.startY = e.clientY;
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!this.dragging) return;
+      this.panX -= (e.clientX - this.lastX) * (canvas.width / Math.max(1, canvas.clientWidth));
+      this.lastX = e.clientX;
+    });
+    canvas.addEventListener('pointerup', (e) => {
+      if (!this.dragging) return;
+      this.dragging = false;
+      if (Math.hypot(e.clientX - this.startX, e.clientY - this.startY) < 6) {
+        const rect = canvas.getBoundingClientRect();
+        const sx = canvas.width / rect.width;
+        const sy = canvas.height / rect.height;
+        const px = (e.clientX - rect.left) * sx;
+        const py = (e.clientY - rect.top) * sy;
+        let best: string | undefined;
+        let dist = 18;
+        for (const city of CITIES) {
+          const [x, y] = project(city.lat, city.lon);
+          const d = Math.hypot(x - px, y - py);
+          if (d < dist) {
+            dist = d;
+            best = city.id;
+          }
+        }
+        if (best) this.opts.onCity(best);
+      }
+    });
+    window.addEventListener('resize', resize);
+    resize();
+    const loop = () => {
+      if (this.disposed) return;
+      this.frame = requestAnimationFrame(loop);
+      if (!this.reduced && !this.dragging && this.overlays.spin) this.panX += 0.55;
+      paint();
+    };
+    loop();
   }
 
   private mount(): void {
@@ -228,10 +336,10 @@ export class EarthGlobe {
         antialias: true,
         alpha: true,
         powerPreference: 'high-performance',
+        failIfMajorPerformanceCaveat: false,
       });
     } catch {
-      this.root.innerHTML =
-        '<p class="earth-fallback">WebGL could not start. The sourced city list still reads without the globe.</p>';
+      this.mountFlat(canvas);
       return;
     }
     this.renderer = renderer;

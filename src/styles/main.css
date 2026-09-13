@@ -524,6 +524,18 @@ main {
   display: block;
 }
 
+.earth-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 2rem;
+  color: #e8eef6;
+  font-family: var(--serif);
+  text-align: center;
+}
+
 .earth-copy {
   display: none;
 }
