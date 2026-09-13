@@ -63,24 +63,30 @@ function logoCanvas(img: HTMLImageElement | null, short: string, on = false): HT
     ctx.fillStyle = '#0b1220';
     ctx.fillRect(0, 0, CARD_W, CARD_H);
   }
-  const bw = 520;
-  const bh = 70;
+  ctx.fillStyle = 'rgba(7, 11, 20, 0.42)';
+  ctx.fillRect(0, CARD_H - 168, CARD_W, 168);
+  const bw = 580;
+  const bh = 112;
   const bx = (CARD_W - bw) / 2;
-  const by = CARD_H - 92;
-  ctx.fillStyle = on ? '#ffffff' : 'rgba(255, 255, 255, 0.9)';
+  const by = CARD_H - 136;
+  ctx.fillStyle = on ? '#ffffff' : '#f7f9ff';
+  ctx.shadowColor = 'rgba(7, 11, 20, 0.45)';
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 6;
   ctx.beginPath();
-  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 18);
+  if (typeof ctx.roundRect === 'function') ctx.roundRect(bx, by, bw, bh, 20);
   else ctx.rect(bx, by, bw, bh);
   ctx.fill();
-  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.16)';
-  ctx.lineWidth = on ? 6 : 2;
+  ctx.shadowColor = 'transparent';
+  ctx.strokeStyle = on ? '#1557FF' : 'rgba(11, 31, 92, 0.28)';
+  ctx.lineWidth = on ? 6 : 3;
   ctx.stroke();
   const wide = Boolean(img && img.naturalWidth / Math.max(1, img.naturalHeight) > 6);
   if (img?.complete && img.naturalWidth && img.naturalHeight && !wide) {
-    containDraw(ctx, img, bx + 40, by + 24, bw - 80, bh - 48);
+    containDraw(ctx, img, bx + 28, by + 18, bw - 56, bh - 36);
   } else {
     ctx.fillStyle = '#0B1F5C';
-    ctx.font = '700 52px Outfit, IBM Plex Sans, sans-serif';
+    ctx.font = '700 48px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(wide ? 'LLOYDS' : short, CARD_W / 2, by + bh / 2);

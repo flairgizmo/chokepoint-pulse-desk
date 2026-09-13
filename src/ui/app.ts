@@ -40,6 +40,7 @@ import { resolveStage } from './resolve';
 import { matchProgrammes } from '../data/programmes';
 import { rememberHeadline } from './newsCache';
 import { STORY } from '../data/story';
+import { filmSetSlides } from './filmSets';
 
 interface Route {
   name: string;
@@ -53,6 +54,7 @@ export class QntDesk {
   private heroDispose: Array<() => void> = [];
   private stackDispose: (() => void) | null = null;
   private stackIsolate: ((id: string | null) => void) | null = null;
+  private filmDispose: (() => void) | null = null;
   private markets: MarketPrint | null = staleCache();
   private news: NewsRiver | null = null;
   private abort: AbortController | null = null;
@@ -154,6 +156,8 @@ export class QntDesk {
     this.stackDispose?.();
     this.stackDispose = null;
     this.stackIsolate = null;
+    this.filmDispose?.();
+    this.filmDispose = null;
     this.lastHoverId = undefined;
     const route = this.parse();
     try {
@@ -333,8 +337,9 @@ export class QntDesk {
       /* corridor is optional */
     }
     this.wireMotionBeds();
-    this.wireHeroes();
     this.wireStack();
+    this.wireFilm();
+    this.wireHeroes();
     this.wireFlips();
     if (route.name === 'podcast' || route.name === 'episode') wirePlayer(this.root);
     if (this.root.querySelector('#earth-stage')) {
@@ -575,7 +580,24 @@ export class QntDesk {
       .catch(() => undefined);
   }
 
+  private wireFilm(): void {
+    const canvas = this.root.querySelector<HTMLCanvasElement>('#film-stage');
+    if (!canvas) return;
+    void import('./film3d')
+      .then(({ mountFilm2D, upgradeFilm3D }) => {
+        const live = this.root.querySelector<HTMLCanvasElement>('#film-stage');
+        if (!live || !this.root.contains(live)) return;
+        this.filmDispose = mountFilm2D(live, filmSetSlides(live.dataset.filmSet ?? ''));
+        const upgraded = upgradeFilm3D(live);
+        if (!upgraded) return;
+        this.filmDispose?.();
+        this.filmDispose = upgraded.dispose;
+      })
+      .catch(() => undefined);
+  }
+
   private wireHeroes(): void {
+    if (this.root.querySelector('#stack-stage, #film-stage')) return;
     this.root.querySelectorAll<HTMLElement>('.hero-plate.cinema-frame').forEach((figure) => {
       void import('./hero3d')
         .then(({ upgradeHero3D }) => {

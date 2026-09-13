@@ -11,6 +11,7 @@ import { diagramFigure } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
+import { filmStageMarkup } from './filmSets';
 
 function kicker(text: string): string {
   return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
@@ -124,6 +125,7 @@ export function renderStory(): string {
     )
     .join('');
   return `${hero('Story / Timeline', 'History as a scored film.', 'Search and filter. Quiet months collapse — there are no empty holes. Each node opens a stage with the stake, the filing, and the source.', 'story-hero')}
+    ${filmStageMarkup('story', 'Five dates on the rail as film plates. Click a plate.')}
     <div class="toolbar filter-bar">
       <input type="search" id="story-search" placeholder="Search the rail…" />
       <div class="chip-row" id="story-themes">${chips}</div>
@@ -201,6 +203,7 @@ export function renderTechnology(): string {
     </article>`,
   ).join('');
   return `${hero('Technology', 'Every layer Quant built or productised.', 'Isolated ledgers were the problem. Overledger is the operating layer. The network, the standards capture, and what that unlocks for tokenised deposits in 2026–27 sit in the chapters below.', 'tech-hero')}
+    ${filmStageMarkup('technology', 'Five technology stills. Click a plate.')}
     <p class="lede">Problem of isolated ledgers → Overledger as the operating layer → network effects → standards capture → CBDCs and tokenised deposits as adjacency, not slogans.</p>
     <div class="toolbar filter-bar">
       <input type="search" id="tech-search" placeholder="Search chapters…" />
@@ -224,6 +227,7 @@ export function renderPatents(): string {
     </article>`,
   ).join('');
   return `${hero('Patents', 'The estate, in plain language.', 'Numbers match the public file. A patent is a claim, not a live rail. Each card opens why it matters to Overledger, SATP, or Fusion.', 'patents-hero')}
+    ${filmStageMarkup('patents', 'Patent hall stills. Click a plate.')}
     <div class="toolbar filter-bar">
       <input type="search" id="patent-search" placeholder="Search numbers, inventors, claims…" />
     </div>
@@ -250,6 +254,7 @@ export function renderInstitutions(): string {
     </article>`;
   }).join('');
   return `${hero('Institutions & boards', 'Who they still sit with.', 'Current, historical, and adjacency — labelled. Official marks where they are on file. A typeset caption where they are not.', 'inst-hero')}
+    ${filmStageMarkup('institutions', 'Rooms on the record as film plates. Click a plate.')}
     <div class="toolbar filter-bar">
       <input type="search" id="inst-search" placeholder="Search institutions…" />
       <div class="chip-row" id="inst-status">

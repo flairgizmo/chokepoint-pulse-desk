@@ -3,8 +3,9 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { diagramFigure } from '../src/ui/diagrams';
-import { renderPatents, renderStack } from '../src/ui/pages';
-import { renderCity, renderPeople, renderVision } from '../src/ui/views';
+import { renderPatents, renderStack, renderStory } from '../src/ui/pages';
+import { renderCity, renderPeople, renderProgrammes, renderResearch, renderVision } from '../src/ui/views';
+import { FILM_SETS } from '../src/ui/filmSets';
 import { cityById } from '../src/data/cities';
 
 describe('Topic plates', () => {
@@ -106,6 +107,23 @@ describe('Topic plates', () => {
     expect(html).toContain('/visuals/topics/fiber.jpg');
     expect(html).toContain('/visuals/topics/cable.jpg');
     expect(html).not.toContain('hero-bed');
+  });
+
+  it('stands a WebGL film stage on story, programmes and research', () => {
+    expect(renderStory()).toContain('id="film-stage"');
+    expect(renderStory()).toContain('data-film-set="story"');
+    expect(renderProgrammes()).toContain('id="film-stage"');
+    expect(renderProgrammes()).toContain('data-film-set="programmes"');
+    expect(renderResearch()).toContain('id="film-stage"');
+    expect(renderResearch()).toContain('data-film-set="research"');
+    expect(renderStory()).not.toContain('hero-bed');
+    expect(FILM_SETS.story.map((s) => s.src)).toEqual([
+      PLATES.geneva.src,
+      PLATES.ucl.src,
+      PLATES.canary.src,
+      PLATES.boeFacade.src,
+      PLATES.paris.src,
+    ]);
   });
 
   it('keeps the patent claim SVG and adds a hall photograph above it', () => {

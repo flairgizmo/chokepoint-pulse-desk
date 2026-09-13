@@ -1,58 +1,51 @@
-/** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
+/** Standing film gallery — five stills in a shallow arc. */
 
 import * as THREE from 'three';
-import { probeWebGL } from './webgl';
+import { filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
+import { probeWebGL } from './webgl';
 
-export const STACK_SLABS = [
-  { id: 'apps', title: 'FLOW APPLICATIONS', src: '/visuals/topics/fiber.jpg', stage: 'quant-connect' },
-  { id: 'script', title: 'PAYSCRIPT', src: '/visuals/topics/payments.jpg', stage: 'payscript' },
-  { id: 'fusion', title: 'FUSION', src: '/visuals/stories/city.jpg', stage: 'fusion' },
-  { id: 'gate', title: 'OVERLEDGER', src: '/visuals/topics/datacenter.jpg', stage: 'overledger' },
-  { id: 'ledgers', title: 'LEDGERS & RAILS', src: '/visuals/topics/cable.jpg', stage: 'connectors' },
-] as const;
-
-export type Stack3DHandle = {
+export type Film3DHandle = {
   dispose: () => void;
-  isolate: (id: string | null) => void;
 };
 
-export function mountStack2D(canvas: HTMLCanvasElement): () => void {
+export function mountFilm2D(canvas: HTMLCanvasElement, slides: FilmSlide[]): () => void {
   canvas.dataset.engine = 'canvas2d';
   const ctx = canvas.getContext('2d');
   if (!ctx) return () => undefined;
-  const imgs = STACK_SLABS.map((l) => {
+  const imgs = slides.map((s) => {
     const img = new Image();
-    img.src = l.src;
+    img.src = s.src;
     return img;
   });
   const paint = (): void => {
     const r = canvas.getBoundingClientRect();
-    const dpr = 1;
-    const w = Math.max(1, Math.floor(r.width * dpr));
-    const h = Math.max(1, Math.floor(r.height * dpr));
+    const w = Math.max(1, Math.floor(r.width));
+    const h = Math.max(1, Math.floor(r.height));
     if (canvas.width !== w || canvas.height !== h) {
       canvas.width = w;
       canvas.height = h;
     }
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, w, h);
-    imgs.forEach((img, i) => {
-      const pw = w * 0.58;
-      const ph = h * 0.155;
-      const x = w * 0.14 + i * (w * 0.045);
-      const y = h * 0.05 + i * (h * 0.165);
+    const n = Math.max(1, slides.length);
+    const pw = w * 0.22;
+    const ph = h * 0.58;
+    slides.forEach((slide, i) => {
+      const t = i - (n - 1) / 2;
+      const x = w / 2 + t * (pw * 0.92) - pw / 2;
+      const y = h * 0.18 + Math.abs(t) * 10;
       ctx.save();
-      ctx.translate(x, y);
       ctx.fillStyle = '#05070c';
-      ctx.fillRect(-6, -6, pw + 12, ph + 12);
-      if (img.complete && img.naturalWidth) ctx.drawImage(img, 0, 0, pw, ph);
-      ctx.fillStyle = 'rgba(7, 11, 20, 0.55)';
-      ctx.fillRect(0, ph - 28, pw, 28);
+      ctx.fillRect(x - 5, y - 5, pw + 10, ph + 10);
+      const img = imgs[i];
+      if (img.complete && img.naturalWidth) ctx.drawImage(img, x, y, pw, ph);
+      ctx.fillStyle = 'rgba(7, 11, 20, 0.52)';
+      ctx.fillRect(x, y + ph - 40, pw, 40);
       ctx.fillStyle = '#EAF1FF';
-      ctx.font = '700 13px Outfit, IBM Plex Sans, sans-serif';
-      ctx.fillText(STACK_SLABS[i].title, 12, ph - 10);
+      ctx.font = '700 14px Outfit, IBM Plex Sans, sans-serif';
+      ctx.fillText(slide.title, x + 12, y + ph - 16);
       ctx.restore();
     });
   };
@@ -65,12 +58,16 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
   return () => window.removeEventListener('resize', onResize);
 }
 
-export function upgradeStack3D(canvas: HTMLCanvasElement): Stack3DHandle | null {
+export function upgradeFilm3D(canvas: HTMLCanvasElement): Film3DHandle | null {
+  const set = canvas.dataset.filmSet ?? '';
+  const slides = filmSetSlides(set);
+  if (!slides.length) return null;
   const probe = probeWebGL();
   if (!probe) return null;
   const next = remountCanvas(canvas);
+  next.dataset.filmSet = set;
   try {
-    return mountStack3D(next, probe.lite);
+    return mountFilm3D(next, slides, probe.lite);
   } catch {
     return null;
   }
@@ -78,27 +75,27 @@ export function upgradeStack3D(canvas: HTMLCanvasElement): Stack3DHandle | null 
 
 function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTexture) => void): THREE.CanvasTexture {
   const c = document.createElement('canvas');
-  c.width = 1280;
-  c.height = 720;
+  c.width = 1024;
+  c.height = 576;
   const ctx = c.getContext('2d');
   if (ctx) {
     ctx.fillStyle = '#0b1220';
-    ctx.fillRect(0, 0, 1280, 720);
+    ctx.fillRect(0, 0, 1024, 576);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 680);
+    ctx.font = '700 34px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 28, 540);
   }
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   const img = new Image();
   img.onload = () => {
     if (!ctx) return;
-    ctx.drawImage(img, 0, 0, 1280, 720);
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.48)';
-    ctx.fillRect(0, 638, 1280, 82);
+    ctx.drawImage(img, 0, 0, 1024, 576);
+    ctx.fillStyle = 'rgba(7, 11, 20, 0.5)';
+    ctx.fillRect(0, 500, 1024, 76);
     ctx.fillStyle = '#EAF1FF';
-    ctx.font = '700 36px Outfit, IBM Plex Sans, sans-serif';
-    ctx.fillText(title, 36, 690);
+    ctx.font = '700 34px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillText(title, 28, 550);
     tex.needsUpdate = true;
     onReady(tex);
   };
@@ -106,7 +103,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   return tex;
 }
 
-function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
+function mountFilm3D(canvas: HTMLCanvasElement, slides: FilmSlide[], lite: boolean): Film3DHandle {
   let renderer: THREE.WebGLRenderer;
   try {
     renderer = new THREE.WebGLRenderer({
@@ -125,65 +122,52 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   renderer.setPixelRatio(lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = lite ? 1.08 : 1.2;
+  renderer.toneMappingExposure = lite ? 1.08 : 1.18;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.08, 30);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
   scene.add(new THREE.AmbientLight(0xffffff, lite ? 1 : 0.5));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 0.4 : 1.4);
-  key.position.set(1.4, 2.2, 2.6);
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 0.4 : 1.35);
+  key.position.set(0.8, 1.6, 2.4);
   scene.add(key);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const slabs: THREE.Mesh[] = [];
-  let isolated: string | null = null;
+  const plates: THREE.Mesh[] = [];
+  const mid = (slides.length - 1) / 2;
 
-  STACK_SLABS.forEach((layer) => {
+  slides.forEach((slide, i) => {
     const mat = lite
       ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
       : new THREE.MeshPhysicalMaterial({
           color: 0x1a2438,
-          roughness: 0.32,
-          metalness: 0.08,
-          clearcoat: 0.4,
+          roughness: 0.3,
+          metalness: 0.06,
+          clearcoat: 0.35,
         });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.55, 0.034, 1.42), mat);
-    mesh.userData.layerId = layer.id;
-    mesh.userData.stage = layer.stage;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.72, 0.04), mat);
+    mesh.userData.slide = slide;
     group.add(mesh);
-    slabs.push(mesh);
-    plateTexture(layer.src, layer.title, (tex) => {
+    plates.push(mesh);
+    plateTexture(slide.src, slide.title, (tex) => {
       mat.map = tex;
       mat.color = new THREE.Color(0xffffff);
       mat.needsUpdate = true;
     });
+    const t = i - mid;
+    mesh.position.set(t * 1.52, -Math.abs(t) * 0.04, Math.abs(t) * 0.22);
+    mesh.rotation.set(-0.05, -t * 0.12, 0);
   });
-
-  const place = (now: number): void => {
-    const drift = reduced ? 0 : Math.sin(now / 4200) * 0.04;
-    const mid = (slabs.length - 1) / 2;
-    slabs.forEach((mesh, i) => {
-      const dim = isolated != null && mesh.userData.layerId !== isolated;
-      const t = i - mid;
-      mesh.position.set(t * 0.28 + drift, 1.72 - i * 0.5, i * 0.1);
-      mesh.rotation.set(0.18, -0.28, 0);
-      mesh.scale.setScalar(dim ? 0.92 : 1);
-      const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mat.opacity = dim ? 0.28 : 1;
-      mat.transparent = dim;
-    });
-  };
 
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let raf = 0;
-  let ax = 0.72;
-  let ay = 0.36;
-  let tx = 0.72;
-  let ty = 0.36;
+  let ax = 1.12;
+  let ay = 0;
+  let tx = 1.12;
+  let ty = 0;
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -194,22 +178,22 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     camera.updateProjectionMatrix();
   };
 
-  const pick = (x: number, y: number): (typeof STACK_SLABS)[number] | null => {
+  const pick = (x: number, y: number): FilmSlide | null => {
     const rect = canvas.getBoundingClientRect();
     pointer.x = ((x - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((y - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects(slabs, false)[0];
-    const id = hit?.object.userData.layerId as string | undefined;
-    return STACK_SLABS.find((l) => l.id === id) ?? null;
+    const hit = raycaster.intersectObjects(plates, false)[0];
+    return (hit?.object.userData.slide as FilmSlide | undefined) ?? null;
   };
 
   const tick = (now: number): void => {
     ax += (tx - ax) * 0.08;
     ay += (ty - ay) * 0.08;
-    place(now);
-    camera.position.setFromSphericalCoords(lite ? 6.35 : 5.7, ax, ay);
-    camera.lookAt(0.04, 0.72, 0.18);
+    const drift = reduced ? 0 : Math.sin(now / 3800) * 0.04;
+    group.rotation.y = drift;
+    camera.position.setFromSphericalCoords(lite ? 5.55 : 5.05, ax, ay);
+    camera.lookAt(0, 0.02, 0.08);
     renderer.render(scene, camera);
   };
 
@@ -217,14 +201,14 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     const rect = canvas.getBoundingClientRect();
     const nx = (ev.clientX - rect.left) / rect.width - 0.5;
     const ny = (ev.clientY - rect.top) / rect.height - 0.5;
-    ty = 0.36 + nx * 0.24;
-    tx = 0.72 + ny * 0.12;
+    ty = nx * 0.28;
+    tx = 1.12 + ny * 0.14;
     canvas.style.cursor = pick(ev.clientX, ev.clientY) ? 'pointer' : 'grab';
   };
 
   const onClick = (ev: PointerEvent): void => {
-    const layer = pick(ev.clientX, ev.clientY);
-    if (layer) revealStage('tech', layer.stage);
+    const slide = pick(ev.clientX, ev.clientY);
+    if (slide) revealStage(slide.stageKind, slide.stageId);
   };
 
   resize();
@@ -245,10 +229,6 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   canvas.addEventListener('click', onClick);
 
   return {
-    isolate: (id) => {
-      isolated = id;
-      if (reduced) tick(performance.now());
-    },
     dispose: () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', resize);
