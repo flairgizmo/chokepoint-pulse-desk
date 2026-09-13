@@ -1158,9 +1158,9 @@ main {
 }
 
 .chip.live {
-  color: #08705c;
-  border-color: color-mix(in srgb, var(--live) 55%, var(--line));
-  background: color-mix(in srgb, var(--live) 14%, var(--surface));
+  color: #7ee0c4;
+  border-color: rgba(0, 168, 120, 0.4);
+  background: color-mix(in srgb, var(--live) 22%, #0b1220);
 }
 
 .chip.degraded,
@@ -2555,6 +2555,10 @@ button.chip {
   align-items: center;
   gap: 0.75rem;
   margin-top: 0.9rem;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  background: #0b1220;
+  color: #eaf1ff;
 }
 
 .player-play,
@@ -2612,12 +2616,12 @@ button.chip {
 
 .player-toggle {
   font-size: 0.85rem;
-  color: var(--muted);
+  color: #8aa3c8;
 }
 
 .player-byline {
   margin: 0.55rem 0 0;
-  color: var(--muted);
+  color: #8aa3c8;
 }
 
 .pod-list ol {
@@ -2950,15 +2954,16 @@ button.chip {
   margin: 0 0 0.85rem;
   padding: 0.85rem 1rem;
   border-radius: 16px;
-  background: var(--elevated);
+  background: #122038;
+  color: #f4f7fb;
 }
 
 .pod-line.james {
-  background: var(--accent-soft);
+  background: color-mix(in srgb, var(--accent) 22%, #0b1220);
 }
 
 .pod-line.amelia {
-  background: color-mix(in srgb, var(--live) 14%, var(--surface));
+  background: color-mix(in srgb, var(--live) 18%, #0b1220);
 }
 
 .pod-line strong {
@@ -2980,8 +2985,9 @@ button.chip {
   display: grid;
   place-items: center;
   border-radius: 999px;
-  border: 1px solid var(--line);
-  color: var(--ink);
+  border: 1px solid transparent;
+  background: #122038;
+  color: #eaf1ff;
   text-decoration: none;
   font-family: var(--mono);
   font-size: 0.68rem;
@@ -5308,4 +5314,56 @@ body.stage-open .grok {
   .earth-hud .hud-more {
     display: none;
   }
+}
+
+.stage {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.stage-btn {
+  color: #f4f7fb;
+}
+
+.stage-body {
+  color: #b7c4d8;
+}
+
+.player-controls .mono,
+.player-controls select {
+  color: #eaf1ff;
+  background: #122038;
+  border: 1px solid rgba(234, 241, 255, 0.16);
+  border-radius: 10px;
+}
+
+.player-adjacent .text-link {
+  color: #eaf1ff;
+}
+
+.pod-transcript p,
+.pod-tease em,
+.pod-item em {
+  color: #8aa3c8;
+}
+
+.host-tile,
+.host-tile.james,
+.host-tile.amelia {
+  background: #122038;
+  color: #eaf1ff;
+}
+
+.mission-card,
+.banner-class,
+.coord-block {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.banner-class {
+  color: #7ee0c4;
+  background: color-mix(in srgb, var(--live) 18%, #0b1220);
 }

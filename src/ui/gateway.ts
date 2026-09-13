@@ -90,13 +90,21 @@ function paintPhotoGlass(
     ctx.scale(1, -1);
     ctx.drawImage(photo, cx, cy, sw * 0.48, sh * 0.48, w * 0.08, h * 0.18, w * 0.84, h * 0.64);
     ctx.restore();
+    const rx = ((fx + 0.41) % 1) * photo.naturalWidth;
+    const ry = ((fy + 0.31) % 0.58) * photo.naturalHeight;
+    ctx.save();
+    ctx.globalAlpha = cut === 'pav' ? 0.2 : 0.14;
+    ctx.translate(w / 2, h / 2);
+    ctx.rotate(((i % 4) + 1) * (Math.PI / 2));
+    ctx.drawImage(photo, rx, ry, sw * 0.4, sh * 0.4, -w * 0.42, -h * 0.42, w * 0.84, h * 0.84);
+    ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
       ? 'rgba(234, 241, 255, 0.4)'
       : cut === 'pav'
-        ? 'rgba(6, 14, 36, 0.52)'
+        ? 'rgba(6, 14, 36, 0.48)'
         : cut === 'table'
-          ? 'rgba(21, 87, 255, 0.2)'
+          ? 'rgba(21, 87, 255, 0.18)'
           : GLASS_TINT[i % GLASS_TINT.length];
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
@@ -109,7 +117,7 @@ function paintPhotoGlass(
   }
   ctx.globalCompositeOperation = 'screen';
   const catchL = ctx.createLinearGradient(0, 0, w * 0.58, h * 0.42);
-  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.16)' : 'rgba(234, 241, 255, 0.42)');
+  catchL.addColorStop(0, cut === 'pav' ? 'rgba(234, 241, 255, 0.2)' : 'rgba(234, 241, 255, 0.5)');
   catchL.addColorStop(0.5, 'rgba(234, 241, 255, 0)');
   ctx.fillStyle = catchL;
   ctx.beginPath();
@@ -119,7 +127,8 @@ function paintPhotoGlass(
   ctx.closePath();
   ctx.fill();
   const fire = ctx.createLinearGradient(w, 0, w * 0.42, h * 0.38);
-  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.34)' : 'rgba(60, 230, 255, 0.3)');
+  fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.48)' : 'rgba(60, 230, 255, 0.44)');
+  fire.addColorStop(0.55, i % 3 ? 'rgba(255, 196, 72, 0.16)' : 'rgba(21, 87, 255, 0.12)');
   fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
   ctx.fillStyle = fire;
   ctx.beginPath();
@@ -128,17 +137,23 @@ function paintPhotoGlass(
   ctx.lineTo(w * 0.42, 0);
   ctx.closePath();
   ctx.fill();
-  ctx.globalCompositeOperation = 'source-over';
-  ctx.strokeStyle = i % 2 ? 'rgba(255, 92, 176, 0.42)' : 'rgba(90, 240, 255, 0.4)';
-  ctx.lineWidth = Math.max(2, w / 80);
+  const fire2 = ctx.createLinearGradient(0, h, w * 0.48, h * 0.52);
+  fire2.addColorStop(0, i % 3 ? 'rgba(255, 196, 72, 0.3)' : 'rgba(90, 240, 255, 0.28)');
+  fire2.addColorStop(1, 'rgba(21, 87, 255, 0)');
+  ctx.fillStyle = fire2;
   ctx.beginPath();
-  ctx.moveTo(8, 8);
-  ctx.lineTo(w - 8, 8);
-  ctx.lineTo(w - 8, h * 0.22);
+  ctx.moveTo(0, h);
+  ctx.lineTo(w * 0.48, h);
+  ctx.lineTo(0, h * 0.52);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = i % 2 ? 'rgba(255, 92, 176, 0.55)' : 'rgba(90, 240, 255, 0.5)';
+  ctx.lineWidth = Math.max(2, w / 90);
+  ctx.beginPath();
+  ctx.moveTo(w * 0.08, h * 0.1);
+  ctx.lineTo(w * 0.74, h * 0.07);
   ctx.stroke();
-  ctx.strokeStyle = 'rgba(234, 241, 255, 0.22)';
-  ctx.lineWidth = Math.max(1.5, w / 96);
-  ctx.strokeRect(14, 14, w - 28, h - 28);
+  ctx.globalCompositeOperation = 'source-over';
 }
 
 function diamondPhysical(
@@ -180,7 +195,7 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   ctx.fillStyle = '#02060f';
   ctx.fillRect(0, 0, 512, 512);
   if (photo?.naturalWidth) {
-    ctx.globalAlpha = 0.62;
+    ctx.globalAlpha = 0.72;
     ctx.drawImage(
       photo,
       photo.naturalWidth * 0.26,
@@ -196,9 +211,10 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   }
   ctx.globalCompositeOperation = 'screen';
   const g = ctx.createRadialGradient(256, 256, 6, 256, 256, 248);
-  g.addColorStop(0, 'rgba(234, 241, 255, 0.88)');
-  g.addColorStop(0.16, 'rgba(90, 240, 255, 0.46)');
-  g.addColorStop(0.38, 'rgba(255, 72, 168, 0.22)');
+  g.addColorStop(0, 'rgba(234, 241, 255, 0.7)');
+  g.addColorStop(0.12, 'rgba(90, 240, 255, 0.56)');
+  g.addColorStop(0.28, 'rgba(255, 72, 168, 0.34)');
+  g.addColorStop(0.5, 'rgba(255, 196, 72, 0.16)');
   g.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 512, 512);
@@ -221,7 +237,7 @@ function facetCanvas(i: number, on = false, photo: HTMLImageElement | null = nul
   c.height = 1024;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  paintPhotoGlass(ctx, photo, i, 512, 1024, on, i < 8 ? 'crown' : 'bezel');
+  paintPhotoGlass(ctx, photo, i, 512, 1024, on, i >= 32 || (i >= 16 && i < 24) ? 'bezel' : 'crown');
   if (i === 0) {
     ctx.fillStyle = 'rgba(244,247,251,0.96)';
     ctx.font = '800 260px Outfit, IBM Plex Sans, sans-serif';
@@ -526,7 +542,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const sides = 12;
   const restAyFace = 0.5;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
-  const tableR = 0.18;
+  const tableR = 0.16;
   const tableY = 0.92;
   const eqR = 0.48;
   const eqY = 0.48;

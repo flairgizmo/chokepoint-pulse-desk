@@ -333,8 +333,30 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
         const sw = Math.max(1, backdrop.naturalWidth * 0.46);
         const sh = Math.max(1, backdrop.naturalHeight * 0.58);
         ctx.drawImage(backdrop, sx, sy, sw, sh, minX, minY, bw, bh);
+        ctx.save();
+        ctx.translate(minX + bw, minY);
+        ctx.scale(-1, 1);
+        ctx.globalAlpha = 0.32;
+        ctx.drawImage(
+          backdrop,
+          ((fx + 0.28) % 1) * backdrop.naturalWidth,
+          ((fy + 0.18) % 0.7) * backdrop.naturalHeight,
+          sw * 0.72,
+          sh * 0.72,
+          0,
+          0,
+          bw,
+          bh,
+        );
+        ctx.restore();
         ctx.fillStyle = onGate && i === 2 ? 'rgba(234, 241, 255, 0.28)' : tint;
         ctx.globalCompositeOperation = 'multiply';
+        ctx.fill();
+        ctx.globalCompositeOperation = 'screen';
+        const fire = ctx.createLinearGradient(minX + bw, minY, minX + bw * 0.4, minY + bh * 0.4);
+        fire.addColorStop(0, i % 2 ? 'rgba(255, 72, 168, 0.42)' : 'rgba(60, 230, 255, 0.38)');
+        fire.addColorStop(1, 'rgba(21, 87, 255, 0)');
+        ctx.fillStyle = fire;
         ctx.fill();
         ctx.restore();
       } else {
@@ -376,7 +398,7 @@ export function mountGateway2D(canvas: HTMLCanvasElement): () => void {
       ctx.fill();
       ctx.globalAlpha = 1;
     }
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.28)';
+    ctx.strokeStyle = 'rgba(234, 241, 255, 0.16)';
     ctx.lineWidth = Math.max(1.1, W / 520);
     ctx.beginPath();
     girdle.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));

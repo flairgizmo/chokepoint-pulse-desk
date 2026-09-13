@@ -335,7 +335,7 @@ export class EarthGlobe {
         for (const [a, b] of TOKEN_CORRIDORS) {
           const from = cityById(a);
           const to = cityById(b);
-          if (from && to) arc(from, to, 'rgba(30, 201, 176, 0.72)', Math.max(1.6, W / 620));
+          if (from && to) arc(from, to, 'rgba(142, 176, 255, 0.72)', Math.max(1.6, W / 620));
         }
       }
       ctx.restore();
@@ -620,7 +620,7 @@ export class EarthGlobe {
     this.lookAtCity(london);
     this.pulse = new THREE.Mesh(
       new THREE.SphereGeometry(0.028, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0x1ec9b0, transparent: true, opacity: 0.32 }),
+      new THREE.MeshBasicMaterial({ color: 0x8eb0ff, transparent: true, opacity: 0.34 }),
     );
     this.pulse.position.copy(latLonToVec(london.lat, london.lon, 1.03));
     group.add(this.pulse);
@@ -630,7 +630,7 @@ export class EarthGlobe {
       this.addArc(cityById(a)!, cityById(b)!, 0x8aa0b4, 0.32, arcSegs),
     );
     this.corridorLines = TOKEN_CORRIDORS.map(([a, b]) =>
-      this.addArc(cityById(a)!, cityById(b)!, 0x1ec9b0, 0.72, arcSegs),
+      this.addArc(cityById(a)!, cityById(b)!, 0x8eb0ff, 0.7, arcSegs),
     );
 
     window.addEventListener('resize', () => this.resize());
