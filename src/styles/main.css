@@ -2646,7 +2646,8 @@ button.chip {
 
 .pod-item.is-on {
   border-color: var(--accent);
-  background: var(--accent-soft);
+  background: color-mix(in srgb, var(--accent) 22%, #0b1220);
+  color: #f4f7fb;
 }
 
 .pod-item .n {
