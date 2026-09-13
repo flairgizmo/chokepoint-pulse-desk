@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, duskSheen, hardenCanvasTex, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, cinemaChrome, hardenCanvasTex, plateMaterial } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
@@ -250,13 +250,13 @@ function mountFilm3D(
     );
     mesh.userData.slide = slide;
     const chrome = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.14 : 2.24, portrait ? 1.48 : 1.3, 0.02),
-      duskSheen({ color: 0xd7e4ff, reflectivity: 0.74, envSrc: backdrop }),
+      new THREE.BoxGeometry(portrait ? 1.08 : 2.16, portrait ? 1.42 : 1.24, 0.02),
+      cinemaChrome(lite, backdrop),
     );
     chrome.position.z = -0.04;
     mesh.add(chrome);
     const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.08 : 2.18, portrait ? 1.42 : 1.24, 0.02),
+      new THREE.BoxGeometry(portrait ? 1.05 : 2.14, portrait ? 1.39 : 1.21, 0.02),
       new THREE.MeshBasicMaterial({ color: 0x05070c }),
     );
     frame.position.z = -0.018;

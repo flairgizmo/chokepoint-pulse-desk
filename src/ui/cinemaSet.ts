@@ -282,6 +282,46 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   const rim = new THREE.DirectionalLight(0x3b7bff, lite ? 0.85 : 0.95);
   rim.position.set(-2.4, 1.3, -1.6);
   scene.add(rim);
+  addCinemaHaze(scene);
+}
+
+/** Additive dusk shafts. Reads on software GL; hardware bloom picks them up. */
+export function addCinemaHaze(scene: THREE.Scene): void {
+  const cool = new THREE.MeshBasicMaterial({
+    color: 0x6aa8ff,
+    transparent: true,
+    opacity: 0.08,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.DoubleSide,
+  });
+  const wash = new THREE.Mesh(new THREE.PlaneGeometry(20, 11), cool);
+  wash.position.set(0, 1.35, -4.4);
+  scene.add(wash);
+  const warm = cool.clone();
+  warm.color.setHex(0xffc56a);
+  warm.opacity = 0.055;
+  const shaft = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 15), warm);
+  shaft.position.set(-2.6, 1.7, -3.5);
+  shaft.rotation.z = 0.2;
+  scene.add(shaft);
+}
+
+/** Gunmetal bezel that mixes the page still. Pale Mix chrome reads as paper on software GL. */
+export function cinemaChrome(
+  lite: boolean,
+  envSrc?: string,
+): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
+  return lite
+    ? duskSheen({ color: 0x3d4f6c, reflectivity: 0.5, envSrc })
+    : new THREE.MeshPhysicalMaterial({
+        color: 0x8aa3c8,
+        metalness: 0.92,
+        roughness: 0.16,
+        clearcoat: 0.8,
+        clearcoatRoughness: 0.12,
+        envMapIntensity: 1.85,
+      });
 }
 
 export function duskSheen(opts: {

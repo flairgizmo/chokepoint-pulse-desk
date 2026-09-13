@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, duskSheen, hardenCanvasTex, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, cinemaChrome, hardenCanvasTex, plateMaterial } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -172,11 +172,17 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     mesh.userData.layerId = layer.id;
     mesh.userData.stage = layer.stage;
     const chrome = new THREE.Mesh(
-      new THREE.BoxGeometry(2.48, 1.22, 0.02),
-      duskSheen({ color: 0xd7e4ff, reflectivity: 0.72, envSrc: '/visuals/topics/canary.jpg' }),
+      new THREE.BoxGeometry(2.42, 1.18, 0.02),
+      cinemaChrome(lite, '/visuals/topics/canary.jpg'),
     );
     chrome.position.z = -0.04;
     mesh.add(chrome);
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(2.38, 1.14, 0.02),
+      new THREE.MeshBasicMaterial({ color: 0x05070c }),
+    );
+    frame.position.z = -0.018;
+    mesh.add(frame);
     mesh.add(
       new THREE.LineSegments(
         new THREE.EdgesGeometry(mesh.geometry),

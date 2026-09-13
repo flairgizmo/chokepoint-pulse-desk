@@ -5144,3 +5144,38 @@ body.stage-open .grok {
 #grok-form input::placeholder {
   color: #8aa3c8;
 }
+
+.market-bar {
+  background: #0b1220;
+  color: #8aa3c8;
+  border-bottom-color: transparent;
+}
+
+.market-bar a {
+  color: #7eb0ff;
+}
+
+.market-bar .chip {
+  background: #122038;
+  color: #eaf1ff;
+  border-color: rgba(234, 241, 255, 0.14);
+}
+
+.market-bar .chip.live {
+  color: #7ee0c4;
+  background: color-mix(in srgb, var(--live) 22%, #0b1220);
+  border-color: rgba(0, 168, 120, 0.4);
+}
+
+.research-lane {
+  background: #0b1220;
+  color: #f4f7fb;
+  border-color: transparent;
+}
+
+.research-lane .lane-head h2,
+.research-lane .lede-sm,
+.research-lane .subtle,
+.research-lane .kicker {
+  color: inherit;
+}

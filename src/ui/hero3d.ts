@@ -1,7 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
-import { addUnrealLook, duskSheen } from './cinemaSet';
+import { addUnrealLook, cinemaChrome, duskSheen } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -67,7 +67,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
 
   const frame = new THREE.Mesh(
     new THREE.BoxGeometry(2.52, 1.14, 0.03),
-    duskSheen({ color: 0xd7e4ff, reflectivity: 0.62, envSrc: src }),
+    cinemaChrome(probe.lite, src),
   );
   frame.position.z = -0.028;
   scene.add(frame);
