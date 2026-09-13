@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, cinemaFloorMap, duskSheen, hardenCanvasTex, onDuskPhoto, visionStill } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaFloorMap, climbUserData, duskSheen, hardenCanvasTex, makeCinemaPlate, onDuskPhoto, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -752,40 +752,25 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     img.src = src;
     return img;
   });
-  const cards: THREE.Mesh[] = [];
+  const cards: THREE.Group[] = [];
   const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));
     tex.colorSpace = THREE.SRGBColorSpace;
-    const mat = lite
-      ? duskSheen({ map: tex, reflectivity: 0.38 })
-      : new THREE.MeshPhysicalMaterial({
-          map: tex,
-          roughness: 0.22,
-          metalness: 0.08,
-          clearcoat: 0.85,
-          clearcoatRoughness: 0.18,
-          transparent: true,
-        });
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.64, 0.04), mat);
+    const plate = makeCinemaPlate(0.98, 0.64, lite);
+    applyPlateMap(plate.mat, tex);
     const [x, y, z] = bankXYZ(i, 0);
-    mesh.position.set(x, y + 0.2, z);
-    mesh.userData.nodeId = bank.id;
-    mesh.add(
-      new THREE.LineSegments(
-        new THREE.EdgesGeometry(mesh.geometry),
-        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.28 }),
-      ),
-    );
-    group.add(mesh);
-    cards.push(mesh);
-    cardMats.push(mat);
+    plate.root.position.set(x, y + 0.2, z);
+    plate.root.userData.nodeId = bank.id;
+    plate.face.userData.nodeId = bank.id;
+    group.add(plate.root);
+    cards.push(plate.root);
+    cardMats.push(plate.mat);
     const paintOne = (): void => {
       const next = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(logos[i], bank.short, bank.name, false, stills[i])));
       next.colorSpace = THREE.SRGBColorSpace;
-      mat.map?.dispose();
-      mat.map = next;
-      mat.needsUpdate = true;
+      plate.mat.map?.dispose();
+      applyPlateMap(plate.mat, next);
     };
     logos[i].onload = paintOne;
     stills[i].onload = paintOne;
@@ -857,9 +842,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
-    const hits = raycaster.intersectObjects(pickables, false);
-    const id = hits[0]?.object.userData.nodeId;
-    return typeof id === 'number' ? (id as NodeId) : null;
+    const hits = raycaster.intersectObjects(pickables, true);
+    const id = hits[0] ? climbUserData<NodeId>(hits[0].object, 'nodeId') : undefined;
+    return typeof id === 'number' ? id : null;
   };
 
   let gateLit = false;

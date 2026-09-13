@@ -372,6 +372,66 @@ export function applyPlateMap(
   mat.needsUpdate = true;
 }
 
+export type CinemaPlate = {
+  root: THREE.Group;
+  face: THREE.Mesh;
+  mat: THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+};
+
+/** Photograph on the front only. Stock and bezel stay dark so box sides cannot blow out to sky. */
+export function makeCinemaPlate(w: number, h: number, lite: boolean, envSrc?: string): CinemaPlate {
+  const root = new THREE.Group();
+  const mat = plateMaterial(lite, envSrc);
+  const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+  face.position.z = 0.028;
+  root.add(face);
+  const stock = new THREE.Mesh(
+    new THREE.BoxGeometry(w, h, 0.05),
+    new THREE.MeshBasicMaterial({ color: 0x05070c }),
+  );
+  root.add(stock);
+  const chrome = new THREE.Mesh(
+    new THREE.BoxGeometry(w + 0.04, h + 0.06, 0.02),
+    cinemaChrome(lite, envSrc),
+  );
+  chrome.position.z = -0.04;
+  root.add(chrome);
+  const frame = new THREE.Mesh(
+    new THREE.BoxGeometry(w + 0.02, h + 0.03, 0.02),
+    new THREE.MeshBasicMaterial({ color: 0x0a1018 }),
+  );
+  frame.position.z = -0.018;
+  root.add(frame);
+  const edge = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)),
+    new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.42 }),
+  );
+  edge.position.z = 0.03;
+  root.add(edge);
+  return { root, face, mat };
+}
+
+export function dimCinemaPlate(root: THREE.Object3D, dim: boolean): void {
+  root.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    const raw = mesh.material;
+    if (!raw || Array.isArray(raw)) return;
+    const mat = raw as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+    if (!('opacity' in mat)) return;
+    mat.opacity = dim ? 0.28 : 1;
+    mat.transparent = dim;
+  });
+}
+
+export function climbUserData<T>(obj: THREE.Object3D, key: string): T | undefined {
+  let node: THREE.Object3D | null = obj;
+  while (node) {
+    if (node.userData[key] != null) return node.userData[key] as T;
+    node = node.parent;
+  }
+  return undefined;
+}
+
 /** Photographic IBL and bloom only on a named hardware GPU. Software GL stays fail-closed. */
 export function addUnrealLook(
   renderer: THREE.WebGLRenderer,

@@ -1,7 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
-import { addUnrealLook, cinemaChrome, duskSheen } from './cinemaSet';
+import { addUnrealLook, applyPlateMap, makeCinemaPlate } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -49,28 +49,9 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   });
   tex.colorSpace = THREE.SRGBColorSpace;
 
-  const plate = new THREE.Mesh(
-    new THREE.BoxGeometry(2.42, 1.04, 0.045),
-    probe.lite
-      ? duskSheen({ map: tex, reflectivity: 0.38, envSrc: src })
-      : new THREE.MeshPhysicalMaterial({
-          map: tex,
-          roughness: 0.12,
-          metalness: 0.06,
-          clearcoat: 0.92,
-          clearcoatRoughness: 0.1,
-          ior: 1.52,
-          envMapIntensity: 1.55,
-        }),
-  );
-  scene.add(plate);
-
-  const frame = new THREE.Mesh(
-    new THREE.BoxGeometry(2.52, 1.14, 0.03),
-    cinemaChrome(probe.lite, src),
-  );
-  frame.position.z = -0.028;
-  scene.add(frame);
+  const plate = makeCinemaPlate(2.42, 1.04, probe.lite, src);
+  applyPlateMap(plate.mat, tex);
+  scene.add(plate.root);
 
   scene.add(new THREE.AmbientLight(0xffffff, probe.lite ? 1 : 0.55));
   const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 0.35 : 1.35);
@@ -120,10 +101,9 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     parx += (tx - parx) * 0.08;
     pary += (ty - pary) * 0.08;
     const idle = reduced ? 0 : Math.sin(now / 3800) * 0.03;
-    plate.rotation.y = 0.1 + parx * 0.16 + idle;
-    plate.rotation.x = -0.05 - pary * 0.09;
-    frame.rotation.copy(plate.rotation);
-    if (!reduced) plate.position.z = Math.sin(now / 4200) * 0.025;
+    plate.root.rotation.y = 0.1 + parx * 0.16 + idle;
+    plate.root.rotation.x = -0.05 - pary * 0.09;
+    if (!reduced) plate.root.position.z = Math.sin(now / 4200) * 0.025;
     camera.position.x = parx * 0.1;
     camera.position.y = -pary * 0.07;
     camera.lookAt(0, 0, 0);

@@ -1,7 +1,7 @@
 /** Cinema gallery — featured still on a dusk set, neighbours in cover-flow. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, cinemaChrome, hardenCanvasTex, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, hardenCanvasTex, makeCinemaPlate } from './cinemaSet';
 import { filmBackdrop, filmSetSlides, type FilmSlide } from './filmSets';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
@@ -237,39 +237,18 @@ function mountFilm3D(
   const composer = addUnrealLook(renderer, scene, camera, lite, backdrop);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const plates: THREE.Mesh[] = [];
+  const plates: THREE.Group[] = [];
   const mid = (slides.length - 1) / 2;
   const featuredBase = set.startsWith('city:') ? 0 : mid;
   let featured = featuredBase;
 
   slides.forEach((slide) => {
-    const mat = plateMaterial(lite, backdrop);
-    const mesh = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, 0.05),
-      mat,
-    );
-    mesh.userData.slide = slide;
-    const chrome = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.08 : 2.16, portrait ? 1.42 : 1.24, 0.02),
-      cinemaChrome(lite, backdrop),
-    );
-    chrome.position.z = -0.04;
-    mesh.add(chrome);
-    const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(portrait ? 1.05 : 2.14, portrait ? 1.39 : 1.21, 0.02),
-      new THREE.MeshBasicMaterial({ color: 0x05070c }),
-    );
-    frame.position.z = -0.018;
-    mesh.add(frame);
-    mesh.add(
-      new THREE.LineSegments(
-        new THREE.EdgesGeometry(mesh.geometry),
-        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.62 }),
-      ),
-    );
-    group.add(mesh);
-    plates.push(mesh);
-    plateTexture(slide.src, slide.title, portrait, (tex) => applyPlateMap(mat, tex));
+    const plate = makeCinemaPlate(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, lite, backdrop);
+    plate.root.userData.slide = slide;
+    plate.face.userData.slide = slide;
+    group.add(plate.root);
+    plates.push(plate.root);
+    plateTexture(slide.src, slide.title, portrait, (tex) => applyPlateMap(plate.mat, tex));
   });
 
   const raycaster = new THREE.Raycaster();
@@ -306,8 +285,8 @@ function mountFilm3D(
     pointer.x = ((x - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((y - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects(plates, false)[0];
-    return (hit?.object.userData.slide as FilmSlide | undefined) ?? null;
+    const hit = raycaster.intersectObjects(plates, true)[0];
+    return hit ? climbUserData<FilmSlide>(hit.object, 'slide') ?? null : null;
   };
 
   const tick = (now: number): void => {

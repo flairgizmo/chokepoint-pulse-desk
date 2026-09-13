@@ -1,7 +1,7 @@
 /** Exploded film stack — five stills in perspective. HTML rungs stay for the record. */
 
 import * as THREE from 'three';
-import { addCinemaSet, addUnrealLook, applyPlateMap, cinemaChrome, hardenCanvasTex, plateMaterial } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -163,35 +163,17 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
   const composer = addUnrealLook(renderer, scene, camera, lite, '/visuals/topics/canary.jpg');
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const slabs: THREE.Mesh[] = [];
+  const slabs: THREE.Group[] = [];
   let isolated: string | null = null;
 
   STACK_SLABS.forEach((layer) => {
-    const mat = plateMaterial(lite, '/visuals/topics/canary.jpg');
-    const mesh = new THREE.Mesh(new THREE.BoxGeometry(2.36, 1.12, 0.05), mat);
-    mesh.userData.layerId = layer.id;
-    mesh.userData.stage = layer.stage;
-    const chrome = new THREE.Mesh(
-      new THREE.BoxGeometry(2.42, 1.18, 0.02),
-      cinemaChrome(lite, '/visuals/topics/canary.jpg'),
-    );
-    chrome.position.z = -0.04;
-    mesh.add(chrome);
-    const frame = new THREE.Mesh(
-      new THREE.BoxGeometry(2.38, 1.14, 0.02),
-      new THREE.MeshBasicMaterial({ color: 0x05070c }),
-    );
-    frame.position.z = -0.018;
-    mesh.add(frame);
-    mesh.add(
-      new THREE.LineSegments(
-        new THREE.EdgesGeometry(mesh.geometry),
-        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.55 }),
-      ),
-    );
-    group.add(mesh);
-    slabs.push(mesh);
-    plateTexture(layer.src, layer.title, (tex) => applyPlateMap(mat, tex));
+    const plate = makeCinemaPlate(2.36, 1.12, lite, '/visuals/topics/canary.jpg');
+    plate.root.userData.layerId = layer.id;
+    plate.root.userData.stage = layer.stage;
+    plate.face.userData.layerId = layer.id;
+    group.add(plate.root);
+    slabs.push(plate.root);
+    plateTexture(layer.src, layer.title, (tex) => applyPlateMap(plate.mat, tex));
   });
 
   const place = (now: number): void => {
@@ -203,9 +185,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
       mesh.position.set(t * 0.28 + 0.06 + drift, 1.55 - i * 0.48, -0.12 + i * 0.05);
       mesh.rotation.set(-Math.PI / 2 + 0.22, -0.1, 0);
       mesh.scale.setScalar(dim ? 0.92 : 1);
-      const mat = mesh.material as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
-      mat.opacity = dim ? 0.28 : 1;
-      mat.transparent = dim;
+      dimCinemaPlate(mesh, dim);
     });
   };
 
@@ -232,8 +212,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     pointer.x = ((x - rect.left) / rect.width) * 2 - 1;
     pointer.y = -((y - rect.top) / rect.height) * 2 + 1;
     raycaster.setFromCamera(pointer, camera);
-    const hit = raycaster.intersectObjects(slabs, false)[0];
-    const id = hit?.object.userData.layerId as string | undefined;
+    const hit = raycaster.intersectObjects(slabs, true)[0];
+    const id = hit ? climbUserData<string>(hit.object, 'layerId') : undefined;
     return STACK_SLABS.find((l) => l.id === id) ?? null;
   };
 
