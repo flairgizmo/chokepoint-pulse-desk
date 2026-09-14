@@ -681,18 +681,20 @@ export function renderHome(): string {
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
       <div class="earth-hud">
         <div class="hud-card">
+          ${photoFigure(plateFor('hud-earth'), 'nav-still')}
           <p class="kicker"><i class="section-dot" aria-hidden="true"></i>Earth · orbit</p>
           <label class="sr-only" for="city-select">Cities</label>
           <select id="city-select">${CITIES.map((c) => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}</select>
         </div>
         <div class="hud-tools">
+          ${photoFigure(plateFor('hud-tools'), 'nav-still')}
           <button type="button" data-zoom="-0.4" aria-label="Zoom out">−</button>
           <span id="zoom-readout" class="mono">1.0×</span>
           <button type="button" data-zoom="0.4" aria-label="Zoom in">+</button>
           <button type="button" data-reset-globe aria-label="Reset view">↺</button>
         </div>
         <details class="hud-more">
-          <summary>Overlays</summary>
+          <summary class="chrome-still-btn">${photoFigure(plateFor('hud-overlays'), 'nav-still')}<span>Overlays</span></summary>
           <fieldset class="hud-toggles">
             <legend class="sr-only">Globe overlays</legend>
             <label><input type="checkbox" data-globe-opt="spin" checked /> Auto-spin</label>

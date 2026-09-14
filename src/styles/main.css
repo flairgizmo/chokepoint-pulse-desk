@@ -6835,8 +6835,11 @@ button.text-link {
 
 .earth-hud .hud-card {
   display: grid;
-  gap: 0.35rem;
-  padding: 0.65rem 0.8rem;
+  grid-template-columns: 2.35rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.55rem 0.32rem 0.32rem;
+  min-height: 2.7rem;
 }
 
 .earth-hud .hud-card select {
@@ -8785,7 +8788,8 @@ section.block .kicker {
 }
 
 .nav > .more > summary,
-.icon-btn.chrome-still-btn {
+.icon-btn.chrome-still-btn,
+.earth-hud .hud-more summary.chrome-still-btn {
   display: grid;
   grid-template-columns: 2.15rem auto;
   gap: 0.38rem;
@@ -9024,5 +9028,47 @@ section.block .kicker {
   background: var(--amber);
   color: var(--graphite-950);
   border-color: var(--amber);
+}
+
+.earth-hud .photo-plate.cinema-frame.nav-still {
+  position: relative;
+  width: 2.35rem;
+  height: 1.65rem;
+  min-height: 0;
+  max-height: 1.65rem;
+  margin: 0;
+  flex: 0 0 2.35rem;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #0b1220;
+  box-shadow: 0 0 0 1px rgba(234, 241, 255, 0.16);
+  transform: none;
+}
+
+.earth-hud .photo-plate.nav-still img {
+  display: block;
+  width: 2.35rem;
+  height: 1.65rem;
+  max-height: 1.65rem;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: center 38%;
+  filter: saturate(0.9) contrast(1.14) brightness(0.88);
+}
+
+.earth-hud .photo-plate.nav-still figcaption,
+.earth-hud .photo-plate.nav-still::after {
+  display: none;
+}
+
+.earth-hud .hud-tools {
+  padding: 0.28rem 0.45rem 0.28rem 0.28rem;
+}
+
+.earth-hud .hud-more summary.chrome-still-btn {
+  padding: 0.32rem 0.7rem 0.32rem 0.28rem;
+  font-size: 0.78rem;
+  text-transform: none;
+  letter-spacing: 0;
 }
 

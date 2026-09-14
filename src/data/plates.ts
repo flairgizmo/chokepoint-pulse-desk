@@ -611,6 +611,9 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'search-input': PLATES.library,
   'stage-crumb': PLATES.history,
   'grok-form': PLATES.radio,
+  'hud-earth': PLATES.city,
+  'hud-overlays': PLATES.fiber,
+  'hud-tools': PLATES.datacenter,
 }
 
 const PREFIXES = [

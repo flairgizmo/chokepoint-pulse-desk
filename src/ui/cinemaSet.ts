@@ -658,7 +658,7 @@ export function duskWallLit(
 }
 
 /** Specular studio response on software GL. No envMap — PMREM stays fail-closed. */
-function litePhong(
+export function litePhong(
   color: number,
   specular: number,
   shininess: number,

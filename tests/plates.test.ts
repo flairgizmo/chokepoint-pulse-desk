@@ -478,6 +478,14 @@ describe('Topic plates', () => {
     expect(plateFor('grok-form').src).toBe(PLATES.radio.src);
     expect(chatMarkup()).toContain('id="grok-form"');
     expect(chatMarkup()).toContain('grok-ask-strip');
+    expect(plateFor('hud-earth').src).toBe(PLATES.city.src);
+    expect(plateFor('hud-overlays').src).toBe(PLATES.fiber.src);
+    expect(plateFor('hud-tools').src).toBe(PLATES.datacenter.src);
+    expect(renderHome()).toContain('nav-still');
+    expect(renderHome()).toContain('id="city-select"');
+    expect(renderHome()).toMatch(/hud-card[\s\S]{0,500}\/visuals\/topics\/city\.jpg/);
+    expect(renderHome()).toMatch(/hud-more[\s\S]{0,400}\/visuals\/topics\/fiber\.jpg/);
+    expect(renderHome()).toMatch(/hud-tools[\s\S]{0,400}\/visuals\/topics\/datacenter\.jpg/);
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

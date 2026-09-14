@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addPracticals, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, type PlateFaceMat, visionStill } from './cinemaSet';
+import { addCinemaHaze, addPracticals, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, litePhong, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, type PlateFaceMat, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -1081,7 +1081,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const floor = new THREE.Mesh(
     new THREE.CircleGeometry(5.2, lite ? 48 : 96),
     lite
-      ? new THREE.MeshBasicMaterial({
+      ? litePhong(0x6e829c, 0x8aa3c8, 18, {
           map: cinemaFloorMap(),
           transparent: true,
           opacity: 0.94,
@@ -1805,11 +1805,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     causticMat.map?.dispose();
     causticMat.map = nextCaustic;
     causticMat.needsUpdate = true;
-    if (floor.material instanceof THREE.MeshPhysicalMaterial || floor.material instanceof THREE.MeshBasicMaterial) {
+    const floorMat = Array.isArray(floor.material) ? floor.material[0] : floor.material;
+    if (
+      floorMat instanceof THREE.MeshPhysicalMaterial ||
+      floorMat instanceof THREE.MeshPhongMaterial ||
+      floorMat instanceof THREE.MeshBasicMaterial
+    ) {
       const nextFloor = cinemaFloorMap(photo);
-      floor.material.map?.dispose();
-      floor.material.map = nextFloor;
-      floor.material.needsUpdate = true;
+      floorMat.map?.dispose();
+      floorMat.map = nextFloor;
+      floorMat.needsUpdate = true;
     }
   };
   const paintCards = (): void => {
