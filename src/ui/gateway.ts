@@ -459,7 +459,7 @@ diffuseColor.rgb += envRefl * spec * 2.4;
 diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * liteFres * 1.15;
 diffuseColor.rgb += vec3(0.62, 0.82, 1.0) * liteFres * liteFres * 0.7;
 diffuseColor.rgb += vec3(1.0, 0.97, 0.9) * liteFlash * 0.9;
-diffuseColor.a *= mix(0.46, 0.92, spec);`;
+diffuseColor.a *= mix(0.5, 0.92, spec);`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
@@ -482,7 +482,7 @@ diffuseColor.rgb += envRefl * spec * 2.35;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 1.05;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.7;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.85;
-diffuseColor.a *= mix(0.34, 0.86, spec);`;
+diffuseColor.a *= mix(0.5, 0.9, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -554,7 +554,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-26-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-27-${kind}`;
 }
 
 function glassMat(
@@ -1107,17 +1107,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0xddd2c0,
+    tint: lite ? 0xffffff : 0xddd2c0,
     vertexColors: lite,
-    window: lite ? 0.56 : undefined,
+    window: lite ? 0.62 : undefined,
+    crown: lite,
     env: roomEnv,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0xc4b8a6,
+    tint: lite ? 0xffffff : 0xc4b8a6,
     vertexColors: lite,
-    window: lite ? 0.56 : undefined,
+    window: lite ? 0.62 : undefined,
+    crown: lite,
     env: roomEnv,
   });
   const girdleIce = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
@@ -1245,7 +1247,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.LineBasicMaterial({
         color: lite ? 0xf2e6d4 : 0xeaf1ff,
         transparent: true,
-        opacity: lite ? 0.2 : 0.08,
+        opacity: lite ? 0.1 : 0.08,
       }),
     ),
   );
