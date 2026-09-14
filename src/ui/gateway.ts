@@ -456,10 +456,11 @@ vec3 envSamp = textureCube(liteEnv, wR).rgb;
 diffuseColor.rgb += envSamp * pow(liteFres, 2.4) * 0.78;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
-diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;`,
+diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
+diffuseColor.a *= mix(0.55, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-9';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-8';
 }
 
 function glassMat(
@@ -481,9 +482,12 @@ function glassMat(
       color: opts.tint ?? (opts.shade === false ? 0x5a6c88 : 0x93a6c0),
       side: THREE.DoubleSide,
       vertexColors: Boolean(opts.vertexColors),
+      transparent: opts.window != null,
+      opacity: opts.window ?? 1,
+      depthWrite: opts.window == null || opts.window > 0.84,
     });
     mat.toneMapped = false;
-    attachLiteFire(mat);
+    if (opts.window != null) attachLiteFire(mat);
     return mat;
   }
   return diamondPhysical(tex, opts);
@@ -832,24 +836,28 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.52,
     tint: 0xf6f0e8,
     vertexColors: lite,
+    window: lite ? 0.74 : undefined,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
     tint: 0xe8ddd0,
     vertexColors: lite,
+    window: lite ? 0.74 : undefined,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
     tint: 0xddd2c0,
     vertexColors: lite,
+    window: lite ? 0.56 : undefined,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
     tint: 0xc4b8a6,
     vertexColors: lite,
+    window: lite ? 0.56 : undefined,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
@@ -875,6 +883,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   table.position.y = tableY;
   table.userData.nodeId = 6;
+  if (lite) table.visible = false;
   crystal.add(table);
   const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
     const mesh = new THREE.Mesh(geo, mat);
