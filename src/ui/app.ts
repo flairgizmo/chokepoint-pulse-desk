@@ -530,9 +530,11 @@ export class QntDesk {
       this.root.querySelector('#people-search')?.addEventListener('input', applyPeople);
     }
     if (route.name === 'stack') {
+      const stackChips = () => this.root.querySelectorAll('[data-stack-iso], [data-stack-all]');
       this.root.querySelectorAll<HTMLButtonElement>('[data-stack-iso]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const id = btn.dataset.stackIso;
+          stackChips().forEach((c) => c.classList.toggle('is-on', c === btn));
           this.root.querySelectorAll('.stack-rungs li').forEach((el) => {
             el.classList.toggle('is-dim', el.getAttribute('data-rung') !== id);
           });
@@ -540,6 +542,8 @@ export class QntDesk {
         });
       });
       this.root.querySelector('[data-stack-all]')?.addEventListener('click', () => {
+        const all = this.root.querySelector('[data-stack-all]');
+        stackChips().forEach((c) => c.classList.toggle('is-on', c === all));
         this.root.querySelectorAll('.stack-rungs li').forEach((el) => el.classList.remove('is-dim'));
         this.stackIsolate?.(null);
       });
