@@ -430,29 +430,19 @@ varying vec3 vLiteView;`,
       )
       .replace(
         '#include <map_fragment>',
-        `#ifdef USE_MAP
+        `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 float liteFacing = clamp(abs(dot(liteN, normalize(vLiteView))), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.55);
-vec2 liteOff = vec2(liteFres * 0.018, liteFres * 0.007);
-vec4 liteMid = texture2D(map, vMapUv);
-vec4 liteR = texture2D(map, vMapUv + liteOff);
-vec4 liteB = texture2D(map, vMapUv - liteOff);
-vec4 sampledDiffuseColor = vec4(liteR.r, liteMid.g, liteB.b, liteMid.a);
-#ifdef DECODE_VIDEO_TEXTURE
-sampledDiffuseColor = sRGBTransferEOTF(sampledDiffuseColor);
-#endif
-diffuseColor *= sampledDiffuseColor;
 float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
 float liteFlash = smoothstep(0.88, 1.0, liteSpark) * liteFres;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
-diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
-#endif`,
+diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-2';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-3';
 }
 
 function glassMat(
