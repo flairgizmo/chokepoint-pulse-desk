@@ -218,7 +218,7 @@ export function renderPatents(): string {
   const cards = PATENTS.map(
     (p) => `<article class="patent-card" id="${esc(p.id)}">
       <button type="button" data-stage="patent" data-stage-id="${esc(p.id)}">
-        ${photoFigure(plateFor('patents', p.id), 'patent-still')}
+        ${photoFigure(plateFor(p.id, p.number, p.title), 'patent-still')}
         ${diagramFigure(p.id, 'patent', p.number)}
         <p class="kicker">${esc(p.number)}</p>
         <h2>${esc(p.title)}</h2>

@@ -466,7 +466,7 @@ vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.05);
 vec3 body = vec3(0.1, 0.14, 0.2);
-vec3 heart = mix(body, diffuseColor.rgb, 0.22);
+vec3 heart = mix(body, diffuseColor.rgb, 0.12);
 diffuseColor.rgb = mix(heart, envRefl, spec * 0.72);
 diffuseColor.rgb += envRefl * spec * 1.85;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.55;
@@ -596,7 +596,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-34-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-35-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -796,7 +796,7 @@ function triGeo(
 type WellLane = 0 | 1 | 2 | 3;
 
 function wellGrade(lane: WellLane): GlassGrade {
-  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 1.18, contrast: 1.2, saturate: 0.9, multiply: 0.1 };
+  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 1.04, contrast: 1.22, saturate: 0.82, multiply: 0.22 };
   if (lane === 1) return { sx: 0.38, sy: 0.06, sw: 0.3, sh: 0.7, brightness: 0.98, contrast: 1.2, saturate: 0.8, multiply: 0.14 };
   if (lane === 2) return { sx: 0.58, sy: 0.05, sw: 0.3, sh: 0.7, brightness: 0.86, contrast: 1.24, saturate: 0.74, multiply: 0.16 };
   return { sx: 0.24, sy: 0.1, sw: 0.34, sh: 0.68, brightness: 0.94, contrast: 1.18, saturate: 0.78, multiply: 0.14 };
@@ -821,6 +821,13 @@ function wellCanvas(photo: HTMLImageElement | null, on: boolean, lane: WellLane)
     ctx.filter = 'none';
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on ? 'rgba(242, 235, 224, 0.22)' : `rgba(36, 22, 16, ${grade.multiply})`;
+    ctx.fillRect(0, 0, c.width, c.height);
+    const vig = ctx.createLinearGradient(0, 0, 0, c.height);
+    vig.addColorStop(0, 'rgba(7, 11, 20, 0.88)');
+    vig.addColorStop(0.42, 'rgba(8, 12, 22, 0.55)');
+    vig.addColorStop(0.78, 'rgba(10, 14, 24, 0.18)');
+    vig.addColorStop(1, 'rgba(12, 16, 28, 0.04)');
+    ctx.fillStyle = vig;
     ctx.fillRect(0, 0, c.width, c.height);
     ctx.globalCompositeOperation = 'source-over';
   }
