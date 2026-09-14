@@ -657,8 +657,8 @@ main {
   background: #e8edf2;
 }
 
-.kind-legend li[data-kind='Headquarters']::before { background: #e8d4b0; }
-.kind-legend li[data-kind='Banking']::before { background: #d2c2a4; }
+.kind-legend li[data-kind='Headquarters']::before { background: #c4a070; }
+.kind-legend li[data-kind='Banking']::before { background: #b89a6e; }
 .kind-legend li[data-kind='Lab']::before { background: #9eb4d0; }
 .kind-legend li[data-kind='Standards']::before { background: #b8c4d8; }
 .kind-legend li[data-kind='Research']::before { background: #a8c0bc; }

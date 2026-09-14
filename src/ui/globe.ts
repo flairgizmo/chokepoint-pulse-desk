@@ -711,7 +711,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.46 : 0.5,
+        opacity: this.lite ? 0.56 : 0.5,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -729,7 +729,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.5 : 0.54,
+        opacity: this.lite ? 0.6 : 0.54,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -747,7 +747,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.46 : 0.5,
+        opacity: this.lite ? 0.56 : 0.5,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -1149,9 +1149,9 @@ export class EarthGlobe {
 function kindColor(kind: City['kind']): number {
   switch (kind) {
     case 'Headquarters':
-      return 0xe8d4b0;
+      return 0xc4a070;
     case 'Banking':
-      return 0xd2c2a4;
+      return 0xb89a6e;
     case 'Lab':
       return 0x9eb4d0;
     case 'Standards':

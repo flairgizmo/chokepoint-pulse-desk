@@ -465,10 +465,10 @@ diffuseColor.rgb += envSamp * pow(liteFres, 1.85) * 0.72;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
-diffuseColor.a *= mix(0.62, 1.0, liteFres);`,
+diffuseColor.a *= mix(0.78, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-10';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-11';
 }
 
 function glassMat(
@@ -482,6 +482,7 @@ function glassMat(
     tint?: number;
     vertexColors?: boolean;
     window?: number;
+    writeDepth?: boolean;
   } = {},
 ): CutMat | THREE.MeshBasicMaterial {
   if (lite) {
@@ -492,7 +493,7 @@ function glassMat(
       vertexColors: Boolean(opts.vertexColors),
       transparent: opts.window != null,
       opacity: opts.window ?? 1,
-      depthWrite: opts.window == null || opts.window > 0.84,
+      depthWrite: Boolean(opts.writeDepth) || opts.window == null || opts.window > 0.84,
     });
     mat.toneMapped = false;
     if (opts.window != null) attachLiteFire(mat);
@@ -856,13 +857,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xf6f0e8,
-    window: lite ? 0.74 : undefined,
+    window: lite ? 0.78 : undefined,
+    writeDepth: lite,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xe8ddd0,
-    window: lite ? 0.74 : undefined,
+    window: lite ? 0.78 : undefined,
+    writeDepth: lite,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
