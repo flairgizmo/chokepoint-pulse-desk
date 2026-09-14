@@ -434,7 +434,12 @@ vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 2.45
   + vec3(1.0, 0.96, 0.88) * specCam * 1.85
   + vec3(0.7, 0.86, 1.0) * specFill * 1.35
   + vec3(0.96, 0.98, 1.0) * specBack * 1.2
-  + vec3(0.58, 0.8, 1.0) * specCool * 1.05;`;
+  + vec3(0.58, 0.8, 1.0) * specCool * 1.05;
+#ifdef USE_COLOR
+float kite = clamp(dot(vColor.rgb, vec3(0.3, 0.54, 0.16)), 0.0, 1.0);
+#else
+float kite = 0.42;
+#endif`;
 }
 
 function liteFireChunk(kind: LiteFire): string {
@@ -484,28 +489,28 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.038, 0.052, 0.082) * (0.4 + rim * 0.98);
+vec3 body = vec3(0.032, 0.046, 0.078) * (0.16 + kite * 1.55 + rim * 0.5);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.12;
-diffuseColor.rgb += glint * 1.22;
+diffuseColor.rgb += envRefl * (rim * 0.1 + kite * 0.08);
+diffuseColor.rgb += glint * (0.55 + kite * 0.9);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.08, 0.108, 0.155) * (0.52 + rim * 0.8);
+vec3 body = vec3(0.07, 0.1, 0.15) * (0.28 + kite * 1.15 + rim * 0.55);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.22;
-diffuseColor.rgb += glint * 1.35;
+diffuseColor.rgb += envRefl * (rim * 0.18 + kite * 0.12);
+diffuseColor.rgb += glint * (0.7 + kite * 0.85);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.048, 0.064, 0.098) * (0.42 + rim * 1.02);
+vec3 body = vec3(0.04, 0.055, 0.09) * (0.14 + kite * 1.72 + rim * 0.48);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.16;
-diffuseColor.rgb += glint * 1.38;
+diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.1);
+diffuseColor.rgb += glint * (0.5 + kite * 1.15);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -580,7 +585,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-45-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-46-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {

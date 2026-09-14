@@ -281,9 +281,14 @@ export function overledgerRoster(): string {
       : `<span class="ol-initials" aria-hidden="true">${esc(p.initials)}</span>`;
     return `<li>
       <button type="button" data-stage="person" data-stage-id="${esc(p.id)}">
-        ${face}
-        <strong>${esc(p.name)}</strong>
-        <span>${esc(b.role)}</span>
+        <span class="ol-still cinema-frame">
+          <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+          <span class="cinema-grain" aria-hidden="true"></span>
+          ${face}
+          <span class="people-wash" aria-hidden="true"></span>
+          <span class="people-credit"><strong>${esc(p.name)}</strong><em>${esc(b.role)}</em></span>
+          <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+        </span>
         <em>${esc(b.era)}</em>
       </button>
     </li>`;

@@ -1059,6 +1059,7 @@ function personCard(p: Person): string {
       <span class="cinema-grain" aria-hidden="true"></span>
       ${photo}
       <span class="people-wash" aria-hidden="true"></span>
+      <span class="people-credit"><strong>${esc(p.name)}</strong><em>${esc(p.role)}</em></span>
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     </span>
   </button>`;

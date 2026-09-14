@@ -2533,6 +2533,51 @@ button.chip {
   text-align: center;
 }
 
+.person-still .people-credit,
+.ol-still .people-credit {
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 1.15rem;
+}
+
+.person-still .people-credit strong,
+.ol-still .people-credit strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  letter-spacing: -0.04em;
+  color: #f4f7fb;
+  padding: 0;
+}
+
+.person-still .people-credit em,
+.ol-still .people-credit em {
+  display: block;
+  font-style: normal;
+  color: rgba(234, 241, 255, 0.78);
+  font-size: 0.72rem;
+  padding: 0;
+}
+
+.ol-still {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #070b14;
+}
+
+.ol-still .ol-face,
+.ol-still .ol-initials {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.ol-list button > em {
+  display: block;
+  padding: 0.7rem 1.05rem 1.05rem;
+}
+
 .people-tile span {
   padding: 0;
 }
