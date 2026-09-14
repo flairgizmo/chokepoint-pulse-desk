@@ -589,7 +589,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'intro-pod-list': PLATES.radio,
   'intro-pod-transcript': PLATES.library,
   'source-tokenomics': PLATES.exchange,
-  'intro-donate-list': PLATES.fiber,
+  'intro-donate-list': PLATES.canaryDay,
 }
 
 const PREFIXES = [

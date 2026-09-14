@@ -8476,7 +8476,7 @@ section.block .kicker {
   max-height: 4.6rem;
   aspect-ratio: 21 / 5;
   object-fit: cover;
-  filter: saturate(0.86) contrast(1.14) brightness(0.5);
+  filter: saturate(0.86) contrast(1.14) brightness(0.58);
 }
 
 .card-more .poster-copy,
@@ -8516,6 +8516,6 @@ section.block .kicker {
 .donate-list .poster-frame .photo-plate.donate-usdt-still img,
 .donate-list .poster-frame img.donate-usdt-still,
 .donate-list li:nth-child(3) .poster-frame .photo-plate.donate-code-still img {
-  filter: saturate(0.86) contrast(1.12) brightness(0.82);
+  filter: saturate(0.86) contrast(1.12) brightness(0.7);
 }
 

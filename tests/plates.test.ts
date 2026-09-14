@@ -427,6 +427,7 @@ describe('Topic plates', () => {
     expect(plateFor('source-tokenomics').src).toBe(PLATES.exchange.src);
     expect(renderDonate()).toContain('Published recipients');
     expect(renderDonate()).toContain('donate-usdt-still');
+    expect(plateFor('intro-donate-list').src).toBe(PLATES.canaryDay.src);
     expect(renderCity(cityById('london')!)).toContain('source-strip');
   });
 
