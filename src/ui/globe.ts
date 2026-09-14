@@ -408,8 +408,8 @@ function terminatorTex(): THREE.CanvasTexture {
 }
 
 /**
- * Gold hour on land only. The wedge stays sun-locked (mesh quaternion + termMap UV);
- * land UV is SphereGeometry of the earth-local direction so oceans do not wash orange.
+ * Sun-locked dusk wedge. Land in the gold band runs hotter; ocean keeps the crescent
+ * so the Atlantic rest pose still reads. NASA land mask — never a Canary mix.
  */
 function terminatorMat(align: THREE.Quaternion): THREE.ShaderMaterial {
   const termMap = terminatorTex();
@@ -447,10 +447,9 @@ function terminatorMat(align: THREE.Quaternion): THREE.ShaderMaterial {
         vec4 dusk = texture2D(termMap, vUv);
         float gold = smoothstep(0.07, 0.32, dusk.r - dusk.b * 0.88);
         float aNight = dusk.a * (1.0 - gold);
-        float aGold = dusk.a * gold;
-        float a = aNight * mix(0.9, 1.0, land) + aGold * mix(0.06, 1.22, land);
-        vec3 col = mix(dusk.rgb, vec3(1.0, 0.52, 0.16), gold * land * 0.42);
-        gl_FragColor = vec4(col, a);
+        float aGold = dusk.a * gold * mix(1.0, 1.32, land);
+        vec3 col = mix(dusk.rgb, vec3(1.0, 0.5, 0.14), gold * land * 0.38);
+        gl_FragColor = vec4(col, aNight + aGold);
       }`,
     transparent: true,
     depthWrite: false,
