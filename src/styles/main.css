@@ -1675,9 +1675,12 @@ main {
     grid-template-columns: 1fr 1fr 1fr 1fr;
   }
 
-  .essay-grid,
-  .triptych.hex {
+  .essay-grid {
     grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .triptych.hex {
+    grid-template-columns: 1fr 1fr;
   }
 
   .live-rail {
