@@ -1134,82 +1134,51 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   core.position.y = 0.22;
   core.userData.nodeId = 6;
   crystal.add(core);
-  const heartStamp: Array<CutMat | THREE.MeshBasicMaterial> = [];
-  let heartRoot: THREE.Group | null = null;
   let wellMat: THREE.MeshBasicMaterial | null = null;
   let wellRoot: THREE.Group | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
-    wellMat = new THREE.MeshBasicMaterial({
+    const wrapMat = new THREE.MeshBasicMaterial({
       map: glassTex(photo0, false, 'pav', 0, true),
       color: 0xffffff,
       side: THREE.DoubleSide,
       depthWrite: true,
     });
-    wellMat.toneMapped = false;
+    wrapMat.toneMapped = false;
+    wellMat = wrapMat;
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
-    const wellTopR = tableR * 0.5;
-    const wellTopY = tableY - 0.02;
-    const wellBotY = botY + 0.04;
-    for (let i = 0; i < sides; i++) {
-      const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const mesh = new THREE.Mesh(
-        triGeo(
-          Math.cos(a0) * wellTopR,
-          wellTopY,
-          Math.sin(a0) * wellTopR,
-          0,
-          wellBotY,
-          0,
-          Math.cos(a1) * wellTopR,
-          wellTopY,
-          Math.sin(a1) * wellTopR,
-          'pav',
-        ),
-        wellMat,
-      );
+    const wellTopR = tableR * 0.52;
+    const wellTopY = tableY - 0.016;
+    const wellBotR = tableR * 0.44;
+    const wellBotY = tableY - 0.13;
+    const addWell = (geo: THREE.BufferGeometry): void => {
+      const mesh = new THREE.Mesh(geo, wrapMat);
       mesh.userData.nodeId = 6;
       mesh.renderOrder = 0;
-      wellRoot.add(mesh);
-    }
-    crystal.add(wellRoot);
-    const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
-      tint: 0xffffff,
-    });
-    const heartPavB = glassMat(glassTex(photo0, false, 'pav', 1, true), true, {
-      tint: 0xffffff,
-    });
-    const heart = new THREE.Group();
-    heart.scale.setScalar(1.02);
-    heart.rotation.set(0.08, 0.28, 0.04);
-    heart.position.set(0.016, 0.07, 0.01);
-    const addHeart = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial): void => {
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.userData.nodeId = 6;
-      heart.add(mesh);
+      wellRoot?.add(mesh);
     };
     for (let i = 0; i < sides; i++) {
       const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
       const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const x0 = Math.cos(a0) * eqR;
-      const z0 = Math.sin(a0) * eqR;
-      const x1 = Math.cos(a1) * eqR;
-      const z1 = Math.sin(a1) * eqR;
-      const px0 = Math.cos(a0) * pavR;
-      const pz0 = Math.sin(a0) * pavR;
-      const px1 = Math.cos(a1) * pavR;
-      const pz1 = Math.sin(a1) * pavR;
-      const pav = i % 2 ? heartPavB : heartPavA;
-      addHeart(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav);
-      addHeart(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav);
-      addHeart(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav);
+      const tx0 = Math.cos(a0) * wellTopR;
+      const tz0 = Math.sin(a0) * wellTopR;
+      const tx1 = Math.cos(a1) * wellTopR;
+      const tz1 = Math.sin(a1) * wellTopR;
+      const bx0 = Math.cos(a0) * wellBotR;
+      const bz0 = Math.sin(a0) * wellBotR;
+      const bx1 = Math.cos(a1) * wellBotR;
+      const bz1 = Math.sin(a1) * wellBotR;
+      addWell(triGeo(tx0, wellTopY, tz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, 'pav'));
+      addWell(triGeo(tx0, wellTopY, tz0, bx1, wellBotY, bz1, tx1, wellTopY, tz1, 'pav'));
     }
-    crystal.add(heart);
-    heartRoot = heart;
+    const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wrapMat);
+    wellFloor.position.y = wellBotY;
+    wellFloor.userData.nodeId = 6;
+    wellFloor.renderOrder = 0;
+    wellRoot.add(wellFloor);
+    crystal.add(wellRoot);
     core.visible = false;
-    heartStamp.push(heartPavA, heartPavB);
     const fires = [
       fireSprite(0xffffff, 0, BOT_Y + 0.1, 0.02, 0.58),
       fireSprite(0xb4dcff, 0.05, BOT_Y + 0.06, -0.03, 0.34),
@@ -1326,7 +1295,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     rt2,
     ...cards,
     table,
-    ...(heartRoot ? [heartRoot] : []),
     ...(wellRoot ? [wellRoot] : []),
   ];
   const raycaster = new THREE.Raycaster();
@@ -1416,16 +1384,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
     if (wellMat) swapMap(wellMat, glassTex(photo, on, 'pav', 0, true));
-    if (heartStamp.length >= 2) {
-      const kinds = [
-        ['pav', 0, on],
-        ['pav', 1, on],
-      ] as const;
-      heartStamp.forEach((mat, i) => {
-        const [cut, lane, lit] = kinds[i % 2];
-        swapMap(mat, glassTex(photo, lit, cut, lane, true));
-      });
-    }
     for (const mat of [crownA, crownB]) {
       if (mat instanceof THREE.MeshPhysicalMaterial) {
         mat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
@@ -1492,9 +1450,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.rotation.x = 0;
     crystal.rotation.y = reduced ? 0 : Math.sin((now - t0) / 2800) * 0.1;
-    if (heartRoot) {
-      heartRoot.rotation.y = 0.28 + (reduced ? 0 : Math.sin((now - t0) / 2600) * 0.05);
-    }
     culetFires.forEach((spark, i) => {
       const fire = spark.material as THREE.SpriteMaterial;
       const beat = reduced ? 0.52 : 0.5 + Math.abs(Math.sin((now - t0) / 1400 + i * 0.9)) * 0.28;
