@@ -704,17 +704,17 @@ function triGeo(
 type WellLane = 0 | 1 | 2 | 3;
 
 function wellGrade(lane: WellLane): GlassGrade {
-  if (lane === 0) return { sx: 0.12, sy: 0.06, sw: 0.38, sh: 0.5, brightness: 1.12, contrast: 1.18, saturate: 0.88, multiply: 0.12 };
-  if (lane === 1) return { sx: 0.36, sy: 0.1, sw: 0.36, sh: 0.46, brightness: 1.0, contrast: 1.22, saturate: 0.8, multiply: 0.14 };
-  if (lane === 2) return { sx: 0.56, sy: 0.08, sw: 0.34, sh: 0.48, brightness: 0.86, contrast: 1.26, saturate: 0.74, multiply: 0.16 };
-  return { sx: 0.22, sy: 0.26, sw: 0.4, sh: 0.4, brightness: 0.94, contrast: 1.2, saturate: 0.78, multiply: 0.14 };
+  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 1.1, contrast: 1.16, saturate: 0.86, multiply: 0.12 };
+  if (lane === 1) return { sx: 0.38, sy: 0.06, sw: 0.3, sh: 0.7, brightness: 0.98, contrast: 1.2, saturate: 0.8, multiply: 0.14 };
+  if (lane === 2) return { sx: 0.58, sy: 0.05, sw: 0.3, sh: 0.7, brightness: 0.86, contrast: 1.24, saturate: 0.74, multiply: 0.16 };
+  return { sx: 0.24, sy: 0.1, sw: 0.34, sh: 0.68, brightness: 0.94, contrast: 1.18, saturate: 0.78, multiply: 0.14 };
 }
 
 function wellCanvas(photo: HTMLImageElement | null, on: boolean, lane: WellLane): HTMLCanvasElement {
   const grade = wellGrade(lane);
   const c = document.createElement('canvas');
   c.width = 1024;
-  c.height = 512;
+  c.height = 768;
   const ctx = c.getContext('2d');
   if (!ctx) return c;
   ctx.fillStyle = '#100c0a';
@@ -1259,9 +1259,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       dy: number,
       dz: number,
       mat: THREE.MeshBasicMaterial,
+      v0: number,
+      v1: number,
     ): void => {
-      addWell(wellTri(ax, ay, az, bx, by, bz, cx, cy, cz, 0, 0, 0, 1, 1, 1), mat);
-      addWell(wellTri(ax, ay, az, cx, cy, cz, dx, dy, dz, 0, 0, 1, 1, 1, 0), mat);
+      addWell(wellTri(ax, ay, az, bx, by, bz, cx, cy, cz, 0, v0, 0, v1, 1, v1), mat);
+      addWell(wellTri(ax, ay, az, cx, cy, cz, dx, dy, dz, 0, v0, 1, v1, 1, v0), mat);
     };
     for (let i = 0; i < sides; i++) {
       const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
@@ -1279,8 +1281,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       const bz0 = Math.sin(a0) * wellBotR;
       const bx1 = Math.cos(a1) * wellBotR;
       const bz1 = Math.sin(a1) * wellBotR;
-      kite(tx0, wellTopY, tz0, mx0, wellMidY, mz0, mx1, wellMidY, mz1, tx1, wellTopY, tz1, mat);
-      kite(mx0, wellMidY, mz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, mx1, wellMidY, mz1, mat);
+      kite(tx0, wellTopY, tz0, mx0, wellMidY, mz0, mx1, wellMidY, mz1, tx1, wellTopY, tz1, mat, 0, 0.5);
+      kite(mx0, wellMidY, mz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, mx1, wellMidY, mz1, mat, 0.5, 1);
     }
     const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wraps[0]);
     wellFloor.position.y = wellBotY;
