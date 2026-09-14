@@ -1191,13 +1191,18 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     table.material.polygonOffsetUnits = -2;
   }
   crystal.add(table);
-  const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
+  const addCut = (
+    geo: THREE.BufferGeometry,
+    mat: CutMat | THREE.MeshBasicMaterial,
+    list: THREE.Mesh[],
+    withHalo = true,
+  ): void => {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData.nodeId = 6;
     mesh.renderOrder = list === pavs ? 0 : 1;
     crystal.add(mesh);
     list.push(mesh);
-    if (haloMat && list !== pavs) {
+    if (haloMat && withHalo && list !== pavs) {
       const halo = new THREE.Mesh(geo, haloMat);
       halo.userData.nodeId = 6;
       halo.renderOrder = 4;
@@ -1231,8 +1236,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pav = i % 2 ? pavB : pavA;
     addCut(triGeo(mx0, midY, mz0, x0, girdleTop, z0, x1, girdleTop, z1, 'crown'), crown, crowns);
     addCut(triGeo(mx0, midY, mz0, x1, girdleTop, z1, mx1, midY, mz1, 'crown'), crown, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns);
+    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns, false);
+    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns, false);
     addCut(triGeo(x0, girdleTop, z0, x0, girdleBot, z0, x1, girdleBot, z1, 'crown'), girdleIce, crowns);
     addCut(triGeo(x0, girdleTop, z0, x1, girdleBot, z1, x1, girdleTop, z1, 'crown'), girdleIce, crowns);
     addCut(triGeo(x0, girdleBot, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
