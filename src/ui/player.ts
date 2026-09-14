@@ -63,9 +63,9 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
     )
     .join('');
   return `
-    <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-next="${next ? `/podcast/${esc(next.id)}` : ''}">
+    <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-poster="${esc(ep.posterSrc)}" data-next="${next ? `/podcast/${esc(next.id)}` : ''}">
       <div class="player-stage">
-        <img class="player-still" src="${esc(ep.posterSrc)}" alt="" width="1920" height="1080" />
+        <img class="player-still" src="${esc(BED_STILL[ep.bed].src)}" alt="" width="1920" height="1080" />
         <canvas class="player-wave" data-wave aria-hidden="true"></canvas>
         <div class="player-scrim">
           <p class="kicker">Episode ${String(ep.n).padStart(2, '0')} · James Hale and Amelia Crowe</p>
@@ -223,7 +223,7 @@ export function relatedEpisodeCard(id: string): string {
   const ep = episodeById(id);
   if (!ep) return '';
   return `<a class="pod-tease" href="/podcast/${esc(ep.id)}">
-    <img src="${esc(ep.posterSrc)}" alt="" width="640" height="360" />
+    <img src="${esc(BED_STILL[ep.bed].src)}" alt="" width="640" height="360" />
     <span>
       <p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
       <strong>${esc(ep.title)}</strong>
