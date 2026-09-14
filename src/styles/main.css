@@ -828,7 +828,7 @@ main {
 
 .wordmarks {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.75rem;
   list-style: none;
   padding: 0;
@@ -836,12 +836,12 @@ main {
 }
 
 .wordmarks-inst {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .wordmark {
   display: flex;
-  min-height: 7.6rem;
+  min-height: 9.2rem;
   padding: 0;
   border-radius: 18px;
   border: 1px solid var(--line);
@@ -4362,16 +4362,6 @@ body.stage-open .grok {
 
   .wordmark {
     min-height: 5.6rem;
-  }
-}
-
-@media (min-width: 960px) and (max-width: 1199px) {
-  .wordmarks-banks {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .wordmarks-inst {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
