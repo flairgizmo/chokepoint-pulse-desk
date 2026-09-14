@@ -484,16 +484,16 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.022, 0.032, 0.055) * (0.32 + rim * 1.05);
+vec3 body = vec3(0.038, 0.052, 0.082) * (0.4 + rim * 0.98);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.1;
+diffuseColor.rgb += envRefl * rim * 0.12;
 diffuseColor.rgb += glint * 1.22;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.06, 0.08, 0.12) * (0.48 + rim * 0.85);
+vec3 body = vec3(0.08, 0.108, 0.155) * (0.52 + rim * 0.8);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * rim * 0.22;
 diffuseColor.rgb += glint * 1.35;
@@ -502,9 +502,9 @@ diffuseColor.a = 1.0;`;
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.028, 0.04, 0.068) * (0.34 + rim * 1.12);
+vec3 body = vec3(0.048, 0.064, 0.098) * (0.42 + rim * 1.02);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.14;
+diffuseColor.rgb += envRefl * rim * 0.16;
 diffuseColor.rgb += glint * 1.38;
 diffuseColor.a = 1.0;`;
   }
@@ -580,7 +580,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-44-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-45-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
