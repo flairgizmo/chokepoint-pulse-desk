@@ -384,16 +384,18 @@ function dykBlock(): string {
       (d) => `<li class="dyk-card">
         <details>
           <summary class="dyk-q">${posterFrame(photoFigure(dykPlate(d), 'dyk-still'), `<span class="kicker">${esc(d.category)}</span><span class="dyk-q-label">${esc(d.q)}</span>`)}</summary>
-          <p>${esc(d.a)}</p>
+          ${posterFrame(
+            photoFigure(plateFor(`dyk-a-${d.id}`), 'dyk-answer-still'),
+            `<p>${esc(d.a)}</p><a class="text-link" href="${esc(d.to || '/')}">${esc(d.cta || 'Open')} →</a>`,
+          )}
         </details>
-        <a class="text-link" href="${esc(d.to || '/')}">${esc(d.cta || 'Open')} →</a>
       </li>`,
     )
     .join('');
   return `<section class="dyk">
     ${cinemaIntro('intro-dyk', `${kicker('Did you know')}<h2 class="display">Facts that sit beside the record.</h2>`)}
     <ul class="dyk-list">${list}</ul>
-    <p><a class="text-link" href="/news">The official wire →</a></p>
+    ${cinemaStrip('cta-dyk-wire', `<p><a class="text-link" href="/news">The official wire →</a></p>`, 'source-strip')}
   </section>`;
 }
 
@@ -598,7 +600,10 @@ export function renderHome(): string {
           diagramFigure(`essay-${c.id}`, 'page', c.kicker),
           `${kicker(c.kicker)}<h3 class="display">${esc(c.title)}</h3><p>${esc(teaser)}</p>`,
         )}
-        <button type="button" class="text-link" data-stage="chapter" data-stage-id="${esc(c.id)}">Read the argument →</button>
+        <button type="button" class="paper-door" data-stage="chapter" data-stage-id="${esc(c.id)}">${posterFrame(
+          photoFigure(plateFor(`read-${c.id}`), 'door-still'),
+          '<span>Read the argument →</span>',
+        )}</button>
       </article>`;
     })
     .join('');
@@ -747,17 +752,17 @@ export function renderHome(): string {
         `${kicker('Then and now')}<h2 class="display">From ISO in 2015 <span class="display-mute">to live sterling in 2025.</span></h2>`,
       )}
       <ol class="timeline">${beats}</ol>
-      <p><a class="text-link" href="/story">Open the scored rail →</a></p>
+      ${cinemaStrip('cta-story', `<p><a class="text-link" href="/story">Open the scored rail →</a></p>`, 'source-strip')}
     </section>
 
     ${renderThisMonth(true)}${renderCalendar(true)}${renderVoices()}
     <section class="triptych hex">
-      <article class="panel">${posterFrame(diagramFigure('home-thesis', 'page', 'Thesis'), `${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Overledger connects DLT domains and legacy cores without minting a native settlement chain. The 2018 whitepaper’s problem is single-ledger dependency. Tasca called interoperability a risky necessity. Verdian incorporated a company to ship the gate.</p>`)}<a class="text-link" href="/vision">Vision →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-satp', 'page', 'SATP'), `${kicker('SATP')}<h2 class="display">How an asset leaves one network</h2><p>Secure Asset Transfer Protocol is IETF work. Quant authors appear on the drafts; Facer is a co-chair. Stage 3 is burn-and-mint under two-phase commit, so the asset exists in one network when the transfer ends. SATP is not a Quant SKU.</p>`)}<a class="text-link" href="/standards">Standards →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-gbtd', 'page', 'GBTD'), `${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>On 26 September 2025 UK Finance selected Quant as technology partner for tokenised deposits with six commercial banks. The banks owe the holder. Overledger and PayScript are the named foundation. GBTD is not a CBDC.</p>`)}<a class="text-link" href="/cbdc">The distinction →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-tokenomics', 'page', 'QNT'), `${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>QNT is an ERC-20 at 0x4a220E6096B25EADb88358cb44068A3248254675. Unsold allocation was burned in 2018. Overledger licences settle in it. Live circulating comes from CoinGecko. Utility token, not equity in Quant Network.</p>`)}<a class="text-link" href="/markets#tokenomics">Markets →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-stack', 'page', 'Stack'), `${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, Layer 2.5 rollup (Fusion mainnet, 2 June 2026), programmability on the deposit. Oracle and Murex are named vendors sitting on that stack, not on a new chain.</p>`)}<a class="text-link" href="/technology">The stack →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-programmes', 'page', 'Rooms'), `${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2><p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source.</p>`)}<a class="text-link" href="/programmes">Programmes →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-thesis', 'page', 'Thesis'), `${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Overledger connects DLT domains and legacy cores without minting a native settlement chain. The 2018 whitepaper’s problem is single-ledger dependency. Tasca called interoperability a risky necessity. Verdian incorporated a company to ship the gate.</p><a class="text-link" href="/vision">Vision →</a>`)}</article>
+      <article class="panel">${posterFrame(diagramFigure('home-satp', 'page', 'SATP'), `${kicker('SATP')}<h2 class="display">How an asset leaves one network</h2><p>Secure Asset Transfer Protocol is IETF work. Quant authors appear on the drafts; Facer is a co-chair. Stage 3 is burn-and-mint under two-phase commit, so the asset exists in one network when the transfer ends. SATP is not a Quant SKU.</p><a class="text-link" href="/standards">Standards →</a>`)}</article>
+      <article class="panel">${posterFrame(diagramFigure('home-gbtd', 'page', 'GBTD'), `${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>On 26 September 2025 UK Finance selected Quant as technology partner for tokenised deposits with six commercial banks. The banks owe the holder. Overledger and PayScript are the named foundation. GBTD is not a CBDC.</p><a class="text-link" href="/cbdc">The distinction →</a>`)}</article>
+      <article class="panel">${posterFrame(diagramFigure('home-tokenomics', 'page', 'QNT'), `${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>QNT is an ERC-20 at 0x4a220E6096B25EADb88358cb44068A3248254675. Unsold allocation was burned in 2018. Overledger licences settle in it. Live circulating comes from CoinGecko. Utility token, not equity in Quant Network.</p><a class="text-link" href="/markets#tokenomics">Markets →</a>`)}</article>
+      <article class="panel">${posterFrame(diagramFigure('home-stack', 'page', 'Stack'), `${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, Layer 2.5 rollup (Fusion mainnet, 2 June 2026), programmability on the deposit. Oracle and Murex are named vendors sitting on that stack, not on a new chain.</p><a class="text-link" href="/technology">The stack →</a>`)}</article>
+      <article class="panel">${posterFrame(diagramFigure('home-programmes', 'page', 'Rooms'), `${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2><p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source.</p><a class="text-link" href="/programmes">Programmes →</a>`)}</article>
     </section>
 
     ${constellation()}${featuredStory()}${notesReel()}${podcastTease()}${quoteRail('home', 10)}${eraStrip()}${dykBlock()}
@@ -1179,7 +1184,10 @@ function paperCard(p: Paper): string {
       <summary>${cinemaSummary(`says-${p.id}`, 'What the document says')}</summary>
       ${essayParas(p.lede)}
     </details>
-    <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read the filing →</button>
+    <button type="button" class="paper-door" data-stage="paper" data-stage-id="${esc(p.id)}">${posterFrame(
+      photoFigure(plateFor(`read-${p.id}`), 'door-still'),
+      '<span>Read the filing →</span>',
+    )}</button>
   </article>`;
 }
 
@@ -1530,17 +1538,15 @@ export function renderLiveRail(): string {
     <article class="panel" id="home-tape">
       ${posterFrame(
         photoFigure(plateFor('markets', 'qnt'), 'markets-still'),
-        `${kicker('Live QNT')}<p class="stat" data-home-price>—</p><p class="subtle" data-home-meta>Live print · Coinbase, Kraken or Binance · CoinGecko supply</p>`,
+        `${kicker('Live QNT')}<p class="stat" data-home-price>—</p><p class="subtle" data-home-meta>Live print · Coinbase, Kraken or Binance · CoinGecko supply</p><a class="text-link" href="/markets">Full market →</a>`,
       )}
-      <a class="text-link" href="/markets">Full market →</a>
     </article>
     <article class="panel live-news-panel">
       ${posterFrame(
         photoFigure(plateFor('home-wire'), 'live-news-still'),
-        `${kicker('On Quant, right now')}<p class="subtle" data-home-news-meta>Headlines that name Quant, Overledger or QNT.</p>`,
+        `${kicker('On Quant, right now')}<p class="subtle" data-home-news-meta>Headlines that name Quant, Overledger or QNT.</p><a class="text-link" href="/news">News →</a>`,
       )}
       <ul class="headlines compact" data-home-news><li class="empty-note">Headlines load when the wire answers.</li></ul>
-      <a class="text-link" href="/news">News →</a>
     </article>
   </section>`;
 }

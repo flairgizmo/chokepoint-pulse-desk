@@ -607,17 +607,22 @@ export function addCinemaHaze(scene: THREE.Scene, grade: 'cool' | 'warm' = 'cool
 export function cinemaChrome(
   lite: boolean,
   envSrc?: string,
-): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
-  return lite
-    ? duskSheen({ color: 0x3d4f6c, reflectivity: 0.5, envSrc })
-    : new THREE.MeshPhysicalMaterial({
-        color: 0x8aa3c8,
-        metalness: 0.92,
-        roughness: 0.16,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.12,
-        envMapIntensity: 1.85,
-      });
+  lit = false,
+): THREE.MeshBasicMaterial | THREE.MeshLambertMaterial | THREE.MeshPhysicalMaterial {
+  if (!lite) {
+    return new THREE.MeshPhysicalMaterial({
+      color: 0x8aa3c8,
+      metalness: 0.92,
+      roughness: 0.16,
+      clearcoat: 0.8,
+      clearcoatRoughness: 0.12,
+      envMapIntensity: 1.85,
+    });
+  }
+  if (lit) {
+    return new THREE.MeshLambertMaterial({ color: 0x3d4f6c });
+  }
+  return duskSheen({ color: 0x3d4f6c, reflectivity: 0.5, envSrc });
 }
 
 /** Darkened photograph on a wall. No Mix — env on a photo map double-exposes. */
@@ -710,13 +715,15 @@ export function makeCinemaPlate(
   root.add(face);
   const stock = new THREE.Mesh(
     new THREE.BoxGeometry(w, h, depth),
-    new THREE.MeshBasicMaterial({ color: 0x05070c }),
+    lite && lit
+      ? new THREE.MeshLambertMaterial({ color: 0x121826 })
+      : new THREE.MeshBasicMaterial({ color: 0x05070c }),
   );
   root.add(stock);
   if (!flush) {
     const chrome = new THREE.Mesh(
       new THREE.BoxGeometry(w + 0.04, h + 0.06, 0.02),
-      cinemaChrome(lite, envSrc),
+      cinemaChrome(lite, envSrc, lit),
     );
     chrome.position.z = -(depth / 2 + 0.015);
     root.add(chrome);

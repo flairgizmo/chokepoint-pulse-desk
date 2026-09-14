@@ -429,6 +429,12 @@ describe('Topic plates', () => {
     expect(renderDonate()).toContain('donate-usdt-still');
     expect(plateFor('intro-donate-list').src).toBe(PLATES.canaryDay.src);
     expect(renderCity(cityById('london')!)).toContain('source-strip');
+    expect(renderTechnology()).toContain('tech-cell-still');
+    expect(renderResearch()).toContain('door-still');
+    expect(renderHome()).toContain('door-still');
+    expect(renderHome()).toContain('dyk-answer-still');
+    expect(renderHome()).toContain('Vision →');
+    expect(plateFor('cta-story').src).toBe(PLATES.history.src);
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

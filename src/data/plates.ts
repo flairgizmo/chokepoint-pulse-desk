@@ -590,6 +590,8 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'intro-pod-transcript': PLATES.library,
   'source-tokenomics': PLATES.exchange,
   'intro-donate-list': PLATES.canaryDay,
+  'cta-story': PLATES.history,
+  'cta-dyk-wire': PLATES.newsroom,
 }
 
 const PREFIXES = [

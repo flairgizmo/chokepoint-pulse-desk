@@ -2972,6 +2972,8 @@ button.chip {
 .token-lab > .cinema-filter,
 .city-essay > .cinema-filter,
 .chapter.city-essay > .cinema-filter,
+.dyk > .cinema-filter,
+.timeline-wrap > .cinema-filter,
 .cinema-tape > .cinema-filter,
 .stack-exploded > .cinema-filter,
 .cinema-wire > .cinema-filter,
@@ -8456,19 +8458,19 @@ section.block .kicker {
   padding: 0.85rem 1.15rem 1rem;
 }
 
-.card-more .poster-frame,
-.person-more .poster-frame,
-.paper-more .poster-frame {
+.card-more > summary .poster-frame,
+.person-more > summary .poster-frame,
+.paper-more > summary .poster-frame {
   min-height: 0;
   margin: 0;
 }
 
-.card-more .poster-frame .photo-plate.summary-still img,
-.person-more .poster-frame .photo-plate.summary-still img,
-.paper-more .poster-frame .photo-plate.summary-still img,
-.card-more .poster-frame img,
-.person-more .poster-frame img,
-.paper-more .poster-frame img {
+.card-more > summary .poster-frame .photo-plate.summary-still img,
+.person-more > summary .poster-frame .photo-plate.summary-still img,
+.paper-more > summary .poster-frame .photo-plate.summary-still img,
+.card-more > summary .poster-frame img,
+.person-more > summary .poster-frame img,
+.paper-more > summary .poster-frame img {
   display: block;
   width: 100%;
   min-height: 0;
@@ -8479,16 +8481,16 @@ section.block .kicker {
   filter: saturate(0.86) contrast(1.14) brightness(0.58);
 }
 
-.card-more .poster-copy,
-.person-more .poster-copy,
-.paper-more .poster-copy {
+.card-more > summary .poster-copy,
+.person-more > summary .poster-copy,
+.paper-more > summary .poster-copy {
   padding: 1.05rem 1.05rem 0.55rem;
   background: linear-gradient(180deg, transparent 0%, rgba(7, 11, 20, 0.9) 58%);
 }
 
-.card-more .poster-copy span,
-.person-more .poster-copy span,
-.paper-more .poster-copy span {
+.card-more > summary .poster-copy span,
+.person-more > summary .poster-copy span,
+.paper-more > summary .poster-copy span {
   color: #f4f7fb;
   font-weight: 650;
   font-size: 0.92rem;
@@ -8517,5 +8519,94 @@ section.block .kicker {
 .donate-list .poster-frame img.donate-usdt-still,
 .donate-list li:nth-child(3) .poster-frame .photo-plate.donate-code-still img {
   filter: saturate(0.86) contrast(1.12) brightness(0.7);
+}
+
+.tech-grid .poster-frame {
+  min-height: 16rem;
+  margin: 0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.tech-grid .poster-frame .photo-plate.tech-cell-still img,
+.tech-grid .poster-frame img {
+  display: block;
+  width: 100%;
+  height: 18rem;
+  min-height: 16rem;
+  max-height: 22rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.62);
+}
+
+.tech-grid .poster-copy {
+  padding: 3.2rem 1.1rem 1rem;
+}
+
+.tech-grid .poster-copy h3,
+.tech-grid .poster-copy p {
+  color: #f4f7fb;
+}
+
+.paper-door {
+  display: block;
+  width: 100%;
+  margin-top: 0.45rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.paper-door .poster-frame {
+  min-height: 0;
+  margin: 0;
+}
+
+.paper-door .poster-frame .photo-plate.door-still img,
+.paper-door .poster-frame img {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  height: 4.6rem;
+  max-height: 4.6rem;
+  aspect-ratio: 21 / 5;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.5);
+}
+
+.paper-door .poster-copy {
+  padding: 1.05rem 1.05rem 0.55rem;
+}
+
+.paper-door .poster-copy span {
+  color: #f4f7fb;
+  font-weight: 650;
+}
+
+.door-still figcaption,
+.tech-cell-still figcaption,
+.dyk-answer-still figcaption {
+  display: none;
+}
+
+.dyk-card details .poster-frame .photo-plate.dyk-answer-still img,
+.dyk-card .poster-frame .photo-plate.dyk-answer-still img {
+  display: block;
+  width: 100%;
+  height: 14rem;
+  min-height: 12rem;
+  max-height: 18rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
+.dyk-card details > .poster-frame {
+  min-height: 12rem;
+  margin: 0.35rem 0 0;
 }
 

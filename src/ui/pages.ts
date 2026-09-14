@@ -212,10 +212,10 @@ export function renderTechnology(): string {
       <details class="card-more"${i < 2 ? ' open' : ''}>
         <summary>${cinemaSummary(`chapter-more-${t.id}`, 'Chapter')}</summary>
         <div class="tech-grid">
-          <div><h3>What it does</h3><p>${esc(t.does)}</p></div>
-          <div><h3>Why it exists</h3><p>${esc(t.why)}</p></div>
-          <div><h3>Standards</h3><p>${esc(t.standards)}</p></div>
-          <div><h3>What it is not</h3><p>${esc(t.isNot)}</p></div>
+          ${posterFrame(photoFigure(plateFor(`tech-does-${t.id}`), 'tech-cell-still'), `<h3>What it does</h3><p>${esc(t.does)}</p>`)}
+          ${posterFrame(photoFigure(plateFor(`tech-why-${t.id}`), 'tech-cell-still'), `<h3>Why it exists</h3><p>${esc(t.why)}</p>`)}
+          ${posterFrame(photoFigure(plateFor(`tech-std-${t.id}`), 'tech-cell-still'), `<h3>Standards</h3><p>${esc(t.standards)}</p>`)}
+          ${posterFrame(photoFigure(plateFor(`tech-not-${t.id}`), 'tech-cell-still'), `<h3>What it is not</h3><p>${esc(t.isNot)}</p>`)}
         </div>
         <div class="stage-related">${relatedButtons(chipsFromIds(t.related))}</div>
       </details>
