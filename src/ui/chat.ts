@@ -1,6 +1,6 @@
 import { answerFromDesk, type ChatTurn } from '../modules/assistant';
 import { photoFigure, plateFor } from '../data/plates';
-import { posterFrame } from './diagrams';
+import { cinemaStrip, posterFrame } from './diagrams';
 import { esc } from './html';
 
 const PROMPTS = ['What is GBTD?', 'What is Overledger?', 'Why does QNT exist?', 'What is PayScript?'];
@@ -65,9 +65,12 @@ export function chatMarkup(): string {
       <ol class="grok-log" id="grok-log">
         <li class="grok-assistant grok-welcome" data-grok-welcome>
           ${posterFrame(photoFigure(plateFor('grok-welcome'), 'grok-welcome-still'), '<p>Ask about Overledger, GBTD, QNT, SATP, Fusion, or the people who signed the papers. I keep the thread as you move through the desk.</p>')}
-          <div class="grok-chips">
+          ${cinemaStrip(
+            'grok-chips',
+            `<div class="grok-chips">
             ${PROMPTS.map((p) => `<button type="button" class="grok-chip" data-grok-prompt="${esc(p)}">${esc(p)}</button>`).join('')}
-          </div>
+          </div>`,
+          )}
         </li>
       </ol>
       <form id="grok-form">

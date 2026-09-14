@@ -592,6 +592,13 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'intro-donate-list': PLATES.canaryDay,
   'cta-story': PLATES.history,
   'cta-dyk-wire': PLATES.newsroom,
+  'back-library': PLATES.library,
+  'back-earth': PLATES.city,
+  'back-wire': PLATES.newsroom,
+  'donate-warn': PLATES.exchange,
+  'gone-mast': PLATES.radio,
+  'notfound-mast': PLATES.gateway,
+  'grok-chips': PLATES.cambridge,
 }
 
 const PREFIXES = [

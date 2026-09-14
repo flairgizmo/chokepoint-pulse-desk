@@ -91,6 +91,10 @@ function cinemaDiagram(stillKey: string, svg: string, alt: string): string {
   </figure>`;
 }
 
+function cinemaBack(href: string, label: string, plateKey: string): string {
+  return cinemaStrip(plateKey, `<p class="source-row"><a class="text-link" href="${esc(href)}">${esc(label)}</a></p>`, 'source-strip');
+}
+
 export function constellation(): string {
   const nodes: Array<[string, string, string]> = [
     ['Overledger', sources.overledger, 'Gateway OS'],
@@ -475,9 +479,9 @@ export function latestStrip(): string {
           photoFigure(plateFor(n.id, n.source, n.title), 'month-still'),
           `<time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
         <p class="mono">${esc(n.source)}</p>
-        <h3>${esc(n.title)}</h3><p>${esc(n.body.length > 110 ? `${n.body.slice(0, 110).trim()}…` : n.body)}</p>`,
+        <h3>${esc(n.title)}</h3><p>${esc(n.body.length > 110 ? `${n.body.slice(0, 110).trim()}…` : n.body)}</p>
+        ${extLink(sourceUrl(n.href), 'Open the source')}`,
         )}
-        ${extLink(sourceUrl(n.href), 'Open the source')}
       </li>`;
     })
     .join('');
@@ -1077,9 +1081,13 @@ function personCard(p: Person): string {
     .join('');
   const officialHref = p.href ? sourceUrl(p.href) : '';
   const official = officialHref
-    ? `<p class="person-cta">${extLink(officialHref, 'Open original')}</p>`
+    ? cinemaStrip(`person-orig-${p.id}`, `<p class="source-row person-cta">${extLink(officialHref, 'Open original')}</p>`, 'source-strip')
     : p.id === 'lovesey'
-      ? '<p class="tiny">Monogram only — Quant has not published a portrait.</p>'
+      ? cinemaStrip(
+          'person-lovesey-mono',
+          '<p class="source-row tiny">Monogram only — Quant has not published a portrait.</p>',
+          'source-strip',
+        )
       : '';
   const photo = p.photo
     ? `<img class="people-face" src="${esc(p.photo)}" alt="${esc(p.name)}" width="320" height="400" />`
@@ -1104,7 +1112,7 @@ function personCard(p: Person): string {
       <details class="person-more">
         <summary>${cinemaSummary(`record-${p.id}`, 'Record')}</summary>
         <p>${esc(p.bio)}</p>
-        ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
+        ${p.note ? cinemaStrip(`person-note-${p.id}`, `<p class="source-row">${esc(p.note)}</p>`, 'source-strip') : ''}
         ${official}
         ${spoken ? `<div class="person-quotes">${spoken}</div>` : ''}
       </details>
@@ -1203,9 +1211,20 @@ export function renderRead(id: string): string {
         `<p class="kicker">${esc(p.kind)} · ${esc(p.year)}</p><h2>${esc(p.title)}</h2><p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p><p>${esc(lead)}</p>`,
       )}
       ${essayParas(rest)}
-      <p>The original sits with the publisher. Open it if you want the sentence in its first room.</p>
-      ${href?.startsWith('http') ? `<p>${extLink(href, 'Open the original')}</p>` : '<p class="note">Held locally on the live QntDesk library when a PDF exists; this build points at the publisher URL when it is public.</p>'}
-      <p><a class="text-link" href="/research">← Library</a></p>
+      ${
+        href?.startsWith('http')
+          ? cinemaStrip(
+              `read-orig-${p.id}`,
+              `<p class="source-row">The original sits with the publisher. ${extLink(href, 'Open the original')}</p>`,
+              'source-strip',
+            )
+          : cinemaStrip(
+              `read-held-${p.id}`,
+              '<p class="source-row">Held locally on the live QntDesk library when a PDF exists; this build points at the publisher URL when it is public.</p>',
+              'source-strip',
+            )
+      }
+      ${cinemaBack('/research', '← Library', 'back-library')}
     </article>`;
 }
 
@@ -1519,9 +1538,8 @@ function renderVoices(): string {
     (v) => `<article class="voice cinema-voice">
       ${posterFrame(
         photoFigure(plateFor(v.handle, v.name), 'voice-still'),
-        `<h3>${esc(v.name)} <span class="mono">${esc(v.handle)}</span></h3><p>${esc(v.blurb)}</p>`,
+        `<h3>${esc(v.name)} <span class="mono">${esc(v.handle)}</span></h3><p>${esc(v.blurb)}</p>${extLink(v.href, v.handle)}`,
       )}
-      ${extLink(v.href, v.handle)}
     </article>`,
   ).join('');
   return `<section class="voices">
@@ -1561,7 +1579,11 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
     'news',
   )}
   ${stillStrip('news', 'Photographs on the map')}
-  <p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
+  ${cinemaStrip(
+    'gone-mast',
+    `<p class="masthead-pills">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`,
+    'mast-strip',
+  )}`;
 }
 
 function essayParas(text: string): string {
@@ -1615,7 +1637,7 @@ export function renderCity(city: City): string {
       )}
       <div class="city-neighbor-grid">${neighbors}</div>
     </section>
-    <p><a class="text-link" href="/">← Earth</a></p>`;
+    ${cinemaBack('/', '← Earth', 'back-earth')}`;
 }
 
 export function renderDonate(): string {
@@ -1639,7 +1661,11 @@ export function renderDonate(): string {
       <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-btc'), 'donate-code-still'), '<span class="kicker">BTC</span><code>bc1qgxnzt5d2qdx8zskffejhfjnqxuwtwnn3s3tadz</code>')}</li>
       <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-usdt'), 'donate-code-still donate-usdt-still'), '<span class="kicker">USDT · Solana</span><code>911rhAbnvrVZion9nS7N2BbKxDTWbNRQCELvMR5dXtcw</code>')}</li>
     </ul>
-    <p class="note">Do not send funds to addresses in comments or DMs. Verify the QNT ERC-20 on Etherscan before anything else. Burn tx ${esc(QNT_BURN_TX.slice(0, 18))}…</p>
+    ${cinemaStrip(
+      'donate-warn',
+      `<p class="source-row">Do not send funds to addresses in comments or DMs. Verify the QNT ERC-20 on Etherscan before anything else. Burn tx ${esc(QNT_BURN_TX.slice(0, 18))}…</p>`,
+      'source-strip warn-strip',
+    )}
   </article>`;
 }
 
@@ -1656,7 +1682,11 @@ export function renderNotFound(): string {
       '<p class="kicker">404</p><h2>This page is not on the map.</h2><p>This URL is not on the desk. The live rooms are News, Podcast, Vision, Programmes, Research and Markets.</p>',
     )}
   </article>
-  <p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
+  ${cinemaStrip(
+    'notfound-mast',
+    `<p class="masthead-pills">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`,
+    'mast-strip',
+  )}`;
 }
 
 export function renderPodcast(): string {
@@ -1741,7 +1771,7 @@ export function renderNote(id: string): string {
       )}
       ${essayParas(rest)}
       ${source ? cinemaStrip(`source-note-${n.id}`, `<p class="source-row">${source}</p>`, 'source-strip') : ''}
-      <p><a class="text-link" href="/news">← The wire</a></p>
+      ${cinemaBack('/news', '← The wire', 'back-wire')}
     </article>
     ${related ? `<section class="notes-related">${cinemaStrip('intro-sourced', kicker('Same era'))}<div class="notes-index">${related}</div></section>` : ''}
   </article>`;

@@ -18,10 +18,12 @@ import {
   renderHome,
   renderMarkets,
   renderNews,
+  renderNotFound,
   renderNotes,
   renderPeople,
   renderPodcast,
   renderProgrammes,
+  renderRead,
   renderResearch,
   renderStandards,
   renderTechnology,
@@ -435,6 +437,23 @@ describe('Topic plates', () => {
     expect(renderHome()).toContain('dyk-answer-still');
     expect(renderHome()).toContain('Vision →');
     expect(plateFor('cta-story').src).toBe(PLATES.history.src);
+    expect(renderDonate()).toContain('Do not send funds');
+    expect(renderDonate()).toContain('warn-strip');
+    expect(plateFor('donate-warn').src).toBe(PLATES.exchange.src);
+    expect(renderCity(cityById('london')!)).toContain('← Earth');
+    expect(plateFor('back-earth').src).toBe(PLATES.city.src);
+    expect(plateFor('back-library').src).toBe(PLATES.library.src);
+    expect(plateFor('back-wire').src).toBe(PLATES.newsroom.src);
+    expect(renderRead('overledger-2018')).toContain('← Library');
+    expect(renderRead('overledger-2018')).toContain('Open the original');
+    expect(renderNotFound()).toContain('mast-strip');
+    expect(plateFor('notfound-mast').src).toBe(PLATES.gateway.src);
+    expect(chatMarkup()).toContain('data-grok-prompt');
+    expect(chatMarkup()).toContain('/visuals/cities/cambridge.jpg');
+    expect(plateFor('grok-chips').src).toBe(PLATES.cambridge.src);
+    expect(renderHome()).toContain('Open the source');
+    expect(renderPeople()).toContain('person-cta');
+    expect(renderPeople()).toContain('Monogram only');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

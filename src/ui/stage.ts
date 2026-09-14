@@ -1,5 +1,6 @@
 import { sourceUrl } from '../data/catalog';
 import { plateFor } from '../data/plates';
+import { cinemaStrip } from './diagrams';
 import { esc, extLink } from './html';
 import { forceGrokIdle } from './chat';
 import { sameDeskPath, stageRoute, type RelatedChip } from './relate';
@@ -102,10 +103,18 @@ function paint(root: HTMLElement, doc: StageDoc): void {
   visual.innerHTML = doc.visual;
 
   const sourced = doc.fact
-    ? `<p class="stage-fact"><strong>On the record.</strong> ${esc(doc.fact)}</p>`
+    ? cinemaStrip(
+        `stage-fact-${doc.id}`,
+        `<p class="source-row stage-fact"><strong>On the record.</strong> ${esc(doc.fact)}</p>`,
+        'source-strip',
+      )
     : '';
   const facts = doc.facts?.length
-    ? `<dl class="stage-facts">${doc.facts.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`
+    ? cinemaStrip(
+        `stage-facts-${doc.id}`,
+        `<dl class="stage-facts">${doc.facts.map((f) => `<div><dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd></div>`).join('')}</dl>`,
+        'facts-strip',
+      )
     : '';
   body.innerHTML = `${stageParas(doc.body)}${sourced}${facts}`;
 
@@ -117,7 +126,11 @@ function paint(root: HTMLElement, doc: StageDoc): void {
     ? `<div class="stage-related" aria-label="Related">${relatedButtons(relatedChips)}</div>`
     : '';
   const original = doc.original
-    ? `<p class="stage-original">${extLink(doc.original.href.startsWith('http') ? doc.original.href : sourceUrl(doc.original.href), doc.original.label || 'Open original')}</p>`
+    ? cinemaStrip(
+        `stage-orig-${doc.id}`,
+        `<p class="source-row stage-original">${extLink(doc.original.href.startsWith('http') ? doc.original.href : sourceUrl(doc.original.href), doc.original.label || 'Open original')}</p>`,
+        'source-strip',
+      )
     : '';
   foot.innerHTML = `${crumb}${related}<div class="stage-actions"><button type="button" class="btn btn-primary" data-stage-close>Close</button>${original}</div>`;
 

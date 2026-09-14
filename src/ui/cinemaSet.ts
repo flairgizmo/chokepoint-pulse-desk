@@ -481,6 +481,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.add(bounce);
   addCinemaHaze(scene);
   addPracticals(scene);
+  addCinemaPracticalLights(scene, lite);
 }
 
 let contactMap: THREE.CanvasTexture | null = null;
@@ -576,6 +577,20 @@ export function addPracticals(scene: THREE.Scene): void {
     );
     glow.position.set(x, y, z);
     scene.add(glow);
+  }
+}
+
+/** Point lights at the practical bulbs. Film/hero only — gateway jewel stays MeshBasic. */
+export function addCinemaPracticalLights(scene: THREE.Scene, lite: boolean, scale = 1): void {
+  const bulbs: Array<readonly [number, number, number, number, number]> = [
+    [2.85, 1.82, -2.15, 0xffc56a, lite ? 0.38 : 0.62],
+    [-3.05, 1.48, -2.35, 0x6aa8ff, lite ? 0.24 : 0.42],
+    [0.15, 2.35, -3.15, 0xeaf1ff, lite ? 0.12 : 0.22],
+  ];
+  for (const [x, y, z, color, intensity] of bulbs) {
+    const light = new THREE.PointLight(color, intensity, 7.2 * scale, 2);
+    light.position.set(x * scale, y * scale, z * scale);
+    scene.add(light);
   }
 }
 

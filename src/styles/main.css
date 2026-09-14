@@ -2986,7 +2986,12 @@ button.chip {
 .notes-related > .cinema-filter,
 .player > .cinema-filter,
 .headline-lane > .cinema-filter,
-.headlines .cinema-filter {
+.headlines .cinema-filter,
+.person > div > .cinema-filter,
+.person-more .cinema-filter,
+.desk-stage-story .cinema-filter,
+.desk-stage-foot .cinema-filter,
+.grok-panel .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
 }
@@ -8626,5 +8631,104 @@ section.block .kicker {
 .live-rail .panel {
   align-self: start;
   overflow: hidden;
+}
+
+.voice.cinema-voice .poster-copy h3,
+.voice.cinema-voice .poster-copy p,
+.voice.cinema-voice .poster-copy a {
+  padding-inline: 0;
+}
+
+.month-card .poster-copy a {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: #eaf1ff;
+}
+
+.cinema-filter.warn-strip .photo-plate.filter-still img {
+  height: 8.4rem;
+  min-height: 8.4rem;
+  max-height: 8.4rem;
+  aspect-ratio: 21 / 6;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.42);
+}
+
+.cinema-filter.facts-strip .photo-plate.filter-still img {
+  height: 14rem;
+  min-height: 14rem;
+  max-height: 14rem;
+  aspect-ratio: 21 / 8;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.42);
+}
+
+.cinema-filter.mast-strip .filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cinema-filter.mast-strip .masthead-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.cinema-filter.mast-strip .btn {
+  pointer-events: auto;
+}
+
+.grok-panel .cinema-filter {
+  margin: 0.15rem 0 0.45rem;
+  border-radius: 12px;
+}
+
+.grok-panel .cinema-filter .grok-chips {
+  margin: 0;
+  padding: 0;
+}
+
+.grok-panel .cinema-filter .grok-chip {
+  border-color: rgba(234, 241, 255, 0.18);
+  background: rgba(18, 32, 56, 0.72);
+  color: #eaf1ff;
+}
+
+.desk-stage-story .cinema-filter,
+.desk-stage-foot .cinema-filter {
+  margin: 0.75rem 0 0.85rem;
+}
+
+.desk-stage-story .cinema-filter .stage-facts,
+.desk-stage-story .cinema-filter .stage-fact,
+.desk-stage-foot .cinema-filter .stage-original,
+.desk-stage-story .cinema-filter .source-row {
+  max-width: none;
+  margin-top: 0;
+  color: #eaf1ff;
+}
+
+.cinema-filter.facts-strip .filter-row {
+  align-items: flex-end;
+}
+
+.cinema-filter.facts-strip .stage-facts {
+  width: 100%;
+  margin: 0;
+}
+
+.desk-stage-story .cinema-filter .stage-facts dt {
+  color: #8aa3c8;
+}
+
+.desk-stage-story .cinema-filter .stage-facts dd {
+  color: #eaf1ff;
+}
+
+.person-more .cinema-filter {
+  margin: 0.65rem 0 0.35rem;
 }
 
