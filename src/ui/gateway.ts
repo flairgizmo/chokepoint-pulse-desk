@@ -1006,7 +1006,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       });
       cubeRT.texture.colorSpace = THREE.SRGBColorSpace;
       cubeCam = new THREE.CubeCamera(0.15, 16, cubeRT);
-      cubeCam.position.set(0, 0.22, 0);
+      cubeCam.position.set(0, 0.58, 0);
       scene.add(cubeCam);
       roomEnv = cubeRT.texture;
       const booth = (color: number, w: number, h: number, x: number, y: number, z: number): void => {
@@ -1310,6 +1310,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   base.position.y = -0.24;
   base.userData.nodeId = 6;
   const lean = new THREE.Group();
+  lean.position.y = 0.36;
   lean.rotation.x = -0.16;
   lean.add(crystal);
   lean.add(base);
@@ -1553,7 +1554,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 3.48 : 3.36, ax, ay);
-    camera.lookAt(0, lite ? 0.28 : 0.3, 0);
+    camera.lookAt(0, lite ? 1.0 : 1.02, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
