@@ -409,35 +409,11 @@ function glassTex(
   return tex;
 }
 
-function attachLiteFire(
-  mat: THREE.MeshBasicMaterial,
-  env: THREE.CubeTexture,
-  kind: 'window' | 'mirror' = 'window',
-): void {
-  const mirror = kind === 'mirror';
-  mat.onBeforeCompile = (shader) => {
-    shader.uniforms.liteEnv = { value: env };
-    shader.vertexShader = shader.vertexShader
-      .replace(
-        '#include <common>',
-        `#include <common>
-varying vec3 vLiteNormal;
-varying vec3 vLiteView;
-varying vec3 vLiteWorldN;
-varying vec3 vLiteWorldV;`,
-      )
-      .replace(
-        '#include <project_vertex>',
-        `#include <beginnormal_vertex>
-#include <defaultnormal_vertex>
-#include <project_vertex>
-vLiteNormal = normalize(transformedNormal);
-vLiteView = normalize(-mvPosition.xyz);
-vLiteWorldN = normalize(mat3(modelMatrix) * objectNormal);
-vLiteWorldV = cameraPosition - (modelMatrix * vec4(transformed, 1.0)).xyz;`,
-      );
-    const fire = mirror
-      ? `#include <map_fragment>
+type LiteFire = 'window' | 'mirror' | 'crown';
+
+function liteFireChunk(kind: LiteFire): string {
+  if (kind === 'mirror') {
+    return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
@@ -456,8 +432,37 @@ diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.28);
 diffuseColor.rgb += envRefl * spec * 0.55;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.22;
 diffuseColor.a = mix(0.9, 0.96, spec);
-}`
-      : `#include <map_fragment>
+}`;
+  }
+  if (kind === 'crown') {
+    return `#include <map_fragment>
+vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+vec3 liteV = normalize(vLiteView);
+float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
+float liteFres = pow(1.0 - liteFacing, 1.45);
+float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
+float liteFlash = smoothstep(0.9, 1.0, liteSpark) * liteFres;
+vec3 liteT = refract(-liteV, liteN, 0.413);
+vec2 iorOff = (dot(liteT, liteT) > 0.001 ? liteT.xy : liteN.xy) * (0.06 + liteFacing * 0.1);
+vec4 iorSamp = texture2D(map, vMapUv + iorOff);
+vec3 body = vec3(0.11, 0.1, 0.09);
+vec3 wrap = mix(diffuseColor.rgb, iorSamp.rgb, 0.35 + liteFacing * 0.2);
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+float spec = pow(liteFres, 1.35);
+diffuseColor.rgb = mix(body, wrap, 0.22 + spec * 0.5);
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.58);
+diffuseColor.rgb += envRefl * spec * 1.85;
+diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.7;
+diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.46;
+diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.62;
+diffuseColor.a *= mix(0.55, 0.94, spec);`;
+  }
+  return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
@@ -487,6 +492,34 @@ diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.78, 1.0, liteFres);`;
+}
+
+function attachLiteFire(
+  mat: THREE.MeshBasicMaterial,
+  env: THREE.CubeTexture,
+  kind: LiteFire = 'window',
+): void {
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.liteEnv = { value: env };
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+varying vec3 vLiteNormal;
+varying vec3 vLiteView;
+varying vec3 vLiteWorldN;
+varying vec3 vLiteWorldV;`,
+      )
+      .replace(
+        '#include <project_vertex>',
+        `#include <beginnormal_vertex>
+#include <defaultnormal_vertex>
+#include <project_vertex>
+vLiteNormal = normalize(transformedNormal);
+vLiteView = normalize(-mvPosition.xyz);
+vLiteWorldN = normalize(mat3(modelMatrix) * objectNormal);
+vLiteWorldV = cameraPosition - (modelMatrix * vec4(transformed, 1.0)).xyz;`,
+      );
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
@@ -497,9 +530,9 @@ varying vec3 vLiteView;
 varying vec3 vLiteWorldN;
 varying vec3 vLiteWorldV;`,
       )
-      .replace('#include <map_fragment>', fire);
+      .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-18-mirror' : 'qd-lite-fire-18-window');
+  mat.customProgramCacheKey = () => `qd-lite-fire-19-${kind}`;
 }
 
 function glassMat(
@@ -515,6 +548,7 @@ function glassMat(
     window?: number;
     writeDepth?: boolean;
     mirror?: boolean;
+    crown?: boolean;
     doubleSide?: boolean;
     env?: THREE.CubeTexture;
   } = {},
@@ -531,7 +565,8 @@ function glassMat(
     });
     mat.toneMapped = false;
     if (opts.window != null) {
-      attachLiteFire(mat, opts.env ?? duskCubeMap(), opts.mirror ? 'mirror' : 'window');
+      const fire: LiteFire = opts.mirror ? 'mirror' : opts.crown ? 'crown' : 'window';
+      attachLiteFire(mat, opts.env ?? duskCubeMap(), fire);
     }
     return mat;
   }
@@ -935,16 +970,18 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xf6f0e8,
-    window: lite ? 0.78 : undefined,
+    window: lite ? 0.7 : undefined,
     writeDepth: lite,
+    crown: lite,
     env: roomEnv,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xe8ddd0,
-    window: lite ? 0.78 : undefined,
+    window: lite ? 0.7 : undefined,
     writeDepth: lite,
+    crown: lite,
     env: roomEnv,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
