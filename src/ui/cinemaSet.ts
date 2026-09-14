@@ -182,6 +182,9 @@ export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
   return tex;
 }
 
+/** Draw filter before printGradeStill — daylight Vision stills into the dusk set. */
+export const DUSK_STILL_FILTER = 'saturate(0.78) contrast(1.22) brightness(0.66)';
+
 /** Keep bright Vision stills on dusk plates. Official portraits skip this. */
 export function printGradeStill(
   ctx: CanvasRenderingContext2D,
@@ -191,15 +194,24 @@ export function printGradeStill(
   y = 0,
 ): void {
   let avg = 110;
+  let sky = 0;
   try {
     const img = ctx.getImageData(x, y, Math.max(1, w), Math.max(1, h));
     let acc = 0;
+    let blue = 0;
     let n = 0;
     for (let i = 0; i < img.data.length; i += 32) {
-      acc += (img.data[i] + img.data[i + 1] + img.data[i + 2]) / 3;
+      const r = img.data[i];
+      const g = img.data[i + 1];
+      const b = img.data[i + 2];
+      acc += (r + g + b) / 3;
+      if (b > r + 8 && b > g - 4 && b > 90) blue += 1;
       n += 1;
     }
-    if (n) avg = acc / n;
+    if (n) {
+      avg = acc / n;
+      sky = blue / n;
+    }
   } catch {
     avg = 110;
   }
@@ -207,12 +219,19 @@ export function printGradeStill(
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = `rgba(16, 20, 32, ${(0.14 + t * 0.32).toFixed(3)})`;
+  ctx.fillStyle = `rgba(10, 16, 32, ${(0.2 + t * 0.36 + sky * 0.28).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = `rgba(255, 188, 130, ${(0.04 + t * 0.05).toFixed(3)})`;
+  ctx.fillStyle = `rgba(255, 176, 108, ${(0.05 + t * 0.06).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'source-over';
+  const vig = ctx.createLinearGradient(x, y, x, y + h);
+  vig.addColorStop(0, 'rgba(7, 11, 20, 0.28)');
+  vig.addColorStop(0.38, 'rgba(7, 11, 20, 0)');
+  vig.addColorStop(0.7, 'rgba(7, 11, 20, 0)');
+  vig.addColorStop(1, 'rgba(7, 11, 20, 0.42)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(x, y, w, h);
   ctx.restore();
 }
 
@@ -301,7 +320,7 @@ export function printGradeImage(photo: HTMLImageElement, w = 1280, h = 720): THR
       const scale = Math.max(w / photo.naturalWidth, h / photo.naturalHeight);
       const dw = photo.naturalWidth * scale;
       const dh = photo.naturalHeight * scale;
-      ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
+      ctx.filter = DUSK_STILL_FILTER;
       ctx.drawImage(photo, (w - dw) / 2, (h - dh) / 2, dw, dh);
       ctx.filter = 'none';
       printGradeStill(ctx, w, h);
@@ -370,7 +389,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = new THREE.Color(0x070b14);
   if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = duskWall(tex, 0x3f5168);
+  const cycMat = duskWall(tex, 0x1c2636);
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);

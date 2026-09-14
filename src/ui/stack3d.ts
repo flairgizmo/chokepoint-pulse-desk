@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { PLATES } from '../data/plates';
-import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate, makeFloorContact, printGradeStill, stampFilmGate } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, DUSK_STILL_FILTER, hardenCanvasTex, makeCinemaPlate, makeFloorContact, printGradeStill, stampFilmGate } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -61,7 +61,7 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
       ctx.fillStyle = '#05070c';
       ctx.fillRect(-8, -8, pw + 16, ph + 16);
       if (img.complete && img.naturalWidth) {
-        ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
+        ctx.filter = DUSK_STILL_FILTER;
         ctx.drawImage(img, 0, 0, pw, ph);
         ctx.filter = 'none';
         printGradeStill(ctx, pw, ph);
@@ -120,7 +120,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     const scale = Math.min(innerW / sw, innerH / sh);
     const dw = sw * scale;
     const dh = sh * scale;
-    ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
+    ctx.filter = DUSK_STILL_FILTER;
     ctx.drawImage(img, sx, sy, sw, sh, (innerW - dw) / 2, 40 + (innerH - dh) / 2, dw, dh);
     ctx.filter = 'none';
     printGradeStill(ctx, 1280, 720);
