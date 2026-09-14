@@ -58,8 +58,8 @@ export function chatMarkup(): string {
           <p class="subtle" data-grok-status>A research companion for Overledger, GBTD, QNT and the rooms around them. It remembers this visit.</p>
         </div>
         <div class="grok-tools">
-          <button type="button" class="icon-btn" data-grok-min aria-label="Minimise assistant">–</button>
-          <button type="button" class="icon-btn" data-grok-toggle aria-label="Close assistant">×</button>
+          <button type="button" class="icon-btn chrome-still-btn" data-grok-min aria-label="Minimise assistant">${photoFigure(plateFor('grok-min'), 'nav-still')}<span>–</span></button>
+          <button type="button" class="icon-btn chrome-still-btn" data-grok-toggle aria-label="Close assistant">${photoFigure(plateFor('grok-close'), 'nav-still')}<span>×</span></button>
         </div>
       </header>
       <ol class="grok-log" id="grok-log">

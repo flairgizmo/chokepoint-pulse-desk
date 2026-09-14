@@ -616,6 +616,9 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'hud-tools': PLATES.datacenter,
   'stage-esc': PLATES.newsroom,
   'stage-close': PLATES.patentsHall,
+  'grok-min': PLATES.brussels,
+  'grok-close': PLATES.paris,
+  'nav-menu': PLATES.lisbon,
 }
 
 const PREFIXES = [

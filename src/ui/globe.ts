@@ -3,7 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { applyPhotoEnv, duskWall, hardenCanvasTex } from './cinemaSet';
+import { applyPhotoEnv, duskWall, hardenCanvasTex, litePhong } from './cinemaSet';
 import { canUseBloom, probeWebGL } from './webgl';
 import { latLonToVec, vecToLatLon } from './latlon';
 import {
@@ -1138,7 +1138,10 @@ export class EarthGlobe {
       const hq = city.kind === 'Headquarters';
       const radial = latLonToVec(city.lat, city.lon, 1);
       const pinMat = this.lite
-        ? new THREE.MeshBasicMaterial({ color: kindColor(city.kind) })
+        ? litePhong(kindColor(city.kind), 0xe8d4b0, 28, {
+            emissive: kindColor(city.kind),
+            emissiveIntensity: 0.16,
+          })
         : new THREE.MeshPhysicalMaterial({
             color: kindColor(city.kind),
             emissive: kindColor(city.kind),

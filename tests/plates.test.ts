@@ -488,6 +488,12 @@ describe('Topic plates', () => {
     expect(renderHome()).toMatch(/hud-tools[\s\S]{0,400}\/visuals\/topics\/datacenter\.jpg/);
     expect(plateFor('stage-esc').src).toBe(PLATES.newsroom.src);
     expect(plateFor('stage-close').src).toBe(PLATES.patentsHall.src);
+    expect(plateFor('grok-min').src).toBe(PLATES.brussels.src);
+    expect(plateFor('grok-close').src).toBe(PLATES.paris.src);
+    expect(plateFor('nav-menu').src).toBe(PLATES.lisbon.src);
+    expect(chatMarkup()).toContain('data-grok-min');
+    expect(chatMarkup()).toContain('/visuals/cities/brussels.jpg');
+    expect(chatMarkup()).toContain('/visuals/cities/paris.jpg');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {
