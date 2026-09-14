@@ -235,7 +235,8 @@ function oceanSpecMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
         vec3 l = normalize(sunDir);
         float fres = pow(1.0 - abs(dot(n, v)), 2.4);
         float spec = pow(max(0.0, dot(reflect(-l, n), v)), 42.0);
-        float a = wet * (fres * 0.12 + spec * 0.7);
+        float facing = pow(max(0.0, dot(n, v)), 7.0);
+        float a = wet * (fres * 0.14 + spec * 0.82 + facing * 0.11);
         gl_FragColor = vec4(0.76, 0.88, 1.0, a);
       }`,
     transparent: true,
@@ -477,6 +478,8 @@ export class EarthGlobe {
   private oceanMesh: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
+  private readonly scratchA = new THREE.Vector3();
+  private readonly scratchB = new THREE.Vector3();
   private hoverId: string | undefined;
   private lastHudHover: string | undefined;
   private hudClock = 0;
@@ -921,16 +924,17 @@ export class EarthGlobe {
         map: sunGlintTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.7 : 0.92,
+        opacity: this.lite ? 0.86 : 0.92,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         sizeAttenuation: true,
       }),
     );
-    glint.scale.set(this.lite ? 0.2 : 0.34, this.lite ? 0.12 : 0.2, 1);
-    glint.position.copy(this.sunDir.clone().multiplyScalar(1.02));
+    glint.scale.set(this.lite ? 0.28 : 0.34, this.lite ? 0.16 : 0.2, 1);
+    /* Bay of Biscay / west of Galicia — on the London rest disc. Sprite only; never a plane. */
+    glint.position.copy(latLonToVec(43.2, -9.4, 1.018));
     glint.renderOrder = 4;
-    scene.add(glint);
+    group.add(glint);
     this.glint = glint;
     const sheen = new THREE.Mesh(
       new THREE.PlaneGeometry(0.78, 0.52),
@@ -1296,8 +1300,11 @@ export class EarthGlobe {
     this.camera.position.setFromSphericalCoords(this.distance, this.phi, this.theta);
     this.camera.lookAt(0, 0, 0);
     if (this.glint) {
-      this.glint.position.copy(this.sunDir).multiplyScalar(1.02);
-      this.glint.visible = this.overlays.day;
+      const facing = this.glint
+        .getWorldPosition(this.scratchA)
+        .normalize()
+        .dot(this.scratchB.copy(this.camera.position).normalize());
+      this.glint.visible = this.overlays.day && facing > 0.12;
     }
     if (this.sun) this.sun.intensity = this.overlays.day ? 1.85 : 0.35;
     if (this.pulse && this.overlays.activity && !this.reduced) {

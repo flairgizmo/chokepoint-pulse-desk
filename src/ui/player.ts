@@ -10,6 +10,34 @@ const BED_STILL: Record<Episode['bed'], Plate> = {
   sterling: PLATES.payments,
 };
 
+/** One still per episode so the playlist is a film strip, not four recycled beds. */
+const EPISODE_STILL: Record<string, Plate> = {
+  'internet-of-value': PLATES.fiber,
+  'overledger-gateway': PLATES.gateway,
+  'qnt-utility': PLATES.exchange,
+  'iso-decade': PLATES.zurich,
+  lacchain: PLATES.miami,
+  rosalind: PLATES.bisTower,
+  rln: PLATES.royal,
+  gbtd: PLATES.canary,
+  'six-banks': PLATES.canaryDay,
+  satp: PLATES.geneva,
+  fusion: PLATES.cityDay,
+  payscript: PLATES.payments,
+  'flow-agents': PLATES.city,
+  x402: PLATES.cable,
+  'oracle-fabric': PLATES.washington,
+  murex: PLATES.paris,
+  dentsu: PLATES.tokyo,
+  'sync-lab': PLATES.boeFacade,
+  'sibos-trusted': PLATES.frankfurt,
+  'future-money': PLATES.future,
+};
+
+function episodeStill(id: string): Plate {
+  return EPISODE_STILL[id] ?? plateFor(id);
+}
+
 function quoteStageId(text: string): string | undefined {
   return quotes.find((q) => q.text === text || q.text.startsWith(text.slice(0, 48)))?.id;
 }
@@ -23,18 +51,19 @@ function fmtTime(sec: number): string {
 
 export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string {
   const list = playlist
-    .map(
-      (item) => `<li>
+    .map((item, i) => {
+      const eager = i < 8;
+      return `<li>
         <a class="pod-item${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}">
-          <img class="pod-still" src="${esc(plateFor(item.id).src)}" alt="" width="1280" height="720" loading="lazy" decoding="async" />
+          <img class="pod-still" src="${esc(episodeStill(item.id).src)}" alt="" width="1280" height="720" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${i < 2 ? ' fetchpriority="high"' : ''} />
           <span class="n">${String(item.n).padStart(2, '0')}</span>
           <span>
             <strong>${esc(item.title)}</strong>
             <em>James Hale and Amelia Crowe</em>
           </span>
         </a>
-      </li>`,
-    )
+      </li>`;
+    })
     .join('');
   const quoteCards = ep.quotes
     .map((q) => {
@@ -223,7 +252,7 @@ export function relatedEpisodeCard(id: string): string {
   const ep = episodeById(id);
   if (!ep) return '';
   return `<a class="pod-tease" href="/podcast/${esc(ep.id)}">
-    <img src="${esc(BED_STILL[ep.bed].src)}" alt="" width="640" height="360" />
+    <img src="${esc(episodeStill(ep.id).src)}" alt="" width="640" height="360" loading="eager" decoding="async" />
     <span>
       <p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
       <strong>${esc(ep.title)}</strong>

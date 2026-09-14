@@ -1,6 +1,7 @@
 import { existsSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { INSTITUTIONS } from '../src/data/institutions';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { diagramFigure } from '../src/ui/diagrams';
 import { renderInstitutions, renderPatents, renderStack, renderStory } from '../src/ui/pages';
@@ -43,6 +44,8 @@ describe('Topic plates', () => {
       (id) => plateFor(id, 'programme').src,
     );
     expect(new Set(srcs).size).toBeGreaterThanOrEqual(6);
+    expect(plateFor('lacchain').src).toBe(PLATES.miami.src);
+    expect(plateFor('oracle').src).toBe(PLATES.washington.src);
     expect(renderProgrammes()).toContain('/visuals/topics/canary.jpg');
     expect(renderProgrammes()).toContain('/visuals/cities/paris.jpg');
     expect(renderProgrammes()).toContain('/visuals/cities/frankfurt.jpg');
@@ -250,7 +253,12 @@ describe('Topic plates', () => {
     expect(plateFor('overledger-gateway').src).toBe(PLATES.gateway.src);
     expect(plateFor('home-interop').src).toBe(PLATES.fiber.src);
     expect(plateFor('home-standards').src).toBe(PLATES.brussels.src);
+    expect(plateFor('linux').src).toBe(PLATES.fiber.src);
+    expect(plateFor('hyperledger').src).toBe(PLATES.datacenter.src);
+    expect(plateFor('vocalink').src).toBe(PLATES.newsroom.src);
+    const inst = INSTITUTIONS.map((i) => plateFor(i.id, 'institution').src);
+    expect(new Set(inst).size).toBeGreaterThanOrEqual(20);
     const pods = [...renderPodcast().matchAll(/class="pod-still"[^>]*src="(\/visuals\/[^"]+)"/g)].map((m) => m[1]);
-    expect(new Set(pods).size).toBeGreaterThanOrEqual(12);
+    expect(new Set(pods).size).toBeGreaterThanOrEqual(18);
   });
 });
