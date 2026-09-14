@@ -41,16 +41,16 @@ export function stageMarkup(): string {
   return `<div class="desk-stage" id="desk-stage" hidden>
     <div class="desk-stage-backdrop" data-stage-close></div>
     <div class="desk-stage-sheet" role="dialog" aria-modal="true" aria-labelledby="desk-stage-title" aria-describedby="desk-stage-stake" tabindex="-1">
-      <header class="desk-stage-head">
-        <p class="kicker" id="desk-stage-kicker"></p>
-        <button type="button" class="desk-stage-close" data-stage-close aria-label="Close stage">Esc</button>
-        <h2 class="display" id="desk-stage-title"></h2>
-        <p class="desk-stage-stake" id="desk-stage-stake"></p>
-      </header>
-      <div class="desk-stage-split">
+      <button type="button" class="desk-stage-close" data-stage-close aria-label="Close stage">Esc</button>
+      <div class="desk-stage-hero">
         <div class="desk-stage-object" id="desk-stage-visual"></div>
-        <div class="desk-stage-story" id="desk-stage-body"></div>
+        <header class="desk-stage-head">
+          <p class="kicker" id="desk-stage-kicker"></p>
+          <h2 class="display" id="desk-stage-title"></h2>
+          <p class="desk-stage-stake" id="desk-stage-stake"></p>
+        </header>
       </div>
+      <div class="desk-stage-story" id="desk-stage-body"></div>
       <footer class="desk-stage-foot" id="desk-stage-foot"></footer>
     </div>
   </div>`;

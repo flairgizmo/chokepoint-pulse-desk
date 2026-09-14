@@ -335,13 +335,24 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   }
   ctx.globalCompositeOperation = 'screen';
   const g = ctx.createRadialGradient(256, 256, 6, 256, 256, 248);
-  g.addColorStop(0, 'rgba(234, 241, 255, 0.7)');
-  g.addColorStop(0.12, 'rgba(160, 210, 255, 0.48)');
-  g.addColorStop(0.28, 'rgba(90, 160, 220, 0.22)');
-  g.addColorStop(0.5, 'rgba(255, 214, 160, 0.12)');
+  g.addColorStop(0, 'rgba(234, 241, 255, 0.82)');
+  g.addColorStop(0.1, 'rgba(160, 210, 255, 0.55)');
+  g.addColorStop(0.26, 'rgba(90, 160, 220, 0.26)');
+  g.addColorStop(0.48, 'rgba(255, 214, 160, 0.18)');
   g.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 16; i++) {
+    const a0 = (i / 16) * Math.PI * 2;
+    const a1 = ((i + 0.38) / 16) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(256, 256);
+    ctx.lineTo(256 + Math.cos(a0) * 238, 256 + Math.sin(a0) * 238);
+    ctx.lineTo(256 + Math.cos(a1) * 238, 256 + Math.sin(a1) * 238);
+    ctx.closePath();
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(234, 241, 255, 0.28)' : 'rgba(255, 196, 128, 0.14)';
+    ctx.fill();
+  }
   if (photo?.naturalWidth) {
     ctx.save();
     ctx.globalAlpha = 0.38;
@@ -489,28 +500,31 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.16, 0.2, 0.3);
+float cut = smoothstep(0.16, 0.84, kite);
+vec3 body = mix(vec3(0.03, 0.035, 0.05), vec3(0.22, 0.28, 0.4), cut);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.14 + kite * 0.08);
-diffuseColor.rgb += glint * (0.55 + kite * 1.35);
+diffuseColor.rgb += envRefl * (rim * 0.1 + cut * 0.12);
+diffuseColor.rgb += glint * (0.1 + cut * 1.85);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.28, 0.34, 0.46);
+float cut = smoothstep(0.16, 0.84, kite);
+vec3 body = mix(vec3(0.07, 0.08, 0.11), vec3(0.44, 0.52, 0.66), cut);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.2 + kite * 0.1);
-diffuseColor.rgb += glint * (0.9 + kite * 1.05);
+diffuseColor.rgb += envRefl * (rim * 0.14 + cut * 0.16);
+diffuseColor.rgb += glint * (0.16 + cut * 1.55);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.34, 0.42, 0.56);
+float cut = smoothstep(0.16, 0.84, kite);
+vec3 body = mix(vec3(0.048, 0.055, 0.08), vec3(0.62, 0.74, 0.92), cut);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.16 + kite * 0.1);
-diffuseColor.rgb += glint * (0.7 + kite * 1.4);
+diffuseColor.rgb += envRefl * (rim * 0.12 + cut * 0.2);
+diffuseColor.rgb += glint * (0.14 + cut * 2.15);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -583,9 +597,10 @@ varying vec3 vLiteView;
 varying vec3 vLiteWorldN;
 varying vec3 vLiteWorldV;`,
       )
-      .replace('#include <map_fragment>', liteFireChunk(kind));
+      .replace('#include <map_fragment>', liteFireChunk(kind))
+      .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-49-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-50-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -680,10 +695,9 @@ function facetFire(
   const key = Math.max(0, n.dot(KEY_DIR));
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
-  const fres = (1 - facing) ** 1.55;
   /** 16-cut: adjacent kites are π/8 apart, so *8 flips neighbors. Rest camera sees the stripe. */
   const stripe = 0.5 + 0.5 * Math.cos(Math.atan2(n.x, n.z) * 8);
-  const shade = Math.min(1, 0.06 + stripe * 0.9 + key * 0.08 + facing * 0.04);
+  const shade = Math.min(1, 0.06 + stripe * 0.9 + key * 0.08 + facing * 0.04 + rim * 0.04);
   return new THREE.Color(
     Math.min(1, 0.05 + shade * 0.95 + key * 0.06),
     Math.min(1, 0.04 + shade * 0.82),
@@ -1805,7 +1819,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       spark.scale.set(base + beat * 0.04, base + beat * 0.04, 1);
     });
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
-    causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;
+    causticMat.opacity = reduced ? 0.28 : 0.24 + Math.abs(Math.sin((now - t0) / 1600)) * 0.2;
     sparks.forEach((mesh, i) => {
       const mat = mesh.material as THREE.MeshBasicMaterial;
       const pulse = reduced ? 0.4 : 0.22 + Math.abs(Math.sin((now - t0) / 640 + i * 0.7)) * 0.38;

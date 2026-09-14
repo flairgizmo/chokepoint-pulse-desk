@@ -83,7 +83,7 @@ function personStage(id: string): StageDoc | null {
       p.id === 'hargreaves' || p.id === 'facer' || p.id === 'chiriac' || p.id === 'belchior' ? 'satp' : 'overledger-platform',
     ]),
     original: p.href ? { href: sourceUrl(p.href), label: 'Open original' } : undefined,
-    visual: `${p.photo ? `<img class="stage-photo" src="${p.photo}" alt="" />` : ''}${diagramSvg(p.id, 'person', p.initials)}`,
+    visual: `${p.photo ? `<figure class="photo-plate cinema-frame stage-still"><img class="stage-photo" src="${p.photo}" alt="" /></figure>` : ''}${diagramSvg(p.id, 'person', p.initials)}`,
   };
 }
 
@@ -106,7 +106,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
         { label: 'Kind', value: c.kind },
       ],
       related: chipsFromIds([hash, 'overledger', 'gbtd'].filter(Boolean)),
-      visual: `<img class="stage-photo" src="${vis.src}" alt="${c.name}" />`,
+      visual: `<figure class="photo-plate cinema-frame stage-still"><img class="stage-photo" src="${vis.src}" alt="${c.name}" />${vis.credit ? `<figcaption>${vis.credit}</figcaption>` : ''}</figure>`,
     };
   }
   if (kind === 'person') return personStage(id);
@@ -223,7 +223,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       analogy: t.analogy ?? `Think of ${t.term} as a labelled drawer: the definition is what you find inside, not a slogan on the front.`,
       fact: factLine('Source', 'Glossary'),
       related: chipsFromIds([t.id === 'synthorus' ? 'synchronisation' : t.id, 'satp', 'overledger', 'gbtd']),
-      visual: diagramSvg(t.id, 'term', t.term),
+      visual: plateVisual(t.id, t.term),
     };
   }
   if (kind === 'paper') {

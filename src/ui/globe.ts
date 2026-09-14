@@ -352,11 +352,13 @@ function terminatorTex(): THREE.CanvasTexture {
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createLinearGradient(0, 0, c.width, 0);
   g.addColorStop(0, 'rgba(6, 10, 20, 0.62)');
-  g.addColorStop(0.36, 'rgba(8, 14, 28, 0.34)');
-  g.addColorStop(0.48, 'rgba(28, 52, 88, 0.1)');
-  g.addColorStop(0.54, 'rgba(255, 168, 88, 0.28)');
-  g.addColorStop(0.6, 'rgba(255, 214, 160, 0.1)');
-  g.addColorStop(0.68, 'rgba(255, 255, 255, 0)');
+  g.addColorStop(0.38, 'rgba(8, 14, 28, 0.32)');
+  g.addColorStop(0.5, 'rgba(28, 42, 72, 0.08)');
+  g.addColorStop(0.538, 'rgba(255, 118, 36, 0.22)');
+  g.addColorStop(0.555, 'rgba(255, 148, 52, 0.62)');
+  g.addColorStop(0.572, 'rgba(255, 196, 110, 0.46)');
+  g.addColorStop(0.6, 'rgba(255, 226, 168, 0.14)');
+  g.addColorStop(0.66, 'rgba(255, 255, 255, 0)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);

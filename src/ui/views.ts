@@ -450,19 +450,16 @@ export function featuredStory(): string {
     ${kicker('Featured news')}
     ${posterFrame(
       diagramFigure('featured-trusted-node', 'news', 'This month'),
-      '<p class="kicker">This month</p><h2>What most coverage skips.</h2>',
+      `<p class="kicker">On the record</p>
+      <h2 class="display">What most coverage skips.</h2>
+      <div class="cta-row">
+        ${pill('/news', 'Open the news', 'Official wire')}
+        ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
+      </div>`,
     )}
+    <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order: the 2018 paper, the IETF drafts, the bank names. Latest first. A title on every quote.</p>
     <div class="featured-grid">
       ${noteCard(n, true)}
-      <div class="featured-aside">
-        <p class="kicker">On the record</p>
-        <h2 class="display">What most coverage skips.</h2>
-        <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order: the 2018 paper, the IETF drafts, the bank names. Latest first. A title on every quote.</p>
-        <div class="cta-row">
-          ${pill('/news', 'Open the news', 'Official wire')}
-          ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
-        </div>
-      </div>
     </div>
   </section>`;
 }

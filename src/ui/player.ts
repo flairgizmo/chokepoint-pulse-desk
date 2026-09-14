@@ -245,12 +245,10 @@ export function wirePlayer(root: HTMLElement): void {
 export function relatedEpisodeCard(id: string): string {
   const ep = episodeById(id);
   if (!ep) return '';
-  return `<a class="pod-tease" href="/podcast/${esc(ep.id)}">
-    <img src="${esc(episodeStill(ep.id).src)}" alt="" width="640" height="360" loading="eager" decoding="async" />
-    <span>
-      <p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
+  return `<a class="pod-tease" href="/podcast/${esc(ep.id)}">${posterFrame(
+    photoFigure(episodeStill(ep.id), 'pod-tease-still'),
+    `<p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
       <strong>${esc(ep.title)}</strong>
-      <em>James Hale and Amelia Crowe</em>
-    </span>
-  </a>`;
+      <em>James Hale and Amelia Crowe</em>`,
+  )}</a>`;
 }

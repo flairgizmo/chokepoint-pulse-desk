@@ -15,7 +15,9 @@ describe('Stage primitive', () => {
     expect(html).toContain('desk-stage-stake');
     expect(html).toContain('desk-stage-visual');
     expect(html).toContain('desk-stage-sheet');
+    expect(html).toContain('desk-stage-hero');
     expect(html).not.toContain('desk-stage-panel');
+    expect(html).not.toContain('desk-stage-split');
   });
 
   it('resolves a person with analogy, sourced fact, and child-stage chips', () => {
@@ -23,6 +25,8 @@ describe('Stage primitive', () => {
     expect(doc?.stake).toMatch(/Gilbert Verdian/);
     expect(doc?.analogy?.length).toBeGreaterThan(20);
     expect(doc?.visual).toContain('<svg');
+    expect(doc?.visual).toContain('stage-still');
+    expect(doc?.visual).toContain('stage-photo');
     expect(doc?.related?.some((r) => r.kind === 'tech' && r.id === 'overledger')).toBe(true);
     expect(doc?.related?.every((r) => r.kind && r.id && r.label)).toBe(true);
     expect(doc?.original?.label).toMatch(/Open original/i);
