@@ -455,7 +455,7 @@ diffuseColor.rgb += envRefl * spec * 2.25;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.95;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.62;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.8;
-diffuseColor.a *= mix(0.05, 0.64, spec);`;
+diffuseColor.a *= mix(0.16, 0.7, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -527,7 +527,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-23-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-24-${kind}`;
 }
 
 function glassMat(
@@ -572,11 +572,11 @@ const KEY_DIR = new THREE.Vector3(2.4, 3.2, 2.1).normalize();
 const RIM_DIR = new THREE.Vector3(-2.8, 1.2, -2.4).normalize();
 /** Rest camera → jewel, rotated into crystal space so the −0.34 lean still keys the fire. */
 const VIEW_DIR = new THREE.Vector3(
-  -(3.48 * Math.sin(1.24) * Math.sin(0.72)),
-  0.38 - 3.48 * Math.cos(1.24),
-  -(3.48 * Math.sin(1.24) * Math.cos(0.72)),
+  0.72 * Math.sin(0.72) - 3.48 * Math.sin(1.24) * Math.sin(0.72),
+  0.58 - 3.48 * Math.cos(1.24),
+  0.72 * Math.cos(0.72) - 3.48 * Math.sin(1.24) * Math.cos(0.72),
 )
-  .applyAxisAngle(new THREE.Vector3(1, 0, 0), 0.34)
+  .applyAxisAngle(new THREE.Vector3(1, 0, 0), 0.16)
   .normalize();
 
 /** Spectral kite fire for lite MeshBasic. Outward Lambert, not |dot| — that painted every kite the same. */
@@ -1006,7 +1006,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       });
       cubeRT.texture.colorSpace = THREE.SRGBColorSpace;
       cubeCam = new THREE.CubeCamera(0.15, 16, cubeRT);
-      cubeCam.position.set(0, 0.58, 0);
+      cubeCam.position.set(0, 0.4, 0);
       scene.add(cubeCam);
       roomEnv = cubeRT.texture;
       const booth = (color: number, w: number, h: number, x: number, y: number, z: number): void => {
@@ -1112,6 +1112,27 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     table.material.polygonOffsetUnits = -2;
   }
   crystal.add(table);
+  const bezelMat = lite
+    ? new THREE.MeshBasicMaterial({
+        color: 0xe8dcc8,
+        transparent: true,
+        opacity: 0.72,
+        depthWrite: false,
+      })
+    : cinemaChrome(false);
+  if (lite && bezelMat instanceof THREE.MeshBasicMaterial) bezelMat.toneMapped = false;
+  const tableBezel = new THREE.Mesh(new THREE.TorusGeometry(tableR, 0.007, 8, sides), bezelMat);
+  tableBezel.rotation.x = Math.PI / 2;
+  tableBezel.position.y = tableY;
+  tableBezel.userData.nodeId = 6;
+  tableBezel.renderOrder = 3;
+  crystal.add(tableBezel);
+  const girdle = new THREE.Mesh(new THREE.TorusGeometry(eqR, 0.011, 8, sides), bezelMat);
+  girdle.rotation.x = Math.PI / 2;
+  girdle.position.y = eqY;
+  girdle.userData.nodeId = 6;
+  girdle.renderOrder = 3;
+  crystal.add(girdle);
   const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData.nodeId = 6;
@@ -1198,7 +1219,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.LineBasicMaterial({
         color: lite ? 0xf2e6d4 : 0xeaf1ff,
         transparent: true,
-          opacity: lite ? 0.1 : 0.04,
+        opacity: lite ? 0.28 : 0.08,
       }),
     ),
   );
@@ -1233,11 +1254,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     wellMats = wraps;
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
-    const wellTopR = tableR * 0.9;
-    const wellTopY = tableY - 0.012;
-    const wellMidR = tableR * 0.4;
+    const wellTopR = tableR * 0.38;
+    const wellTopY = eqY - 0.012;
+    const wellMidR = tableR * 0.2;
     const wellMidY = wellTopY + (botY + 0.05 - wellTopY) * 0.48;
-    const wellBotR = tableR * 0.08;
+    const wellBotR = tableR * 0.06;
     const wellBotY = botY + 0.05;
     const addWell = (geo: THREE.BufferGeometry, mat: THREE.MeshBasicMaterial): void => {
       const mesh = new THREE.Mesh(geo, mat);
@@ -1310,7 +1331,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   base.position.y = -0.24;
   base.userData.nodeId = 6;
   const lean = new THREE.Group();
-  lean.position.y = 0.36;
+  lean.position.y = 0.12;
   lean.rotation.x = -0.16;
   lean.add(crystal);
   lean.add(base);
@@ -1408,6 +1429,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     rt2,
     ...cards,
     table,
+    tableBezel,
+    girdle,
     ...(wellRoot ? [wellRoot] : []),
   ];
   const raycaster = new THREE.Raycaster();
@@ -1554,7 +1577,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 3.48 : 3.36, ax, ay);
-    camera.lookAt(0, lite ? 1.0 : 1.02, 0);
+    // Near girdle — on-axis lookAt stares down the table well (a city funnel).
+    camera.lookAt(Math.sin(ay) * 0.72, lite ? 0.58 : 0.6, Math.cos(ay) * 0.72);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
