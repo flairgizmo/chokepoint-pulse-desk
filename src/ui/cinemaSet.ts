@@ -229,6 +229,11 @@ export function printGradeStill(
     ctx.fillStyle = skyWash;
     ctx.fillRect(x, y, w, h * 0.52);
   }
+  const topNavy = ctx.createLinearGradient(x, y, x, y + h * 0.4);
+  topNavy.addColorStop(0, 'rgba(6, 12, 28, 0.32)');
+  topNavy.addColorStop(1, 'rgba(6, 12, 28, 0)');
+  ctx.fillStyle = topNavy;
+  ctx.fillRect(x, y, w, Math.round(h * 0.4));
   ctx.globalCompositeOperation = 'screen';
   ctx.fillStyle = `rgba(255, 168, 96, ${(0.06 + t * 0.08).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);

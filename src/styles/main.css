@@ -6705,3 +6705,23 @@ section.block .kicker {
   filter: brightness(0) invert(1);
   opacity: 0.92;
 }
+
+.proof-chip .poster-copy,
+.stack-rungs .poster-copy,
+.cbdc-model .poster-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+}
+
+.proof-chip .poster-copy strong,
+.proof-chip .poster-copy > span,
+.stack-rungs .poster-copy strong,
+.stack-rungs .poster-copy > span,
+.stack-rungs .poster-copy > small,
+.cbdc-model .poster-copy h3,
+.cbdc-model .poster-copy p {
+  display: block;
+  width: 100%;
+}
