@@ -8265,12 +8265,12 @@ section.block .kicker {
 }
 
 .grok-panel .poster-frame {
-  min-height: 5.2rem;
+  min-height: 4.6rem;
 }
 
 .grok-panel .grok-still img {
-  min-height: 5.2rem;
-  max-height: 6.2rem;
+  min-height: 4.6rem;
+  max-height: 5.2rem;
 }
 
 .grok-panel .poster-copy {
@@ -8428,23 +8428,35 @@ section.block .kicker {
 }
 
 .grok-welcome .poster-frame {
-  min-height: 7.2rem;
-  margin: 0 0 0.65rem;
+  min-height: 8.2rem;
+  margin: 0 0 0.35rem;
   border-radius: 12px;
 }
 
 .grok-welcome .poster-frame .photo-plate.grok-welcome-still img {
-  height: 7.2rem;
-  min-height: 7.2rem;
-  max-height: 7.2rem;
+  height: 8.2rem;
+  min-height: 8.2rem;
+  max-height: 8.2rem;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+  filter: saturate(0.86) contrast(1.16) brightness(0.72);
+}
+
+.grok-welcome .poster-copy {
+  padding: 1.85rem 1rem 0.65rem;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.08), rgba(7, 11, 20, 0.82));
 }
 
 .grok-welcome .poster-copy p,
 .grok-welcome .poster-copy {
   color: #eaf1ff;
+}
+
+.grok-welcome .cinema-filter .photo-plate.filter-still img {
+  height: 4.6rem;
+  min-height: 4.6rem;
+  max-height: 4.6rem;
+  aspect-ratio: 21 / 5;
 }
 
 .grok-chips {
