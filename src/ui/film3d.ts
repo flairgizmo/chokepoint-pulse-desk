@@ -210,7 +210,7 @@ function mountFilm3D(
 
   const puddles: THREE.Mesh[] = [];
   slides.forEach((slide) => {
-    const plate = makeCinemaPlate(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, lite, backdrop);
+    const plate = makeCinemaPlate(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, lite, backdrop, 0.1);
     plate.root.userData.slide = slide;
     plate.face.userData.slide = slide;
     group.add(plate.root);
@@ -235,7 +235,7 @@ function mountFilm3D(
       const mag = Math.abs(d);
       const scale = mag === 0 ? 1 : mag === 1 ? 0.7 : 0.46;
       mesh.position.set(d * (portrait ? 1.18 : 1.68), 0.16 - mag * 0.02, mag * 0.42);
-      mesh.rotation.set(-0.06, -d * 0.18, 0);
+      mesh.rotation.set(-0.08, -0.28 - d * 0.12, 0.01);
       mesh.scale.setScalar(scale);
       const puddle = puddles[i];
       puddle.position.x = mesh.position.x;
@@ -271,7 +271,7 @@ function mountFilm3D(
     layout();
     group.rotation.y = reduced ? 0 : Math.sin(now / 4200) * 0.035;
     camera.position.setFromSphericalCoords(lite ? 3.52 : 3.32, ax, ay);
-    camera.lookAt(0, -0.14, 0.22);
+    camera.lookAt(0.04, 0.08, 0.12);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
