@@ -4602,7 +4602,12 @@ body.stage-open .grok {
 .tech-chapter .photo-plate img,
 .stack-rungs.exploded .photo-plate img,
 .stack-rungs.cinema-rungs .photo-plate img {
-  max-height: 26rem;
+  max-height: 30rem;
+}
+
+.story-hit .photo-plate img {
+  aspect-ratio: 21 / 9;
+  max-height: 28rem;
 }
 
 .photo-plate::after,
@@ -5049,8 +5054,8 @@ body.stage-open .grok {
 
 .beat-still img {
   aspect-ratio: 21 / 9;
-  max-height: 8.2rem;
-  filter: saturate(0.78) contrast(1.12) brightness(0.58);
+  max-height: 20rem;
+  filter: saturate(0.9) contrast(1.12) brightness(0.72);
 }
 
 .beat .year {
@@ -5952,8 +5957,8 @@ section.block .kicker {
 
 .layer-bands .layer-still img {
   aspect-ratio: 21 / 9;
-  max-height: 9.5rem;
-  filter: saturate(0.78) contrast(1.12) brightness(0.58);
+  max-height: 22rem;
+  filter: saturate(0.9) contrast(1.12) brightness(0.72);
 }
 
 .acid li {
