@@ -279,7 +279,7 @@ function nightLightsMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
         vec3 c = texture2D(lights, vUv).rgb;
         float glow = max(c.r, max(c.g * 0.85, c.b * 0.55));
         float city = smoothstep(0.03, 0.12, glow);
-        gl_FragColor = vec4(vec3(1.58, 1.1, 0.64) * city, night * city * 1.22);
+        gl_FragColor = vec4(vec3(1.7, 1.18, 0.62) * city, night * city * 1.55);
       }`,
     transparent: true,
     depthWrite: false,
@@ -447,7 +447,7 @@ export class EarthGlobe {
   private phi = 1.08;
   private theta = 2.05;
   private earthSpin = 0.42;
-  private distance = 2.42;
+  private distance = 2.58;
   private velTheta = 0;
   private velPhi = 0;
   private followId: string | undefined;
@@ -529,7 +529,7 @@ export class EarthGlobe {
     this.velTheta = 0;
     this.velPhi = 0;
     this.panX = 0;
-    this.distance = 2.42;
+    this.distance = 2.58;
     const london = cityById('london');
     if (london) this.lookAtCity(london);
   }
@@ -551,7 +551,8 @@ export class EarthGlobe {
     local.applyAxisAngle(Y_AXIS, this.earthSpin);
     const sph = new THREE.Spherical().setFromVector3(local);
     this.phi = THREE.MathUtils.clamp(sph.phi, 0.18, Math.PI - 0.18);
-    this.theta = sph.theta;
+    /** Rest London: yaw west so US-east night lights sit on the Atlantic limb. Fly-ins stay on-city. */
+    this.theta = sph.theta + (city.id === 'london' && this.distance >= 2.2 ? 0.48 : 0);
   }
 
   private flat = false;

@@ -7175,3 +7175,106 @@ section.block .kicker {
 .constellation-grid .poster-copy span {
   color: #b7c4d8;
 }
+
+.quote-inline {
+  padding: 0;
+  margin: 0.55rem 0 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  background: #0b1220;
+  color: #f4f7fb;
+}
+
+.quote-inline .poster-frame,
+.quote-inline .poster-frame img {
+  min-height: 8.5rem;
+  max-height: 11rem;
+}
+
+.quote-inline .poster-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  padding: 2.1rem 0.85rem 0.7rem;
+}
+
+.quote-inline .poster-copy p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #f4f7fb;
+  margin: 0;
+  font-family: var(--serif);
+}
+
+.quote-inline .poster-copy footer,
+.quote-inline .poster-copy .note {
+  color: #b7c4d8;
+  margin: 0;
+}
+
+.prog-mentions,
+[data-story-suggest] {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.prog-mentions .kicker,
+[data-story-suggest] .kicker {
+  padding: 0;
+}
+
+.mention-posters {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  padding: 0;
+  margin: 0;
+}
+
+.mention-posters .poster-frame,
+.mention-posters .poster-frame img {
+  min-height: 7.5rem;
+  max-height: 9.5rem;
+  aspect-ratio: 16 / 9;
+}
+
+.mention-posters .poster-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  padding: 1.8rem 0.75rem 0.6rem;
+}
+
+.mention-posters .poster-copy strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #f4f7fb;
+  margin: 0;
+}
+
+.mention-posters button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  appearance: none;
+  background: #0b1220;
+  color: #f4f7fb;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .mention-posters {
+    grid-template-columns: 1fr;
+  }
+}

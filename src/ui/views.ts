@@ -1045,8 +1045,11 @@ function personCard(p: Person): string {
     .slice(0, 2)
     .map(
       (q) => `<button type="button" class="quote-inline" data-stage="quote" data-stage-id="${esc(q.id)}">
-        <p>“${esc(q.text)}”</p>
-        <footer>${esc(q.role)}${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}</footer>
+        ${posterFrame(
+          photoFigure(plateFor(q.id), 'quote-still'),
+          `<p>“${esc(q.text)}”</p>
+        <footer>${esc(q.role)}${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}</footer>`,
+        )}
       </button>`,
     )
     .join('');

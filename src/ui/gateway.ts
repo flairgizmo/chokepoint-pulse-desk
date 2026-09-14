@@ -1497,9 +1497,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         Math.cos(a) * midR,
         midY + 0.03,
         Math.sin(a) * midR,
-        i === 1 ? 0.095 : 0.062,
+        i === 1 ? 0.13 : 0.085,
       );
-      spark.material.opacity = i === 1 ? 0.78 : 0.56;
+      spark.material.opacity = i === 1 ? 0.92 : 0.7;
       crystal.add(spark);
       crownFires.push(spark);
     });
@@ -1804,7 +1804,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       const fire = spark.material as THREE.SpriteMaterial;
       const beat = reduced ? 0.48 : 0.42 + Math.abs(Math.sin((now - t0) / 1100 + i * 0.7)) * 0.28;
       fire.opacity = beat;
-      const base = i === 1 ? 0.095 : 0.062;
+      const base = i === 1 ? 0.13 : 0.085;
       spark.scale.set(base + beat * 0.04, base + beat * 0.04, 1);
     });
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;

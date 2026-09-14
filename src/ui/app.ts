@@ -40,7 +40,6 @@ import { revealStage, setStageNavigator, stageMarkup, syncStageFromLocation, wir
 import { searchMarkup, wireSearch } from './search';
 import { resolveStage } from './resolve';
 import { matchProgrammes } from '../data/programmes';
-import { rememberHeadline } from './newsCache';
 import { STORY } from '../data/story';
 import { filmSetSlides } from './filmSets';
 
@@ -887,19 +886,9 @@ export class QntDesk {
         return;
       }
       el.hidden = false;
-      el.innerHTML = `Mentioned on the wire: ${hits
-        .map((h) => {
-          rememberHeadline({
-            id: h.id,
-            title: h.title,
-            url: h.url,
-            source: h.source,
-            published: h.published ?? '',
-            lane: h.lane,
-          });
-          return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">${esc(h.title)}</button>`;
-        })
-        .join(' · ')}`;
+      el.innerHTML = `<span class="kicker">Mentioned on the wire</span><ul class="mention-posters">${hits
+        .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
+        .join('')}</ul>`;
     });
   }
 
@@ -915,19 +904,11 @@ export class QntDesk {
       return;
     }
     slot.hidden = false;
-    slot.innerHTML = `<span class="chip">unverified until placed</span> On the wire, not yet on this rail: ${suggestions
-      .map((h) => {
-        rememberHeadline({
-          id: h.id,
-          title: h.title,
-          url: h.url,
-          source: h.source,
-          published: h.published ?? '',
-          lane: h.lane,
-        });
-        return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">${esc(h.title)}</button>`;
-      })
-      .join(' · ')}`;
+    slot.innerHTML = `<span class="chip">unverified until placed</span>
+      <p class="kicker">On the wire, not yet on this rail</p>
+      <ul class="mention-posters">${suggestions
+        .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
+        .join('')}</ul>`;
   }
 
   private bindStoryKeys(): void {
