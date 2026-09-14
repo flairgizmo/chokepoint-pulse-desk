@@ -443,8 +443,11 @@ if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.35);
+if (!gl_FrontFacing) {
+  diffuseColor.rgb = vec3(0.05, 0.04, 0.035);
+  diffuseColor.a = 0.94;
+} else {
 vec3 wN = normalize(vLiteWorldN);
-if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
@@ -452,7 +455,8 @@ float spec = pow(liteFres, 1.15);
 diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.28);
 diffuseColor.rgb += envRefl * spec * 0.55;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.22;
-diffuseColor.a = mix(0.9, 0.96, spec);`
+diffuseColor.a = mix(0.9, 0.96, spec);
+}`
       : `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
@@ -495,7 +499,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', fire);
   };
-  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-17-mirror' : 'qd-lite-fire-17-window');
+  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-18-mirror' : 'qd-lite-fire-18-window');
 }
 
 function glassMat(
@@ -967,6 +971,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           window: 0.92,
           writeDepth: true,
           mirror: true,
+          doubleSide: true,
           env: roomEnv,
         })
       : glassMat(glassTex(photo0, false, 'table'), lite, {
