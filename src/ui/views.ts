@@ -1238,10 +1238,13 @@ export function renderMarkets(print?: MarketPrint): string {
   ${stillStrip('markets', 'Photographs of the meter')}
   ${quoteRail('markets')}
   <section class="tape cinema-tape" data-mk data-proof="ticker">
-    ${photoFigure(plateFor('markets', 'qnt'), 'markets-still')}
-    <div class="tape-head">${chip}<span class="mono subtle" data-mk-meta>Updated ${esc(p?.updated ?? '—')} · ${esc(p?.venue ?? '')}</span></div>
+    ${posterFrame(
+      photoFigure(plateFor('markets', 'qnt'), 'markets-still'),
+      `<div class="tape-head">${chip}<span class="mono subtle" data-mk-meta>Updated ${esc(p?.updated ?? '—')} · ${esc(p?.venue ?? '')}</span></div>
+    <p class="stat" data-mk-price>${p?.priceUsd != null ? fmtMoney(p.priceUsd) : '—'}</p>
+    <p class="${up ? 'up' : 'down'}" data-mk-change>${change} 24h</p>`,
+    )}
     <div class="stats">
-      <div><p class="kicker">Price</p><p class="stat" data-mk-price>${p?.priceUsd != null ? fmtMoney(p.priceUsd) : '—'}</p><p class="${up ? 'up' : 'down'}" data-mk-change>${change} 24h</p></div>
       <div><p class="kicker">Volume 24h</p><p class="stat" data-mk-vol>${p?.volume24h != null ? fmtMoney(p.volume24h, 0) : '—'}</p></div>
       <div><p class="kicker">Market cap</p><p class="stat" data-mk-cap>${p?.marketCap != null ? fmtMoney(p.marketCap, 0) : '—'}</p></div>
       <div><p class="kicker">24h high / low</p><p class="stat" data-mk-range>${p?.high24h != null ? fmtMoney(p.high24h) : '—'} <span class="subtle">/</span> ${p?.low24h != null ? fmtMoney(p.low24h) : '—'}</p></div>
@@ -1523,7 +1526,10 @@ export function renderDonate(): string {
   )}
   ${stillStrip('donate', 'Photographs of the desk')}
   <article class="chapter city-essay cinema-room">
-    ${photoFigure(plateFor('donate', 'support'), 'city-essay-still')}
+    ${posterFrame(
+      photoFigure(plateFor('donate', 'support'), 'city-essay-still'),
+      '<p class="kicker">Support</p><h2>The only published addresses</h2>',
+    )}
     <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
     <p>Published recipients:</p>
     <ul class="donate-list">

@@ -200,18 +200,27 @@ export function printGradeStill(
     let acc = 0;
     let blue = 0;
     let n = 0;
-    for (let i = 0; i < img.data.length; i += 32) {
+    for (let i = 0; i < img.data.length; i += 4) {
       const r = img.data[i];
       const g = img.data[i + 1];
       const b = img.data[i + 2];
-      acc += (r + g + b) / 3;
-      if (b > r + 8 && b > g - 4 && b > 90) blue += 1;
-      n += 1;
+      if (i % 32 === 0) {
+        acc += (r + g + b) / 3;
+        n += 1;
+        if (b > r + 8 && b > g - 4 && b > 88) blue += 1;
+      }
+      if (b > r + 8 && b > g - 4 && b > 88) {
+        const t = Math.min(1, (b - 88) / 140);
+        img.data[i] = Math.round(r * (0.36 - t * 0.1) + 8);
+        img.data[i + 1] = Math.round(g * (0.42 - t * 0.08) + 14);
+        img.data[i + 2] = Math.round(b * (0.5 - t * 0.12) + 26);
+      }
     }
     if (n) {
       avg = acc / n;
       sky = blue / n;
     }
+    ctx.putImageData(img, x, y);
   } catch {
     avg = 110;
   }

@@ -6725,3 +6725,34 @@ section.block .kicker {
   display: block;
   width: 100%;
 }
+
+.cinema-tape .poster-frame img {
+  min-height: 18rem;
+  max-height: 28rem;
+}
+
+.cinema-tape .poster-copy .tape-head {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cinema-tape .poster-copy .up {
+  color: #7dffc4;
+}
+
+.cinema-tape .poster-copy .down {
+  color: #ff8b82;
+}
+
+.cinema-tape .stats,
+.cinema-tape .contract,
+.cinema-tape .note,
+.cinema-tape [data-mk-spark] {
+  padding-inline: 1.15rem;
+}
+
+.city-essay > .poster-frame {
+  margin: 0 0 1.6rem;
+}
