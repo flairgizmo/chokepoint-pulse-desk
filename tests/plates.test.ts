@@ -11,6 +11,7 @@ import {
   renderGlossary,
   renderMarkets,
   renderNews,
+  renderNotes,
   renderPeople,
   renderPodcast,
   renderProgrammes,
@@ -218,5 +219,30 @@ describe('Topic plates', () => {
     expect(renderVision()).toContain('/visuals/topics/datacenter.jpg');
     expect(renderVision()).toContain('/visuals/topics/city.jpg');
     expect(renderVision()).toContain('/visuals/topics/ucl.jpg');
+  });
+
+  it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {
+    expect(plateFor('murex-2026').src).toBe(PLATES.paris.src);
+    expect(plateFor('quantnet', 'programme').src).toBe(PLATES.city.src);
+    expect(plateFor('connectors').src).toBe(PLATES.cable.src);
+    expect(plateFor('essay-future').src).toBe(PLATES.future.src);
+    expect(plateFor('satp-arch', 'paper-standards', '2023').src).not.toBe(PLATES.geneva.src);
+    expect(plateFor('satp-adapt', 'paper-standards', '2023').src).not.toBe(
+      plateFor('satp-core', 'paper-standards', '2023').src,
+    );
+    const hashed = ['satp-draft-zz', 'satp-other-yy', 'satp-alpha-01', 'satp-beta-02', 'satp-gamma-03', 'satp-delta-04', 'satp-epsilon-05', 'satp-zeta-06'].map(
+      (id) => plateFor(id, 'paper-standards', '2024').src,
+    );
+    expect(new Set(hashed).size).toBeGreaterThanOrEqual(6);
+  });
+
+  it('spreads research, glossary and notes across distinct photographs', () => {
+    const srcs = (html: string) => [...html.matchAll(/src="(\/visuals\/[^"]+\.jpg)"/g)].map((m) => m[1]);
+    expect(new Set(srcs(renderResearch())).size).toBeGreaterThanOrEqual(16);
+    expect(new Set(srcs(renderGlossary())).size).toBeGreaterThanOrEqual(18);
+    expect(new Set(srcs(renderNews())).size).toBeGreaterThanOrEqual(10);
+    expect(new Set(srcs(renderNotes())).size).toBeGreaterThanOrEqual(16);
+    expect(plateFor('overledger-2018').src).toBe(PLATES.ucl.src);
+    expect(plateFor('mondelli-thesis-2017').src).toBe(PLATES.lisbon.src);
   });
 });

@@ -1049,37 +1049,56 @@ export class EarthGlobe {
     scene.add(rim);
 
     for (const city of CITIES) {
-      const pos = latLonToVec(city.lat, city.lon, 1.012);
-      const pin = new THREE.Mesh(
-        new THREE.SphereGeometry(city.kind === 'Headquarters' ? 0.009 : 0.006, this.lite ? 8 : 12, this.lite ? 8 : 12),
-        this.lite
-          ? new THREE.MeshBasicMaterial({ color: kindColor(city.kind) })
-          : new THREE.MeshPhysicalMaterial({
-              color: kindColor(city.kind),
-              emissive: kindColor(city.kind),
-              emissiveIntensity: 0.32,
-              roughness: 0.28,
-              metalness: 0.42,
-              clearcoat: 0.55,
-            }),
+      const hq = city.kind === 'Headquarters';
+      const radial = latLonToVec(city.lat, city.lon, 1);
+      const pinMat = this.lite
+        ? new THREE.MeshBasicMaterial({ color: kindColor(city.kind) })
+        : new THREE.MeshPhysicalMaterial({
+            color: kindColor(city.kind),
+            emissive: kindColor(city.kind),
+            emissiveIntensity: 0.32,
+            roughness: 0.28,
+            metalness: 0.42,
+            clearcoat: 0.55,
+          });
+      const pad = new THREE.Mesh(
+        new THREE.CircleGeometry(hq ? 0.011 : 0.0075, 12),
+        new THREE.MeshBasicMaterial({
+          color: kindColor(city.kind),
+          transparent: true,
+          opacity: 0.42,
+          side: THREE.DoubleSide,
+          depthWrite: false,
+        }),
       );
-      pin.position.copy(pos);
-      pin.userData.cityId = city.id;
-      group.add(pin);
-      this.pinMeshes.push(pin);
+      pad.position.copy(radial.clone().multiplyScalar(1.003));
+      pad.lookAt(0, 0, 0);
+      pad.userData.cityId = city.id;
+      group.add(pad);
+      this.pinMeshes.push(pad);
+      const stemH = 0.022;
+      /* Cylinder +Y is the outer tip after lookAt(origin)+rotateX(π/2). Thick end sits on the crust. */
       const stem = new THREE.Mesh(
-        new THREE.CylinderGeometry(this.lite ? 0.0032 : 0.0024, this.lite ? 0.0032 : 0.0024, 0.06, 6),
-        new THREE.MeshBasicMaterial({ color: kindColor(city.kind) }),
+        new THREE.CylinderGeometry(this.lite ? 0.0012 : 0.001, this.lite ? 0.0036 : 0.0028, stemH, 8),
+        pinMat,
       );
-      stem.position.copy(latLonToVec(city.lat, city.lon, 1.04));
+      stem.position.copy(radial.clone().multiplyScalar(1.003 + stemH / 2));
       stem.lookAt(0, 0, 0);
       stem.rotateX(Math.PI / 2);
       stem.userData.cityId = city.id;
       group.add(stem);
       this.pinMeshes.push(stem);
+      const pin = new THREE.Mesh(
+        new THREE.SphereGeometry(hq ? 0.0075 : 0.0055, this.lite ? 8 : 12, this.lite ? 8 : 12),
+        pinMat,
+      );
+      pin.position.copy(radial.clone().multiplyScalar(1.003 + stemH + 0.004));
+      pin.userData.cityId = city.id;
+      group.add(pin);
+      this.pinMeshes.push(pin);
       const label = makeLabelSprite(city.name);
-      label.scale.set(0.34, 0.085, 1);
-      label.position.copy(latLonToVec(city.lat, city.lon, 1.09));
+      label.scale.set(0.28, 0.07, 1);
+      label.position.copy(latLonToVec(city.lat, city.lon, 1.055));
       label.userData.cityId = city.id;
       group.add(label);
       this.labelSprites.push(label);
@@ -1089,10 +1108,10 @@ export class EarthGlobe {
     this.followId = london.id;
     this.lookAtCity(london);
     this.pulse = new THREE.Mesh(
-      new THREE.SphereGeometry(0.028, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0xe8d4b0, transparent: true, opacity: 0.34 }),
+      new THREE.SphereGeometry(0.016, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xe8d4b0, transparent: true, opacity: 0.28 }),
     );
-    this.pulse.position.copy(latLonToVec(london.lat, london.lon, 1.03));
+    this.pulse.position.copy(latLonToVec(london.lat, london.lon, 1.038));
     group.add(this.pulse);
 
     const arcSegs = this.lite ? 32 : 64;
@@ -1396,7 +1415,9 @@ function kindColor(kind: City['kind']): number {
       return 0xb8c4d8;
     case 'Research':
       return 0xa8c0bc;
+    case 'Markets':
+      return 0xc8b090;
     default:
-      return 0xeaf1ff;
+      return 0xc4b8a0;
   }
 }

@@ -1163,7 +1163,7 @@ export function renderGlossary(filter = ''): string {
         .map(
           (t) => `<article class="term" id="${esc(t.id)}">
             <button type="button" data-stage="term" data-stage-id="${esc(t.id)}">
-              ${photoFigure(plateFor(t.term, t.id), 'term-still')}
+              ${photoFigure(plateFor(t.id, t.term), 'term-still')}
               <h2>${esc(t.term)}</h2>
               <p>${esc(t.body)}</p>
             </button>
