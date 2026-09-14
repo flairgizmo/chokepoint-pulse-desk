@@ -8544,6 +8544,10 @@ section.block .kicker {
   filter: saturate(0.82) contrast(1.08) brightness(1.18);
 }
 
+.tech-spine-hit[data-stage-id='trusted-node'] .poster-frame .photo-plate.spine-still img {
+  object-position: center 12%;
+}
+
 .donate-list .poster-frame .photo-plate.donate-usdt-still img,
 .donate-list .poster-frame img.donate-usdt-still,
 .donate-list li:nth-child(3) .poster-frame .photo-plate.donate-code-still img {
