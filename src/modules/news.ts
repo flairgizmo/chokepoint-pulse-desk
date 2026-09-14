@@ -91,8 +91,15 @@ function publishedIso(pub: string): string | null {
   return Number.isFinite(ts) ? new Date(ts).toISOString() : null;
 }
 
-function isQuantinuumNoise(title: string, source: string): boolean {
-  return /\bquantinuum\b/i.test(`${title} ${source}`) && !/\bquant network\b/i.test(title);
+function isQntTickerCollision(title: string, source: string): boolean {
+  const hay = `${title} ${source}`;
+  if (/\bquant network\b/i.test(hay) || /\boverledger\b/i.test(title)) return false;
+  if (/\bquantinuum\b/i.test(hay)) return true;
+  if (/\b(coinmarketcap|coingecko|binance|kraken)\b/i.test(hay) && /\bqnt\b/i.test(title)) return false;
+  if (/\bqnt\b/i.test(title) && /\b(bold|blze|gbts|rgti|ionq|qbts)\b/i.test(title)) return true;
+  if (/\bqnt stocks?\b/i.test(title) && /\b(surge|rally|jump|soar|roundup)\b/i.test(title)) return true;
+  if (/\bqnt stock quote\b/i.test(title) && !/\b(crypto|token|coin)\b/i.test(hay)) return true;
+  return false;
 }
 
 function isFxWidgetNoise(title: string): boolean {
@@ -127,7 +134,7 @@ export function parseNamedRss(
     const source = forced?.source || xmlTag(raw, 'source') || 'RSS';
     const pub = xmlTag(raw, 'pubDate');
     if (!title || !url) continue;
-    if (isQuantinuumNoise(title, source)) continue;
+    if (isQntTickerCollision(title, source)) continue;
     if (isFxWidgetNoise(title)) continue;
     if (forced?.requireMatch !== false && !RE.test(`${title} ${source}`)) continue;
     items.push({
@@ -158,7 +165,7 @@ export function parseAtomFeed(
     const url = href.startsWith('http') ? href : `${forced.linkBase ?? ''}${href}`;
     const pub = xmlTag(raw, 'updated') || xmlTag(raw, 'published');
     if (!title || !url) continue;
-    if (isQuantinuumNoise(title, forced.source)) continue;
+    if (isQntTickerCollision(title, forced.source)) continue;
     items.push({
       id: headlineId(url, title),
       title,

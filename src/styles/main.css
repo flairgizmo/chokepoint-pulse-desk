@@ -2148,7 +2148,8 @@ main {
   border-radius: 16px;
   background: #0b1220;
   color: #f4f7fb;
-  padding: 1.1rem 1.15rem;
+  padding: 0 0 1.1rem;
+  overflow: hidden;
 }
 
 .month-card time,
@@ -4143,7 +4144,8 @@ body.stage-open .grok {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 18px;
-  padding: 1rem;
+  padding: 0 0 1.1rem;
+  overflow: hidden;
 }
 
 .prog-card > button {
@@ -4756,6 +4758,31 @@ body.stage-open .grok {
 .cal-still,
 .month-still {
   margin: 0 0 0.75rem;
+}
+
+.month-card time,
+.cal-card time,
+.month-card .mono,
+.cal-card .mono,
+.month-card h3,
+.cal-card h3,
+.month-card p,
+.cal-card p {
+  padding-inline: 1.1rem;
+}
+
+.month-card time,
+.cal-card time {
+  padding-top: 0.35rem;
+}
+
+.prog-card .kicker,
+.prog-card h2,
+.prog-card .lede-sm,
+.prog-card .mono,
+.prog-card .prog-tech,
+.prog-card .prog-marks {
+  padding-inline: 1.05rem;
 }
 
 .patent-still img,

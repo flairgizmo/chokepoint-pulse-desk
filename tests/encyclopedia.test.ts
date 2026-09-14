@@ -139,6 +139,16 @@ describe('Google News RSS parser', () => {
           <source>simplywall.st</source>
         </item>
         <item>
+          <title>Why Did BOLD, BLZE, QNT Stocks Surge To 52-Week Highs Today</title>
+          <link>https://example.com/roundup</link>
+          <source>Stocktwits</source>
+        </item>
+        <item>
+          <title>QNT Stock Quote Price and Forecast</title>
+          <link>https://example.com/cnn-qnt</link>
+          <source>CNN</source>
+        </item>
+        <item>
           <title>Overledger is not a twelfth blockchain</title>
           <link>https://example.net/ol</link>
           <source>Industry Desk</source>

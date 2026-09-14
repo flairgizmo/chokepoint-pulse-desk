@@ -465,13 +465,13 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.05);
-vec3 body = vec3(0.1, 0.14, 0.2);
-vec3 heart = mix(body, diffuseColor.rgb, 0.12);
-diffuseColor.rgb = mix(heart, envRefl, spec * 0.72);
-diffuseColor.rgb += envRefl * spec * 1.85;
-diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.55;
-diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.45;
-diffuseColor.a *= mix(0.8, 0.95, spec);`;
+float kite = clamp(dot(diffuseColor.rgb, vec3(0.22, 0.45, 0.33)), 0.0, 1.0);
+vec3 body = vec3(0.07, 0.1, 0.16);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.58);
+diffuseColor.rgb += envRefl * spec * 1.45;
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * (0.32 + kite * 0.55);
+diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.38;
+diffuseColor.a *= mix(0.93, 0.98, spec);`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
@@ -522,7 +522,7 @@ diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 1.05;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.7;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 1.15;
 diffuseColor.rgb += vec3(0.72, 0.88, 1.0) * liteFlash2 * 0.85;
-diffuseColor.a *= mix(0.18, 0.88, spec);`;
+diffuseColor.a *= mix(0.4, 0.9, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -596,7 +596,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-35-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-36-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -1176,7 +1176,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.7,
     tint: lite ? 0xffffff : 0xddd2c0,
     vertexColors: lite,
-    window: lite ? 0.86 : undefined,
+    window: lite ? 0.94 : undefined,
     pav: lite,
     env: roomEnv,
   });
@@ -1185,7 +1185,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.7,
     tint: lite ? 0xffffff : 0xc4b8a6,
     vertexColors: lite,
-    window: lite ? 0.86 : undefined,
+    window: lite ? 0.94 : undefined,
     pav: lite,
     env: roomEnv,
   });
