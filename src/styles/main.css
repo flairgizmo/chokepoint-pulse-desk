@@ -5733,6 +5733,8 @@ body.stage-open .grok {
   min-height: 18rem;
   max-height: 24rem;
 }
+
+.poster-copy {
   position: absolute;
   left: 0;
   right: 0;
