@@ -440,27 +440,22 @@ vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 1.45);
+float liteFres = pow(1.0 - liteFacing, 1.2);
 float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
-float liteFlash = smoothstep(0.9, 1.0, liteSpark) * liteFres;
-vec3 liteT = refract(-liteV, liteN, 0.413);
-vec2 iorOff = (dot(liteT, liteT) > 0.001 ? liteT.xy : liteN.xy) * (0.06 + liteFacing * 0.1);
-vec4 iorSamp = texture2D(map, vMapUv + iorOff);
-vec3 body = vec3(0.11, 0.1, 0.09);
-vec3 wrap = mix(diffuseColor.rgb, iorSamp.rgb, 0.35 + liteFacing * 0.2);
+float liteFlash = smoothstep(0.86, 1.0, liteSpark) * liteFres;
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
-float spec = pow(liteFres, 1.35);
-diffuseColor.rgb = mix(body, wrap, 0.22 + spec * 0.5);
-diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.58);
-diffuseColor.rgb += envRefl * spec * 1.85;
-diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.7;
-diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.46;
-diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.62;
-diffuseColor.a *= mix(0.32, 0.9, spec);`;
+float spec = pow(liteFres, 1.12);
+vec3 body = vec3(0.16, 0.15, 0.14);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.84);
+diffuseColor.rgb += envRefl * spec * 2.25;
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.95;
+diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.62;
+diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.8;
+diffuseColor.a *= mix(0.05, 0.9, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -491,7 +486,7 @@ diffuseColor.rgb += envRefl * spec * 1.7;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
-diffuseColor.a *= mix(0.78, 1.0, liteFres);`;
+diffuseColor.a *= mix(0.22, 0.96, liteFres);`;
 }
 
 function attachLiteFire(
@@ -532,7 +527,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-20-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-21-${kind}`;
 }
 
 function glassMat(
