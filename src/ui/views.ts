@@ -1330,7 +1330,7 @@ export function headlinePosterButton(h: Headline, withLane = false): string {
     : `<strong>${esc(h.title)}</strong>`;
   return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">
     ${posterFrame(
-      photoFigure(plateFor(h.id, h.lane, h.source, h.title), 'headline-still'),
+      photoFigure(plateFor(h.id), 'headline-still'),
       copy,
     )}
   </button>`;
