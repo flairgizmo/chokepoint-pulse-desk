@@ -470,7 +470,7 @@ export class EarthGlobe {
   private dayTex: THREE.Texture | null = null;
   private nightTex: THREE.Texture | null = null;
   private terminator: THREE.Mesh | null = null;
-  private glint: THREE.Mesh | null = null;
+  private glint: THREE.Sprite | null = null;
   private sheen: THREE.Mesh | null = null;
   private medSheen: THREE.Mesh | null = null;
   private biscaySheen: THREE.Mesh | null = null;
@@ -916,21 +916,19 @@ export class EarthGlobe {
       scene.add(term);
       this.terminator = term;
     }
-    const glint = new THREE.Mesh(
-      new THREE.PlaneGeometry(this.lite ? 0.14 : 0.28, this.lite ? 0.09 : 0.18),
-      new THREE.MeshBasicMaterial({
+    const glint = new THREE.Sprite(
+      new THREE.SpriteMaterial({
         map: sunGlintTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.52 : 0.92,
+        opacity: this.lite ? 0.7 : 0.92,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
+        sizeAttenuation: true,
       }),
     );
-    const glintDir = latLonToVec(36, -16, 1).applyAxisAngle(Y_AXIS, this.earthSpin).normalize();
-    glint.position.copy(glintDir.multiplyScalar(1.018));
-    glint.lookAt(0, 0, 0);
+    glint.scale.set(this.lite ? 0.2 : 0.34, this.lite ? 0.12 : 0.2, 1);
+    glint.position.copy(this.sunDir.clone().multiplyScalar(1.02));
     glint.renderOrder = 4;
     scene.add(glint);
     this.glint = glint;
@@ -1297,6 +1295,10 @@ export class EarthGlobe {
     }
     this.camera.position.setFromSphericalCoords(this.distance, this.phi, this.theta);
     this.camera.lookAt(0, 0, 0);
+    if (this.glint) {
+      this.glint.position.copy(this.sunDir).multiplyScalar(1.02);
+      this.glint.visible = this.overlays.day;
+    }
     if (this.sun) this.sun.intensity = this.overlays.day ? 1.85 : 0.35;
     if (this.pulse && this.overlays.activity && !this.reduced) {
       const s = 1 + Math.sin(performance.now() / 420) * 0.55;

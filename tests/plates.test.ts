@@ -246,5 +246,11 @@ describe('Topic plates', () => {
     expect(plateFor('mondelli-thesis-2017').src).toBe(PLATES.lisbon.src);
     expect(plateFor('cbdc', 'CBDC').src).toBe(PLATES.zurich.src);
     expect(plateFor('satp-arch', 'paper-standards').src).not.toBe(PLATES.geneva.src);
+    expect(plateFor('internet-of-value').src).toBe(PLATES.fiber.src);
+    expect(plateFor('overledger-gateway').src).toBe(PLATES.gateway.src);
+    expect(plateFor('home-interop').src).toBe(PLATES.fiber.src);
+    expect(plateFor('home-standards').src).toBe(PLATES.brussels.src);
+    const pods = [...renderPodcast().matchAll(/class="pod-still"[^>]*src="(\/visuals\/[^"]+)"/g)].map((m) => m[1]);
+    expect(new Set(pods).size).toBeGreaterThanOrEqual(12);
   });
 });
