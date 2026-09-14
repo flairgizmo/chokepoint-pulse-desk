@@ -207,6 +207,9 @@ function diamondPhysical(
     thickness: opts.thickness ?? 0.55,
     attenuationColor: new THREE.Color(0x8ec4ff),
     attenuationDistance: 0.82,
+    sheen: 0.38,
+    sheenColor: new THREE.Color(0xeaf1ff),
+    sheenRoughness: 0.18,
     iridescence: 1,
     iridescenceIOR: 1.3,
     iridescenceThicknessRange: [120, 420],
@@ -214,7 +217,7 @@ function diamondPhysical(
     clearcoatRoughness: 0.035,
     specularIntensity: 1,
     specularColor: new THREE.Color(0xeaf1ff),
-    envMapIntensity: 2.15,
+    envMapIntensity: 2.55,
     side: THREE.DoubleSide,
     transparent: true,
     opacity: 0.97,
@@ -407,7 +410,7 @@ function glassTex(
   return tex;
 }
 
-type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle' | 'halo';
+type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle' | 'halo' | 'pav';
 
 function liteFireChunk(kind: LiteFire): string {
   if (kind === 'mirror') {
@@ -452,6 +455,28 @@ diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.08 + liteFres *
 diffuseColor.rgb += envRefl * liteFres * kite * 0.22;
 diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.28 + kite * 0.7);
 diffuseColor.a = liteFres * mix(0.1, 0.62, kite);`;
+  }
+  if (kind === 'pav') {
+    return `#include <map_fragment>
+vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+vec3 liteV = normalize(vLiteView);
+float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
+float liteFres = pow(1.0 - liteFacing, 1.18);
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
+float spec = pow(liteFres, 1.05);
+vec3 body = vec3(0.1, 0.14, 0.2);
+vec3 heart = mix(body, diffuseColor.rgb, 0.16);
+diffuseColor.rgb = mix(heart, envRefl, spec * 0.72);
+diffuseColor.rgb += envRefl * spec * 1.85;
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.55;
+diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.45;
+diffuseColor.a *= mix(0.8, 0.95, spec);`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
@@ -573,7 +598,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-31-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-32-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -605,6 +630,7 @@ function glassMat(
     writeDepth?: boolean;
     mirror?: boolean;
     crown?: boolean;
+    pav?: boolean;
     girdle?: boolean;
     doubleSide?: boolean;
     env?: THREE.CubeTexture;
@@ -626,9 +652,11 @@ function glassMat(
         ? 'mirror'
         : opts.girdle
           ? 'girdle'
-          : opts.crown
-            ? 'crown'
-            : 'window';
+          : opts.pav
+            ? 'pav'
+            : opts.crown
+              ? 'crown'
+              : 'window';
       attachLiteFire(mat, opts.env ?? duskCubeMap(), fire);
     }
     return mat;
@@ -1143,8 +1171,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.7,
     tint: lite ? 0xffffff : 0xddd2c0,
     vertexColors: lite,
-    window: lite ? 0.62 : undefined,
-    crown: lite,
+    window: lite ? 0.86 : undefined,
+    pav: lite,
     env: roomEnv,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
@@ -1152,8 +1180,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.7,
     tint: lite ? 0xffffff : 0xc4b8a6,
     vertexColors: lite,
-    window: lite ? 0.62 : undefined,
-    crown: lite,
+    window: lite ? 0.86 : undefined,
+    pav: lite,
     env: roomEnv,
   });
   const girdleIce = glassMat(glassTex(photo0, false, 'crown', 0), lite, {

@@ -126,7 +126,8 @@ function oceanMask(
     const g = p[i + 1];
     const b = p[i + 2];
     const lum = 0.3 * r + 0.59 * g + 0.11 * b;
-    const ocean = b > r + 6 && b >= g - 4 && lum < 96 && Math.max(r, g, b) < 130;
+    const ocean = (b > r + 6 && b >= g - 4 && lum < 96 && Math.max(r, g, b) < 130)
+      || (b > r + 10 && b > g + 4 && lum < 150 && r < 90);
     p[i] = rgb[0];
     p[i + 1] = rgb[1];
     p[i + 2] = rgb[2];
@@ -146,12 +147,6 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   ctx.filter = 'contrast(1.14) saturate(0.9) brightness(0.98)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
-  ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(28, 18, 32, 0.04)';
-  ctx.fillRect(0, 0, c.width, c.height);
-  ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = 'rgba(255, 188, 140, 0.05)';
-  ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'multiply';
   ctx.globalAlpha = 0.22;
   ctx.drawImage(oceanMask(img, c.width, c.height, [18, 36, 56]), 0, 0);
@@ -226,6 +221,47 @@ function oceanSpecMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
         float spec = pow(max(0.0, dot(reflect(-l, n), v)), 42.0);
         float a = wet * (fres * 0.12 + spec * 0.7);
         gl_FragColor = vec4(0.76, 0.88, 1.0, a);
+      }`,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+}
+
+function nightLightsMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
+  const hold = document.createElement('canvas');
+  hold.width = 1;
+  hold.height = 1;
+  const hctx = hold.getContext('2d');
+  if (hctx) {
+    hctx.fillStyle = '#000';
+    hctx.fillRect(0, 0, 1, 1);
+  }
+  const holdTex = new THREE.CanvasTexture(hold);
+  holdTex.needsUpdate = true;
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      lights: { value: holdTex },
+      sunDir: { value: sunDir.clone() },
+    },
+    vertexShader: `
+      varying vec3 vN;
+      varying vec2 vUv;
+      void main(){
+        vUv = uv;
+        vN = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform sampler2D lights;
+      uniform vec3 sunDir;
+      varying vec3 vN;
+      varying vec2 vUv;
+      void main(){
+        float night = smoothstep(0.18, -0.22, dot(normalize(vN), normalize(sunDir)));
+        vec3 c = texture2D(lights, vUv).rgb;
+        float glow = max(c.r, max(c.g, c.b));
+        gl_FragColor = vec4(c * vec3(1.15, 0.96, 0.72), night * glow * 0.9);
       }`,
     transparent: true,
     depthWrite: false,
@@ -775,15 +811,18 @@ export class EarthGlobe {
 
     const lights = new THREE.Mesh(
       new THREE.SphereGeometry(1.004, segs, rings),
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.88,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      }),
+      this.lite
+        ? nightLightsMat(this.sunDir)
+        : new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.88,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          }),
     );
     this.lightsMesh = lights;
+    lights.visible = false;
     lights.renderOrder = 2;
     group.add(lights);
 
@@ -1309,13 +1348,18 @@ export class EarthGlobe {
     if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day && !this.lite;
     if (this.oceanMesh) this.oceanMesh.visible = this.overlays.day;
     if (this.lightsMesh) {
-      const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
-      const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));
-      if (showLights) {
-        lm.map = this.nightTex;
+      const showLights = Boolean(this.overlays.night && this.nightTex);
+      const shader = this.lightsMesh.material as THREE.ShaderMaterial;
+      const basic = this.lightsMesh.material as THREE.MeshBasicMaterial;
+      if ('uniforms' in shader && shader.uniforms.lights) {
+        if (this.nightTex) shader.uniforms.lights.value = this.nightTex;
+        this.lightsMesh.visible = showLights;
+        shader.needsUpdate = true;
+      } else if (showLights) {
+        basic.map = this.nightTex;
         this.lightsMesh.visible = true;
-        lm.opacity = this.overlays.day ? 0.72 : 1;
-        lm.needsUpdate = true;
+        basic.opacity = this.overlays.day ? 0.72 : 1;
+        basic.needsUpdate = true;
       } else {
         this.lightsMesh.visible = false;
       }
