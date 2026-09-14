@@ -52,16 +52,11 @@ export function chatMarkup(): string {
     </button>
     <div class="grok-panel" id="grok-panel" hidden>
       <header>
-        ${posterFrame(
-          photoFigure(plateFor('grok-ask'), 'grok-still'),
-          `<div class="grok-head">
+        ${posterFrame(photoFigure(plateFor('grok-ask'), 'grok-still'), '<p class="kicker">Ask Grok</p>')}
+        <div class="grok-head">
           <img class="grok-mark" src="/brand/grok-mark.png" width="32" height="32" alt="" />
-          <div>
-            <p class="kicker">Ask Grok</p>
-            <p class="subtle" data-grok-status>A research companion for Overledger, GBTD, QNT and the rooms around them. It remembers this visit.</p>
-          </div>
-        </div>`,
-        )}
+          <p class="subtle" data-grok-status>A research companion for Overledger, GBTD, QNT and the rooms around them. It remembers this visit.</p>
+        </div>
         <div class="grok-tools">
           <button type="button" class="icon-btn" data-grok-min aria-label="Minimise assistant">–</button>
           <button type="button" class="icon-btn" data-grok-toggle aria-label="Close assistant">×</button>

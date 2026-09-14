@@ -7630,20 +7630,21 @@ section.block .kicker {
 }
 
 .grok-panel .poster-frame {
-  min-height: 7.4rem;
+  min-height: 5.2rem;
 }
 
 .grok-panel .grok-still img {
-  min-height: 7.4rem;
-  max-height: 8.6rem;
+  min-height: 5.2rem;
+  max-height: 6.2rem;
 }
 
 .grok-panel .poster-copy {
-  padding: 2.5rem 3.6rem 0.85rem 1rem;
+  padding: 1.8rem 3.5rem 0.7rem 1rem;
 }
 
 .grok-panel .grok-head {
-  align-items: flex-end;
+  align-items: center;
+  padding: 0.7rem 1rem 0.15rem;
 }
 
 .donate-list li.cinema-bar {

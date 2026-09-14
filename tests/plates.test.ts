@@ -344,7 +344,7 @@ describe('Topic plates', () => {
     expect(renderDonate()).toContain('/visuals/cities/hong-kong.jpg');
     expect(renderDonate()).toContain('0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD');
     expect(renderVision()).toContain('flip-back-still');
-    expect(plateFor('lloyds-bank').src).toBe(PLATES.london.src);
+    expect(plateFor('lloyds-bank').src).toBe(PLATES.royal.src);
     expect(plateFor('wm-barclays').src).toBe(PLATES.city.src);
   });
 
