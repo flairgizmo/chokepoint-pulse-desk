@@ -8387,7 +8387,8 @@ section.block .kicker {
 }
 
 .tech-spine-hit .poster-copy {
-  padding: 1.4rem 0.7rem 0.45rem;
+  padding: 0.55rem 0.6rem 0.4rem;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.08), rgba(7, 11, 20, 0.72));
 }
 
 .tech-spine-hit .poster-copy span {
