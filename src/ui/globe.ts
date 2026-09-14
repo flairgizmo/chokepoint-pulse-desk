@@ -258,7 +258,7 @@ function nightLightsMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
       varying vec3 vN;
       varying vec2 vUv;
       void main(){
-        float night = smoothstep(0.18, -0.22, dot(normalize(vN), normalize(sunDir)));
+        float night = smoothstep(0.18, -0.22, dot(normalize(vN), normalize(-sunDir)));
         vec3 c = texture2D(lights, vUv).rgb;
         float glow = max(c.r, max(c.g * 0.85, c.b * 0.55));
         float city = smoothstep(0.08, 0.2, glow);
