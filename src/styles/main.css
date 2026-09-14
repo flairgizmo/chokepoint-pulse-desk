@@ -5651,6 +5651,26 @@ body.stage-open .grok {
   grid-column: 1 / -1;
 }
 
+.still-strip.is-portraits .strip-still:last-child:nth-child(odd) {
+  grid-column: auto;
+}
+
+.still-strip.is-portraits {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.still-strip .strip-still.is-portrait img {
+  aspect-ratio: 3 / 4;
+  max-height: 28rem;
+  object-position: 50% 18%;
+}
+
+@media (max-width: 720px) {
+  .still-strip.is-portraits {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .proof-chip,
 .quote-card,
 .essay-card,
@@ -5920,6 +5940,10 @@ body.stage-open .grok {
 @media (max-width: 959px) {
   .still-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .still-strip.is-portraits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .page-hero.cinema-hero .hero-plate {

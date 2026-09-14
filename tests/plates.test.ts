@@ -13,6 +13,7 @@ import {
   renderCity,
   renderDonate,
   renderGlossary,
+  renderHome,
   renderMarkets,
   renderNews,
   renderNotes,
@@ -185,6 +186,8 @@ describe('Topic plates', () => {
     expect(html).toContain('people-face');
     expect(html).toContain('/people/verdian.jpg');
     expect(html).toContain('/people/tasca.jpg');
+    expect(html).toContain('still-strip');
+    expect(html).toContain('is-portraits');
     expect(html).toContain('cinema-letterbox');
     expect(html).not.toContain('people-bed');
     expect(html).not.toContain('hero-bed');
@@ -246,6 +249,9 @@ describe('Topic plates', () => {
     expect(renderPodcast()).toContain('/visuals/stills/gateway.jpg');
     expect(renderPodcast()).toContain('/visuals/topics/city.jpg');
     expect(renderPodcast()).toContain('/visuals/topics/payments.jpg');
+    expect(renderHome()).toContain('still-strip');
+    expect(renderHome()).toContain('live-news-still');
+    expect(renderHome()).toContain('/visuals/cities/paris.jpg');
     expect(renderCbdc()).toContain('still-strip');
     expect(renderCbdc()).toContain('liability-still');
     expect(renderCbdc()).toContain('/visuals/topics/payments.jpg');
@@ -287,9 +293,9 @@ describe('Topic plates', () => {
   it('spreads research, glossary and notes across distinct photographs', () => {
     const srcs = (html: string) => [...html.matchAll(/src="(\/visuals\/[^"]+\.jpg)"/g)].map((m) => m[1]);
     expect(new Set(srcs(renderResearch())).size).toBeGreaterThanOrEqual(16);
-    expect(new Set(srcs(renderGlossary())).size).toBeGreaterThanOrEqual(18);
+    expect(new Set(srcs(renderGlossary())).size).toBeGreaterThanOrEqual(28);
     expect(new Set(srcs(renderNews())).size).toBeGreaterThanOrEqual(10);
-    expect(new Set(srcs(renderNotes())).size).toBeGreaterThanOrEqual(16);
+    expect(new Set(srcs(renderNotes())).size).toBeGreaterThanOrEqual(18);
     expect(plateFor('overledger-2018').src).toBe(PLATES.ucl.src);
     expect(plateFor('mondelli-thesis-2017').src).toBe(PLATES.lisbon.src);
     expect(plateFor('cbdc', 'CBDC').src).toBe(PLATES.zurich.src);

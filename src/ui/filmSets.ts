@@ -40,6 +40,15 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
     { id: 'gbtd', title: 'STERLING', src: PLATES.canary.src, stageKind: 'programme', stageId: 'gbtd' },
     { id: 'satp', title: 'SATP', src: PLATES.geneva.src, stageKind: 'satp', stageId: '3' },
     { id: 'liability', title: 'LIABILITY', src: PLATES.payments.src, stageKind: 'money', stageId: 'tcbm' },
+    { id: 'docs', title: 'DOCS', src: PLATES.datacenter.src, stageKind: 'tech', stageId: 'overledger-platform' },
+    { id: 'quantnet', title: 'QUANTNET', src: PLATES.city.src, stageKind: 'tech', stageId: 'quantnet' },
+  ],
+  home: [
+    { id: 'whitepaper-2018', title: '2018 PAPER', src: PLATES.ucl.src, stageKind: 'event', stageId: 'whitepaper-2018' },
+    { id: 'gbtd-2025', title: 'GBTD', src: PLATES.canary.src, stageKind: 'event', stageId: 'gbtd-2025' },
+    { id: 'satp-core', title: 'SATP', src: PLATES.geneva.src, stageKind: 'paper', stageId: 'satp-core' },
+    { id: 'murex-2026', title: 'MUREX', src: PLATES.paris.src, stageKind: 'event', stageId: 'murex-2026' },
+    { id: 'boe-lab-2026', title: 'SYNC LAB', src: PLATES.boeFacade.src, stageKind: 'event', stageId: 'boe-lab-2026' },
   ],
   stack: [
     { id: 'apps', title: 'FLOW APPS', src: PLATES.city.src, stageKind: 'tech', stageId: 'quant-connect' },
@@ -151,6 +160,7 @@ export const FILM_BACKDROPS: Record<string, string> = {
   programmes: PLATES.canary.src,
   research: PLATES.library.src,
   vision: PLATES.ucl.src,
+  home: PLATES.ucl.src,
   technology: PLATES.fiber.src,
   stack: PLATES.canary.src,
   patents: PLATES.patentsHall.src,
@@ -195,13 +205,16 @@ export function filmStageMarkup(set: string, label: string, overlay = ''): strin
 export function stillStrip(set: string, label = 'Photographs on this rail', count = 4): string {
   const slides = (FILM_SETS[set] ?? []).slice(0, count);
   if (!slides.length) return '';
-  return `<section class="still-strip" aria-label="${esc(label)}">
+  const portrait = set === 'people';
+  return `<section class="still-strip${portrait ? ' is-portraits' : ''}" aria-label="${esc(label)}">
     ${slides
       .map((s) => {
         const plate = Object.values(PLATES).find((p) => p.src === s.src) ?? plateFor(s.id, s.title, set);
-        return `<figure class="photo-plate cinema-frame strip-still">
-          <img src="${esc(s.src)}" alt="${esc(plate.alt)}" width="1280" height="720" loading="lazy" decoding="async" />
-          <figcaption>${esc(plate.credit)}</figcaption>
+        const alt = portrait ? s.title : plate.alt;
+        const credit = portrait ? 'Official published portrait' : plate.credit;
+        return `<figure class="photo-plate cinema-frame strip-still${portrait ? ' is-portrait' : ''}">
+          <img src="${esc(s.src)}" alt="${esc(alt)}" width="${portrait ? 640 : 1280}" height="${portrait ? 800 : 720}" loading="lazy" decoding="async" />
+          <figcaption>${esc(credit)}</figcaption>
         </figure>`;
       })
       .join('')}

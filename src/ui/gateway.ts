@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, type PlateFaceMat, visionStill } from './cinemaSet';
+import { addCinemaHaze, addPracticals, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, type PlateFaceMat, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -1103,6 +1103,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   right.rotation.y = -0.74;
   scene.add(right);
   addCinemaHaze(scene, 'warm');
+  addPracticals(scene);
 
   scene.add(new THREE.AmbientLight(0xc4b8a8, lite ? 0.36 : 0.38));
   scene.add(new THREE.HemisphereLight(0xe8ddd0, 0x1a1410, lite ? 0.42 : 0.55));

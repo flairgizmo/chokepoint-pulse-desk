@@ -368,15 +368,8 @@ export function sparklineSvg(values: number[]): string {
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" role="img" aria-label="Seven-day CoinGecko sparkline"><polygon fill="${fill}" points="${pts} ${w},${h} 0,${h}"/><polyline fill="none" stroke="${stroke}" stroke-width="3" points="${pts}"/></svg>`;
 }
 
-function dykPlate(category: string) {
-  if (category === 'CBDC') return PLATES.payments;
-  if (category === 'AI agents') return PLATES.datacenter;
-  if (category === 'Technology') return PLATES.city;
-  if (category === 'Research') return PLATES.ucl;
-  if (category === 'Standards') return PLATES.geneva;
-  if (category === 'Vision') return PLATES.future;
-  if (category === 'Programmes') return PLATES.canary;
-  return PLATES.ucl;
+function dykPlate(d: { id: string; category: string }) {
+  return plateFor(d.id, d.category);
 }
 
 function dykBlock(): string {
@@ -386,7 +379,7 @@ function dykBlock(): string {
       (d) => `<li class="dyk-card">
         <p class="kicker">${esc(d.category)}</p>
         <details>
-          <summary class="dyk-q">${posterFrame(photoFigure(dykPlate(d.category), 'dyk-still'), `<span class="dyk-q-label">${esc(d.q)}</span>`)}</summary>
+          <summary class="dyk-q">${posterFrame(photoFigure(dykPlate(d), 'dyk-still'), `<span class="dyk-q-label">${esc(d.q)}</span>`)}</summary>
           <p>${esc(d.a)}</p>
         </details>
         <a class="text-link" href="${esc(d.to || '/')}">${esc(d.cta || 'Open')} →</a>
@@ -636,6 +629,8 @@ export function renderHome(): string {
       </div>
     </section>
 
+    ${stillStrip('home', 'Photographs on the desk', 5)}
+
     ${essayOrder()}
 
     <section class="proof-row">
@@ -823,7 +818,7 @@ export function renderVision(): string {
     'the operating system, not another chain.',
     'future',
     'vision',
-  )}${stillStrip('vision', 'Photographs in the argument')}${quoteRail('vision')}${extra}<div class="chapter-stack cinema-room">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
+  )}${stillStrip('vision', 'Photographs in the argument', 7)}${quoteRail('vision')}${extra}<div class="chapter-stack cinema-room">${rest.map((c) => chapterCard(c)).join('')}</div>${dykBlock()}`;
 }
 
 export function renderProgrammes(): string {
@@ -1008,6 +1003,7 @@ export function renderPeople(): string {
     undefined,
     'people',
   )}
+  ${stillStrip('people', 'Official portraits on the record', 5)}
   <div class="toolbar filter-bar">
     <input type="search" id="people-search" placeholder="Search names, roles, rooms…" />
   </div>
@@ -1487,8 +1483,10 @@ export function renderLiveRail(): string {
       <a class="text-link" href="/markets">Full market →</a>
     </article>
     <article class="panel live-news-panel">
-      ${kicker('On Quant, right now')}
-      <p class="subtle" data-home-news-meta>Headlines that name Quant, Overledger or QNT.</p>
+      ${posterFrame(
+        photoFigure(plateFor('home-wire'), 'live-news-still'),
+        `${kicker('On Quant, right now')}<p class="subtle" data-home-news-meta>Headlines that name Quant, Overledger or QNT.</p>`,
+      )}
       <ul class="headlines compact" data-home-news><li class="empty-note">Headlines load when the wire answers.</li></ul>
       <a class="text-link" href="/news">News →</a>
     </article>

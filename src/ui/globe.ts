@@ -367,7 +367,7 @@ function landHoldTex(): THREE.CanvasTexture {
   c.height = 1;
   const ctx = c.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, 1, 1);
   }
   const tex = new THREE.CanvasTexture(c);
@@ -1389,6 +1389,11 @@ export class EarthGlobe {
         .normalize()
         .dot(this.scratchB.copy(this.camera.position).normalize());
       this.glint.visible = this.overlays.day && facing > 0.12;
+      const mat = this.glint.material as THREE.SpriteMaterial;
+      const base = this.lite ? 0.86 : 0.92;
+      mat.opacity = this.glint.visible
+        ? base + Math.sin(performance.now() / 1400) * (this.lite ? 0.1 : 0.06)
+        : 0;
     }
     if (this.sun) this.sun.intensity = this.overlays.day ? 1.85 : 0.35;
     if (this.pulse && this.overlays.activity && !this.reduced) {

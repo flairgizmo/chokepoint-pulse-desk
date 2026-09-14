@@ -1,7 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, duskWall, makeCinemaPlate, makeFloorContact, makeFloorPool, printGradeImage } from './cinemaSet';
+import { addCinemaHaze, addPracticals, addUnrealLook, applyPlateMap, duskWall, makeCinemaPlate, makeFloorContact, makeFloorPool, printGradeImage } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -41,6 +41,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x070b14);
+  scene.fog = probe.lite ? new THREE.Fog(0x070b14, 14, 32) : new THREE.Fog(0x0a1220, 8.5, 18);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 20);
   camera.position.set(0.62, 0.28, 2.42);
 
@@ -54,13 +55,13 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   cyc.position.set(0, 0.2, -1.45);
   scene.add(cyc);
   addCinemaHaze(scene);
+  addPracticals(scene);
   scene.add(makeFloorContact(2.9, 1.55, -0.56));
   const pool = makeFloorPool(-0.555, 2.8);
   (pool.material as THREE.MeshBasicMaterial).opacity = 0.28;
   scene.add(pool);
 
   const plate = makeCinemaPlate(2.28, 1.18, probe.lite, src, 0.1, false, true);
-  applyPlateMap(plate.mat, tex);
   plate.root.position.set(0.04, 0.16, 0);
   plate.root.rotation.set(-0.08, -0.3, 0.012);
   scene.add(plate.root);

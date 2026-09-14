@@ -102,6 +102,7 @@ describe('Home and Technology against V2 brochure rejects', () => {
     expect(home).toContain('data-stage="proof"');
     expect(home).toContain('hero-kicker-copy');
     expect(home).toContain('QntDesk · independent research');
+    expect(home).toContain('still-strip');
   });
 
   it('wires technology related chips as stages, not fake tech ids', () => {

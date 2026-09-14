@@ -409,7 +409,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   });
   tex.colorSpace = THREE.SRGBColorSpace;
   scene.background = new THREE.Color(0x070b14);
-  if (!lite) scene.fog = new THREE.Fog(0x0a1220, 8.5, 18);
+  scene.fog = lite ? new THREE.Fog(0x070b14, 14, 32) : new THREE.Fog(0x0a1220, 8.5, 18);
 
   const cycMat = duskWall(tex, 0x1c2636);
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
@@ -536,7 +536,7 @@ export function makeFloorPool(y = -0.605, size = 5.4): THREE.Mesh {
   return mesh;
 }
 
-function addPracticals(scene: THREE.Scene): void {
+export function addPracticals(scene: THREE.Scene): void {
   const bulbs: Array<readonly [number, number, number, number]> = [
     [2.85, 1.82, -2.15, 0xffc56a],
     [-3.05, 1.48, -2.35, 0x6aa8ff],
