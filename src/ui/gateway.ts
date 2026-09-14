@@ -453,14 +453,14 @@ vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wR = reflect(-normalize(vLiteWorldV), wN);
 vec3 envSamp = textureCube(liteEnv, wR).rgb;
-diffuseColor.rgb = mix(diffuseColor.rgb, envSamp, liteFres * 0.52);
+diffuseColor.rgb += envSamp * pow(liteFres, 2.4) * 0.78;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.55, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-7';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-8';
 }
 
 function glassMat(
