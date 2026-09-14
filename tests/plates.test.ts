@@ -24,7 +24,7 @@ import { cityById } from '../src/data/cities';
 describe('Topic plates', () => {
   it('does not collapse untitled news seeds onto the Reuters still', () => {
     expect(plateFor('ukf-roadmap', 'news', 'present').src).toBe(PLATES.canary.src);
-    expect(plateFor('hmt-digit', 'news', 'present').src).toBe(PLATES.sterling.src);
+    expect(plateFor('hmt-digit', 'news', 'present').src).toBe(PLATES.future.src);
     const srcs = [
       plateFor('ukf-roadmap', 'news', 'present').src,
       plateFor('hmt-digit', 'news', 'present').src,

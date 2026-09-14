@@ -463,14 +463,14 @@ if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
-envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
 float spec = pow(liteFres, 1.05);
 float kite = clamp(dot(diffuseColor.rgb, vec3(0.22, 0.45, 0.33)), 0.0, 1.0);
 vec3 body = vec3(0.05, 0.07, 0.11);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.32);
-diffuseColor.rgb += envRefl * spec * 0.85;
-diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * (0.32 + kite * 0.55);
-diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.38;
+diffuseColor.rgb = mix(body, envRefl, spec * 0.22);
+diffuseColor.rgb += envRefl * spec * 0.48;
+diffuseColor.rgb += vec3(0.72, 0.78, 0.88) * liteFres * (0.14 + kite * 0.18);
+diffuseColor.rgb += vec3(0.4, 0.58, 0.78) * liteFres * liteFres * 0.16;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
@@ -508,11 +508,11 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
 float spec = pow(liteFres, 1.12);
-vec3 body = vec3(0.11, 0.16, 0.24);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.28);
-diffuseColor.rgb += envRefl * spec * 0.82;
-diffuseColor.rgb += vec3(0.9, 0.86, 0.78) * liteFres * 0.36;
-diffuseColor.rgb += vec3(0.46, 0.66, 0.9) * liteFres * liteFres * 0.2;
+vec3 body = vec3(0.08, 0.12, 0.2);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.2);
+diffuseColor.rgb += envRefl * spec * 0.58;
+diffuseColor.rgb += vec3(0.82, 0.8, 0.74) * liteFres * 0.24;
+diffuseColor.rgb += vec3(0.4, 0.58, 0.82) * liteFres * liteFres * 0.14;
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -587,7 +587,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-40-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-41-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -683,7 +683,7 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(1, 0.24 + key * 0.68 + rim * 0.22);
+  const shade = Math.min(1, 0.1 + key * 0.82 + rim * 0.18);
   return new THREE.Color(
     Math.min(1, shade + key * 0.16 + fres * 0.08),
     shade * 0.94,

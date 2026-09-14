@@ -249,7 +249,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'ukf-2026': PLATES.canary,
   'ukf-roadmap': PLATES.canary,
   'ukf-report': PLATES.royal,
-  'hmt-digit': PLATES.sterling,
+  'hmt-digit': PLATES.future,
   'digit-2027': PLATES.sterling,
   'sibos-miami-note': PLATES.miami,
   'sync-lab': PLATES.boeFacade,
