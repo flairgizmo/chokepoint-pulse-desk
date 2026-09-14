@@ -8810,7 +8810,8 @@ section.block .kicker {
 
 .nav > .more > summary,
 .icon-btn.chrome-still-btn,
-.earth-hud .hud-more summary.chrome-still-btn {
+.earth-hud .hud-more summary.chrome-still-btn,
+.desk-stage-close.chrome-still-btn {
   display: grid;
   grid-template-columns: 2.15rem auto;
   gap: 0.38rem;
@@ -9086,10 +9087,21 @@ section.block .kicker {
   padding: 0.28rem 0.45rem 0.28rem 0.28rem;
 }
 
-.earth-hud .hud-more summary.chrome-still-btn {
-  padding: 0.32rem 0.7rem 0.32rem 0.28rem;
-  font-size: 0.78rem;
-  text-transform: none;
-  letter-spacing: 0;
+.desk-stage-close.chrome-still-btn {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.desk-stage-close.chrome-still-btn .nav-still::after {
+  display: none;
+}
+
+.desk-stage-foot .cinema-filter .stage-actions {
+  margin: 0;
+}
+
+.desk-stage-foot .cinema-filter .btn-primary {
+  --btn-fg: #eaf1ff;
 }
 

@@ -486,6 +486,8 @@ describe('Topic plates', () => {
     expect(renderHome()).toMatch(/hud-card[\s\S]{0,500}\/visuals\/topics\/city\.jpg/);
     expect(renderHome()).toMatch(/hud-more[\s\S]{0,400}\/visuals\/topics\/fiber\.jpg/);
     expect(renderHome()).toMatch(/hud-tools[\s\S]{0,400}\/visuals\/topics\/datacenter\.jpg/);
+    expect(plateFor('stage-esc').src).toBe(PLATES.newsroom.src);
+    expect(plateFor('stage-close').src).toBe(PLATES.patentsHall.src);
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

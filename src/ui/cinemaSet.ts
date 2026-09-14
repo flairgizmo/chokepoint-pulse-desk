@@ -757,7 +757,7 @@ export function makeCinemaPlate(
     root.add(chrome);
     const frame = new THREE.Mesh(
       new THREE.BoxGeometry(w + 0.02, h + 0.03, 0.02),
-      new THREE.MeshBasicMaterial({ color: 0x0a1018 }),
+      lite && lit ? litePhong(0x0a1018, 0x3a4658, 8) : new THREE.MeshBasicMaterial({ color: 0x0a1018 }),
     );
     frame.position.z = -(depth / 2 - 0.006);
     root.add(frame);

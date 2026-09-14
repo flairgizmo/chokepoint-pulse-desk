@@ -16,6 +16,9 @@ describe('Stage primitive', () => {
     expect(html).toContain('desk-stage-visual');
     expect(html).toContain('desk-stage-sheet');
     expect(html).toContain('desk-stage-hero');
+    expect(html).toContain('chrome-still-btn');
+    expect(html).toContain('nav-still');
+    expect(html).toContain('Esc');
     expect(html).not.toContain('desk-stage-panel');
     expect(html).not.toContain('desk-stage-split');
   });

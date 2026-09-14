@@ -1,5 +1,5 @@
 import { sourceUrl } from '../data/catalog';
-import { plateFor } from '../data/plates';
+import { photoFigure, plateFor } from '../data/plates';
 import { cinemaStrip } from './diagrams';
 import { esc, extLink } from './html';
 import { forceGrokIdle } from './chat';
@@ -43,7 +43,7 @@ export function stageMarkup(): string {
   return `<div class="desk-stage" id="desk-stage" hidden>
     <div class="desk-stage-backdrop" data-stage-close></div>
     <div class="desk-stage-sheet" role="dialog" aria-modal="true" aria-labelledby="desk-stage-title" aria-describedby="desk-stage-stake" tabindex="-1">
-      <button type="button" class="desk-stage-close" data-stage-close aria-label="Close stage">Esc</button>
+      <button type="button" class="desk-stage-close chrome-still-btn" data-stage-close aria-label="Close stage">${photoFigure(plateFor('stage-esc'), 'nav-still')}<span>Esc</span></button>
       <div class="desk-stage-hero">
         <div class="desk-stage-object" id="desk-stage-visual"></div>
         <header class="desk-stage-head">
@@ -136,7 +136,11 @@ function paint(root: HTMLElement, doc: StageDoc): void {
         'source-strip',
       )
     : '';
-  foot.innerHTML = `${crumb}${related}<div class="stage-actions"><button type="button" class="btn btn-primary" data-stage-close>Close</button>${original}</div>`;
+  foot.innerHTML = `${crumb}${related}${cinemaStrip(
+    'stage-close',
+    `<p class="source-row stage-actions"><button type="button" class="btn btn-primary" data-stage-close>Close</button></p>`,
+    'source-strip',
+  )}${original}`;
 
   wrap.hidden = false;
   wrap.dataset.kind = doc.kind;

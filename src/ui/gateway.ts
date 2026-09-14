@@ -1590,7 +1590,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   }
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.028, 0.046, 0.028, sides),
-    cinemaChrome(lite),
+    cinemaChrome(lite, undefined, lite),
   );
   crystal.position.y = 0.2;
   crystal.scale.setScalar(1.52);
@@ -1612,7 +1612,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const rt2 = new THREE.Mesh(
     new THREE.TorusGeometry(0.92, 0.016, lite ? 8 : 16, lite ? 48 : 72),
     lite
-      ? cinemaChrome(true)
+      ? cinemaChrome(true, undefined, true)
       : new THREE.MeshPhysicalMaterial({
           color: 0x2c281f,
           metalness: 0.86,
@@ -1622,11 +1622,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           clearcoat: 0.8,
         }),
   );
-  if (lite && rt2.material instanceof THREE.MeshBasicMaterial) {
-    rt2.material.color.setHex(0x2c281f);
-    rt2.material.envMap = null;
-    rt2.material.reflectivity = 0;
-  }
   rt2.rotation.x = Math.PI / 2;
   rt2.position.y = -0.305;
   rt2.userData.nodeId = 7;
@@ -1677,13 +1672,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
 
   const bead = new THREE.Mesh(
     new THREE.SphereGeometry(lite ? 0.022 : 0.038, lite ? 12 : 24, lite ? 12 : 24),
-    cinemaChrome(lite),
+    cinemaChrome(lite, undefined, lite),
   );
-  if (lite && bead.material instanceof THREE.MeshBasicMaterial) {
-    bead.material.color.setHex(0x5a4e40);
-    bead.material.envMap = null;
-    bead.material.reflectivity = 0;
-  }
   group.add(bead);
   const pickables: THREE.Object3D[] = [
     ...crowns,
@@ -1837,10 +1827,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }
     if (rt2.material instanceof THREE.MeshPhysicalMaterial) {
       rt2.material.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
-    } else {
-      (rt2.material as THREE.MeshBasicMaterial).color.setHex(
-        selected === 7 || hover === 7 ? 0xc4a888 : 0x2c281f,
-      );
+    } else if (rt2.material instanceof THREE.MeshPhongMaterial) {
+      const on = selected === 7 || hover === 7;
+      rt2.material.color.setHex(on ? 0xa89070 : 0x4a5568);
+      rt2.material.specular.setHex(on ? 0xe8d4b0 : 0x8aa3c8);
+      rt2.material.needsUpdate = true;
     }
   };
   stills.forEach((img) => {
