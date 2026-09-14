@@ -274,7 +274,7 @@ export function overledgerRoster(): string {
     const p = PEOPLE.find((x) => x.id === b.id);
     if (!p) return '';
     const face = p.photo
-      ? `<img class="ol-face" src="${esc(p.photo)}" alt="${esc(p.name)}" width="72" height="90" />`
+      ? `<img class="ol-face" src="${esc(p.photo)}" alt="${esc(p.name)}" width="640" height="800" />`
       : `<span class="ol-initials" aria-hidden="true">${esc(p.initials)}</span>`;
     return `<li>
       <button type="button" data-stage="person" data-stage-id="${esc(p.id)}">
