@@ -2886,7 +2886,8 @@ button.chip {
 
 .cinema-filter input[type='search'],
 .cinema-filter #lib-search,
-.cinema-filter #gloss-search {
+.cinema-filter #gloss-search,
+.cinema-filter #desk-search-input {
   flex: 1;
   min-width: 12rem;
   background: rgba(234, 241, 255, 0.12);
@@ -2995,7 +2996,8 @@ button.chip {
 .hero-split .cinema-filter,
 .masthead .cinema-filter,
 .foot-legal > .cinema-filter,
-.story-suggest .cinema-filter {
+.story-suggest .cinema-filter,
+.desk-search-panel .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
 }
@@ -8745,16 +8747,16 @@ section.block .kicker {
 
 .nav > a {
   display: grid;
-  grid-template-columns: 1.55rem auto;
-  gap: 0.38rem;
+  grid-template-columns: 2.35rem auto;
+  gap: 0.42rem;
   align-items: center;
-  padding: 0.22rem 0.5rem 0.22rem 0.28rem;
+  padding: 0.2rem 0.48rem 0.2rem 0.22rem;
 }
 
 .nav > a .nav-still {
   margin: 0;
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 2.35rem;
+  height: 1.65rem;
   border-radius: 5px;
   overflow: hidden;
   background: #0b1220;
@@ -8762,14 +8764,130 @@ section.block .kicker {
 
 .nav > a .nav-still img {
   display: block;
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 2.35rem;
+  height: 1.65rem;
   object-fit: cover;
-  filter: saturate(0.9) contrast(1.12) brightness(0.78);
+  filter: saturate(0.92) contrast(1.14) brightness(0.82);
 }
 
-.nav > a .nav-still figcaption {
+.nav > a .nav-still figcaption,
+.nav > .more > summary .nav-still figcaption,
+.chrome-still-btn .nav-still figcaption,
+.qnt-chip .nav-still figcaption {
   display: none;
+}
+
+.nav > .more > summary,
+.icon-btn.chrome-still-btn {
+  display: grid;
+  grid-template-columns: 2.15rem auto;
+  gap: 0.38rem;
+  align-items: center;
+  min-width: 0;
+  width: auto;
+  padding: 0.18rem 0.55rem 0.18rem 0.2rem;
+}
+
+.nav > .more > summary .nav-still,
+.chrome-still-btn .nav-still,
+.qnt-chip .nav-still {
+  margin: 0;
+  width: 2.15rem;
+  height: 1.5rem;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #0b1220;
+}
+
+.nav > .more > summary .nav-still img,
+.chrome-still-btn .nav-still img,
+.qnt-chip .nav-still img {
+  display: block;
+  width: 2.15rem;
+  height: 1.5rem;
+  object-fit: cover;
+  filter: saturate(0.92) contrast(1.14) brightness(0.82);
+}
+
+.qnt-chip {
+  padding-left: 0.22rem;
+}
+
+#desk-search-hits button {
+  display: block;
+  appearance: none;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+#desk-search-hits .poster-frame {
+  min-height: 0;
+}
+
+#desk-search-hits .poster-copy {
+  color: #eaf1ff;
+  padding: 2.1rem 0.9rem 0.55rem;
+}
+
+#desk-search-hits .poster-copy .kicker {
+  color: #8aa3c8;
+}
+
+#desk-search-hits .poster-copy .search-sub {
+  color: #c5d4ea;
+  font-size: 0.82rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#desk-search-hits .poster-frame .photo-plate.search-still img,
+#desk-search-hits .search-still img {
+  display: block;
+  width: 100%;
+  height: 7.2rem;
+  min-height: 7.2rem;
+  max-height: 7.2rem;
+  aspect-ratio: 21 / 6;
+  object-fit: cover;
+  object-position: center 18%;
+  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
+.desk-search-panel .cinema-filter {
+  margin: 0 0 0.85rem;
+}
+
+.cinema-filter #desk-search-input {
+  margin-bottom: 0;
+}
+
+.desk-stage-foot .cinema-filter .stage-crumb {
+  color: #eaf1ff;
+  background: rgba(18, 32, 56, 0.72);
+  border-color: rgba(234, 241, 255, 0.22);
+}
+
+.cinema-filter.grok-ask-strip {
+  margin: 0.45rem 0.7rem 0.85rem;
+}
+
+.cinema-filter.grok-ask-strip #grok-form {
+  width: 100%;
+  padding: 0;
+}
+
+.cinema-filter.grok-ask-strip #grok-input {
+  background: rgba(234, 241, 255, 0.12);
+  color: #eaf1ff;
+  border: 1px solid rgba(234, 241, 255, 0.22);
 }
 
 .market-bar.cinema-filter {

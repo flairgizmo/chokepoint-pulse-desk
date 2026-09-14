@@ -259,7 +259,7 @@ export class QntDesk {
             ${cinemaNavLink('/programmes', 'Programmes', route.name === 'programmes' || route.name === 'institutional')}
             ${cinemaNavLink('/research', 'Research', route.name === 'research' || route.name === 'library' || route.name === 'read')}
             <details class="more">
-              <summary>More</summary>
+              <summary class="chrome-still-btn">${photoFigure(plateFor('nav-more'), 'nav-still')}<span>More</span></summary>
               <div class="more-menu">
                 ${cinemaNavLink('/people', 'People')}
                 ${cinemaNavLink('/stack', 'Stack')}
@@ -276,8 +276,8 @@ export class QntDesk {
             </details>
           </nav>
           <div class="top-tools">
-            <a class="qnt-chip" href="/markets"><i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
-            <button type="button" class="icon-btn" data-open-search aria-label="Search the record">Search</button>
+            <a class="qnt-chip" href="/markets">${photoFigure(plateFor('chip-qnt'), 'nav-still')}<i class="${live ? 'live' : ''}"></i> QNT <strong>${esc(price)}</strong> ${chg != null ? `<em class="${chg >= 0 ? 'up' : 'down'}">${esc(fmtPct(chg))}</em>` : ''}</a>
+            <button type="button" class="icon-btn chrome-still-btn" data-open-search aria-label="Search the record">${photoFigure(plateFor('nav-search'), 'nav-still')}<span>Search</span></button>
             <a class="btn btn-primary cta-nav" href="/podcast"><span class="btn-swap"><span>Start the series</span><span>Open Podcast</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>
             <button type="button" class="icon-btn menu-btn" data-open-menu aria-label="Open menu" aria-expanded="false">☰</button>
           </div>

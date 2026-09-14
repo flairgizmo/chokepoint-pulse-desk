@@ -119,7 +119,11 @@ function paint(root: HTMLElement, doc: StageDoc): void {
   body.innerHTML = `${stageParas(doc.body)}${sourced}${facts}`;
 
   const crumb = stack.length
-    ? `<button type="button" class="stage-crumb" data-stage-back>← ${esc(stack[stack.length - 1].title)}</button>`
+    ? cinemaStrip(
+        'stage-crumb',
+        `<p class="source-row"><button type="button" class="stage-crumb" data-stage-back>← ${esc(stack[stack.length - 1].title)}</button></p>`,
+        'source-strip',
+      )
     : '';
   const relatedChips = (doc.related ?? []).filter((r) => !(r.kind === doc.kind && r.id === doc.id));
   const related = relatedChips.length

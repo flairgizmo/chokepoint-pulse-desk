@@ -7,6 +7,7 @@ import { PATENTS } from '../data/patents';
 import { INSTITUTIONS } from '../data/institutions';
 import { PROGRAMMES } from '../data/programmes';
 import { photoFigure, plateFor } from '../data/plates';
+import { cinemaStrip, posterFrame } from './diagrams';
 import { esc } from './html';
 import { isStageOpen, revealStage } from './stage';
 
@@ -74,7 +75,10 @@ export function searchHitButton(h: Hit): string {
   const still = person?.photo
     ? `<figure class="photo-plate cinema-frame search-still"><img src="${esc(person.photo)}" alt="${esc(person.name)}" width="160" height="100" /></figure>`
     : photoFigure(plateFor(h.id, h.stageKind), 'search-still');
-  return `<li><button type="button" data-stage="${esc(h.stageKind)}" data-stage-id="${esc(h.id)}">${still}<span class="kicker">${esc(h.kind)}</span><strong>${esc(h.title)}</strong><span class="search-sub">${esc(h.sub)}</span></button></li>`;
+  return `<li><button type="button" data-stage="${esc(h.stageKind)}" data-stage-id="${esc(h.id)}">${posterFrame(
+    still,
+    `<span class="kicker">${esc(h.kind)}</span><strong>${esc(h.title)}</strong><span class="search-sub">${esc(h.sub)}</span>`,
+  )}</button></li>`;
 }
 
 export function searchMarkup(): string {
@@ -82,8 +86,10 @@ export function searchMarkup(): string {
     <div class="desk-search-backdrop" data-search-close></div>
     <div class="desk-search-panel" role="dialog" aria-modal="true" aria-labelledby="desk-search-title">
       <h2 id="desk-search-title" class="sr-only">Search the record</h2>
-      <label class="sr-only" for="desk-search-input">Search</label>
-      <input id="desk-search-input" type="search" placeholder="Search people, patents, terms, programmes…" />
+      ${cinemaStrip(
+        'search-input',
+        `<label class="sr-only" for="desk-search-input">Search</label><input id="desk-search-input" type="search" placeholder="Search people, patents, terms, programmes…" />`,
+      )}
       <ul id="desk-search-hits"></ul>
       <p class="empty-note" id="desk-search-empty" hidden>Nothing matches. Try Overledger, SATP, GBTD, or a surname.</p>
     </div>

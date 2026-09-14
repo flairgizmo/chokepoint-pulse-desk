@@ -73,11 +73,15 @@ export function chatMarkup(): string {
           )}
         </li>
       </ol>
-      <form id="grok-form">
+      ${cinemaStrip(
+        'grok-form',
+        `<form id="grok-form">
         <label class="sr-only" for="grok-input">Ask Grok</label>
         <input id="grok-input" type="text" autocomplete="off" maxlength="2000" placeholder="What is GBTD?" />
         <button type="submit" class="btn btn-primary">Ask</button>
-      </form>
+      </form>`,
+        'grok-ask-strip',
+      )}
     </div>
   </aside>`;
 }

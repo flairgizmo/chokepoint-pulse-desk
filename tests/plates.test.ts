@@ -6,7 +6,7 @@ import { papers } from '../src/data/catalog';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { STORY } from '../src/data/story';
 import { TECH } from '../src/data/tech';
-import { searchHitButton } from '../src/ui/search';
+import { searchHitButton, searchMarkup } from '../src/ui/search';
 import { diagramFigure, cinemaNavLink } from '../src/ui/diagrams';
 import { chatMarkup } from '../src/ui/chat';
 import { renderInstitutions, renderPatents, renderStack, renderStory } from '../src/ui/pages';
@@ -464,6 +464,20 @@ describe('Topic plates', () => {
     expect(plateFor('story-suggest').src).toBe(PLATES.newsroom.src);
     expect(cinemaNavLink('/news', 'News', true)).toContain('aria-current="page"');
     expect(cinemaNavLink('/news', 'News', true)).toContain('/visuals/topics/newsroom.jpg');
+    expect(searchMarkup()).toContain('id="desk-search-input"');
+    expect(searchMarkup()).toContain('filter-still');
+    expect(searchMarkup()).toContain('/visuals/topics/library.jpg');
+    expect(
+      searchHitButton({ stageKind: 'term', id: 'overledger', kind: 'Glossary', title: 'Overledger', sub: 'Gateway OS' }),
+    ).toContain('poster-frame');
+    expect(plateFor('search-input').src).toBe(PLATES.library.src);
+    expect(plateFor('nav-search').src).toBe(PLATES.library.src);
+    expect(plateFor('nav-more').src).toBe(PLATES.tokyo.src);
+    expect(plateFor('chip-qnt').src).toBe(PLATES.exchange.src);
+    expect(plateFor('stage-crumb').src).toBe(PLATES.history.src);
+    expect(plateFor('grok-form').src).toBe(PLATES.radio.src);
+    expect(chatMarkup()).toContain('id="grok-form"');
+    expect(chatMarkup()).toContain('grok-ask-strip');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

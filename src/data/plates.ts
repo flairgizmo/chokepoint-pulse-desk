@@ -605,6 +605,12 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'foot-disclaimer': PLATES.library,
   'foot-voices': PLATES.radio,
   'story-suggest': PLATES.newsroom,
+  'nav-search': PLATES.library,
+  'nav-more': PLATES.tokyo,
+  'chip-qnt': PLATES.exchange,
+  'search-input': PLATES.library,
+  'stage-crumb': PLATES.history,
+  'grok-form': PLATES.radio,
 }
 
 const PREFIXES = [
