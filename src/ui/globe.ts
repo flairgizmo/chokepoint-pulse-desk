@@ -134,24 +134,21 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.28) saturate(0.68) brightness(0.92)';
+  ctx.filter = 'contrast(1.14) saturate(0.9) brightness(0.98)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(28, 18, 32, 0.1)';
+  ctx.fillStyle = 'rgba(28, 18, 32, 0.04)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = 'rgba(255, 172, 100, 0.1)';
-  ctx.fillRect(0, 0, c.width, c.height);
-  ctx.globalCompositeOperation = 'color';
-  ctx.fillStyle = 'rgba(196, 164, 112, 0.08)';
+  ctx.fillStyle = 'rgba(255, 188, 140, 0.05)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'multiply';
-  ctx.globalAlpha = 0.18;
-  ctx.drawImage(oceanMask(img, c.width, c.height, [22, 32, 48]), 0, 0);
+  ctx.globalAlpha = 0.16;
+  ctx.drawImage(oceanMask(img, c.width, c.height, [18, 36, 56]), 0, 0);
   ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = 0.3;
-  ctx.drawImage(oceanMask(img, c.width, c.height, [206, 222, 236]), 0, 0);
+  ctx.globalAlpha = 0.38;
+  ctx.drawImage(oceanMask(img, c.width, c.height, [210, 228, 240]), 0, 0);
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -240,9 +237,9 @@ function oceanSheenTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createRadialGradient(128, 138, 8, 128, 128, 124);
-  g.addColorStop(0, 'rgba(255, 236, 210, 0.42)');
-  g.addColorStop(0.28, 'rgba(180, 210, 255, 0.14)');
-  g.addColorStop(0.62, 'rgba(140, 170, 210, 0.04)');
+  g.addColorStop(0, 'rgba(255, 244, 220, 0.72)');
+  g.addColorStop(0.22, 'rgba(200, 220, 255, 0.24)');
+  g.addColorStop(0.58, 'rgba(140, 170, 210, 0.06)');
   g.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 256);
@@ -714,7 +711,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.36 : 0.4,
+        opacity: this.lite ? 0.46 : 0.5,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -732,7 +729,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.4 : 0.44,
+        opacity: this.lite ? 0.5 : 0.54,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -750,7 +747,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.36 : 0.4,
+        opacity: this.lite ? 0.46 : 0.5,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -1120,7 +1117,7 @@ export class EarthGlobe {
     if (mat) {
       if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
-        mat.color = new THREE.Color(this.lite ? 0xf2e6d4 : 0xffffff);
+        mat.color = new THREE.Color(0xffffff);
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
       } else {
         mat.map = this.overlays.night && this.nightTex ? this.nightTex : null;
