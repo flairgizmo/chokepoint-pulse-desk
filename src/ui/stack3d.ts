@@ -2,7 +2,7 @@
 
 import * as THREE from 'three';
 import { PLATES } from '../data/plates';
-import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate, makeFloorContact, printGradeStill } from './cinemaSet';
+import { addCinemaSet, addUnrealLook, applyPlateMap, climbUserData, dimCinemaPlate, hardenCanvasTex, makeCinemaPlate, makeFloorContact, printGradeStill, stampFilmGate } from './cinemaSet';
 import { remountCanvas } from './gateway2d';
 import { revealStage } from './stage';
 import { probeWebGL } from './webgl';
@@ -66,14 +66,7 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
         ctx.filter = 'none';
         printGradeStill(ctx, pw, ph);
       }
-      ctx.fillStyle = '#05070c';
-      ctx.fillRect(0, 0, pw, 10);
-      ctx.fillRect(0, ph - 10, pw, 10);
-      ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
-      ctx.fillRect(0, ph - 36, pw, 26);
-      ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
-      ctx.font = '700 13px Outfit, IBM Plex Sans, sans-serif';
-      ctx.fillText(STACK_SLABS[i].title, 12, ph - 18);
+      stampFilmGate(ctx, pw, ph, STACK_SLABS[i].title);
       ctx.restore();
     });
     const vig = ctx.createRadialGradient(w * 0.5, h * 0.42, h * 0.12, w * 0.5, h * 0.48, Math.max(w, h) * 0.72);
@@ -131,14 +124,7 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
     ctx.drawImage(img, sx, sy, sw, sh, (innerW - dw) / 2, 40 + (innerH - dh) / 2, dw, dh);
     ctx.filter = 'none';
     printGradeStill(ctx, 1280, 720);
-    ctx.fillStyle = '#05070c';
-    ctx.fillRect(0, 0, 1280, 40);
-    ctx.fillRect(0, 692, 1280, 28);
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.9)';
-    ctx.font = '700 26px Outfit, IBM Plex Sans, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(title, 22, 20);
+    stampFilmGate(ctx, 1280, 720, title);
     tex.needsUpdate = true;
     onReady(tex);
   };
@@ -181,7 +167,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   const puddles: THREE.Mesh[] = [];
   STACK_SLABS.forEach((layer) => {
-    const plate = makeCinemaPlate(2.08, 1.16, lite, PLATES.canary.src, 0.08);
+    const plate = makeCinemaPlate(2.08, 1.16, lite, PLATES.canary.src, 0.1);
     plate.root.userData.layerId = layer.id;
     plate.root.userData.stage = layer.stage;
     plate.face.userData.layerId = layer.id;

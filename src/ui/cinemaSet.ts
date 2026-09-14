@@ -216,6 +216,58 @@ export function printGradeStill(
   ctx.restore();
 }
 
+/** 35mm gate on a landscape still. Side sprockets, frame lines, title in the gate. */
+export function stampFilmGate(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  title: string,
+  portrait = false,
+): void {
+  ctx.save();
+  ctx.filter = 'none';
+  ctx.globalCompositeOperation = 'source-over';
+  const rail = Math.round(w * (portrait ? 0.04 : 0.058));
+  const bar = Math.max(8, Math.round(h * 0.018));
+  ctx.fillStyle = '#080b10';
+  ctx.fillRect(0, 0, w, bar);
+  ctx.fillRect(0, h - bar, w, bar);
+  ctx.fillRect(0, 0, rail, h);
+  ctx.fillRect(w - rail, 0, rail, h);
+  const holeW = Math.max(5, Math.round(rail * 0.46));
+  const holeH = Math.max(6, Math.round(h * (portrait ? 0.028 : 0.038)));
+  const step = Math.round(h * (portrait ? 0.07 : 0.078));
+  const rx = Math.max(1, Math.round(holeW * 0.2));
+  ctx.fillStyle = '#04060a';
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.14)';
+  ctx.lineWidth = 1;
+  for (let y = step * 0.35; y < h - holeH; y += step) {
+    for (const x of [Math.round((rail - holeW) / 2), w - rail + Math.round((rail - holeW) / 2)]) {
+      ctx.beginPath();
+      if (typeof ctx.roundRect === 'function') ctx.roundRect(x, y, holeW, holeH, rx);
+      else ctx.rect(x, y, holeW, holeH);
+      ctx.fill();
+      ctx.stroke();
+    }
+  }
+  ctx.strokeStyle = 'rgba(234, 241, 255, 0.16)';
+  ctx.beginPath();
+  ctx.moveTo(rail, bar);
+  ctx.lineTo(w - rail, bar);
+  ctx.moveTo(rail, h - bar);
+  ctx.lineTo(w - rail, h - bar);
+  ctx.stroke();
+  const titleH = Math.round(h * (portrait ? 0.07 : 0.08));
+  ctx.fillStyle = 'rgba(8, 11, 16, 0.72)';
+  ctx.fillRect(rail, h - bar - titleH, w - rail * 2, titleH);
+  ctx.fillStyle = 'rgba(234, 241, 255, 0.9)';
+  ctx.font = `700 ${Math.max(15, Math.round(h * (portrait ? 0.028 : 0.034)))}px Outfit, IBM Plex Sans, sans-serif`;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(title, rail + Math.round(w * 0.02), h - bar - titleH / 2);
+  ctx.restore();
+}
+
 /** Cover-draw a Vision still, then print-grade it for a 3D plate. */
 export function printGradeImage(photo: HTMLImageElement, w = 1280, h = 720): THREE.CanvasTexture {
   const c = document.createElement('canvas');
