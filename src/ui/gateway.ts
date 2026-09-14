@@ -455,7 +455,7 @@ diffuseColor.rgb += envRefl * spec * 2.25;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.95;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.62;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.8;
-diffuseColor.a *= mix(0.05, 0.52, spec);`;
+diffuseColor.a *= mix(0.05, 0.64, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -527,7 +527,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-22-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-23-${kind}`;
 }
 
 function glassMat(
@@ -701,8 +701,8 @@ function triGeo(
   return g;
 }
 
-function wellTex(photo: HTMLImageElement | null, on: boolean): THREE.CanvasTexture {
-  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, 'pav', 0, true)));
+function wellTex(photo: HTMLImageElement | null, on: boolean, lane: GlassLane = 0): THREE.CanvasTexture {
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, 'pav', lane, true)));
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = THREE.ClampToEdgeWrapping;
   tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -1136,36 +1136,38 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       sparks.push(spark);
     }
   }
-  if (!lite) {
-    const edgePts: number[] = [];
-    for (let i = 0; i < sides; i++) {
-      const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const x = Math.cos(a) * eqR;
-      const z = Math.sin(a) * eqR;
-      const tx = Math.cos(a) * tableR;
-      const tz = Math.sin(a) * tableR;
-      const mx = Math.cos(a) * midR;
-      const mz = Math.sin(a) * midR;
-      const px = Math.cos(a) * pavR;
-      const pz = Math.sin(a) * pavR;
-      edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
-      edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
-      edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
-      edgePts.push(tx, tableY, tz, mx, midY, mz);
-      edgePts.push(mx, midY, mz, x, eqY, z);
-      edgePts.push(x, eqY, z, px, pavY, pz);
-      edgePts.push(px, pavY, pz, 0, botY, 0);
-    }
-    const edgeGeo = new THREE.BufferGeometry();
-    edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
-    crystal.add(
-      new THREE.LineSegments(
-        edgeGeo,
-        new THREE.LineBasicMaterial({ color: 0xeaf1ff, transparent: true, opacity: 0.04 }),
-      ),
-    );
+  const edgePts: number[] = [];
+  for (let i = 0; i < sides; i++) {
+    const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+    const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+    const x = Math.cos(a) * eqR;
+    const z = Math.sin(a) * eqR;
+    const tx = Math.cos(a) * tableR;
+    const tz = Math.sin(a) * tableR;
+    const mx = Math.cos(a) * midR;
+    const mz = Math.sin(a) * midR;
+    const px = Math.cos(a) * pavR;
+    const pz = Math.sin(a) * pavR;
+    edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
+    edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
+    edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
+    edgePts.push(tx, tableY, tz, mx, midY, mz);
+    edgePts.push(mx, midY, mz, x, eqY, z);
+    edgePts.push(x, eqY, z, px, pavY, pz);
+    edgePts.push(px, pavY, pz, 0, botY, 0);
   }
+  const edgeGeo = new THREE.BufferGeometry();
+  edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
+  crystal.add(
+    new THREE.LineSegments(
+      edgeGeo,
+      new THREE.LineBasicMaterial({
+        color: lite ? 0xf2e6d4 : 0xeaf1ff,
+        transparent: true,
+        opacity: lite ? 0.16 : 0.04,
+      }),
+    ),
+  );
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
@@ -1180,47 +1182,77 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   core.position.y = 0.22;
   core.userData.nodeId = 6;
   crystal.add(core);
-  let wellMat: THREE.MeshBasicMaterial | null = null;
+  let wellMats: THREE.MeshBasicMaterial[] = [];
   let wellRoot: THREE.Group | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
-    const wrapMat = new THREE.MeshBasicMaterial({
-      map: wellTex(photo0, false),
+    const wrapA = new THREE.MeshBasicMaterial({
+      map: wellTex(photo0, false, 0),
       color: 0xffffff,
       side: THREE.DoubleSide,
       depthWrite: true,
     });
-    wrapMat.toneMapped = false;
-    wellMat = wrapMat;
+    const wrapB = new THREE.MeshBasicMaterial({
+      map: wellTex(photo0, false, 1),
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      depthWrite: true,
+    });
+    wrapA.toneMapped = false;
+    wrapB.toneMapped = false;
+    wellMats = [wrapA, wrapB];
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
     const wellTopR = tableR * 0.9;
     const wellTopY = tableY - 0.012;
+    const wellMidR = tableR * 0.4;
+    const wellMidY = wellTopY + (botY + 0.05 - wellTopY) * 0.48;
     const wellBotR = tableR * 0.08;
     const wellBotY = botY + 0.05;
-    const addWell = (geo: THREE.BufferGeometry): void => {
-      const mesh = new THREE.Mesh(geo, wrapMat);
+    const addWell = (geo: THREE.BufferGeometry, mat: THREE.MeshBasicMaterial): void => {
+      const mesh = new THREE.Mesh(geo, mat);
       mesh.userData.nodeId = 6;
       mesh.renderOrder = 0;
       wellRoot?.add(mesh);
     };
+    const kite = (
+      ax: number,
+      ay: number,
+      az: number,
+      bx: number,
+      by: number,
+      bz: number,
+      cx: number,
+      cy: number,
+      cz: number,
+      dx: number,
+      dy: number,
+      dz: number,
+      mat: THREE.MeshBasicMaterial,
+    ): void => {
+      addWell(wellTri(ax, ay, az, bx, by, bz, cx, cy, cz, 0, 0, 0, 1, 1, 1), mat);
+      addWell(wellTri(ax, ay, az, cx, cy, cz, dx, dy, dz, 0, 0, 1, 1, 1, 0), mat);
+    };
     for (let i = 0; i < sides; i++) {
       const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
       const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const u0 = i / sides;
-      const u1 = (i + 1) / sides;
+      const mat = i % 2 ? wrapB : wrapA;
       const tx0 = Math.cos(a0) * wellTopR;
       const tz0 = Math.sin(a0) * wellTopR;
       const tx1 = Math.cos(a1) * wellTopR;
       const tz1 = Math.sin(a1) * wellTopR;
+      const mx0 = Math.cos(a0) * wellMidR;
+      const mz0 = Math.sin(a0) * wellMidR;
+      const mx1 = Math.cos(a1) * wellMidR;
+      const mz1 = Math.sin(a1) * wellMidR;
       const bx0 = Math.cos(a0) * wellBotR;
       const bz0 = Math.sin(a0) * wellBotR;
       const bx1 = Math.cos(a1) * wellBotR;
       const bz1 = Math.sin(a1) * wellBotR;
-      addWell(wellTri(tx0, wellTopY, tz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, u0, 0, u0, 1, u1, 1));
-      addWell(wellTri(tx0, wellTopY, tz0, bx1, wellBotY, bz1, tx1, wellTopY, tz1, u0, 0, u1, 1, u1, 0));
+      kite(tx0, wellTopY, tz0, mx0, wellMidY, mz0, mx1, wellMidY, mz1, tx1, wellTopY, tz1, mat);
+      kite(mx0, wellMidY, mz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, mx1, wellMidY, mz1, mat);
     }
-    const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wrapMat);
+    const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wrapA);
     wellFloor.position.y = wellBotY;
     wellFloor.userData.nodeId = 6;
     wellFloor.renderOrder = 0;
@@ -1431,7 +1463,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
-    if (wellMat) swapMap(wellMat, wellTex(photo, on));
+    wellMats.forEach((mat, i) => swapMap(mat, wellTex(photo, on, (i % 2) as GlassLane)));
     for (const mat of [crownA, crownB]) {
       if (mat instanceof THREE.MeshPhysicalMaterial) {
         mat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
