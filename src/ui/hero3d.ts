@@ -1,7 +1,7 @@
 /** Perspective film plate for page heroes. The JPEG still paints first. */
 
 import * as THREE from 'three';
-import { addCinemaFloor, addCinemaHaze, addPracticals, addUnrealLook, applyPlateMap, duskWall, makeCinemaPlate, makeFloorContact, makeFloorPool, printGradeImage } from './cinemaSet';
+import { addCinemaFloor, addCinemaHaze, addPracticals, addUnrealLook, applyPlateMap, duskWall, duskWallLit, makeCinemaPlate, makeFloorContact, makeFloorPool, printGradeImage } from './cinemaSet';
 import { probeWebGL } from './webgl';
 
 export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
@@ -51,7 +51,10 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   });
   tex.colorSpace = THREE.SRGBColorSpace;
 
-  const cyc = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 3.4), duskWall(tex, 0x243044));
+  const cyc = new THREE.Mesh(
+    new THREE.PlaneGeometry(7.2, 3.4),
+    probe.lite ? duskWallLit(tex, 0x2a3648) : duskWall(tex, 0x243044),
+  );
   cyc.position.set(0, 0.2, -1.45);
   scene.add(cyc);
   addCinemaHaze(scene);

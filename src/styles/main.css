@@ -2969,6 +2969,9 @@ button.chip {
   color: #eaf1ff;
 }
 
+.token-lab > .cinema-filter,
+.city-essay > .cinema-filter,
+.chapter.city-essay > .cinema-filter,
 .cinema-tape > .cinema-filter,
 .stack-exploded > .cinema-filter,
 .cinema-wire > .cinema-filter,
@@ -2990,7 +2993,10 @@ button.chip {
 .cinema-filter .cohort-note,
 .cinema-filter .contract,
 .cinema-filter .story-keys,
-.cinema-filter .lede-sm {
+.cinema-filter .lede-sm,
+.cinema-filter .source-row,
+.cinema-filter .source-row a,
+.cinema-filter .source-row .text-link {
   color: #eaf1ff;
   margin: 0;
   max-width: none;
@@ -5891,7 +5897,8 @@ body.stage-open .grok {
 .poster-copy .year-num,
 .poster-copy .mono,
 .poster-copy .year,
-.poster-copy .n {
+.poster-copy .n,
+.poster-copy .meta {
   color: #8aa3c8;
 }
 
@@ -8418,5 +8425,97 @@ section.block .kicker {
 
 .grok-chips {
   padding: 0 0.2rem 0.35rem;
+}
+
+.card-more > summary,
+.person-more > summary,
+.paper-more > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.card-more > summary::-webkit-details-marker,
+.person-more > summary::-webkit-details-marker,
+.paper-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.paper .paper-more,
+.tech-chapter > .card-more,
+.prog-card > .card-more,
+.person .person-more {
+  padding: 0;
+  margin-top: 0.55rem;
+}
+
+.paper .paper-more > :not(summary),
+.tech-chapter > .card-more > :not(summary),
+.prog-card > .card-more > :not(summary),
+.person .person-more > :not(summary) {
+  padding: 0.85rem 1.15rem 1rem;
+}
+
+.card-more .poster-frame,
+.person-more .poster-frame,
+.paper-more .poster-frame {
+  min-height: 0;
+  margin: 0;
+}
+
+.card-more .poster-frame .photo-plate.summary-still img,
+.person-more .poster-frame .photo-plate.summary-still img,
+.paper-more .poster-frame .photo-plate.summary-still img,
+.card-more .poster-frame img,
+.person-more .poster-frame img,
+.paper-more .poster-frame img {
+  display: block;
+  width: 100%;
+  min-height: 0;
+  height: 4.6rem;
+  max-height: 4.6rem;
+  aspect-ratio: 21 / 5;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.5);
+}
+
+.card-more .poster-copy,
+.person-more .poster-copy,
+.paper-more .poster-copy {
+  padding: 1.05rem 1.05rem 0.55rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(7, 11, 20, 0.9) 58%);
+}
+
+.card-more .poster-copy span,
+.person-more .poster-copy span,
+.paper-more .poster-copy span {
+  color: #f4f7fb;
+  font-weight: 650;
+  font-size: 0.92rem;
+  letter-spacing: -0.02em;
+}
+
+.summary-still figcaption {
+  display: none;
+}
+
+.headline .poster-copy .meta {
+  display: block;
+  margin-top: 0.2rem;
+  color: #8aa3c8;
+}
+
+.tech-spine-hit[data-stage-id='payscript'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='satp'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='identity'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='x402'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='quant-connect'] .poster-frame .photo-plate.spine-still img {
+  filter: saturate(0.86) contrast(1.12) brightness(0.84);
+}
+
+.donate-list .poster-frame .photo-plate.donate-usdt-still img,
+.donate-list .poster-frame img.donate-usdt-still,
+.donate-list li:nth-child(3) .poster-frame .photo-plate.donate-code-still img {
+  filter: saturate(0.86) contrast(1.12) brightness(0.82);
 }
 

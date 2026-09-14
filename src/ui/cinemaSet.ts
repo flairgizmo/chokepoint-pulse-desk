@@ -449,7 +449,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.background = new THREE.Color(0x070b14);
   scene.fog = lite ? new THREE.Fog(0x070b14, 14, 32) : new THREE.Fog(0x0a1220, 8.5, 18);
 
-  const cycMat = duskWall(tex, 0x1c2636);
+  const cycMat = lite ? duskWallLit(tex, 0x2a3648) : duskWall(tex, 0x1c2636);
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(36, 18), cycMat);
   cyc.position.set(0, 2.05, -7.1);
   scene.add(cyc);
@@ -627,6 +627,15 @@ export function duskWall(
   side: THREE.Side = THREE.FrontSide,
 ): THREE.MeshBasicMaterial {
   return new THREE.MeshBasicMaterial({ map, color, side });
+}
+
+/** Lite film/hero cyclorama that takes key lights. Gateway walls stay MeshBasic. */
+export function duskWallLit(
+  map: THREE.Texture | null = null,
+  color = 0x2a3648,
+  side: THREE.Side = THREE.FrontSide,
+): THREE.MeshLambertMaterial {
+  return new THREE.MeshLambertMaterial({ map, color, side });
 }
 
 /** Env sheen on unmapped metal only. Do not pass a photograph as `map`. */

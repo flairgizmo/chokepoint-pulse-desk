@@ -415,6 +415,19 @@ describe('Topic plates', () => {
     expect(plateFor('news-lane-official').src).toBe(PLATES.newsroom.src);
     expect(plateFor('news-lane-markets').src).toBe(PLATES.exchange.src);
     expect(plateFor('news-lane-industry').src).toBe(PLATES.city.src);
+    expect(renderTechnology()).toContain('summary-still');
+    expect(renderProgrammes()).toContain('summary-still');
+    expect(renderPeople()).toContain('summary-still');
+    expect(renderResearch()).toContain('summary-still');
+    expect(renderTechnology()).toContain('>Chapter</span>');
+    expect(renderProgrammes()).toContain('>Filing</span>');
+    expect(renderPeople()).toContain('>Record</span>');
+    expect(renderResearch()).toContain('>What the document says</span>');
+    expect(renderMarkets()).toContain('source-strip');
+    expect(plateFor('source-tokenomics').src).toBe(PLATES.exchange.src);
+    expect(renderDonate()).toContain('Published recipients');
+    expect(renderDonate()).toContain('donate-usdt-still');
+    expect(renderCity(cityById('london')!)).toContain('source-strip');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

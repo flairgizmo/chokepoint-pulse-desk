@@ -588,6 +588,8 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'intro-pod-quotes': PLATES.history,
   'intro-pod-list': PLATES.radio,
   'intro-pod-transcript': PLATES.library,
+  'source-tokenomics': PLATES.exchange,
+  'intro-donate-list': PLATES.fiber,
 }
 
 const PREFIXES = [

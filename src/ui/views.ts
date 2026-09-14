@@ -28,7 +28,7 @@ import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
 import { photoFigure, plateFor, PLATES, type VisualId } from '../data/plates';
-import { cinemaFilterBar, cinemaIntro, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, cinemaIntro, cinemaStrip, cinemaSummary, diagramFigure, posterFrame } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
 import { FILM_SETS, filmStageMarkup, stillStrip } from './filmSets';
 import { PROGRAMMES } from '../data/programmes';
@@ -853,7 +853,7 @@ export function renderProgrammes(): string {
         )}
         <div class="prog-marks">${marks}</div>
       </button>
-      <details class="card-more"><summary>Filing</summary><p>${esc(p.body)}</p></details>
+      <details class="card-more"><summary>${cinemaSummary(`filing-${p.id}`, 'Filing')}</summary><p>${esc(p.body)}</p></details>
       <p class="prog-mentions" data-prog-mentions="${esc(p.id)}" hidden></p>
     </article>`;
   }).join('');
@@ -1097,7 +1097,7 @@ function personCard(p: Person): string {
         `<h2>${esc(p.name)}</h2><p class="role">${esc(p.role)}${p.current ? '' : ' · <span class="chip">left / documentary</span>'}</p><p class="still-lede">${esc(p.bio.length > 160 ? `${p.bio.slice(0, 160).trim()}…` : p.bio)}</p>`,
       )}
       <details class="person-more">
-        <summary>Record</summary>
+        <summary>${cinemaSummary(`record-${p.id}`, 'Record')}</summary>
         <p>${esc(p.bio)}</p>
         ${p.note ? `<p class="note">${esc(p.note)}</p>` : ''}
         ${official}
@@ -1176,7 +1176,7 @@ function paperCard(p: Paper): string {
       `<span class="year-num">${esc(p.year)}</span><p class="kicker">${esc(p.kind)} ${verify}</p><h2>${esc(p.title)}</h2><p class="meta">${esc(p.venue)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p><p class="still-lede">${esc(teaser)}</p>`,
     )}
     <details class="paper-more">
-      <summary>What the document says</summary>
+      <summary>${cinemaSummary(`says-${p.id}`, 'What the document says')}</summary>
       ${essayParas(p.lede)}
     </details>
     <button type="button" class="text-link" data-stage="paper" data-stage-id="${esc(p.id)}">Read the filing →</button>
@@ -1356,7 +1356,11 @@ export function renderMarkets(print?: MarketPrint): string {
         )}
       </article>
     </div>
-    <p class="source-row">${extLink(sources.qntEtherscan, 'Etherscan')} ${extLink(sources.qntBurnTweet, 'Burn tweet')} ${extLink(sources.micaBitstamp, 'Bitstamp MiCA')} ${extLink(sources.treasuryPdf.startsWith('http') ? sources.treasuryPdf : sources.overledger, 'Treasury note')}</p>
+    ${cinemaStrip(
+      'source-tokenomics',
+      `<p class="source-row">${extLink(sources.qntEtherscan, 'Etherscan')} ${extLink(sources.qntBurnTweet, 'Burn tweet')} ${extLink(sources.micaBitstamp, 'Bitstamp MiCA')} ${extLink(sources.treasuryPdf.startsWith('http') ? sources.treasuryPdf : sources.overledger, 'Treasury note')}</p>`,
+      'source-strip',
+    )}
   </section>
   <section class="chapter venue-board">
     ${posterFrame(
@@ -1376,9 +1380,11 @@ export function headlinePosterButton(h: Headline, withLane = false): string {
     published: h.published ?? '',
     lane: h.lane,
   });
+  const when = h.published ? h.published.replace('T', ' ').slice(0, 16) : '—';
+  const meta = `<span class="meta">${esc(h.source)} · ${esc(when)}</span>`;
   const copy = withLane
-    ? `<span class="kicker">${esc(h.lane)}</span><strong>${esc(h.title)}</strong>`
-    : `<strong>${esc(h.title)}</strong>`;
+    ? `<span class="kicker">${esc(h.lane)}</span><strong>${esc(h.title)}</strong>${meta}`
+    : `<strong>${esc(h.title)}</strong>${meta}`;
   return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">
     ${posterFrame(
       photoFigure(plateFor(h.id), 'headline-still'),
@@ -1403,10 +1409,7 @@ export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; 
       if (!laneRows.length) return '';
       return `<li class="headline-lane">${cinemaStrip(`news-lane-${lane.toLowerCase()}`, `<p class="kicker">${esc(lane)}</p>`)}<ul>${laneRows
         .map(
-          (h) => `<li class="headline">
-              ${headlinePosterButton(h)}
-              <p class="meta">${esc(h.source)} · ${esc(h.published ? h.published.replace('T', ' ').slice(0, 16) : '—')}</p>
-            </li>`,
+          (h) => `<li class="headline">${headlinePosterButton(h)}</li>`,
         )
         .join('')}</ul></li>`;
     })
@@ -1593,7 +1596,11 @@ export function renderCity(city: City): string {
         `<p class="kicker">${esc(city.country)}</p><h2>${esc(city.name)}</h2><p>${esc(lead)}</p>`,
       )}
       ${essayParas(rest)}
-      <p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>
+      ${cinemaStrip(
+        `city-cta-${city.id}`,
+        `<p class="source-row"><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>`,
+        'source-strip',
+      )}
     </article>
     <section class="city-neighbors" aria-label="Other rooms on the map">
       ${cinemaIntro(
@@ -1620,11 +1627,11 @@ export function renderDonate(): string {
       photoFigure(plateFor('donate', 'support'), 'city-essay-still'),
       `<p class="kicker">Support</p><h2>The only published addresses</h2><p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>`,
     )}
-    <p>Published recipients:</p>
+    ${cinemaStrip('intro-donate-list', `${kicker('Published recipients')}`)}
     <ul class="donate-list">
       <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-eth'), 'donate-code-still'), '<span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code>')}</li>
       <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-btc'), 'donate-code-still'), '<span class="kicker">BTC</span><code>bc1qgxnzt5d2qdx8zskffejhfjnqxuwtwnn3s3tadz</code>')}</li>
-      <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-usdt'), 'donate-code-still'), '<span class="kicker">USDT · Solana</span><code>911rhAbnvrVZion9nS7N2BbKxDTWbNRQCELvMR5dXtcw</code>')}</li>
+      <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-usdt'), 'donate-code-still donate-usdt-still'), '<span class="kicker">USDT · Solana</span><code>911rhAbnvrVZion9nS7N2BbKxDTWbNRQCELvMR5dXtcw</code>')}</li>
     </ul>
     <p class="note">Do not send funds to addresses in comments or DMs. Verify the QNT ERC-20 on Etherscan before anything else. Burn tx ${esc(QNT_BURN_TX.slice(0, 18))}…</p>
   </article>`;
@@ -1727,7 +1734,7 @@ export function renderNote(id: string): string {
         `<p class="kicker">${esc(n.kicker)} · ${esc(n.dateLabel)}</p><h2>${esc(n.title)}</h2><p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p><p>${esc(lead)}</p>`,
       )}
       ${essayParas(rest)}
-      <p class="source-row">${source}</p>
+      ${source ? cinemaStrip(`source-note-${n.id}`, `<p class="source-row">${source}</p>`, 'source-strip') : ''}
       <p><a class="text-link" href="/news">← The wire</a></p>
     </article>
     ${related ? `<section class="notes-related">${cinemaStrip('intro-sourced', kicker('Same era'))}<div class="notes-index">${related}</div></section>` : ''}

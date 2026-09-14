@@ -7,7 +7,7 @@ import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
-import { cinemaFilterBar, cinemaIntro, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, cinemaIntro, cinemaStrip, cinemaSummary, diagramFigure, posterFrame } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
@@ -210,7 +210,7 @@ export function renderTechnology(): string {
         `<p class="kicker">${esc(t.era)}</p><h2>${esc(t.name)}</h2><p class="lede-sm">${esc(t.purpose)}</p><p>${esc(t.does)}</p>`,
       )}
       <details class="card-more"${i < 2 ? ' open' : ''}>
-        <summary>Chapter</summary>
+        <summary>${cinemaSummary(`chapter-more-${t.id}`, 'Chapter')}</summary>
         <div class="tech-grid">
           <div><h3>What it does</h3><p>${esc(t.does)}</p></div>
           <div><h3>Why it exists</h3><p>${esc(t.why)}</p></div>

@@ -414,6 +414,11 @@ export function cinemaStrip(plateKey: string, inner: string, extraClass = '', id
   </div>`;
 }
 
+/** Accordion label on a Vision banner. Keep the summary clickable; long copy stays in details. */
+export function cinemaSummary(plateKey: string, label: string): string {
+  return posterFrame(photoFigure(plateFor(plateKey), 'summary-still'), `<span>${esc(label)}</span>`);
+}
+
 /** Light-chrome nav row: still thumb + label. Never nest this inside a button. */
 export function cinemaNavLink(href: string, label: string, current = false): string {
   const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
