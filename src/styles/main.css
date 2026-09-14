@@ -958,6 +958,16 @@ main {
   grid-column: 1 / -1;
 }
 
+.letter > h3 {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 800px) {
+  .letter {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 900px) {
   .people-group {
     grid-template-columns: 1fr 1fr;
@@ -3722,6 +3732,12 @@ button.chip {
 .tech-stack {
   display: grid;
   gap: 1.35rem;
+}
+
+@media (min-width: 900px) {
+  .tech-stack {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .tech-chapter {

@@ -1145,6 +1145,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
   const tableR = 0.36;
   const tableY = TABLE_Y;
+  const tableInner = tableR * 0.48;
   const eqR = 0.56;
   const eqY = EQ_Y;
   const girdleTop = GIRDLE_TOP;
@@ -1198,7 +1199,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     env: roomEnv,
   });
   const table = new THREE.Mesh(
-    lite ? tableRing(tableR, tableR * 0.55, sides) : tableFan(tableR, sides),
+    lite ? tableRing(tableR, tableInner, sides) : tableFan(tableR, sides),
     lite
       ? (() => {
           const mat = new THREE.MeshBasicMaterial({
@@ -1393,9 +1394,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     wellMats = wraps;
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
-    const wellTopR = tableR * 0.72;
+    const wellTopR = tableInner * 0.92;
     const wellTopY = tableY - 0.012;
-    const wellMidR = tableR * 0.34;
+    const wellMidR = tableR * 0.22;
     const wellMidY = wellTopY + (botY + 0.05 - wellTopY) * 0.48;
     const wellBotR = tableR * 0.08;
     const wellBotY = botY + 0.05;
