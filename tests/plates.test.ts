@@ -349,6 +349,13 @@ describe('Topic plates', () => {
     expect(plateFor('binance').src).toBe(PLATES.hongkong.src);
     expect(plateFor('coinbase-exchange').src).toBe(PLATES.newyork.src);
     expect(plateFor('kraken').src).toBe(PLATES.city.src);
+    expect(
+      new Set(
+        ['icrypex', 'bitdelta', 'bvox', 'hotcoin', 'bitvavo', 'phemex', 'websea', 'binance', 'coinbase-exchange', 'kraken'].map(
+          (id) => plateFor(id).src,
+        ),
+      ).size,
+    ).toBe(10);
     const inst = INSTITUTIONS.map((i) => plateFor(i.id, 'institution').src);
     expect(new Set(inst).size).toBeGreaterThanOrEqual(20);
     const pods = [...renderPodcast().matchAll(/class="pod-still"[^>]*src="(\/visuals\/[^"]+)"/g)].map((m) => m[1]);

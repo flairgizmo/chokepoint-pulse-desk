@@ -490,6 +490,13 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   htx: PLATES.hongkong,
   mexc: PLATES.miami,
   whitebit: PLATES.brussels,
+  icrypex: PLATES.radio,
+  bitdelta: PLATES.cambridge,
+  bvox: PLATES.basel,
+  hotcoin: PLATES.library,
+  bitvavo: PLATES.geneva,
+  phemex: PLATES.sydney,
+  websea: PLATES.cable,
 }
 
 const PREFIXES = [
