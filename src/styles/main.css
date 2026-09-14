@@ -8532,14 +8532,16 @@ section.block .kicker {
 .tech-spine-hit[data-stage-id='satp'] .poster-frame .photo-plate.spine-still img,
 .tech-spine-hit[data-stage-id='identity'] .poster-frame .photo-plate.spine-still img,
 .tech-spine-hit[data-stage-id='x402'] .poster-frame .photo-plate.spine-still img,
-.tech-spine-hit[data-stage-id='quant-connect'] .poster-frame .photo-plate.spine-still img {
+.tech-spine-hit[data-stage-id='quant-connect'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='overledger-platform'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='trusted-node'] .poster-frame .photo-plate.spine-still img {
   filter: saturate(0.86) contrast(1.12) brightness(0.84);
 }
 
 .donate-list .poster-frame .photo-plate.donate-usdt-still img,
 .donate-list .poster-frame img.donate-usdt-still,
 .donate-list li:nth-child(3) .poster-frame .photo-plate.donate-code-still img {
-  filter: saturate(0.86) contrast(1.12) brightness(0.7);
+  filter: saturate(0.86) contrast(1.18) brightness(0.52);
 }
 
 .tech-grid .poster-frame {
