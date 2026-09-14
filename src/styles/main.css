@@ -2911,6 +2911,20 @@ button.chip {
   max-height: 18rem;
 }
 
+.pod-tease .poster-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.pod-tease .poster-copy .kicker,
+.pod-tease .poster-copy strong,
+.pod-tease .poster-copy em {
+  display: block;
+  width: 100%;
+}
+
 .pod-tease em {
   display: block;
   color: var(--muted);

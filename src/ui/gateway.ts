@@ -500,31 +500,28 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float cut = smoothstep(0.16, 0.84, kite);
-vec3 body = mix(vec3(0.03, 0.035, 0.05), vec3(0.22, 0.28, 0.4), cut);
+vec3 body = mix(vec3(0.04, 0.045, 0.06), vec3(0.2, 0.26, 0.38), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.1 + cut * 0.12);
-diffuseColor.rgb += glint * (0.1 + cut * 1.85);
+diffuseColor.rgb += envRefl * (rim * 0.1 + kite * 0.1);
+diffuseColor.rgb += glint * (0.12 + kite * 1.7);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float cut = smoothstep(0.16, 0.84, kite);
-vec3 body = mix(vec3(0.07, 0.08, 0.11), vec3(0.44, 0.52, 0.66), cut);
+vec3 body = mix(vec3(0.07, 0.08, 0.11), vec3(0.32, 0.4, 0.52), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.14 + cut * 0.16);
-diffuseColor.rgb += glint * (0.16 + cut * 1.55);
+diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.12);
+diffuseColor.rgb += glint * (0.16 + kite * 1.45);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float cut = smoothstep(0.16, 0.84, kite);
-vec3 body = mix(vec3(0.048, 0.055, 0.08), vec3(0.62, 0.74, 0.92), cut);
+vec3 body = mix(vec3(0.05, 0.06, 0.09), vec3(0.36, 0.44, 0.58), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.12 + cut * 0.2);
-diffuseColor.rgb += glint * (0.14 + cut * 2.15);
+diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.16);
+diffuseColor.rgb += glint * (0.18 + kite * 1.85);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -600,7 +597,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-50-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-51-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
