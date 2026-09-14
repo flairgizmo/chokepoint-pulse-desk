@@ -4661,7 +4661,7 @@ body.stage-open .grok {
 .cal-still img,
 .month-still img {
   aspect-ratio: 21 / 9;
-  max-height: 22rem;
+  max-height: 28rem;
 }
 
 .cinema-tape,
@@ -4821,7 +4821,7 @@ body.stage-open .grok {
 .prog-card .photo-plate img,
 .term .photo-plate img,
 .note-card .photo-plate img {
-  max-height: 24rem;
+  max-height: 30rem;
 }
 
 .city-neighbors {

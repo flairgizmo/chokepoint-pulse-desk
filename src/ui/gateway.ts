@@ -455,7 +455,7 @@ diffuseColor.rgb += envRefl * spec * 2.25;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.95;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.62;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.8;
-diffuseColor.a *= mix(0.05, 0.64, spec);`;
+diffuseColor.a *= mix(0.14, 0.72, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -527,7 +527,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-23-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-24-${kind}`;
 }
 
 function glassMat(
@@ -1199,10 +1199,26 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.LineBasicMaterial({
         color: lite ? 0xf2e6d4 : 0xeaf1ff,
         transparent: true,
-        opacity: lite ? 0.28 : 0.08,
+        opacity: lite ? 0.48 : 0.08,
       }),
     ),
   );
+  const girdlePts: THREE.Vector3[] = [];
+  for (let i = 0; i < sides; i++) {
+    const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+    girdlePts.push(new THREE.Vector3(Math.cos(a) * eqR, eqY, Math.sin(a) * eqR));
+  }
+  const girdle = new THREE.LineLoop(
+    new THREE.BufferGeometry().setFromPoints(girdlePts),
+    new THREE.LineBasicMaterial({
+      color: lite ? 0xf6ead6 : 0xeaf1ff,
+      transparent: true,
+      opacity: lite ? 0.78 : 0.22,
+      depthWrite: false,
+    }),
+  );
+  girdle.renderOrder = 3;
+  crystal.add(girdle);
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
@@ -1308,7 +1324,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.LineBasicMaterial({
         color: 0xf2e6d4,
         transparent: true,
-        opacity: 0.2,
+        opacity: 0.36,
       }),
     );
     wellSeams.renderOrder = 1;
