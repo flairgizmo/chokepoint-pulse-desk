@@ -36,7 +36,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   renderer.setPixelRatio(probe.lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.22;
+  renderer.toneMappingExposure = 1.26;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();

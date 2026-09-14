@@ -228,30 +228,30 @@ export function printGradeStill(
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = `rgba(8, 14, 32, ${(0.18 + t * 0.24 + sky * 0.22).toFixed(3)})`;
+  ctx.fillStyle = `rgba(8, 14, 32, ${(0.12 + t * 0.18 + sky * 0.16).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   if (sky > 0.1) {
     const skyWash = ctx.createLinearGradient(x, y, x, y + h * 0.52);
-    skyWash.addColorStop(0, `rgba(6, 12, 28, ${(0.28 + sky * 0.42).toFixed(3)})`);
-    skyWash.addColorStop(0.55, `rgba(6, 12, 28, ${(0.1 + sky * 0.18).toFixed(3)})`);
+    skyWash.addColorStop(0, `rgba(6, 12, 28, ${(0.18 + sky * 0.28).toFixed(3)})`);
+    skyWash.addColorStop(0.55, `rgba(6, 12, 28, ${(0.06 + sky * 0.12).toFixed(3)})`);
     skyWash.addColorStop(1, 'rgba(6, 12, 28, 0)');
     ctx.fillStyle = skyWash;
     ctx.fillRect(x, y, w, h * 0.52);
   }
   const topNavy = ctx.createLinearGradient(x, y, x, y + h * 0.4);
-  topNavy.addColorStop(0, 'rgba(6, 12, 28, 0.32)');
+  topNavy.addColorStop(0, 'rgba(6, 12, 28, 0.22)');
   topNavy.addColorStop(1, 'rgba(6, 12, 28, 0)');
   ctx.fillStyle = topNavy;
   ctx.fillRect(x, y, w, Math.round(h * 0.4));
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = `rgba(255, 168, 96, ${(0.06 + t * 0.08).toFixed(3)})`;
+  ctx.fillStyle = `rgba(255, 168, 96, ${(0.07 + t * 0.09).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'source-over';
   const vig = ctx.createLinearGradient(x, y, x, y + h);
-  vig.addColorStop(0, 'rgba(7, 11, 20, 0.38)');
+  vig.addColorStop(0, 'rgba(7, 11, 20, 0.26)');
   vig.addColorStop(0.32, 'rgba(7, 11, 20, 0)');
   vig.addColorStop(0.68, 'rgba(7, 11, 20, 0)');
-  vig.addColorStop(1, 'rgba(7, 11, 20, 0.5)');
+  vig.addColorStop(1, 'rgba(7, 11, 20, 0.36)');
   ctx.fillStyle = vig;
   ctx.fillRect(x, y, w, h);
   ctx.restore();
@@ -410,9 +410,8 @@ export function addCinemaFloor(
   y = -0.62,
 ): THREE.Mesh {
   const floorMat = lite
-    ? new THREE.MeshLambertMaterial({
+    ? litePhong(0x6e829c, 0x8aa3c8, 28, {
         map: cinemaFloorMap(photoFor(backdropSrc)),
-        color: 0x6e829c,
         transparent: true,
         opacity: 0.96,
       })
@@ -583,9 +582,9 @@ export function addPracticals(scene: THREE.Scene): void {
 /** Point lights at the practical bulbs. Film/hero only — gateway jewel stays MeshBasic. */
 export function addCinemaPracticalLights(scene: THREE.Scene, lite: boolean, scale = 1): void {
   const bulbs: Array<readonly [number, number, number, number, number]> = [
-    [2.85, 1.82, -2.15, 0xffc56a, lite ? 0.38 : 0.62],
-    [-3.05, 1.48, -2.35, 0x6aa8ff, lite ? 0.24 : 0.42],
-    [0.15, 2.35, -3.15, 0xeaf1ff, lite ? 0.12 : 0.22],
+    [2.85, 1.82, -2.15, 0xffc56a, lite ? 0.48 : 0.62],
+    [-3.05, 1.48, -2.35, 0x6aa8ff, lite ? 0.32 : 0.42],
+    [0.15, 2.35, -3.15, 0xeaf1ff, lite ? 0.16 : 0.22],
   ];
   for (const [x, y, z, color, intensity] of bulbs) {
     const light = new THREE.PointLight(color, intensity, 7.2 * scale, 2);
@@ -623,7 +622,7 @@ export function cinemaChrome(
   lite: boolean,
   envSrc?: string,
   lit = false,
-): THREE.MeshBasicMaterial | THREE.MeshLambertMaterial | THREE.MeshPhysicalMaterial {
+): THREE.MeshBasicMaterial | THREE.MeshLambertMaterial | THREE.MeshPhongMaterial | THREE.MeshPhysicalMaterial {
   if (!lite) {
     return new THREE.MeshPhysicalMaterial({
       color: 0x8aa3c8,
@@ -635,7 +634,7 @@ export function cinemaChrome(
     });
   }
   if (lit) {
-    return new THREE.MeshLambertMaterial({ color: 0x3d4f6c });
+    return litePhong(0x3d4f6c, 0xb0c4dc, 42);
   }
   return duskSheen({ color: 0x3d4f6c, reflectivity: 0.5, envSrc });
 }
@@ -654,8 +653,18 @@ export function duskWallLit(
   map: THREE.Texture | null = null,
   color = 0x2a3648,
   side: THREE.Side = THREE.FrontSide,
-): THREE.MeshLambertMaterial {
-  return new THREE.MeshLambertMaterial({ map, color, side });
+): THREE.MeshPhongMaterial {
+  return litePhong(color, 0x3a4658, 7, { map, side });
+}
+
+/** Specular studio response on software GL. No envMap — PMREM stays fail-closed. */
+function litePhong(
+  color: number,
+  specular: number,
+  shininess: number,
+  extra: THREE.MeshPhongMaterialParameters = {},
+): THREE.MeshPhongMaterial {
+  return new THREE.MeshPhongMaterial({ color, specular, shininess, ...extra });
 }
 
 /** Env sheen on unmapped metal only. Do not pass a photograph as `map`. */
@@ -681,7 +690,11 @@ export function duskSheen(opts: {
   });
 }
 
-export type PlateFaceMat = THREE.MeshBasicMaterial | THREE.MeshLambertMaterial | THREE.MeshPhysicalMaterial;
+export type PlateFaceMat =
+  | THREE.MeshBasicMaterial
+  | THREE.MeshLambertMaterial
+  | THREE.MeshPhongMaterial
+  | THREE.MeshPhysicalMaterial;
 
 export function plateMaterial(lite: boolean, envSrc?: string, lit = false): PlateFaceMat {
   void envSrc;
@@ -697,7 +710,7 @@ export function plateMaterial(lite: boolean, envSrc?: string, lit = false): Plat
     });
   }
   return lit
-    ? new THREE.MeshLambertMaterial({ color: 0x1a2438 })
+    ? litePhong(0x1a2438, 0x6a7a90, 16)
     : new THREE.MeshBasicMaterial({ color: 0x1a2438 });
 }
 
@@ -731,7 +744,7 @@ export function makeCinemaPlate(
   const stock = new THREE.Mesh(
     new THREE.BoxGeometry(w, h, depth),
     lite && lit
-      ? new THREE.MeshLambertMaterial({ color: 0x121826 })
+      ? litePhong(0x121826, 0x3a4658, 10)
       : new THREE.MeshBasicMaterial({ color: 0x05070c }),
   );
   root.add(stock);
