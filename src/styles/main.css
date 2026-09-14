@@ -3335,14 +3335,14 @@ button.chip {
 
 .flip-card {
   perspective: 1400px;
-  min-height: 22rem;
+  min-height: 38rem;
   cursor: pointer;
 }
 
 .flip-inner {
   position: relative;
   height: 100%;
-  min-height: 22rem;
+  min-height: 38rem;
   transform-style: preserve-3d;
   transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
