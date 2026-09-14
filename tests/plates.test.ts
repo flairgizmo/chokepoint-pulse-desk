@@ -2,6 +2,7 @@ import { existsSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { INSTITUTIONS } from '../src/data/institutions';
+import { papers } from '../src/data/catalog';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { STORY } from '../src/data/story';
 import { TECH } from '../src/data/tech';
@@ -300,6 +301,10 @@ describe('Topic plates', () => {
     expect(plateFor('linux').src).toBe(PLATES.fiber.src);
     expect(plateFor('hyperledger').src).toBe(PLATES.datacenter.src);
     expect(plateFor('vocalink').src).toBe(PLATES.newsroom.src);
+    expect(new Set(papers.map((p) => plateFor(p.id).src)).size).toBeGreaterThanOrEqual(36);
+    expect(plateFor('iso-23516').src).not.toBe(plateFor('satp-core').src);
+    expect(plateFor('boe-lab').src).toBe(PLATES.london.src);
+    expect(plateFor('x402').src).toBe(PLATES.fiber.src);
     const inst = INSTITUTIONS.map((i) => plateFor(i.id, 'institution').src);
     expect(new Set(inst).size).toBeGreaterThanOrEqual(20);
     const pods = [...renderPodcast().matchAll(/class="pod-still"[^>]*src="(\/visuals\/[^"]+)"/g)].map((m) => m[1]);

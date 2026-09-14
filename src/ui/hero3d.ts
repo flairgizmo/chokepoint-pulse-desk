@@ -68,13 +68,13 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   still.onload = () => applyPlateMap(plate.mat, printGradeImage(still));
   still.src = src;
 
-  scene.add(new THREE.AmbientLight(0x9aacc8, probe.lite ? 0.3 : 0.55));
-  if (probe.lite) scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, 0.22));
-  const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 1.22 : 1.35);
+  scene.add(new THREE.AmbientLight(0x9aacc8, probe.lite ? 0.22 : 0.55));
+  if (probe.lite) scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, 0.18));
+  const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 1.38 : 1.35);
   key.position.set(0.55, 0.7, 1.8);
   scene.add(key);
   if (probe.lite) {
-    const rim = new THREE.DirectionalLight(0x3b7bff, 0.52);
+    const rim = new THREE.DirectionalLight(0x3b7bff, 0.64);
     rim.position.set(-1.6, 0.45, -0.9);
     scene.add(rim);
   }

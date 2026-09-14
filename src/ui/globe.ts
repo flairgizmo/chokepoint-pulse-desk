@@ -343,6 +343,39 @@ function orbitSkyTex(): THREE.CanvasTexture {
   return tex;
 }
 
+/** White land / black ocean in Earth UV, from the NASA still. Never a Canary mix. */
+function landMaskTex(img: HTMLImageElement): THREE.CanvasTexture {
+  const w = Math.min(1024, img.naturalWidth || 1024);
+  const h = Math.min(512, img.naturalHeight || 512);
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(oceanMask(img, w, h, [0, 0, 0]), 0, 0);
+  }
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.LinearSRGBColorSpace;
+  return tex;
+}
+
+function landHoldTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 1;
+  c.height = 1;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, 1, 1);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.needsUpdate = true;
+  tex.colorSpace = THREE.LinearSRGBColorSpace;
+  return tex;
+}
+
 /** Sun-locked dusk wedge. Night is a dusk veil; day stays a clear hole so the still reads. */
 function terminatorTex(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
@@ -354,10 +387,10 @@ function terminatorTex(): THREE.CanvasTexture {
   g.addColorStop(0, 'rgba(6, 10, 20, 0.62)');
   g.addColorStop(0.38, 'rgba(8, 14, 28, 0.32)');
   g.addColorStop(0.5, 'rgba(28, 42, 72, 0.08)');
-  g.addColorStop(0.538, 'rgba(255, 118, 36, 0.22)');
-  g.addColorStop(0.555, 'rgba(255, 148, 52, 0.62)');
-  g.addColorStop(0.572, 'rgba(255, 196, 110, 0.46)');
-  g.addColorStop(0.6, 'rgba(255, 226, 168, 0.14)');
+  g.addColorStop(0.538, 'rgba(255, 108, 28, 0.28)');
+  g.addColorStop(0.555, 'rgba(255, 142, 48, 0.82)');
+  g.addColorStop(0.572, 'rgba(255, 196, 104, 0.58)');
+  g.addColorStop(0.6, 'rgba(255, 226, 168, 0.18)');
   g.addColorStop(0.66, 'rgba(255, 255, 255, 0)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
@@ -370,8 +403,59 @@ function terminatorTex(): THREE.CanvasTexture {
   ctx.fillStyle = poles;
   ctx.fillRect(0, 0, c.width, c.height);
   const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
-  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.colorSpace = THREE.LinearSRGBColorSpace;
   return tex;
+}
+
+/**
+ * Gold hour on land only. The wedge stays sun-locked (mesh quaternion + termMap UV);
+ * land UV is SphereGeometry of the earth-local direction so oceans do not wash orange.
+ */
+function terminatorMat(align: THREE.Quaternion): THREE.ShaderMaterial {
+  const termMap = terminatorTex();
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      termMap: { value: termMap },
+      landMap: { value: landHoldTex() },
+      uQuat: { value: new THREE.Vector4(align.x, align.y, align.z, align.w) },
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      varying vec3 vPos;
+      void main(){
+        vUv = uv;
+        vPos = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform sampler2D termMap;
+      uniform sampler2D landMap;
+      uniform vec4 uQuat;
+      varying vec2 vUv;
+      varying vec3 vPos;
+      vec3 qrotate(vec4 q, vec3 v){
+        vec3 u = q.xyz;
+        float s = q.w;
+        return 2.0 * dot(u, v) * u + (s * s - dot(u, u)) * v + 2.0 * s * cross(u, v);
+      }
+      void main(){
+        vec3 earth = normalize(qrotate(uQuat, vPos));
+        float phi = acos(clamp(earth.y, -1.0, 1.0));
+        float theta = atan(earth.z, -earth.x);
+        if (theta < 0.0) theta += 6.28318530718;
+        float land = texture2D(landMap, vec2(theta / 6.28318530718, phi / 3.14159265359)).r;
+        vec4 dusk = texture2D(termMap, vUv);
+        float gold = smoothstep(0.07, 0.32, dusk.r - dusk.b * 0.88);
+        float aNight = dusk.a * (1.0 - gold);
+        float aGold = dusk.a * gold;
+        float a = aNight * mix(0.9, 1.0, land) + aGold * mix(0.06, 1.22, land);
+        vec3 col = mix(dusk.rgb, vec3(1.0, 0.52, 0.16), gold * land * 0.42);
+        gl_FragColor = vec4(col, a);
+      }`,
+    transparent: true,
+    depthWrite: false,
+    toneMapped: false,
+  });
 }
 
 function stars(count = 1800, opacity = 0.55): THREE.Points {
@@ -815,6 +899,7 @@ export class EarthGlobe {
         if (this.disposed || !dayStill.naturalWidth) return;
         this.dayTex = makeDayTex(this.lite, dayStill);
         this.paintOcean(dayStill);
+        this.paintTerminatorLand(dayStill);
         this.applyMaps();
       };
       dayStill.addEventListener('load', takeDay, { once: true });
@@ -908,20 +993,16 @@ export class EarthGlobe {
     group.add(limb);
 
     if (this.lite) {
-      const term = new THREE.Mesh(
-        new THREE.SphereGeometry(1.006, segs, rings),
-        new THREE.MeshBasicMaterial({
-          map: terminatorTex(),
-          color: 0xffffff,
-          transparent: true,
-          opacity: 1,
-          depthWrite: false,
-        }),
+      const termAlign = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(1, 0, 0),
+        this.sunDir.clone().negate(),
       );
+      const term = new THREE.Mesh(new THREE.SphereGeometry(1.006, segs, rings), terminatorMat(termAlign));
       term.renderOrder = 1;
-      term.quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.sunDir.clone().negate());
+      term.quaternion.copy(termAlign);
       group.add(term);
       this.terminator = term;
+      if (dayStillReady()) this.paintTerminatorLand(dayStill);
     }
     const glint = new THREE.Sprite(
       new THREE.SpriteMaterial({
@@ -1374,6 +1455,15 @@ export class EarthGlobe {
     if (!mat || !img.naturalWidth) return;
     mat.uniforms.water.value = waterSpecTex(img);
     mat.needsUpdate = true;
+  }
+
+  private paintTerminatorLand(img: HTMLImageElement): void {
+    const mat = this.terminator?.material as THREE.ShaderMaterial | undefined;
+    if (!mat?.uniforms.landMap || !img.naturalWidth) return;
+    const prev = mat.uniforms.landMap.value as THREE.Texture | undefined;
+    mat.uniforms.landMap.value = landMaskTex(img);
+    mat.needsUpdate = true;
+    prev?.dispose();
   }
 
   private applyMaps(): void {

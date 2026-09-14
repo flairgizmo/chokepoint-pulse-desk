@@ -453,15 +453,15 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
     prev?.dispose();
   });
 
-  scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.32 : 0.4));
-  scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.24 : 0.52));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.18 : 1.95);
+  scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.26 : 0.4));
+  scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.2 : 0.52));
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.38 : 1.95);
   key.position.set(1.8, 2.9, 2.4);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xc4d4ea, lite ? 0.28 : 0.12);
+  const fill = new THREE.DirectionalLight(0xc4d4ea, lite ? 0.22 : 0.12);
   fill.position.set(-0.4, 1.6, 2.8);
   scene.add(fill);
-  const rim = new THREE.DirectionalLight(0x3b7bff, lite ? 0.62 : 0.95);
+  const rim = new THREE.DirectionalLight(0x3b7bff, lite ? 0.78 : 0.95);
   rim.position.set(-2.4, 1.3, -1.6);
   scene.add(rim);
   addCinemaHaze(scene);
