@@ -114,7 +114,9 @@ export function wireSearch(root: HTMLElement): void {
             return rank(a) - rank(b);
           })
           .slice(0, 12)
-      : corpus.slice(0, 8);
+      : (['Programme', 'Technology', 'People', 'Glossary'] as const).flatMap((kind) =>
+          corpus.filter((h) => h.kind === kind).slice(0, 2),
+        );
     empty.hidden = hits.length > 0;
     list.innerHTML = hits.map(searchHitButton).join('');
   };

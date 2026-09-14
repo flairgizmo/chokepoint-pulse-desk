@@ -388,6 +388,13 @@ export function posterFrame(still: string, copy: string): string {
   return `<div class="poster-frame">${still}<div class="poster-copy">${copy}</div></div>`;
 }
 
+/** Light-chrome nav row: still thumb + label. Never nest this inside a button. */
+export function cinemaNavLink(href: string, label: string, current = false): string {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const aria = current ? ' aria-current="page"' : '';
+  return `<a href="${esc(href)}"${aria}>${photoFigure(plateFor(`nav-${slug}`), 'nav-still')}<span>${esc(label)}</span></a>`;
+}
+
 export function topicFigure(...keys: Array<string | undefined | null>): string {
   return photoFigure(plateFor(...keys));
 }

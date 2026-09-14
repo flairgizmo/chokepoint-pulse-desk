@@ -311,10 +311,11 @@ function wordmarkLi(label: string, href: string): string {
   const external = href.startsWith('http');
   const caption = bankDisplay(label);
   const mark = markFor(label);
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const tile = mark
     ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="160" height="48" />`
     : `<span class="wm" aria-hidden="true">${esc(caption[0] ?? '?')}</span>`;
-  return `<li class="wordmark"><a class="wordmark-link" href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${tile}<span class="wordmark-caption">${esc(caption)}</span></a></li>`;
+  return `<li class="wordmark"><a class="wordmark-link" href="${esc(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${photoFigure(plateFor(`wm-${slug}`, slug), 'wm-still')}${tile}<span class="wordmark-caption">${esc(caption)}</span></a></li>`;
 }
 
 function fold(title: string, inner: string, open = false): string {
@@ -790,6 +791,7 @@ export function renderVision(): string {
             )}
           </div>
           <div class="flip-face flip-back">
+            ${photoFigure(plateFor(`essay-${c.id}`), 'flip-back-still')}
             ${kicker(c.kicker)}
             <h3>${esc(c.title)}</h3>
             ${essayParas(c.body)}
@@ -1581,9 +1583,9 @@ export function renderDonate(): string {
     <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
     <p>Published recipients:</p>
     <ul class="donate-list">
-      <li><span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code></li>
-      <li><span class="kicker">BTC</span><code>bc1qgxnzt5d2qdx8zskffejhfjnqxuwtwnn3s3tadz</code></li>
-      <li><span class="kicker">USDT · Solana</span><code>911rhAbnvrVZion9nS7N2BbKxDTWbNRQCELvMR5dXtcw</code></li>
+      <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-eth'), 'donate-code-still'), '<span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code>')}</li>
+      <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-btc'), 'donate-code-still'), '<span class="kicker">BTC</span><code>bc1qgxnzt5d2qdx8zskffejhfjnqxuwtwnn3s3tadz</code>')}</li>
+      <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-usdt'), 'donate-code-still'), '<span class="kicker">USDT · Solana</span><code>911rhAbnvrVZion9nS7N2BbKxDTWbNRQCELvMR5dXtcw</code>')}</li>
     </ul>
     <p class="note">Do not send funds to addresses in comments or DMs. Verify the QNT ERC-20 on Etherscan before anything else. Burn tx ${esc(QNT_BURN_TX.slice(0, 18))}…</p>
   </article>`;

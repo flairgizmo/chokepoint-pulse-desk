@@ -319,8 +319,8 @@ h2.display {
   position: absolute;
   right: 0;
   top: calc(100% + 0.4rem);
-  min-width: 13rem;
-  padding: 0.55rem;
+  min-width: 16.5rem;
+  padding: 0.4rem;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface);
@@ -328,7 +328,15 @@ h2.display {
 }
 
 .more-menu a {
-  display: block;
+  display: grid;
+  grid-template-columns: 3.7rem minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  padding: 0.28rem 0.4rem;
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .top-tools {
@@ -442,11 +450,14 @@ a.btn.cta-nav {
 
 .mobile-nav a {
   min-height: 2.75rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr);
+  gap: 0.5rem;
   align-items: center;
   color: var(--ink);
   text-decoration: none;
   font-weight: 500;
+  padding: 0.2rem 0.15rem;
 }
 
 main {
@@ -858,11 +869,11 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
+  justify-content: flex-start;
+  gap: 0;
   width: 100%;
   min-height: 7.6rem;
-  padding: 1.05rem 0.8rem 0.9rem;
+  padding: 0;
 }
 
 .wm {
@@ -1944,11 +1955,9 @@ main {
 }
 
 .grok-panel header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.6rem;
-  padding: 0.95rem 1rem 0.45rem;
+  display: block;
+  position: relative;
+  padding: 0;
 }
 
 .grok-head {
@@ -3590,6 +3599,7 @@ button.chip {
 .flip-back {
   transform: rotateY(180deg);
   background: linear-gradient(180deg, #152038, #0b1220);
+  padding: 0;
 }
 
 .tokencards {
@@ -3814,11 +3824,14 @@ button.chip {
 
 .tech-spine-hit {
   appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
   border: 1px solid transparent;
-  background: #122038;
+  background: #0b1220;
   color: #eaf1ff;
   border-radius: 999px;
-  padding: 0.28rem 0.75rem;
+  padding: 0.18rem 0.7rem 0.18rem 0.18rem;
   font: inherit;
   cursor: pointer;
 }
@@ -5297,7 +5310,9 @@ body.stage-open .grok {
 .poster-frame > .quote-still,
 .poster-frame > .constellation-still,
 .poster-frame > .pod-tease-still,
-.poster-frame > .stage-still {
+.poster-frame > .stage-still,
+.poster-frame > .grok-still,
+.poster-frame > .donate-code-still {
   margin: 0;
 }
 
@@ -7534,4 +7549,141 @@ section.block .kicker {
   .mention-posters {
     grid-template-columns: 1fr;
   }
+}
+
+.more-menu .nav-still,
+.mobile-nav .nav-still {
+  margin: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0b1220;
+}
+
+.more-menu .nav-still img,
+.mobile-nav .nav-still img {
+  display: block;
+  width: 100%;
+  height: 2.35rem;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.12) brightness(0.78);
+}
+
+.more-menu .nav-still figcaption,
+.mobile-nav .nav-still figcaption,
+.tech-spine-hit .spine-still figcaption,
+.wordmark .wm-still figcaption,
+.flip-back .flip-back-still figcaption {
+  display: none;
+}
+
+.tech-spine-hit .spine-still {
+  width: 2.45rem;
+  height: 1.65rem;
+  margin: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #070b14;
+  flex: 0 0 auto;
+}
+
+.tech-spine-hit .spine-still img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 0;
+  max-height: none;
+  aspect-ratio: auto;
+  filter: saturate(0.86) contrast(1.14) brightness(0.72);
+}
+
+.wordmark .wm-still {
+  margin: 0;
+  width: 100%;
+  background: #0b1220;
+}
+
+.wordmark .wm-still img {
+  display: block;
+  width: 100%;
+  min-height: 5.1rem;
+  max-height: 5.8rem;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.7);
+}
+
+.wordmark-link .wm-logo,
+.wordmark-link .wm {
+  margin: 0.7rem 0.75rem 0.2rem;
+}
+
+.wordmark-link .wordmark-caption {
+  margin: 0 0.75rem 0.85rem;
+}
+
+.grok-tools {
+  position: absolute;
+  top: 0.42rem;
+  right: 0.42rem;
+  z-index: 8;
+}
+
+.grok-panel .poster-frame {
+  min-height: 7.4rem;
+}
+
+.grok-panel .grok-still img {
+  min-height: 7.4rem;
+  max-height: 8.6rem;
+}
+
+.grok-panel .poster-copy {
+  padding: 2.5rem 3.6rem 0.85rem 1rem;
+}
+
+.grok-panel .grok-head {
+  align-items: flex-end;
+}
+
+.donate-list li.cinema-bar {
+  margin: 0 0 0.85rem;
+  padding: 0;
+  overflow: hidden;
+}
+
+.donate-list .poster-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 2.4rem 1.1rem 0.9rem;
+}
+
+.donate-list .cinema-bar code {
+  color: #eaf1ff;
+}
+
+.flip-back .flip-back-still {
+  margin: 0;
+}
+
+.flip-back .flip-back-still img {
+  min-height: 9.2rem;
+  max-height: 11rem;
+  aspect-ratio: 21 / 9;
+  filter: saturate(0.86) contrast(1.16) brightness(0.68);
+}
+
+.flip-back > .kicker,
+.flip-back > h3,
+.flip-back > p {
+  padding-inline: 1.2rem;
+}
+
+.flip-back > .kicker {
+  padding-top: 0.85rem;
+}
+
+.flip-back > p:last-child {
+  padding-bottom: 1.15rem;
 }

@@ -7,7 +7,8 @@ import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { STORY } from '../src/data/story';
 import { TECH } from '../src/data/tech';
 import { searchHitButton } from '../src/ui/search';
-import { diagramFigure } from '../src/ui/diagrams';
+import { diagramFigure, cinemaNavLink } from '../src/ui/diagrams';
+import { chatMarkup } from '../src/ui/chat';
 import { renderInstitutions, renderPatents, renderStack, renderStory } from '../src/ui/pages';
 import {
   renderCbdc,
@@ -23,6 +24,7 @@ import {
   renderProgrammes,
   renderResearch,
   renderStandards,
+  renderTechnology,
   renderVision,
   venueBarsHtml,
 } from '../src/ui/views';
@@ -308,6 +310,42 @@ describe('Topic plates', () => {
     expect(renderVision()).toContain('/visuals/topics/datacenter.jpg');
     expect(renderVision()).toContain('/visuals/topics/city.jpg');
     expect(renderVision()).toContain('/visuals/topics/ucl.jpg');
+  });
+
+  it('paints remaining chrome with unique Vision stills', () => {
+    const nav = [
+      'news',
+      'story',
+      'technology',
+      'people',
+      'stack',
+      'programmes',
+      'institutions',
+      'patents',
+      'cbdc',
+      'markets',
+      'research',
+      'standards',
+      'glossary',
+      'podcast',
+      'vision',
+      'donate',
+    ];
+    expect(new Set(nav.map((id) => plateFor(`nav-${id}`).src)).size).toBe(16);
+    expect(cinemaNavLink('/podcast', 'Podcast')).toContain('/visuals/topics/radio.jpg');
+    expect(cinemaNavLink('/vision', 'Vision')).toContain('/visuals/topics/fiber.jpg');
+    expect(cinemaNavLink('/cbdc', 'CBDC')).toContain('/visuals/cities/zurich.jpg');
+    expect(renderTechnology()).toContain('spine-still');
+    expect(renderHome()).toContain('wm-still');
+    expect(renderHome()).toContain('/visuals/topics/city.jpg');
+    expect(chatMarkup()).toContain('grok-still');
+    expect(chatMarkup()).toContain('aria-label="Ask Grok"');
+    expect(renderDonate()).toContain('donate-code-still');
+    expect(renderDonate()).toContain('/visuals/cities/hong-kong.jpg');
+    expect(renderDonate()).toContain('0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD');
+    expect(renderVision()).toContain('flip-back-still');
+    expect(plateFor('lloyds-bank').src).toBe(PLATES.london.src);
+    expect(plateFor('wm-barclays').src).toBe(PLATES.city.src);
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

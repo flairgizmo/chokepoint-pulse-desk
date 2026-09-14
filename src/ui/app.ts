@@ -42,6 +42,7 @@ import { resolveStage } from './resolve';
 import { matchProgrammes } from '../data/programmes';
 import { STORY } from '../data/story';
 import { filmSetSlides } from './filmSets';
+import { cinemaNavLink } from './diagrams';
 
 interface Route {
   name: string;
@@ -259,17 +260,17 @@ export class QntDesk {
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
-                <a href="/people">People</a>
-                <a href="/stack">Stack</a>
-                <a href="/standards">Standards</a>
-                <a href="/patents">Patents</a>
-                <a href="/institutions">Institutions</a>
-                <a href="/cbdc">CBDC</a>
-                <a href="/markets">Markets</a>
-                <a href="/glossary">Glossary</a>
-                <a href="/podcast">Podcast</a>
-                <a href="/vision">Vision</a>
-                <a href="/donate">Donate</a>
+                ${cinemaNavLink('/people', 'People')}
+                ${cinemaNavLink('/stack', 'Stack')}
+                ${cinemaNavLink('/standards', 'Standards')}
+                ${cinemaNavLink('/patents', 'Patents')}
+                ${cinemaNavLink('/institutions', 'Institutions')}
+                ${cinemaNavLink('/cbdc', 'CBDC')}
+                ${cinemaNavLink('/markets', 'Markets')}
+                ${cinemaNavLink('/glossary', 'Glossary')}
+                ${cinemaNavLink('/podcast', 'Podcast')}
+                ${cinemaNavLink('/vision', 'Vision')}
+                ${cinemaNavLink('/donate', 'Donate')}
               </div>
             </details>
           </nav>
@@ -291,20 +292,20 @@ export class QntDesk {
           <a href="/news" class="push">Live news →</a>
         </div>
         <div class="mobile-nav" id="mobile-nav">
-          <a href="/news">News</a>
-          <a href="/story">Story</a>
-          <a href="/technology">Technology</a>
-          <a href="/people">People</a>
-          <a href="/stack">Stack</a>
-          <a href="/programmes">Programmes</a>
-          <a href="/institutions">Institutions</a>
-          <a href="/patents">Patents</a>
-          <a href="/cbdc">CBDC</a>
-          <a href="/markets">Markets</a>
-          <a href="/research">Research</a>
-          <a href="/standards">Standards</a>
-          <a href="/glossary">Glossary</a>
-          <a href="/podcast">Podcast</a>
+          ${cinemaNavLink('/news', 'News', route.name === 'news')}
+          ${cinemaNavLink('/story', 'Story', route.name === 'story')}
+          ${cinemaNavLink('/technology', 'Technology', route.name === 'technology')}
+          ${cinemaNavLink('/people', 'People', route.name === 'people')}
+          ${cinemaNavLink('/stack', 'Stack', route.name === 'stack')}
+          ${cinemaNavLink('/programmes', 'Programmes', route.name === 'programmes' || route.name === 'institutional')}
+          ${cinemaNavLink('/institutions', 'Institutions', route.name === 'institutions')}
+          ${cinemaNavLink('/patents', 'Patents', route.name === 'patents')}
+          ${cinemaNavLink('/cbdc', 'CBDC', route.name === 'cbdc')}
+          ${cinemaNavLink('/markets', 'Markets', route.name === 'markets')}
+          ${cinemaNavLink('/research', 'Research', route.name === 'research' || route.name === 'library' || route.name === 'read')}
+          ${cinemaNavLink('/standards', 'Standards', route.name === 'standards')}
+          ${cinemaNavLink('/glossary', 'Glossary', route.name === 'glossary')}
+          ${cinemaNavLink('/podcast', 'Podcast', route.name === 'podcast' || route.name === 'episode')}
         </div>
         <main>${body}</main>
         <footer class="foot colophon">

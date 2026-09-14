@@ -497,6 +497,29 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   bitvavo: PLATES.geneva,
   phemex: PLATES.sydney,
   websea: PLATES.cable,
+  'lloyds-bank': PLATES.london,
+  'linux-foundation': PLATES.fiber,
+  'dentsu-soken': PLATES.tokyo,
+  'nav-news': PLATES.newsroom,
+  'nav-story': PLATES.history,
+  'nav-technology': PLATES.datacenter,
+  'nav-people': PLATES.ucl,
+  'nav-stack': PLATES.city,
+  'nav-programmes': PLATES.canary,
+  'nav-institutions': PLATES.royal,
+  'nav-patents': PLATES.patentsHall,
+  'nav-cbdc': PLATES.zurich,
+  'nav-markets': PLATES.exchange,
+  'nav-research': PLATES.library,
+  'nav-standards': PLATES.geneva,
+  'nav-glossary': PLATES.boston,
+  'nav-podcast': PLATES.radio,
+  'nav-vision': PLATES.fiber,
+  'nav-donate': PLATES.hero,
+  'donate-eth': PLATES.fiber,
+  'donate-btc': PLATES.hongkong,
+  'donate-usdt': PLATES.singapore,
+  'grok-ask': PLATES.radio,
 }
 
 const PREFIXES = [
@@ -510,6 +533,7 @@ const PREFIXES = [
   'stack-',
   'era-',
   'featured-',
+  'wm-',
 ]
 
 function lookup(raw: string): Plate | undefined {
