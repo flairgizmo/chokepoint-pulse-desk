@@ -224,7 +224,7 @@ function oceanSpecMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
         vec3 l = normalize(sunDir);
         float fres = pow(1.0 - abs(dot(n, v)), 2.4);
         float spec = pow(max(0.0, dot(reflect(-l, n), v)), 42.0);
-        float a = wet * (fres * 0.34 + spec * 0.82);
+        float a = wet * (fres * 0.12 + spec * 0.7);
         gl_FragColor = vec4(0.76, 0.88, 1.0, a);
       }`,
     transparent: true,
@@ -297,11 +297,11 @@ function terminatorTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createLinearGradient(0, 0, c.width, 0);
-  g.addColorStop(0, 'rgba(8, 8, 16, 0.7)');
-  g.addColorStop(0.32, 'rgba(22, 14, 16, 0.48)');
-  g.addColorStop(0.46, 'rgba(210, 140, 72, 0.3)');
-  g.addColorStop(0.54, 'rgba(255, 220, 170, 0.08)');
-  g.addColorStop(0.6, 'rgba(255, 255, 255, 0)');
+  g.addColorStop(0, 'rgba(6, 10, 20, 0.62)');
+  g.addColorStop(0.36, 'rgba(8, 14, 28, 0.34)');
+  g.addColorStop(0.48, 'rgba(28, 52, 88, 0.1)');
+  g.addColorStop(0.56, 'rgba(170, 200, 230, 0.04)');
+  g.addColorStop(0.64, 'rgba(255, 255, 255, 0)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);

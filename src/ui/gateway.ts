@@ -229,18 +229,12 @@ function tableLidTex(): THREE.CanvasTexture {
   c.height = 256;
   const ctx = c.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#0a0806';
+    ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, 256, 256);
-    const catchL = ctx.createRadialGradient(96, 82, 1, 96, 82, 42);
-    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.38)');
-    catchL.addColorStop(0.28, 'rgba(234, 241, 255, 0.08)');
-    catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
-    ctx.fillStyle = catchL;
-    ctx.fillRect(0, 0, 256, 256);
-    const rim = ctx.createRadialGradient(128, 128, 108, 128, 128, 127);
+    const rim = ctx.createRadialGradient(128, 128, 100, 128, 128, 128);
     rim.addColorStop(0, 'rgba(234, 241, 255, 0)');
-    rim.addColorStop(0.78, 'rgba(234, 241, 255, 0.04)');
-    rim.addColorStop(1, 'rgba(255, 236, 210, 0.16)');
+    rim.addColorStop(0.74, 'rgba(210, 228, 248, 0.05)');
+    rim.addColorStop(1, 'rgba(210, 228, 248, 0.28)');
     ctx.fillStyle = rim;
     ctx.fillRect(0, 0, 256, 256);
   }
@@ -445,7 +439,7 @@ vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 1.12);
+float liteFres = pow(1.0 - liteFacing, 2.15);
 vec3 flash = diffuseColor.rgb;
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
@@ -454,10 +448,10 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float kite = clamp(flash.r * 0.7 + flash.b * 0.3, 0.0, 1.0);
-diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.1 + liteFres * 1.75);
-diffuseColor.rgb += envRefl * liteFres * kite * 0.28;
-diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.35 + kite * 0.8);
-diffuseColor.a = liteFres * mix(0.22, 0.82, kite);`;
+diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.08 + liteFres * 1.55);
+diffuseColor.rgb += envRefl * liteFres * kite * 0.22;
+diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.28 + kite * 0.7);
+diffuseColor.a = liteFres * mix(0.1, 0.62, kite);`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
@@ -579,7 +573,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-30-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-31-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -1100,7 +1094,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       };
       booth(0xffe8c4, 2.2, 0.32, 2.4, 2.6, 2.2);
       booth(0xb4dcff, 1.8, 0.26, -2.2, 1.8, 2.0);
-      booth(0xffffff, 2.4, 0.28, 0.1, 3.2, 0.8);
+      booth(0xffffff, 1.4, 0.18, 2.8, 2.1, -0.6);
       booth(0xdce8ff, 1.6, 0.24, -2.0, 1.6, -2.2);
     } catch {
       cubeCam = null;
@@ -1203,7 +1197,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     mesh.renderOrder = list === pavs ? 0 : 1;
     crystal.add(mesh);
     list.push(mesh);
-    if (haloMat) {
+    if (haloMat && list !== pavs) {
       const halo = new THREE.Mesh(geo, haloMat);
       halo.userData.nodeId = 6;
       halo.renderOrder = 4;
