@@ -524,45 +524,52 @@ diffuseColor.a = liteFres * liteFres * 0.1;`;
   if (kind === 'bezel') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.004, 0.005, 0.012);
+float spark = fract(sin(dot(vMapUv * vec2(28.0, 16.0), vec2(12.9898, 78.233))) * 43758.5453);
+float pin = pow(spark, 18.0);
+vec3 body = vec3(0.003, 0.004, 0.01);
 diffuseColor.rgb = body;
-diffuseColor.rgb += glint * (0.1 + rim * 0.9);
-diffuseColor.rgb += vec3(0.95, 0.97, 1.0) * pow(rim, 2.2) * 0.42;
-diffuseColor.rgb += texture2D(map, vMapUv).rgb * specCam * 0.18;
-diffuseColor.a = mix(0.78, 0.96, rim);`;
+diffuseColor.rgb += glint * (0.03 + pin * 2.4 + rim * 0.45);
+diffuseColor.rgb += vec3(0.95, 0.97, 1.0) * pow(rim, 2.4) * 0.22;
+diffuseColor.rgb += texture2D(map, vMapUv).rgb * specCam * pin * 0.35;
+diffuseColor.a = mix(0.84, 0.96, rim);`;
   }
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float fleck = pow(kite, 2.7);
-vec3 body = mix(vec3(0.001, 0.002, 0.006), vec3(0.012, 0.016, 0.03), kite);
+float fleck = pow(kite, 3.25);
+float spark = fract(sin(dot(vMapUv * vec2(17.0, 23.0), vec2(12.9898, 78.233))) * 43758.5453);
+float pin = pow(spark, 16.0);
+vec3 body = mix(vec3(0.001, 0.002, 0.006), vec3(0.01, 0.014, 0.026), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * 0.06;
-diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * fleck * 0.55;
-diffuseColor.rgb += glint * (0.08 + fleck * 3.2 + rim * 0.42);
+diffuseColor.rgb += envRefl * fleck * pin * 0.08;
+diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * fleck * pin * 0.55;
+diffuseColor.rgb += glint * (0.03 + pin * 2.8 + fleck * pin * 3.2 + rim * 0.12);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float fleck = pow(kite, 2.45);
-vec3 body = mix(vec3(0.004, 0.005, 0.01), vec3(0.022, 0.028, 0.045), kite);
+float fleck = pow(kite, 3.05);
+float spark = fract(sin(dot(vMapUv * vec2(19.0, 21.0), vec2(12.9898, 78.233))) * 43758.5453);
+float pin = pow(spark, 14.0);
+vec3 body = mix(vec3(0.003, 0.004, 0.01), vec3(0.016, 0.02, 0.034), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * 0.07;
-diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * fleck * 0.72;
-diffuseColor.rgb += glint * (0.1 + fleck * 3.4 + rim * 0.5);
+diffuseColor.rgb += envRefl * fleck * pin * 0.08;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * fleck * pin * 0.7;
+diffuseColor.rgb += glint * (0.04 + pin * 3.2 + fleck * pin * 3.6 + rim * 0.16);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float fleck = pow(kite, 2.55);
-vec3 body = mix(vec3(0.0015, 0.002, 0.006), vec3(0.01, 0.014, 0.026), kite);
+float fleck = pow(kite, 3.4);
+float spark = fract(sin(dot(vMapUv * vec2(21.0, 27.0), vec2(12.9898, 78.233))) * 43758.5453);
+float pin = pow(spark, 15.0);
+vec3 body = mix(vec3(0.001, 0.002, 0.006), vec3(0.007, 0.01, 0.018), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * 0.07;
-diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * fleck * 1.12;
-diffuseColor.rgb += vec3(0.7, 0.86, 1.0) * fleck * fleck * 0.55;
-diffuseColor.rgb += glint * (0.06 + fleck * 4.2 + rim * 0.62);
+diffuseColor.rgb += envRefl * fleck * pin * 0.08;
+diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * fleck * pin * 0.85;
+diffuseColor.rgb += glint * (0.025 + pin * 3.6 + fleck * pin * 5.2 + rim * 0.14);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -638,7 +645,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-58-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-59-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
