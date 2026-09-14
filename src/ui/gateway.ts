@@ -226,7 +226,7 @@ function diamondPhysical(
   });
 }
 
-function tableLidTex(): THREE.CanvasTexture {
+function tableLidTex(photo: HTMLImageElement | null = null): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 256;
   c.height = 256;
@@ -234,12 +234,38 @@ function tableLidTex(): THREE.CanvasTexture {
   if (ctx) {
     ctx.fillStyle = '#070b14';
     ctx.fillRect(0, 0, 256, 256);
-    const rim = ctx.createRadialGradient(128, 128, 100, 128, 128, 128);
+    if (photo?.naturalWidth) {
+      ctx.filter = 'contrast(1.18) brightness(0.9) saturate(0.72)';
+      ctx.drawImage(
+        photo,
+        photo.naturalWidth * 0.22,
+        photo.naturalHeight * 0.26,
+        photo.naturalWidth * 0.48,
+        photo.naturalHeight * 0.3,
+        0,
+        0,
+        256,
+        256,
+      );
+      ctx.filter = 'none';
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = 'rgba(10, 14, 24, 0.38)';
+      ctx.fillRect(0, 0, 256, 256);
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    const rim = ctx.createRadialGradient(128, 128, 88, 128, 128, 128);
     rim.addColorStop(0, 'rgba(234, 241, 255, 0)');
-    rim.addColorStop(0.74, 'rgba(210, 228, 248, 0.05)');
-    rim.addColorStop(1, 'rgba(210, 228, 248, 0.28)');
+    rim.addColorStop(0.62, 'rgba(210, 228, 248, 0.04)');
+    rim.addColorStop(1, 'rgba(210, 228, 248, 0.34)');
     ctx.fillStyle = rim;
     ctx.fillRect(0, 0, 256, 256);
+    const catchL = ctx.createRadialGradient(96, 86, 2, 96, 86, 52);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.32)');
+    catchL.addColorStop(1, 'rgba(255, 236, 210, 0)');
+    ctx.globalCompositeOperation = 'screen';
+    ctx.fillStyle = catchL;
+    ctx.fillRect(0, 0, 256, 256);
+    ctx.globalCompositeOperation = 'source-over';
   }
   const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -1209,10 +1235,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     lite
       ? (() => {
           const mat = new THREE.MeshBasicMaterial({
-            map: tableLidTex(),
+            map: tableLidTex(photo0),
             color: 0xffffff,
             transparent: true,
-            opacity: 0.22,
+            opacity: 0.42,
             side: THREE.DoubleSide,
             depthWrite: false,
           });
@@ -1722,7 +1748,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const photo = visionStill();
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     if (lite && tmat instanceof THREE.MeshBasicMaterial) {
-      tmat.needsUpdate = true;
+      swapMap(tmat, tableLidTex(photo));
     } else {
       swapMap(tmat, glassTex(photo, on, 'table'));
     }

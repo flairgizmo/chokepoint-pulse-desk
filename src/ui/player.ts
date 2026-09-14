@@ -82,7 +82,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
   const dots = playlist
     .map(
       (item) =>
-        `<a class="series-dot${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}" aria-label="Episode ${item.n}">${String(item.n).padStart(2, '0')}</a>`,
+        `<a class="series-dot${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}" aria-label="Episode ${item.n}"><img src="${esc(episodeStill(item.id).src)}" alt="" width="96" height="54" /><span>${String(item.n).padStart(2, '0')}</span></a>`,
     )
     .join('');
   return `
@@ -110,8 +110,8 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
         </select>
       </div>
       <p class="player-byline">
-        <span class="host-tile james" aria-hidden="true">JH</span>
-        <span class="host-tile amelia" aria-hidden="true">AC</span>
+        <span class="host-tile james" aria-hidden="true"><img src="${esc(PLATES.radio.src)}" alt="" width="64" height="64" /><span>JH</span></span>
+        <span class="host-tile amelia" aria-hidden="true"><img src="${esc(PLATES.newsroom.src)}" alt="" width="64" height="64" /><span>AC</span></span>
         <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · hosts · series ${String(ep.n).padStart(2, '0')} of 20
       </p>
       <nav class="series-dots" aria-label="Series">${dots}</nav>

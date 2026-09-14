@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { INSTITUTIONS } from '../src/data/institutions';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
+import { STORY } from '../src/data/story';
+import { TECH } from '../src/data/tech';
 import { diagramFigure } from '../src/ui/diagrams';
 import { renderInstitutions, renderPatents, renderStack, renderStory } from '../src/ui/pages';
 import {
@@ -85,7 +87,7 @@ describe('Topic plates', () => {
   });
 
   it('maps technology and story beats to distinct photographs', () => {
-    expect(plateFor('connectors').src).toBe(PLATES.cable.src);
+    expect(plateFor('connectors').src).toBe(PLATES.frankfurt.src);
     expect(plateFor('satp').src).toBe(PLATES.geneva.src);
     expect(plateFor('whitepaper-2018').src).toBe(PLATES.ucl.src);
     expect(plateFor('gbtd-2025').src).toBe(PLATES.canary.src);
@@ -94,6 +96,30 @@ describe('Topic plates', () => {
     expect(plateFor('fusion').src).toBe(PLATES.cityDay.src);
     expect(plateFor('quantnet').src).toBe(PLATES.city.src);
     expect(plateFor('overledger-network').src).toBe(PLATES.cable.src);
+    expect(plateFor('connectors').src).not.toBe(plateFor('overledger-network').src);
+  });
+
+  it('gives constellation doors and technology chapters distinct rooms', () => {
+    const doors = [
+      'Overledger',
+      'PayScript',
+      'GBTD',
+      'SATP',
+      '2018 paper',
+      'Fusion',
+      'x402',
+      'Quant',
+      'Docs',
+      '@quantnetwork',
+      '@OverledgerDev',
+      '@gverdian',
+    ].map((label) => plateFor(`door-${label}`).src);
+    expect(new Set(doors).size).toBe(12);
+    const tech = TECH.map((t) => plateFor(t.id).src);
+    expect(new Set(tech).size).toBe(TECH.length);
+    expect(plateFor('quantnet').src).toBe(PLATES.city.src);
+    expect(plateFor('murex-2026').src).toBe(PLATES.paris.src);
+    expect(new Set(STORY.map((e) => plateFor(e.id).src)).size).toBeGreaterThanOrEqual(20);
   });
 
   it('sits official portraits on distinct dusk stills, not one shared CERN floor', () => {
@@ -212,6 +238,8 @@ describe('Topic plates', () => {
     expect(renderPodcast()).toContain('still-strip');
     expect(renderPodcast()).toContain('/visuals/topics/radio.jpg');
     expect(renderPodcast()).toContain('pod-still');
+    expect(renderPodcast()).toContain('series-dot');
+    expect(renderPodcast()).toContain('class="series-dot is-on"');
     expect(renderPodcast()).toContain('/podcast/stills/');
     expect(renderPodcast()).toContain('/visuals/stills/future.jpg');
     expect(renderPodcast()).toContain('/visuals/stills/gateway.jpg');
@@ -243,7 +271,7 @@ describe('Topic plates', () => {
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {
     expect(plateFor('murex-2026').src).toBe(PLATES.paris.src);
     expect(plateFor('quantnet', 'programme').src).toBe(PLATES.city.src);
-    expect(plateFor('connectors').src).toBe(PLATES.cable.src);
+    expect(plateFor('connectors').src).toBe(PLATES.frankfurt.src);
     expect(plateFor('essay-future').src).toBe(PLATES.future.src);
     expect(plateFor('satp-arch', 'paper-standards', '2023').src).not.toBe(PLATES.geneva.src);
     expect(plateFor('satp-adapt', 'paper-standards', '2023').src).not.toBe(
