@@ -400,7 +400,11 @@ function glassTex(
   const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, cut, lane, heart)));
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = THREE.RepeatWrapping;
-  tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  if (cut === 'table') tex.repeat.set(1, 1);
+  else if (heart) tex.repeat.set(2.1, 1.55);
+  else if (cut === 'crown') tex.repeat.set(2.4, 1.75);
+  else tex.repeat.set(1.9, 1.4);
   return tex;
 }
 
@@ -442,25 +446,29 @@ varying vec3 vLiteWorldV;`,
         `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
-float liteFacing = clamp(abs(dot(liteN, normalize(vLiteView))), 0.0, 1.0);
+vec3 liteV = normalize(vLiteView);
+float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.55);
 float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
 float liteFlash = smoothstep(0.88, 1.0, liteSpark) * liteFres;
-vec2 iorOff = liteN.xy * liteFres * 0.045;
+vec3 liteT = refract(-liteV, liteN, 0.413);
+vec2 iorOff = (dot(liteT, liteT) > 0.001 ? liteT.xy : liteN.xy) * (0.08 + liteFacing * 0.12);
 vec4 iorSamp = texture2D(map, vMapUv + iorOff);
-diffuseColor.rgb = mix(diffuseColor.rgb, iorSamp.rgb, 0.12 + liteFres * 0.4);
+vec4 iorBack = texture2D(map, vMapUv - iorOff * 0.55);
+diffuseColor.rgb = mix(diffuseColor.rgb, iorSamp.rgb, 0.28 + liteFacing * 0.42);
+diffuseColor.rgb = mix(diffuseColor.rgb, iorBack.rgb, 0.12 + liteFres * 0.1);
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wR = reflect(-normalize(vLiteWorldV), wN);
 vec3 envSamp = textureCube(liteEnv, wR).rgb;
-diffuseColor.rgb += envSamp * pow(liteFres, 2.4) * 0.78;
+diffuseColor.rgb += envSamp * pow(liteFres, 1.85) * 0.72;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
-diffuseColor.a *= mix(0.7, 1.0, liteFres);`,
+diffuseColor.a *= mix(0.62, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-9';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-10';
 }
 
 function glassMat(
