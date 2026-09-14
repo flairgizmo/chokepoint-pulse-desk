@@ -8767,7 +8767,7 @@ section.block .kicker {
   width: 2.35rem;
   height: 1.65rem;
   object-fit: cover;
-  filter: saturate(0.92) contrast(1.14) brightness(0.82);
+  filter: saturate(0.94) contrast(1.16) brightness(0.9);
 }
 
 .nav > a .nav-still figcaption,
@@ -8786,6 +8786,10 @@ section.block .kicker {
   min-width: 0;
   width: auto;
   padding: 0.18rem 0.55rem 0.18rem 0.2rem;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .nav > .more > summary .nav-still,
@@ -8831,8 +8835,18 @@ section.block .kicker {
 }
 
 #desk-search-hits .poster-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
   color: #eaf1ff;
   padding: 2.1rem 0.9rem 0.55rem;
+}
+
+#desk-search-hits .poster-copy .kicker,
+#desk-search-hits .poster-copy strong,
+#desk-search-hits .poster-copy .search-sub {
+  display: block;
 }
 
 #desk-search-hits .poster-copy .kicker {
@@ -8848,6 +8862,10 @@ section.block .kicker {
   overflow: hidden;
 }
 
+#desk-search-hits .search-still figcaption {
+  display: none;
+}
+
 #desk-search-hits .poster-frame .photo-plate.search-still img,
 #desk-search-hits .search-still img {
   display: block;
@@ -8857,8 +8875,17 @@ section.block .kicker {
   max-height: 7.2rem;
   aspect-ratio: 21 / 6;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 12%;
   filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
+#desk-search-hits .poster-frame .photo-plate.search-still img[src*='/people/'],
+#desk-search-hits .search-still img[src*='/people/'] {
+  height: 10.5rem;
+  min-height: 10.5rem;
+  max-height: 10.5rem;
+  aspect-ratio: 16 / 9;
+  object-position: center 42%;
 }
 
 .desk-search-panel .cinema-filter {
@@ -8867,6 +8894,22 @@ section.block .kicker {
 
 .cinema-filter #desk-search-input {
   margin-bottom: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.desk-search-panel .cinema-filter:focus-within {
+  box-shadow: 0 0 0 2px #2f5bff;
+}
+
+.desk-search-panel .cinema-filter #desk-search-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.desk-search-panel .cinema-filter #desk-search-input::placeholder {
+  color: #c5d4ea;
 }
 
 .desk-stage-foot .cinema-filter .stage-crumb {
