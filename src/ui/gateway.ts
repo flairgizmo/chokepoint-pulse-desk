@@ -407,6 +407,33 @@ function glassTex(
 
 type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle' | 'halo' | 'pav';
 
+/** Hard studio glints on dark ice. Broad cube fresnel was the milky paper hull. */
+function liteIcePreamble(): string {
+  return `vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+vec3 liteV = normalize(vLiteView);
+float ndv = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
+float rim = pow(1.0 - ndv, 2.35);
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.2);
+vec3 keyL = normalize(vec3(2.4, 2.6, 2.2));
+vec3 fillL = normalize(vec3(-2.2, 1.8, 2.0));
+vec3 backL = normalize(vec3(2.8, 2.1, -0.6));
+vec3 coolL = normalize(vec3(-2.0, 1.6, -2.2));
+float specKey = pow(max(dot(wR, keyL), 0.0), 52.0);
+float specFill = pow(max(dot(wR, fillL), 0.0), 70.0);
+float specBack = pow(max(dot(wR, backL), 0.0), 44.0);
+float specCool = pow(max(dot(wR, coolL), 0.0), 60.0);
+vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 1.7
+  + vec3(0.7, 0.86, 1.0) * specFill * 1.15
+  + vec3(0.96, 0.98, 1.0) * specBack * 0.95
+  + vec3(0.58, 0.8, 1.0) * specCool * 0.8;`;
+}
+
 function liteFireChunk(kind: LiteFire): string {
   if (kind === 'mirror') {
     return `#include <map_fragment>
@@ -446,73 +473,36 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float kite = clamp(flash.r * 0.7 + flash.b * 0.3, 0.0, 1.0);
-diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.08 + liteFres * 1.55);
-diffuseColor.rgb += envRefl * liteFres * kite * 0.22;
-diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.28 + kite * 0.7);
-diffuseColor.a = liteFres * mix(0.1, 0.62, kite);`;
+diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.04 + liteFres * 0.85);
+diffuseColor.rgb += envRefl * liteFres * kite * 0.12;
+diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.12 + kite * 0.28);
+diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   }
   if (kind === 'pav') {
     return `#include <map_fragment>
-vec3 liteN = normalize(vLiteNormal);
-if (!gl_FrontFacing) liteN = -liteN;
-vec3 liteV = normalize(vLiteView);
-float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 1.18);
-vec3 wN = normalize(vLiteWorldN);
-if (!gl_FrontFacing) wN = -wN;
-vec3 wV = normalize(vLiteWorldV);
-vec3 wR = reflect(-wV, wN);
-vec3 envRefl = textureCube(liteEnv, wR).rgb;
-envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
-float spec = pow(liteFres, 1.05);
-float kite = clamp(dot(diffuseColor.rgb, vec3(0.22, 0.45, 0.33)), 0.0, 1.0);
-vec3 body = vec3(0.05, 0.07, 0.11);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.22);
-diffuseColor.rgb += envRefl * spec * 0.48;
-diffuseColor.rgb += vec3(0.72, 0.78, 0.88) * liteFres * (0.14 + kite * 0.18);
-diffuseColor.rgb += vec3(0.4, 0.58, 0.78) * liteFres * liteFres * 0.16;
+${liteIcePreamble()}
+vec3 body = vec3(0.035, 0.05, 0.08) * (0.38 + rim * 0.85);
+diffuseColor.rgb = body;
+diffuseColor.rgb += envRefl * rim * 0.1;
+diffuseColor.rgb += glint * 0.82;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
-vec3 liteN = normalize(vLiteNormal);
-if (!gl_FrontFacing) liteN = -liteN;
-vec3 liteV = normalize(vLiteView);
-float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 1.05);
-vec3 wN = normalize(vLiteWorldN);
-if (!gl_FrontFacing) wN = -wN;
-vec3 wV = normalize(vLiteWorldV);
-vec3 wR = reflect(-wV, wN);
-vec3 envRefl = textureCube(liteEnv, wR).rgb;
-envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
-float spec = pow(liteFres, 0.95);
-vec3 body = vec3(0.14, 0.2, 0.3);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.42);
-diffuseColor.rgb += envRefl * spec * 0.95;
-diffuseColor.rgb += vec3(0.92, 0.88, 0.8) * liteFres * 0.42;
-diffuseColor.rgb += vec3(0.5, 0.7, 0.92) * liteFres * liteFres * 0.22;
+${liteIcePreamble()}
+vec3 body = vec3(0.08, 0.11, 0.16) * (0.5 + rim * 0.7);
+diffuseColor.rgb = body;
+diffuseColor.rgb += envRefl * rim * 0.18;
+diffuseColor.rgb += glint * 1.05;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
-vec3 liteN = normalize(vLiteNormal);
-if (!gl_FrontFacing) liteN = -liteN;
-vec3 liteV = normalize(vLiteView);
-float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 1.2);
-vec3 wN = normalize(vLiteWorldN);
-if (!gl_FrontFacing) wN = -wN;
-vec3 wV = normalize(vLiteWorldV);
-vec3 wR = reflect(-wV, wN);
-vec3 envRefl = textureCube(liteEnv, wR).rgb;
-envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
-float spec = pow(liteFres, 1.12);
-vec3 body = vec3(0.08, 0.12, 0.2);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.2);
-diffuseColor.rgb += envRefl * spec * 0.58;
-diffuseColor.rgb += vec3(0.82, 0.8, 0.74) * liteFres * 0.24;
-diffuseColor.rgb += vec3(0.4, 0.58, 0.82) * liteFres * liteFres * 0.14;
+${liteIcePreamble()}
+vec3 body = vec3(0.045, 0.062, 0.095) * (0.4 + rim * 0.95);
+diffuseColor.rgb = body;
+diffuseColor.rgb += envRefl * rim * 0.14;
+diffuseColor.rgb += glint;
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -587,7 +577,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-41-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-42-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -683,7 +673,7 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(1, 0.1 + key * 0.82 + rim * 0.18);
+  const shade = Math.min(1, 0.06 + key * 0.9 + rim * 0.16 + fres * 0.12);
   return new THREE.Color(
     Math.min(1, shade + key * 0.16 + fres * 0.08),
     shade * 0.94,

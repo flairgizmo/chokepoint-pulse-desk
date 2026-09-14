@@ -37,6 +37,15 @@ describe('Topic plates', () => {
     expect(plateFor('vision').src).toBe(PLATES.ucl.src);
   });
 
+  it('keeps named programmes on distinct stills', () => {
+    const srcs = ['gbtd', 'rln', 'murex', 'oracle', 'basel', 'sync-lab', 'lacchain', 'dentsu'].map(
+      (id) => plateFor(id, 'programme').src,
+    );
+    expect(new Set(srcs).size).toBeGreaterThanOrEqual(6);
+    expect(renderProgrammes()).toContain('/visuals/topics/canary.jpg');
+    expect(renderProgrammes()).toContain('/visuals/cities/paris.jpg');
+  });
+
   it('maps Vision and essays to real photographs, not leftover SVGs', () => {
     expect(plateFor('vision').src).toBe(PLATES.ucl.src);
     expect(plateFor('philosophy').src).toBe(PLATES.fiber.src);
