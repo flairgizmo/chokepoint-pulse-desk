@@ -44,6 +44,9 @@ describe('Topic plates', () => {
     expect(new Set(srcs).size).toBeGreaterThanOrEqual(6);
     expect(renderProgrammes()).toContain('/visuals/topics/canary.jpg');
     expect(renderProgrammes()).toContain('/visuals/cities/paris.jpg');
+    expect(renderProgrammes()).toContain('/visuals/cities/frankfurt.jpg');
+    expect(renderProgrammes()).toContain('/visuals/cities/miami.jpg');
+    expect(renderProgrammes()).toContain('/visuals/cities/tokyo.jpg');
   });
 
   it('maps Vision and essays to real photographs, not leftover SVGs', () => {
