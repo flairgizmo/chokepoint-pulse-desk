@@ -206,7 +206,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   payscript: PLATES.payments,
   rln: PLATES.payments,
   murex: PLATES.paris,
-  apps: PLATES.fiber,
+  apps: PLATES.city,
   script: PLATES.payments,
   ledgers: PLATES.cable,
   gate: PLATES.datacenter,

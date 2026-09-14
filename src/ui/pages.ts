@@ -160,6 +160,7 @@ export function renderStack(): string {
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     </section>
     ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero', undefined, false)}
+    ${stillStrip('stack', 'Photographs in the layers', 5)}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
       <div class="stack-tools">

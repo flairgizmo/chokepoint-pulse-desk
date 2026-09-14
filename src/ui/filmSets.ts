@@ -41,6 +41,13 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
     { id: 'satp', title: 'SATP', src: PLATES.geneva.src, stageKind: 'satp', stageId: '3' },
     { id: 'liability', title: 'LIABILITY', src: PLATES.payments.src, stageKind: 'money', stageId: 'tcbm' },
   ],
+  stack: [
+    { id: 'apps', title: 'FLOW APPS', src: PLATES.city.src, stageKind: 'tech', stageId: 'quant-connect' },
+    { id: 'script', title: 'PAYSCRIPT', src: PLATES.payments.src, stageKind: 'tech', stageId: 'payscript' },
+    { id: 'fiber', title: 'FIBER', src: PLATES.fiber.src, stageKind: 'chapter', stageId: 'philosophy' },
+    { id: 'gate', title: 'OVERLEDGER', src: PLATES.datacenter.src, stageKind: 'tech', stageId: 'overledger' },
+    { id: 'ledgers', title: 'RAILS', src: PLATES.cable.src, stageKind: 'tech', stageId: 'connectors' },
+  ],
   technology: [
     { id: 'overledger', title: 'OVERLEDGER', src: PLATES.ucl.src, stageKind: 'tech', stageId: 'overledger' },
     { id: 'satp', title: 'SATP', src: PLATES.geneva.src, stageKind: 'tech', stageId: 'satp' },
@@ -145,6 +152,7 @@ export const FILM_BACKDROPS: Record<string, string> = {
   research: PLATES.library.src,
   vision: PLATES.ucl.src,
   technology: PLATES.fiber.src,
+  stack: PLATES.canary.src,
   patents: PLATES.patentsHall.src,
   institutions: PLATES.royal.src,
   people: PLATES.canary.src,
