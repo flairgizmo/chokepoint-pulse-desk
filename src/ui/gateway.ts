@@ -48,6 +48,10 @@ type GlassCut = 'crown' | 'pav' | 'table';
 const TABLE_Y = 0.42;
 const EQ_Y = 0.18;
 const BOT_Y = -0.24;
+/** Thin brilliant girdle — waist area at rest, not a chrome torus. */
+const GIRDLE_H = 0.054;
+const GIRDLE_TOP = EQ_Y + GIRDLE_H * 0.5;
+const GIRDLE_BOT = EQ_Y - GIRDLE_H * 0.5;
 
 type CutMat = THREE.MeshPhongMaterial | THREE.MeshPhysicalMaterial;
 type GlassLane = 0 | 1;
@@ -409,7 +413,7 @@ function glassTex(
   return tex;
 }
 
-type LiteFire = 'window' | 'mirror' | 'crown';
+type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle';
 
 function liteFireChunk(kind: LiteFire): string {
   if (kind === 'mirror') {
@@ -433,6 +437,29 @@ diffuseColor.rgb += envRefl * spec * 0.55;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.22;
 diffuseColor.a = mix(0.9, 0.96, spec);
 }`;
+  }
+  if (kind === 'girdle') {
+    return `#include <map_fragment>
+vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+vec3 liteV = normalize(vLiteView);
+float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
+float liteFres = pow(1.0 - liteFacing, 1.05);
+float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
+float liteFlash = smoothstep(0.82, 1.0, liteSpark) * liteFres;
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+float spec = pow(liteFres, 0.95);
+vec3 body = vec3(0.22, 0.2, 0.18);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.9);
+diffuseColor.rgb += envRefl * spec * 2.4;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * liteFres * 1.15;
+diffuseColor.rgb += vec3(0.62, 0.82, 1.0) * liteFres * liteFres * 0.7;
+diffuseColor.rgb += vec3(1.0, 0.97, 0.9) * liteFlash * 0.9;
+diffuseColor.a *= mix(0.42, 0.9, spec);`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
@@ -544,6 +571,7 @@ function glassMat(
     writeDepth?: boolean;
     mirror?: boolean;
     crown?: boolean;
+    girdle?: boolean;
     doubleSide?: boolean;
     env?: THREE.CubeTexture;
   } = {},
@@ -560,7 +588,13 @@ function glassMat(
     });
     mat.toneMapped = false;
     if (opts.window != null) {
-      const fire: LiteFire = opts.mirror ? 'mirror' : opts.crown ? 'crown' : 'window';
+      const fire: LiteFire = opts.mirror
+        ? 'mirror'
+        : opts.girdle
+          ? 'girdle'
+          : opts.crown
+            ? 'crown'
+            : 'window';
       attachLiteFire(mat, opts.env ?? duskCubeMap(), fire);
     }
     return mat;
@@ -613,8 +647,8 @@ function wrapU(x: number, z: number): number {
 }
 
 function wrapV(y: number, band: 'crown' | 'pav' = 'crown'): number {
-  if (band === 'pav') return Math.min(1, Math.max(0, (y - BOT_Y) / (EQ_Y - BOT_Y)));
-  return Math.min(1, Math.max(0, (y - EQ_Y) / (TABLE_Y - EQ_Y)));
+  if (band === 'pav') return Math.min(1, Math.max(0, (y - BOT_Y) / (GIRDLE_BOT - BOT_Y)));
+  return Math.min(1, Math.max(0, (y - GIRDLE_TOP) / (TABLE_Y - GIRDLE_TOP)));
 }
 
 function seamUv(us: number[]): number[] {
@@ -1048,11 +1082,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const tableY = TABLE_Y;
   const eqR = 0.56;
   const eqY = EQ_Y;
+  const girdleTop = GIRDLE_TOP;
+  const girdleBot = GIRDLE_BOT;
   const botY = BOT_Y;
   const midR = tableR + (eqR - tableR) * 0.52;
-  const midY = tableY + (eqY - tableY) * 0.48;
+  const midY = tableY + (girdleTop - tableY) * 0.48;
   const pavR = eqR * 0.42;
-  const pavY = eqY + (botY - eqY) * 0.52;
+  const pavY = girdleBot + (botY - girdleBot) * 0.52;
   const photo0 = visionStill();
   const crownA = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
     transmission: 0.7,
@@ -1084,6 +1120,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tint: 0xc4b8a6,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
+    env: roomEnv,
+  });
+  const girdleIce = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
+    transmission: 0.48,
+    thickness: 0.18,
+    tint: lite ? 0xffffff : 0xf6f0e8,
+    window: lite ? 0.62 : undefined,
+    girdle: lite,
     env: roomEnv,
   });
   const table = new THREE.Mesh(
@@ -1141,17 +1185,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pz1 = Math.sin(a1) * pavR;
     const crown = i % 2 ? crownB : crownA;
     const pav = i % 2 ? pavB : pavA;
-    addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, 'crown'), crown, crowns);
-    addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1, 'crown'), crown, crowns);
+    addCut(triGeo(mx0, midY, mz0, x0, girdleTop, z0, x1, girdleTop, z1, 'crown'), crown, crowns);
+    addCut(triGeo(mx0, midY, mz0, x1, girdleTop, z1, mx1, midY, mz1, 'crown'), crown, crowns);
     addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns);
     addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns);
-    addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
-    addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav, pavs);
+    addCut(triGeo(x0, girdleTop, z0, x0, girdleBot, z0, x1, girdleBot, z1, 'crown'), girdleIce, crowns);
+    addCut(triGeo(x0, girdleTop, z0, x1, girdleBot, z1, x1, girdleTop, z1, 'crown'), girdleIce, crowns);
+    addCut(triGeo(x0, girdleBot, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
+    addCut(triGeo(x0, girdleBot, z0, px1, pavY, pz1, x1, girdleBot, z1, 'pav'), pav, pavs);
     addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav, pavs);
     if (!lite) {
       const amid = (a0 + a1) / 2;
       const starR = tableR + (eqR - tableR) * 0.4;
-      const starY = tableY + (eqY - tableY) * 0.4;
+      const starY = tableY + (girdleTop - tableY) * 0.4;
       const sx = Math.cos(amid) * starR;
       const sz = Math.sin(amid) * starR;
       addCut(triGeo(tx0, tableY, tz0, tx1, tableY, tz1, sx, starY, sz, 'crown'), crownA, stars);
@@ -1183,12 +1229,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const mz = Math.sin(a) * midR;
     const px = Math.cos(a) * pavR;
     const pz = Math.sin(a) * pavR;
-    edgePts.push(x, eqY, z, Math.cos(n) * eqR, eqY, Math.sin(n) * eqR);
+    edgePts.push(x, girdleTop, z, Math.cos(n) * eqR, girdleTop, Math.sin(n) * eqR);
+    edgePts.push(x, girdleBot, z, Math.cos(n) * eqR, girdleBot, Math.sin(n) * eqR);
+    edgePts.push(x, girdleTop, z, x, girdleBot, z);
     edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
     edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
     edgePts.push(tx, tableY, tz, mx, midY, mz);
-    edgePts.push(mx, midY, mz, x, eqY, z);
-    edgePts.push(x, eqY, z, px, pavY, pz);
+    edgePts.push(mx, midY, mz, x, girdleTop, z);
+    edgePts.push(x, girdleBot, z, px, pavY, pz);
     edgePts.push(px, pavY, pz, 0, botY, 0);
   }
   const edgeGeo = new THREE.BufferGeometry();
@@ -1203,22 +1251,26 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       }),
     ),
   );
-  const girdlePts: THREE.Vector3[] = [];
-  for (let i = 0; i < sides; i++) {
-    const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-    girdlePts.push(new THREE.Vector3(Math.cos(a) * eqR, eqY, Math.sin(a) * eqR));
-  }
-  const girdle = new THREE.LineLoop(
-    new THREE.BufferGeometry().setFromPoints(girdlePts),
-    new THREE.LineBasicMaterial({
-      color: lite ? 0xf6ead6 : 0xeaf1ff,
-      transparent: true,
-      opacity: lite ? 0.78 : 0.22,
-      depthWrite: false,
-    }),
-  );
-  girdle.renderOrder = 3;
-  crystal.add(girdle);
+  const addGirdleLoop = (y: number, opacity: number): void => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i < sides; i++) {
+      const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      pts.push(new THREE.Vector3(Math.cos(a) * eqR, y, Math.sin(a) * eqR));
+    }
+    const loop = new THREE.LineLoop(
+      new THREE.BufferGeometry().setFromPoints(pts),
+      new THREE.LineBasicMaterial({
+        color: lite ? 0xf6ead6 : 0xeaf1ff,
+        transparent: true,
+        opacity,
+        depthWrite: false,
+      }),
+    );
+    loop.renderOrder = 3;
+    crystal.add(loop);
+  };
+  addGirdleLoop(girdleTop, lite ? 0.84 : 0.24);
+  addGirdleLoop(girdleBot, lite ? 0.7 : 0.18);
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite

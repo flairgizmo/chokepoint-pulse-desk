@@ -941,7 +941,7 @@ main {
 }
 
 .paper-grid {
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
 }
 
 .block .paper-grid {
@@ -3360,9 +3360,15 @@ button.chip {
 
 .tokencards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.8rem;
   margin: 1rem 0;
+}
+
+@media (max-width: 720px) {
+  .tokencards {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tokencard {
@@ -4222,6 +4228,13 @@ body.stage-open .grok {
 
 .research-lane .paper-grid {
   margin-top: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 799px) {
+  .research-lane .paper-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .research-lane .lane-head {
@@ -4629,7 +4642,7 @@ body.stage-open .grok {
 .triptych .photo-plate img,
 .compare .photo-plate img {
   aspect-ratio: 16 / 9;
-  max-height: 20rem;
+  max-height: 24rem;
 }
 
 .term .photo-plate,
@@ -4857,7 +4870,7 @@ body.stage-open .grok {
 
 .city-neighbor-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.85rem;
 }
 
@@ -4872,6 +4885,7 @@ body.stage-open .grok {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
+  max-height: 16rem;
   object-fit: cover;
   border-radius: 16px;
   filter: saturate(0.9) contrast(1.12) brightness(0.78);
@@ -5929,7 +5943,7 @@ section.block .kicker {
 
 .satp-lab .satp-still img {
   aspect-ratio: 21 / 9;
-  max-height: 11rem;
+  max-height: 18rem;
   filter: saturate(0.8) contrast(1.12) brightness(0.62);
 }
 
@@ -5989,7 +6003,7 @@ section.block .kicker {
 }
 
 .acid-still img {
-  max-height: 8.2rem;
+  max-height: 18rem;
 }
 
 .acid li strong,
@@ -6007,7 +6021,7 @@ section.block .kicker {
 }
 
 .liability-still img {
-  max-height: 11rem;
+  max-height: 18rem;
 }
 
 .liability-cards .n,
@@ -6016,12 +6030,27 @@ section.block .kicker {
 }
 
 .token-still img {
-  max-height: 7.2rem;
+  max-height: 16rem;
 }
 
 .dyk-card {
   padding: 0 0 1rem;
   overflow: hidden;
+}
+
+.dyk-list {
+  list-style: none;
+  margin: 1.2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .dyk-list {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .dyk-card .kicker,
@@ -6065,7 +6094,7 @@ section.block .kicker {
 
 .dyk-still img {
   aspect-ratio: 21 / 9;
-  max-height: 7.6rem;
+  max-height: 16rem;
   object-fit: cover;
   filter: saturate(0.84) contrast(1.14) brightness(0.72);
 }
