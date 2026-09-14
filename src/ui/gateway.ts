@@ -1650,6 +1650,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tex.colorSpace = THREE.SRGBColorSpace;
     const plate = makeCinemaPlate(0.62, 0.36, lite, undefined, 0.01, true);
     applyPlateMap(plate.mat, tex);
+    const bezel = new THREE.Mesh(
+      new THREE.BoxGeometry(0.646, 0.386, 0.01),
+      cinemaChrome(lite, undefined, lite),
+    );
+    bezel.position.z = -0.012;
+    plate.root.add(bezel);
     const [x, , z] = bankXYZ(i, 0);
     sitIssuerStill(plate.root, x, z);
     plate.root.userData.nodeId = bank.id;

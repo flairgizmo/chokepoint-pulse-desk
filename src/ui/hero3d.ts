@@ -58,7 +58,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   cyc.position.set(0, 0.2, -1.45);
   scene.add(cyc);
   addCinemaHaze(scene);
-  addPracticals(scene);
+  addPracticals(scene, true);
   addCinemaPracticalLights(scene, probe.lite, 0.42);
   addCinemaFloor(scene, probe.lite, src, 2.9, -0.57);
   scene.add(makeFloorContact(2.9, 1.55, -0.56));

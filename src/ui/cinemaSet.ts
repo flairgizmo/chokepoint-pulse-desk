@@ -430,6 +430,13 @@ export function addCinemaFloor(
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = y;
   scene.add(floor);
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(radius * 0.36, Math.max(0.012, radius * 0.003), lite ? 8 : 12, lite ? 48 : 72),
+    cinemaChrome(lite, undefined, lite),
+  );
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = y + 0.007;
+  scene.add(ring);
   onPhotoEnv(backdropSrc, () => {
     const prev = floorMat.map;
     floorMat.map = cinemaFloorMap(photoFor(backdropSrc) ?? visionStill());
@@ -479,7 +486,7 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   bounce.position.set(0.2, -2.2, 1.1);
   scene.add(bounce);
   addCinemaHaze(scene);
-  addPracticals(scene);
+  addPracticals(scene, true);
   addCinemaPracticalLights(scene, lite);
 }
 
@@ -551,12 +558,13 @@ export function makeFloorPool(y = -0.605, size = 5.4): THREE.Mesh {
   return mesh;
 }
 
-export function addPracticals(scene: THREE.Scene): void {
+export function addPracticals(scene: THREE.Scene, baffles = false): void {
   const bulbs: Array<readonly [number, number, number, number]> = [
     [2.85, 1.82, -2.15, 0xffc56a],
     [-3.05, 1.48, -2.35, 0x6aa8ff],
     [0.15, 2.35, -3.15, 0xeaf1ff],
   ];
+  const chrome = baffles ? litePhong(0x3d4f6c, 0xb0c4dc, 42) : null;
   for (const [x, y, z, color] of bulbs) {
     const lamp = new THREE.Mesh(
       new THREE.SphereGeometry(0.055, 8, 8),
@@ -576,6 +584,11 @@ export function addPracticals(scene: THREE.Scene): void {
     );
     glow.position.set(x, y, z);
     scene.add(glow);
+    if (!chrome) continue;
+    const baffle = new THREE.Mesh(new THREE.TorusGeometry(0.078, 0.014, 8, 16), chrome);
+    baffle.position.set(x, y, z);
+    baffle.lookAt(0, 0.2, 0);
+    scene.add(baffle);
   }
 }
 
