@@ -8522,26 +8522,39 @@ section.block .kicker {
 }
 
 .tech-grid .poster-frame {
-  min-height: 16rem;
+  position: relative;
+  min-height: 18rem;
   margin: 0;
   border-radius: 14px;
   overflow: hidden;
+}
+
+.tech-grid .poster-frame > .photo-plate,
+.tech-grid .poster-frame > .photo-plate.tech-cell-still {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  height: 100%;
 }
 
 .tech-grid .poster-frame .photo-plate.tech-cell-still img,
 .tech-grid .poster-frame img {
   display: block;
   width: 100%;
-  height: 18rem;
-  min-height: 16rem;
-  max-height: 22rem;
-  aspect-ratio: 16 / 9;
+  height: 100%;
+  min-height: 18rem;
+  max-height: none;
+  aspect-ratio: auto;
   object-fit: cover;
   filter: saturate(0.86) contrast(1.16) brightness(0.62);
 }
 
 .tech-grid .poster-copy {
-  padding: 3.2rem 1.1rem 1rem;
+  position: relative;
+  z-index: 4;
+  min-height: 18rem;
+  padding: 5.8rem 1.1rem 1.15rem;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.12) 0%, rgba(7, 11, 20, 0.78) 38%, rgba(7, 11, 20, 0.94) 100%);
 }
 
 .tech-grid .poster-copy h3,
@@ -8608,5 +8621,10 @@ section.block .kicker {
 .dyk-card details > .poster-frame {
   min-height: 12rem;
   margin: 0.35rem 0 0;
+}
+
+.live-rail .panel {
+  align-self: start;
+  overflow: hidden;
 }
 
