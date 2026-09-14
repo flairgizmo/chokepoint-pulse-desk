@@ -8538,10 +8538,24 @@ section.block .kicker {
   filter: saturate(0.86) contrast(1.12) brightness(0.84);
 }
 
+.tech-spine-hit[data-stage-id='overledger-platform'] .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit[data-stage-id='trusted-node'] .poster-frame .photo-plate.spine-still img {
+  filter: saturate(0.82) contrast(1.08) brightness(1.18);
+}
+
 .donate-list .poster-frame .photo-plate.donate-usdt-still img,
 .donate-list .poster-frame img.donate-usdt-still,
 .donate-list li:nth-child(3) .poster-frame .photo-plate.donate-code-still img {
-  filter: saturate(0.86) contrast(1.18) brightness(0.52);
+  filter: saturate(0.8) contrast(1.22) brightness(0.4);
+}
+
+.donate-list li:nth-child(3) .poster-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.28), rgba(7, 11, 20, 0.62));
 }
 
 .tech-grid .poster-frame {
