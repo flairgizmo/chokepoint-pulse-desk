@@ -1285,6 +1285,34 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       kite(tx0, wellTopY, tz0, mx0, wellMidY, mz0, mx1, wellMidY, mz1, tx1, wellTopY, tz1, mat, 0, 0.5);
       kite(mx0, wellMidY, mz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, mx1, wellMidY, mz1, mat, 0.5, 1);
     }
+    const wellEdge: number[] = [];
+    for (let i = 0; i < sides; i++) {
+      const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const tx = Math.cos(a) * wellTopR;
+      const tz = Math.sin(a) * wellTopR;
+      const mx = Math.cos(a) * wellMidR;
+      const mz = Math.sin(a) * wellMidR;
+      const bx = Math.cos(a) * wellBotR;
+      const bz = Math.sin(a) * wellBotR;
+      wellEdge.push(tx, wellTopY, tz, Math.cos(n) * wellTopR, wellTopY, Math.sin(n) * wellTopR);
+      wellEdge.push(mx, wellMidY, mz, Math.cos(n) * wellMidR, wellMidY, Math.sin(n) * wellMidR);
+      wellEdge.push(tx, wellTopY, tz, mx, wellMidY, mz);
+      wellEdge.push(mx, wellMidY, mz, bx, wellBotY, bz);
+      wellEdge.push(bx, wellBotY, bz, 0, wellBotY, 0);
+    }
+    const wellEdgeGeo = new THREE.BufferGeometry();
+    wellEdgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(wellEdge, 3));
+    const wellSeams = new THREE.LineSegments(
+      wellEdgeGeo,
+      new THREE.LineBasicMaterial({
+        color: 0xf2e6d4,
+        transparent: true,
+        opacity: 0.2,
+      }),
+    );
+    wellSeams.renderOrder = 1;
+    wellRoot?.add(wellSeams);
     const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wraps[0]);
     wellFloor.position.y = wellBotY;
     wellFloor.userData.nodeId = 6;

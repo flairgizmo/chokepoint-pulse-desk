@@ -45,6 +45,15 @@ const BUMP_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-topolog
 const WATER_TEX = 'https://unpkg.com/three-globe@2.44.1/example/img/earth-water.png';
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
+const dayStill = new Image();
+dayStill.crossOrigin = 'anonymous';
+dayStill.decoding = 'async';
+dayStill.src = DAY_TEX;
+
+function dayStillReady(): boolean {
+  return Boolean(dayStill.complete && dayStill.naturalWidth);
+}
+
 function makeLabelSprite(text: string): THREE.Sprite {
   const canvas = document.createElement('canvas');
   canvas.width = 256;
@@ -155,6 +164,62 @@ function cinemaDayTexture(img: HTMLImageElement): THREE.CanvasTexture {
   const tex = new THREE.CanvasTexture(gradeCinemaDay(img));
   tex.colorSpace = THREE.SRGBColorSpace;
   return hardenCanvasTex(tex);
+}
+
+function makeDayTex(lite: boolean, img: HTMLImageElement): THREE.Texture {
+  const tex = lite ? cinemaDayTexture(img) : new THREE.Texture(img);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/** Navy hold so the first tick is not the teal cue-ball. Replaced when the NASA still arrives. */
+function earthHoldTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 8;
+  c.height = 4;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    const g = ctx.createLinearGradient(0, 0, 0, c.height);
+    g.addColorStop(0, '#0a1422');
+    g.addColorStop(0.5, '#122033');
+    g.addColorStop(1, '#0a1422');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, c.width, c.height);
+  }
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+/** Painted orbit dome. Not a Vision still — Canary on this sphere reads as a city room. */
+function orbitSkyTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 1024;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
+  const g = ctx.createLinearGradient(0, 0, 0, c.height);
+  g.addColorStop(0, '#03050c');
+  g.addColorStop(0.22, '#070b14');
+  g.addColorStop(0.46, '#10182c');
+  g.addColorStop(0.5, '#1c2438');
+  g.addColorStop(0.54, '#10182c');
+  g.addColorStop(0.78, '#070b14');
+  g.addColorStop(1, '#03050c');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'screen';
+  const air = ctx.createRadialGradient(c.width * 0.5, c.height * 0.52, 24, c.width * 0.5, c.height * 0.52, 380);
+  air.addColorStop(0, 'rgba(210, 180, 140, 0.16)');
+  air.addColorStop(0.42, 'rgba(90, 100, 130, 0.07)');
+  air.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = air;
+  ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'source-over';
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
 }
 
 /** Sun-locked dusk wedge. Night is a dusk veil; day stays a clear hole so the still reads. */
@@ -589,15 +654,10 @@ export class EarthGlobe {
     this.scene = scene;
     applyPhotoEnv(renderer, scene, this.lite);
     scene.add(stars(this.lite ? 160 : 900, this.lite ? 0.32 : 0.48));
-    const skyTex = new THREE.TextureLoader().load('/visuals/topics/canary.jpg', (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      tex.needsUpdate = true;
-    });
-    skyTex.colorSpace = THREE.SRGBColorSpace;
     scene.background = new THREE.Color(0x070b14);
-    const skyMat = duskWall(skyTex, 0x243044, THREE.BackSide);
+    const skyMat = duskWall(orbitSkyTex(), 0xffffff, THREE.BackSide);
     skyMat.depthWrite = false;
-    scene.add(new THREE.Mesh(new THREE.SphereGeometry(16, 48, 28), skyMat));
+    scene.add(new THREE.Mesh(new THREE.SphereGeometry(28, 48, 28), skyMat));
     const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 50);
     this.camera = camera;
 
@@ -607,10 +667,12 @@ export class EarthGlobe {
 
     const segs = this.lite ? 48 : 96;
     const rings = this.lite ? 32 : 64;
+    this.dayTex = dayStillReady() ? makeDayTex(this.lite, dayStill) : earthHoldTex();
     const globeMat = this.lite
-      ? new THREE.MeshBasicMaterial({ color: 0x16384a })
+      ? new THREE.MeshBasicMaterial({ color: 0xffffff, map: this.dayTex })
       : new THREE.MeshPhysicalMaterial({
-          color: 0x16384a,
+          color: 0xffffff,
+          map: this.dayTex,
           roughness: 0.28,
           metalness: 0.18,
           emissive: 0x031016,
@@ -619,6 +681,15 @@ export class EarthGlobe {
           ior: 1.33,
           envMapIntensity: 1.4,
         });
+    if (!dayStillReady()) {
+      const takeDay = (): void => {
+        if (this.disposed || !dayStill.naturalWidth) return;
+        this.dayTex = makeDayTex(this.lite, dayStill);
+        this.applyMaps();
+      };
+      dayStill.addEventListener('load', takeDay, { once: true });
+      if (dayStillReady()) takeDay();
+    }
     const globe = new THREE.Mesh(new THREE.SphereGeometry(1, segs, rings), globeMat);
     this.globeMesh = globe;
     group.add(globe);
@@ -796,13 +867,7 @@ export class EarthGlobe {
       };
       img.src = src;
     };
-    paintTex(
-      DAY_TEX,
-      (tex) => {
-        this.dayTex = tex;
-      },
-      this.lite,
-    );
+    if (dayStillReady()) this.applyMaps();
     paintTex(NIGHT_TEX, (tex) => {
       this.nightTex = tex;
     });
@@ -864,18 +929,16 @@ export class EarthGlobe {
       pin.userData.cityId = city.id;
       group.add(pin);
       this.pinMeshes.push(pin);
-      if (!this.lite) {
-        const stem = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.0024, 0.0024, 0.06, 6),
-          new THREE.MeshBasicMaterial({ color: kindColor(city.kind) }),
-        );
-        stem.position.copy(latLonToVec(city.lat, city.lon, 1.04));
-        stem.lookAt(0, 0, 0);
-        stem.rotateX(Math.PI / 2);
-        stem.userData.cityId = city.id;
-        group.add(stem);
-        this.pinMeshes.push(stem);
-      }
+      const stem = new THREE.Mesh(
+        new THREE.CylinderGeometry(this.lite ? 0.0032 : 0.0024, this.lite ? 0.0032 : 0.0024, 0.06, 6),
+        new THREE.MeshBasicMaterial({ color: kindColor(city.kind) }),
+      );
+      stem.position.copy(latLonToVec(city.lat, city.lon, 1.04));
+      stem.lookAt(0, 0, 0);
+      stem.rotateX(Math.PI / 2);
+      stem.userData.cityId = city.id;
+      group.add(stem);
+      this.pinMeshes.push(stem);
       const label = makeLabelSprite(city.name);
       label.scale.set(0.34, 0.085, 1);
       label.position.copy(latLonToVec(city.lat, city.lon, 1.09));
@@ -1145,7 +1208,7 @@ export class EarthGlobe {
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
       } else {
         mat.map = this.overlays.night && this.nightTex ? this.nightTex : null;
-        mat.color = new THREE.Color(this.nightTex && this.overlays.night ? 0xffffff : 0x0b2a32);
+        mat.color = new THREE.Color(this.nightTex && this.overlays.night ? 0xffffff : 0x0c1828);
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x071018);
       }
       mat.needsUpdate = true;

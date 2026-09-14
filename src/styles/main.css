@@ -530,9 +530,7 @@ main {
 .earth-stage {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 50% 58%, rgba(16, 36, 60, 0.35) 0%, rgba(7, 11, 18, 0.55) 64%),
-    url('/visuals/topics/canary.jpg') center / cover;
+  background: radial-gradient(ellipse at 50% 42%, #1a2438 0%, #0c1424 46%, #070b14 100%);
 }
 
 .earth-canvas {
@@ -4446,9 +4444,7 @@ body.stage-open .grok {
 }
 
 .earth-hero.cinema-earth {
-  background:
-    radial-gradient(ellipse at 50% 42%, rgba(20, 48, 92, 0.42) 0%, rgba(7, 16, 24, 0.55) 62%, #04070c 100%),
-    url('/visuals/topics/canary.jpg') center / cover;
+  background: radial-gradient(ellipse at 50% 42%, #1a2438 0%, #0c1424 46%, #04070c 100%);
 }
 
 .earth-hero.cinema-earth::after {
@@ -4618,7 +4614,7 @@ body.stage-open .grok {
 .term .photo-plate img,
 .headline .photo-plate img {
   aspect-ratio: 21 / 9;
-  max-height: 22rem;
+  max-height: 28rem;
 }
 
 .cinema-diagram {
@@ -4652,7 +4648,7 @@ body.stage-open .grok {
 
 .markets-still img {
   aspect-ratio: 21 / 9;
-  max-height: 26rem;
+  max-height: 34rem;
 }
 
 .patent-still,
@@ -4680,7 +4676,7 @@ body.stage-open .grok {
 }
 
 .headline .photo-plate img {
-  max-height: 22rem;
+  max-height: 28rem;
 }
 
 .voice.cinema-voice {
@@ -4926,7 +4922,7 @@ body.stage-open .grok {
 
 .still-strip img {
   aspect-ratio: 16 / 9;
-  max-height: 14rem;
+  max-height: 22rem;
 }
 
 .proof-chip,

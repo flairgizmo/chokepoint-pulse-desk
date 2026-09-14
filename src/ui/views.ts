@@ -1139,7 +1139,7 @@ export function renderRead(id: string): string {
   if (!p) return renderNotFound();
   const href = sources[p.hrefKey];
   return `${pageHero(p.kind, p.title, p.lede, '', undefined, 'research')}
-    <article class="chapter city-essay">
+    <article class="chapter city-essay cinema-room">
       ${photoFigure(plateFor(p.id, p.kind, p.title), 'city-essay-still')}
       <p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
       ${essayParas(p.lede)}
@@ -1448,7 +1448,9 @@ export function renderGone(_kind: 'desk' | 'ops'): string {
     'with the record.',
     undefined,
     'news',
-  )}<p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
+  )}
+  ${stillStrip('news', 'Photographs on the map')}
+  <p class="masthead" style="padding-top:0">${pill('/news', 'Open the news', 'Official wire')} ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}</p>`;
 }
 
 function essayParas(text: string): string {
@@ -1477,7 +1479,7 @@ export function renderCity(city: City): string {
     .join('');
   return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
     <p class="mono subtle coord-block">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
-    <article class="chapter city-essay">
+    <article class="chapter city-essay cinema-room">
       ${photoFigure(plateFor(city.id, city.name), 'city-essay-still')}
       ${essayParas(city.body)}
       <p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>
@@ -1500,7 +1502,7 @@ export function renderDonate(): string {
     'donate',
   )}
   ${stillStrip('donate', 'Photographs of the desk')}
-  <article class="chapter city-essay">
+  <article class="chapter city-essay cinema-room">
     ${photoFigure(plateFor('donate', 'support'), 'city-essay-still')}
     <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
     <p>Published recipients:</p>
@@ -1518,7 +1520,13 @@ export function renderOps(): string {
 }
 
 export function renderNotFound(): string {
-  return `${pageHero('404', 'This page is not', 'Try News, Podcast, Vision, Programmes, Research or Markets.', 'on the map.', undefined, 'news')}<p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
+  return `${pageHero('404', 'This page is not', 'Try News, Podcast, Vision, Programmes, Research or Markets.', 'on the map.', undefined, 'news')}
+  ${stillStrip('news', 'Photographs on the map')}
+  <article class="chapter city-essay cinema-room">
+    ${photoFigure(plateFor('news', '404'), 'city-essay-still')}
+    <p>This URL is not on the desk. The live rooms are News, Podcast, Vision, Programmes, Research and Markets.</p>
+  </article>
+  <p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
 }
 
 export function renderPodcast(): string {
@@ -1544,8 +1552,8 @@ export function renderEpisode(id: string): string {
     '',
     undefined,
     'podcast',
-  )}${playerMarkup(ep)}
-  <article class="chapter city-essay">
+  )}${stillStrip('podcast', 'Photographs of this episode')}${playerMarkup(ep)}
+  <article class="chapter city-essay cinema-room">
     ${photoFigure(plateFor('podcast', ep.id, ep.title), 'city-essay-still')}
     ${essayParas(ep.lede)}
   </article>`;
@@ -1591,7 +1599,7 @@ export function renderNote(id: string): string {
   const bed: VisualId = n.era === 'future' ? 'future' : n.era === 'history' ? 'history' : 'sterling';
   return `<article class="note-page">
     ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed, 'notes')}
-    <article class="chapter city-essay note-body">
+    <article class="chapter city-essay note-body cinema-room">
       ${photoFigure(plateFor(n.id, n.era, n.title), 'city-essay-still')}
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
       ${essayParas(n.body)}
