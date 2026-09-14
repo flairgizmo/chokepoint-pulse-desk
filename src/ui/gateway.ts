@@ -437,13 +437,16 @@ float liteFacing = clamp(abs(dot(liteN, normalize(vLiteView))), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.55);
 float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
 float liteFlash = smoothstep(0.88, 1.0, liteSpark) * liteFres;
+vec2 iorOff = liteN.xy * liteFres * 0.045;
+vec4 iorSamp = texture2D(map, vMapUv + iorOff);
+diffuseColor.rgb = mix(diffuseColor.rgb, iorSamp.rgb, 0.12 + liteFres * 0.4);
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.4, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-4';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-5';
 }
 
 function glassMat(
@@ -850,7 +853,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
             map: iceCatchTex(),
             color: 0xf2ebe0,
             transparent: true,
-            opacity: 0.11,
+            opacity: 0.08,
             depthWrite: false,
             side: THREE.DoubleSide,
           });
@@ -972,6 +975,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
   let flareRoot: THREE.Group | null = null;
+  let roomMat: THREE.MeshBasicMaterial | null = null;
+  let roomMesh: THREE.Mesh | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
@@ -1010,6 +1015,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(heart);
     heartRoot = heart;
     core.visible = false;
+    roomMat = new THREE.MeshBasicMaterial({
+      map: glassTex(photo0, false, 'crown', 0, true),
+      color: 0xf6f0e8,
+      transparent: true,
+      opacity: 0.9,
+    });
+    roomMat.toneMapped = false;
+    roomMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 28, 18), roomMat);
+    roomMesh.position.y = 0.255;
+    roomMesh.userData.nodeId = 6;
+    crystal.add(roomMesh);
     heartStamp.push(heartPavA, heartPavB);
     const ghost = heart.clone(true);
     ghost.scale.setScalar(0.76);
@@ -1168,6 +1184,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     ...(heartRoot ? [heartRoot] : []),
     ...(ghostRoot ? [ghostRoot] : []),
     ...(flareRoot ? [flareRoot] : []),
+    ...(roomMesh ? [roomMesh] : []),
   ];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -1218,7 +1235,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const photo = visionStill();
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     if (lite && tmat instanceof THREE.MeshBasicMaterial) {
-      tmat.opacity = on ? 0.16 : 0.11;
+      tmat.opacity = on ? 0.13 : 0.08;
       tmat.color.setHex(on ? 0xffffff : 0xf2ebe0);
       tmat.needsUpdate = true;
     } else {
@@ -1228,6 +1245,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
+    if (roomMat) swapMap(roomMat, glassTex(photo, on, 'crown', 0, true));
     if (heartStamp.length >= 2) {
       const kinds = [
         ['pav', 0, on],

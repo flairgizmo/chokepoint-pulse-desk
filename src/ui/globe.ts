@@ -868,7 +868,7 @@ export class EarthGlobe {
     this.lookAtCity(london);
     this.pulse = new THREE.Mesh(
       new THREE.SphereGeometry(0.028, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0x8eb0ff, transparent: true, opacity: 0.34 }),
+      new THREE.MeshBasicMaterial({ color: 0xe8d4b0, transparent: true, opacity: 0.34 }),
     );
     this.pulse.position.copy(latLonToVec(london.lat, london.lon, 1.03));
     group.add(this.pulse);
