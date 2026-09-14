@@ -688,12 +688,12 @@ export class EarthGlobe {
     scene.add(sheen);
     this.sheen = sheen;
     const med = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.38, 0.24),
+      new THREE.PlaneGeometry(0.48, 0.3),
       new THREE.MeshBasicMaterial({
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.18 : 0.22,
+        opacity: this.lite ? 0.28 : 0.32,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,

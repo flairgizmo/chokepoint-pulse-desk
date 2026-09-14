@@ -427,11 +427,11 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(1, 0.42 + key * 0.56 + rim * 0.18);
+  const shade = Math.min(1, 0.46 + key * 0.48 + rim * 0.16);
   return new THREE.Color(
-    Math.min(1, shade + key * 0.12 + fres * 0.05),
+    Math.min(1, shade + key * 0.08 + fres * 0.04),
     shade,
-    Math.min(1, shade - key * 0.08 + rim * 0.12 + fres * 0.08),
+    Math.min(1, shade - key * 0.06 + rim * 0.1 + fres * 0.06),
   );
 }
 
@@ -891,7 +891,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
   let flareRoot: THREE.Group | null = null;
-  let culetFire: THREE.Mesh | null = null;
+  let culetFire: THREE.Sprite | null = null;
   if (lite) {
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
@@ -968,21 +968,21 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.add(flare);
     flareRoot = flare;
-    const fireMat = new THREE.MeshBasicMaterial({
+    const fireMat = new THREE.SpriteMaterial({
       map: culetFireTex(),
       color: 0xffffff,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.5,
       depthWrite: false,
+      depthTest: false,
       blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
     });
     fireMat.toneMapped = false;
-    culetFire = new THREE.Mesh(new THREE.CircleGeometry(0.07, 28), fireMat);
-    culetFire.rotation.x = -Math.PI / 2;
-    culetFire.position.y = BOT_Y + 0.07;
+    culetFire = new THREE.Sprite(fireMat);
+    culetFire.position.set(0, BOT_Y + 0.1, 0.02);
+    culetFire.scale.set(0.34, 0.34, 1);
     culetFire.userData.nodeId = 6;
-    culetFire.renderOrder = 2;
+    culetFire.renderOrder = 3;
     crystal.add(culetFire);
   }
   const base = new THREE.Mesh(
@@ -1227,9 +1227,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       flareRoot.rotation.y = 0.48 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 2.1) * 0.045);
     }
     if (culetFire) {
-      const fire = culetFire.material as THREE.MeshBasicMaterial;
-      fire.opacity = reduced ? 0.36 : 0.32 + Math.abs(Math.sin((now - t0) / 1400)) * 0.23;
-      culetFire.rotation.z = reduced ? 0 : Math.sin((now - t0) / 1800) * 0.18;
+      const fire = culetFire.material as THREE.SpriteMaterial;
+      const pulse = reduced ? 0.4 : 0.38 + Math.abs(Math.sin((now - t0) / 1400)) * 0.2;
+      fire.opacity = pulse;
+      const size = 0.3 + pulse * 0.1;
+      culetFire.scale.set(size, size, 1);
     }
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;
