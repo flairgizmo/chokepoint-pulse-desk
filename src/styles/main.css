@@ -2331,21 +2331,11 @@ main {
   color: var(--muted);
 }
 
-.era-grid li[data-era='history'] {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--gold) 16%, var(--surface)), var(--surface));
-  border-color: color-mix(in srgb, var(--gold) 45%, var(--line));
-}
-
-.era-grid li[data-era='present'] {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent) 12%, var(--surface)), var(--surface));
-}
-
+.era-grid li[data-era='history'],
+.era-grid li[data-era='present'],
 .era-grid li[data-era='future'] {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--live) 16%, var(--surface)), var(--surface));
-  border-color: color-mix(in srgb, var(--live) 40%, var(--line));
+  background: #0b1220;
+  border-color: transparent;
 }
 
 .featured-grid {
@@ -2354,17 +2344,17 @@ main {
 }
 
 .note-card {
-  padding: 1.25rem 1.3rem;
-  border: 1px solid var(--line);
+  padding: 0 0 1.15rem;
+  border: 1px solid transparent;
   border-radius: 20px;
-  background: var(--surface);
+  background: #0b1220;
+  overflow: hidden;
 }
 
 .note-card.is-feature {
-  padding: 1.6rem 1.7rem;
-  border-color: var(--ink);
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, var(--surface)), var(--surface) 55%);
+  padding: 0 0 1.2rem;
+  border-color: transparent;
+  background: #0b1220;
 }
 
 .note-card h3 {
@@ -2389,7 +2379,7 @@ main {
 }
 
 .notes-reel .note-card {
-  flex: 0 0 min(320px, 82vw);
+  flex: 0 0 min(22rem, 86vw);
   scroll-snap-align: center;
 }
 
@@ -2569,7 +2559,7 @@ button.chip {
 
 @media (min-width: 900px) {
   .era-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .featured-grid {
@@ -2803,23 +2793,32 @@ button.chip {
 
 .pod-tease {
   display: grid;
-  grid-template-columns: 9rem 1fr;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.55rem;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+  align-items: start;
+  padding: 0 0 1.15rem;
   border: 1px solid transparent;
   border-radius: 18px;
   background: #0b1220;
   color: #f4f7fb;
   text-decoration: none;
+  overflow: hidden;
 }
 
+.pod-tease img,
 .pod-tease video {
   width: 100%;
-  border-radius: 12px;
-  aspect-ratio: 16 / 9;
+  border-radius: 0;
+  aspect-ratio: 21 / 9;
+  max-height: 16rem;
   object-fit: cover;
   background: #071428;
+  filter: saturate(0.9) contrast(1.12) brightness(0.72);
+}
+
+.pod-tease span {
+  padding-inline: 1.1rem;
+  padding-bottom: 0.15rem;
 }
 
 .pod-tease em {
@@ -4911,6 +4910,49 @@ body.stage-open .grok {
   overflow: hidden;
 }
 
+.paper,
+.term {
+  padding: 0 0 1.2rem;
+}
+
+.patent-card button,
+.inst-card button,
+.term button,
+.note-card,
+.note-card.news-card,
+.note-card.is-feature {
+  padding: 0 0 1.15rem;
+}
+
+.paper .year-num {
+  padding-top: 0.85rem;
+}
+
+.paper .year-num,
+.paper .kicker,
+.paper h2,
+.paper .meta,
+.paper .paper-more,
+.patent-card .kicker,
+.patent-card h2,
+.patent-card p,
+.patent-card .mono,
+.inst-card .inst-mark,
+.inst-card .kicker,
+.inst-card h2,
+.inst-card p,
+.inst-card .mono,
+.note-card .kicker,
+.note-card h3,
+.note-card p,
+.note-card .text-link {
+  padding-inline: 1.1rem;
+}
+
+.note-card .kicker {
+  padding-top: 0.35rem;
+}
+
 .paper button,
 .patent-card button,
 .inst-card button,
@@ -5304,16 +5346,11 @@ body.stage-open .grok {
   color: inherit;
 }
 
-.era-grid li[data-era='history'] {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--gold) 22%, #0b1220), #0b1220);
-}
-
-.era-grid li[data-era='present'] {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 20%, #0b1220), #0b1220);
-}
-
+.era-grid li[data-era='history'],
+.era-grid li[data-era='present'],
 .era-grid li[data-era='future'] {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--live) 20%, #0b1220), #0b1220);
+  background: #0b1220;
+  border-color: transparent;
 }
 
 .compare .panel,
@@ -5379,7 +5416,7 @@ body.stage-open .grok {
 
 .quote-card.quote-feature,
 .note-card.is-feature {
-  background: linear-gradient(160deg, color-mix(in srgb, var(--coral) 18%, #122038), #0b1220 70%);
+  background: #0b1220;
   color: #f4f7fb;
   border-color: transparent;
 }

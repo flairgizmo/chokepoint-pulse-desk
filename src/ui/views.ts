@@ -458,6 +458,7 @@ export function latestStrip(): string {
     .map((n) => {
       const stamp = dateStamp(n.date);
       return `<li class="month-card">
+        ${photoFigure(plateFor(n.id, n.source, n.title), 'month-still')}
         <time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
         <p class="mono">${esc(n.source)}</p>
         <h3>${esc(n.title)}</h3>

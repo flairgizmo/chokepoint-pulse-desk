@@ -823,10 +823,11 @@ function wellCanvas(photo: HTMLImageElement | null, on: boolean, lane: WellLane)
     ctx.fillStyle = on ? 'rgba(242, 235, 224, 0.22)' : `rgba(36, 22, 16, ${grade.multiply})`;
     ctx.fillRect(0, 0, c.width, c.height);
     const vig = ctx.createLinearGradient(0, 0, 0, c.height);
-    vig.addColorStop(0, 'rgba(12, 16, 28, 0.06)');
-    vig.addColorStop(0.22, 'rgba(10, 14, 24, 0.18)');
-    vig.addColorStop(0.55, 'rgba(8, 12, 22, 0.58)');
-    vig.addColorStop(1, 'rgba(7, 11, 20, 0.92)');
+    vig.addColorStop(0, 'rgba(12, 16, 28, 0.1)');
+    vig.addColorStop(0.16, 'rgba(8, 12, 22, 0.78)');
+    vig.addColorStop(0.4, 'rgba(7, 11, 20, 0.9)');
+    vig.addColorStop(0.72, 'rgba(5, 8, 16, 0.95)');
+    vig.addColorStop(1, 'rgba(5, 8, 14, 0.98)');
     ctx.fillStyle = vig;
     ctx.fillRect(0, 0, c.width, c.height);
     ctx.globalCompositeOperation = 'source-over';
