@@ -701,8 +701,42 @@ function triGeo(
   return g;
 }
 
-function wellTex(photo: HTMLImageElement | null, on: boolean, lane: GlassLane = 0): THREE.CanvasTexture {
-  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, 'pav', lane, true)));
+type WellLane = 0 | 1 | 2 | 3;
+
+function wellGrade(lane: WellLane): GlassGrade {
+  if (lane === 0) return { sx: 0.12, sy: 0.06, sw: 0.38, sh: 0.5, brightness: 1.12, contrast: 1.18, saturate: 0.88, multiply: 0.12 };
+  if (lane === 1) return { sx: 0.36, sy: 0.1, sw: 0.36, sh: 0.46, brightness: 1.0, contrast: 1.22, saturate: 0.8, multiply: 0.14 };
+  if (lane === 2) return { sx: 0.56, sy: 0.08, sw: 0.34, sh: 0.48, brightness: 0.86, contrast: 1.26, saturate: 0.74, multiply: 0.16 };
+  return { sx: 0.22, sy: 0.26, sw: 0.4, sh: 0.4, brightness: 0.94, contrast: 1.2, saturate: 0.78, multiply: 0.14 };
+}
+
+function wellCanvas(photo: HTMLImageElement | null, on: boolean, lane: WellLane): HTMLCanvasElement {
+  const grade = wellGrade(lane);
+  const c = document.createElement('canvas');
+  c.width = 1024;
+  c.height = 512;
+  const ctx = c.getContext('2d');
+  if (!ctx) return c;
+  ctx.fillStyle = '#100c0a';
+  ctx.fillRect(0, 0, c.width, c.height);
+  if (photo?.naturalWidth) {
+    const sx = photo.naturalWidth * grade.sx;
+    const sy = photo.naturalHeight * grade.sy;
+    const sw = Math.max(1, photo.naturalWidth * grade.sw);
+    const sh = Math.max(1, photo.naturalHeight * grade.sh);
+    ctx.filter = `contrast(${grade.contrast}) brightness(${grade.brightness}) saturate(${grade.saturate})`;
+    ctx.drawImage(photo, sx, sy, sw, sh, 0, 0, c.width, c.height);
+    ctx.filter = 'none';
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = on ? 'rgba(242, 235, 224, 0.22)' : `rgba(36, 22, 16, ${grade.multiply})`;
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  return c;
+}
+
+function wellTex(photo: HTMLImageElement | null, on: boolean, lane: WellLane = 0): THREE.CanvasTexture {
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(wellCanvas(photo, on, lane)));
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.wrapS = THREE.ClampToEdgeWrapping;
   tex.wrapT = THREE.ClampToEdgeWrapping;
@@ -1164,7 +1198,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.LineBasicMaterial({
         color: lite ? 0xf2e6d4 : 0xeaf1ff,
         transparent: true,
-        opacity: lite ? 0.16 : 0.04,
+          opacity: lite ? 0.1 : 0.04,
       }),
     ),
   );
@@ -1186,21 +1220,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let wellRoot: THREE.Group | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
-    const wrapA = new THREE.MeshBasicMaterial({
-      map: wellTex(photo0, false, 0),
-      color: 0xffffff,
-      side: THREE.DoubleSide,
-      depthWrite: true,
+    const wraps = [0, 1, 2, 3].map((lane) => {
+      const mat = new THREE.MeshBasicMaterial({
+        map: wellTex(photo0, false, lane as WellLane),
+        color: 0xffffff,
+        side: THREE.DoubleSide,
+        depthWrite: true,
+      });
+      mat.toneMapped = false;
+      return mat;
     });
-    const wrapB = new THREE.MeshBasicMaterial({
-      map: wellTex(photo0, false, 1),
-      color: 0xffffff,
-      side: THREE.DoubleSide,
-      depthWrite: true,
-    });
-    wrapA.toneMapped = false;
-    wrapB.toneMapped = false;
-    wellMats = [wrapA, wrapB];
+    wellMats = wraps;
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
     const wellTopR = tableR * 0.9;
@@ -1236,7 +1266,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     for (let i = 0; i < sides; i++) {
       const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
       const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-      const mat = i % 2 ? wrapB : wrapA;
+      const mat = wraps[i % 4];
       const tx0 = Math.cos(a0) * wellTopR;
       const tz0 = Math.sin(a0) * wellTopR;
       const tx1 = Math.cos(a1) * wellTopR;
@@ -1252,7 +1282,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       kite(tx0, wellTopY, tz0, mx0, wellMidY, mz0, mx1, wellMidY, mz1, tx1, wellTopY, tz1, mat);
       kite(mx0, wellMidY, mz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, mx1, wellMidY, mz1, mat);
     }
-    const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wrapA);
+    const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wraps[0]);
     wellFloor.position.y = wellBotY;
     wellFloor.userData.nodeId = 6;
     wellFloor.renderOrder = 0;
@@ -1463,7 +1493,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
-    wellMats.forEach((mat, i) => swapMap(mat, wellTex(photo, on, (i % 2) as GlassLane)));
+    wellMats.forEach((mat, i) => swapMap(mat, wellTex(photo, on, (i % 4) as WellLane)));
     for (const mat of [crownA, crownB]) {
       if (mat instanceof THREE.MeshPhysicalMaterial) {
         mat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
