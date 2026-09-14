@@ -2538,25 +2538,40 @@ button.chip {
   left: 0.85rem;
   right: 0.85rem;
   bottom: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  pointer-events: none;
+  text-shadow: 0 1px 8px rgba(7, 11, 20, 0.85);
 }
 
 .person-still .people-credit strong,
 .ol-still .people-credit strong {
   display: block;
+  width: 100%;
   font-family: var(--display);
   font-size: 1.05rem;
   letter-spacing: -0.04em;
   color: #f4f7fb;
   padding: 0;
+  margin: 0;
 }
 
 .person-still .people-credit em,
 .ol-still .people-credit em {
   display: block;
+  width: 100%;
   font-style: normal;
   color: rgba(234, 241, 255, 0.78);
   font-size: 0.72rem;
   padding: 0;
+  margin: 0;
+}
+
+.person > div > h2,
+.person > div > .role {
+  display: none;
 }
 
 .ol-still {
