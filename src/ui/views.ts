@@ -23,7 +23,7 @@ import { featuredNote, notesForEra, notesFromDesk, noteById, type NoteEra, type 
 import { episodesInOrder, episodeById, episodeByN } from '../data/podcast';
 import { CALENDAR, GBTD_BANKS, MONEY_LAYERS, OFFICIAL_VOICES, SATP_STAGES, THIS_MONTH, TIMELINE } from '../data/timeline';
 import type { MarketPrint } from '../modules/markets';
-import type { NewsRiver } from '../modules/news';
+import type { Headline, NewsRiver } from '../modules/news';
 import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
@@ -964,10 +964,10 @@ export function renderStandards(): string {
         '<p class="kicker">Treaty table</p><h2>IETF SATP and ISO</h2>',
       )}
       <ul class="treaty-row">
-        <li><button type="button" data-stage="satp" data-stage-id="3"><span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em></button></li>
-        <li><button type="button" data-stage="chapter" data-stage-id="iso"><span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em></button></li>
-        <li><button type="button" data-stage="event" data-stage-id="iso-2015"><span class="chip">adopted</span><strong>ISO/TC 307</strong><em>Proposed 2015</em></button></li>
-        <li><button type="button" data-stage="event" data-stage-id="odap-2020"><span class="chip">referenced</span><strong>ODAP 2020</strong><em>Maiden name of the SATP shape</em></button></li>
+        <li><button type="button" data-stage="satp" data-stage-id="3">${posterFrame(photoFigure(PLATES.fiber, 'treaty-still'), '<span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em>')}</button></li>
+        <li><button type="button" data-stage="chapter" data-stage-id="iso">${posterFrame(photoFigure(PLATES.brussels, 'treaty-still'), '<span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em>')}</button></li>
+        <li><button type="button" data-stage="event" data-stage-id="iso-2015">${posterFrame(photoFigure(PLATES.zurich, 'treaty-still'), '<span class="chip">adopted</span><strong>ISO/TC 307</strong><em>Proposed 2015</em>')}</button></li>
+        <li><button type="button" data-stage="event" data-stage-id="odap-2020">${posterFrame(photoFigure(PLATES.royal, 'treaty-still'), '<span class="chip">referenced</span><strong>ODAP 2020</strong><em>Maiden name of the SATP shape</em>')}</button></li>
       </ul>
     </div>
   </section>
@@ -1316,6 +1316,26 @@ export function renderMarkets(print?: MarketPrint): string {
   </section>`;
 }
 
+export function headlinePosterButton(h: Headline, withLane = false): string {
+  rememberHeadline({
+    id: h.id,
+    title: h.title,
+    url: h.url,
+    source: h.source,
+    published: h.published ?? '',
+    lane: h.lane,
+  });
+  const copy = withLane
+    ? `<span class="kicker">${esc(h.lane)}</span><strong>${esc(h.title)}</strong>`
+    : `<strong>${esc(h.title)}</strong>`;
+  return `<button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">
+    ${posterFrame(
+      photoFigure(plateFor(h.id, h.lane, h.source, h.title), 'headline-still'),
+      copy,
+    )}
+  </button>`;
+}
+
 export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; count: number } {
   const q = filter.trim().toLowerCase();
   const rows = (river?.items ?? [])
@@ -1332,25 +1352,10 @@ export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; 
       if (!laneRows.length) return '';
       return `<li class="headline-lane"><p class="kicker">${esc(lane)}</p><ul>${laneRows
         .map(
-          (h) => {
-            rememberHeadline({
-              id: h.id,
-              title: h.title,
-              url: h.url,
-              source: h.source,
-              published: h.published ?? '',
-              lane: h.lane,
-            });
-            return `<li class="headline">
-              <button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}">
-                ${posterFrame(
-                  photoFigure(plateFor(h.lane, h.source, h.title), 'headline-still'),
-                  `<span>${esc(h.title)}</span>`,
-                )}
-              </button>
+          (h) => `<li class="headline">
+              ${headlinePosterButton(h)}
               <p class="meta">${esc(h.source)} · ${esc(h.published ? h.published.replace('T', ' ').slice(0, 16) : '—')}</p>
-            </li>`;
-          },
+            </li>`,
         )
         .join('')}</ul></li>`;
     })
@@ -1504,13 +1509,14 @@ export function renderCity(city: City): string {
     .slice(0, 4)
     .map(
       (c) => `<a class="city-neighbor" href="/${esc(c.id)}">
-        <span class="city-neighbor-still cinema-frame">
+        ${posterFrame(
+          `<span class="city-neighbor-still cinema-frame">
           <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
           <span class="cinema-grain" aria-hidden="true"></span>
           <img src="${esc(c.photo ?? `/visuals/cities/${c.id}.jpg`)}" alt="${esc(c.name)}" width="720" height="405" decoding="async" />
-          <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
-        </span>
-        <span>${esc(c.name)}</span>
+        </span>`,
+          `<span>${esc(c.name)}</span>`,
+        )}
       </a>`,
     )
     .join('');

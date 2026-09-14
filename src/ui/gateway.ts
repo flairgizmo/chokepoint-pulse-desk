@@ -439,7 +439,18 @@ vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 2.45
 float kite = clamp(dot(vColor.rgb, vec3(0.3, 0.54, 0.16)), 0.0, 1.0);
 #else
 float kite = 0.42;
-#endif`;
+#endif
+float interior = smoothstep(0.58, 0.92, ndv) * smoothstep(0.48, 0.06, kite);
+interior *= interior;
+vec3 tR = refract(-wV, wN, 0.40);
+vec3 tG = refract(-wV, wN, 0.413);
+vec3 tB = refract(-wV, wN, 0.43);
+vec3 cubeR = textureCube(liteEnv, dot(tR, tR) > 0.001 ? tR : -wV).rgb;
+vec3 cubeG = textureCube(liteEnv, dot(tG, tG) > 0.001 ? tG : -wV).rgb;
+vec3 cubeB = textureCube(liteEnv, dot(tB, tB) > 0.001 ? tB : -wV).rgb;
+vec3 chroma = vec3(cubeR.r, cubeG.g, cubeB.b);
+chroma = mix(vec3(dot(chroma, vec3(0.28, 0.52, 0.2))), chroma * vec3(1.14, 0.86, 1.22), 0.4);
+chroma *= interior * 0.11;`;
 }
 
 function liteFireChunk(kind: LiteFire): string {
@@ -493,6 +504,7 @@ vec3 body = vec3(0.032, 0.046, 0.078) * (0.16 + kite * 1.55 + rim * 0.5);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * (rim * 0.1 + kite * 0.08);
 diffuseColor.rgb += glint * (0.55 + kite * 0.9);
+diffuseColor.rgb += chroma;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
@@ -502,6 +514,7 @@ vec3 body = vec3(0.07, 0.1, 0.15) * (0.28 + kite * 1.15 + rim * 0.55);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * (rim * 0.18 + kite * 0.12);
 diffuseColor.rgb += glint * (0.7 + kite * 0.85);
+diffuseColor.rgb += chroma;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
@@ -511,6 +524,7 @@ vec3 body = vec3(0.04, 0.055, 0.09) * (0.14 + kite * 1.72 + rim * 0.48);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.1);
 diffuseColor.rgb += glint * (0.5 + kite * 1.15);
+diffuseColor.rgb += chroma;
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -585,7 +599,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-46-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-47-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {

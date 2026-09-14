@@ -10,6 +10,7 @@ import { esc, fmtCompact, fmtMoney, fmtPct, fmtQty } from './html';
 import {
   DISCLAIMER,
   newsListMarkup,
+  headlinePosterButton,
   sparklineSvg,
   venueBarsHtml,
   renderCbdc,
@@ -813,17 +814,7 @@ export class QntDesk {
       pulse.innerHTML = this.news.items.length
         ? this.news.items
             .slice(0, 8)
-            .map((h) => {
-              rememberHeadline({
-                id: h.id,
-                title: h.title,
-                url: h.url,
-                source: h.source,
-                published: h.published ?? '',
-                lane: h.lane,
-              });
-              return `<li><button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}"><span class="kicker">${esc(h.lane)}</span> ${esc(h.title)}</button></li>`;
-            })
+            .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
             .join('')
         : `<li class="empty-note">${esc(this.news.error ?? 'The river is quiet. Sourced notes stay on the wire.')}</li>`;
     }
@@ -841,18 +832,8 @@ export class QntDesk {
       if (newsMeta) newsMeta.textContent = `${this.news.items.length} headlines · ${this.news.status}`;
       news.innerHTML = this.news.items.length
         ? this.news.items
-            .slice(0, 5)
-            .map((h) => {
-              rememberHeadline({
-                id: h.id,
-                title: h.title,
-                url: h.url,
-                source: h.source,
-                published: h.published ?? '',
-                lane: h.lane,
-              });
-              return `<li><button type="button" data-stage="news" data-stage-id="${esc(h.id)}" data-title="${esc(h.title)}" data-url="${esc(h.url)}" data-source="${esc(h.source)}" data-published="${esc(h.published ?? '')}" data-lane="${esc(h.lane)}"><span class="kicker">${esc(h.lane)}</span> ${esc(h.title)}</button></li>`;
-            })
+            .slice(0, 4)
+            .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
             .join('')
         : `<li class="empty-note">${esc(this.news.error ?? 'No matching headlines yet.')}</li>`;
     }
