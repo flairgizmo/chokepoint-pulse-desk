@@ -227,16 +227,16 @@ export function stampFilmGate(
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'source-over';
-  const rail = Math.round(w * (portrait ? 0.04 : 0.058));
-  const bar = Math.max(8, Math.round(h * 0.018));
+  const rail = Math.round(w * (portrait ? 0.048 : 0.072));
+  const bar = Math.max(8, Math.round(h * 0.02));
   ctx.fillStyle = '#080b10';
   ctx.fillRect(0, 0, w, bar);
   ctx.fillRect(0, h - bar, w, bar);
   ctx.fillRect(0, 0, rail, h);
   ctx.fillRect(w - rail, 0, rail, h);
-  const holeW = Math.max(5, Math.round(rail * 0.46));
-  const holeH = Math.max(6, Math.round(h * (portrait ? 0.028 : 0.038)));
-  const step = Math.round(h * (portrait ? 0.07 : 0.078));
+  const holeW = Math.max(6, Math.round(rail * 0.5));
+  const holeH = Math.max(7, Math.round(h * (portrait ? 0.03 : 0.042)));
+  const step = Math.round(h * (portrait ? 0.068 : 0.072));
   const rx = Math.max(1, Math.round(holeW * 0.2));
   ctx.fillStyle = '#04060a';
   ctx.strokeStyle = 'rgba(234, 241, 255, 0.14)';
@@ -257,14 +257,16 @@ export function stampFilmGate(
   ctx.moveTo(rail, h - bar);
   ctx.lineTo(w - rail, h - bar);
   ctx.stroke();
-  const titleH = Math.round(h * (portrait ? 0.07 : 0.08));
-  ctx.fillStyle = 'rgba(8, 11, 16, 0.72)';
-  ctx.fillRect(rail, h - bar - titleH, w - rail * 2, titleH);
-  ctx.fillStyle = 'rgba(234, 241, 255, 0.9)';
-  ctx.font = `700 ${Math.max(15, Math.round(h * (portrait ? 0.028 : 0.034)))}px Outfit, IBM Plex Sans, sans-serif`;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(title, rail + Math.round(w * 0.02), h - bar - titleH / 2);
+  if (title) {
+    const titleH = Math.round(h * (portrait ? 0.07 : 0.086));
+    ctx.fillStyle = 'rgba(8, 11, 16, 0.72)';
+    ctx.fillRect(rail, h - bar - titleH, w - rail * 2, titleH);
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.92)';
+    ctx.font = `700 ${Math.max(16, Math.round(h * (portrait ? 0.03 : 0.04)))}px Outfit, IBM Plex Sans, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, rail + Math.round(w * 0.02), h - bar - titleH / 2);
+  }
   ctx.restore();
 }
 
@@ -285,6 +287,7 @@ export function printGradeImage(photo: HTMLImageElement, w = 1280, h = 720): THR
       ctx.drawImage(photo, (w - dw) / 2, (h - dh) / 2, dw, dh);
       ctx.filter = 'none';
       printGradeStill(ctx, w, h);
+      stampFilmGate(ctx, w, h, '');
     }
   }
   const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
