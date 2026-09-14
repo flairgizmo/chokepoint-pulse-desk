@@ -652,6 +652,17 @@ function tableFan(r: number, sides: number): THREE.BufferGeometry {
   return g;
 }
 
+/** Opaque wrap dish inside the pavilion — fills the table-axis hole without capping the table. */
+function tableWell(r: number, sides: number, dish: number): THREE.BufferGeometry {
+  const g = tableFan(r, sides);
+  const pos = g.getAttribute('position');
+  for (let i = 0; i < pos.count; i++) {
+    if (Math.abs(pos.getX(i)) < 1e-5 && Math.abs(pos.getZ(i)) < 1e-5) pos.setY(i, -dish);
+  }
+  g.computeVertexNormals();
+  return g;
+}
+
 /** Lite table is a bezel, not a cap — the window looks through to the pavilion. */
 function tableRing(r: number, inner: number, sides: number): THREE.BufferGeometry {
   const g = new THREE.RingGeometry(inner, r, sides);
@@ -1136,8 +1147,22 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   crystal.add(core);
   const heartStamp: Array<CutMat | THREE.MeshBasicMaterial> = [];
   let heartRoot: THREE.Group | null = null;
+  let wellMat: THREE.MeshBasicMaterial | null = null;
+  let wellRoot: THREE.Mesh | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
+    wellMat = new THREE.MeshBasicMaterial({
+      map: glassTex(photo0, false, 'pav', 0, true),
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      depthWrite: true,
+    });
+    wellMat.toneMapped = false;
+    wellRoot = new THREE.Mesh(tableWell(tableR * 0.58, sides, 0.1), wellMat);
+    wellRoot.position.y = (eqY + botY) * 0.5;
+    wellRoot.userData.nodeId = 6;
+    wellRoot.renderOrder = 0;
+    crystal.add(wellRoot);
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
     });
@@ -1290,6 +1315,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     ...cards,
     table,
     ...(heartRoot ? [heartRoot] : []),
+    ...(wellRoot ? [wellRoot] : []),
   ];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -1377,6 +1403,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
+    if (wellMat) swapMap(wellMat, glassTex(photo, on, 'pav', 0, true));
     if (heartStamp.length >= 2) {
       const kinds = [
         ['pav', 0, on],
