@@ -745,7 +745,7 @@ export class EarthGlobe {
     scene.add(med);
     this.medSheen = med;
     const biscay = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.42, 0.26),
+      new THREE.PlaneGeometry(0.56, 0.34),
       new THREE.MeshBasicMaterial({
         map: oceanSheenTex(),
         color: 0xffffff,

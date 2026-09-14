@@ -1067,9 +1067,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(flare);
     flareRoot = flare;
     const fires = [
-      fireSprite(0xffffff, 0, BOT_Y + 0.1, 0.02, 0.44),
-      fireSprite(0xb4dcff, 0.05, BOT_Y + 0.06, -0.03, 0.26),
-      fireSprite(0xffb0d2, -0.04, BOT_Y + 0.08, 0.04, 0.22),
+      fireSprite(0xffffff, 0, BOT_Y + 0.1, 0.02, 0.58),
+      fireSprite(0xb4dcff, 0.05, BOT_Y + 0.06, -0.03, 0.34),
+      fireSprite(0xffb0d2, -0.04, BOT_Y + 0.08, 0.04, 0.3),
     ];
     fires.forEach((spark) => {
       crystal.add(spark);
@@ -1329,9 +1329,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }
     culetFires.forEach((spark, i) => {
       const fire = spark.material as THREE.SpriteMaterial;
-      const beat = reduced ? 0.44 : 0.4 + Math.abs(Math.sin((now - t0) / 1400 + i * 0.9)) * 0.22;
+      const beat = reduced ? 0.52 : 0.5 + Math.abs(Math.sin((now - t0) / 1400 + i * 0.9)) * 0.28;
       fire.opacity = beat;
-      const base = i === 0 ? 0.4 : i === 1 ? 0.24 : 0.2;
+      const base = i === 0 ? 0.52 : i === 1 ? 0.32 : 0.28;
       spark.scale.set(base + beat * 0.08, base + beat * 0.08, 1);
     });
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
