@@ -166,6 +166,24 @@ function cinemaDayTexture(img: HTMLImageElement): THREE.CanvasTexture {
   return hardenCanvasTex(tex);
 }
 
+/** White oceans / black land for the lite spec shell. Derived from the NASA still. */
+function waterSpecTex(img: HTMLImageElement): THREE.CanvasTexture {
+  const w = Math.min(1024, img.naturalWidth || 1024);
+  const h = Math.min(512, img.naturalHeight || 512);
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(oceanMask(img, w, h, [255, 255, 255]), 0, 0);
+  }
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.LinearSRGBColorSpace;
+  return tex;
+}
+
 function oceanSpecMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
   const hold = document.createElement('canvas');
   hold.width = 1;
@@ -429,9 +447,9 @@ export class EarthGlobe {
     for (const s of this.labelSprites) s.visible = this.overlays.labels;
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.glint) this.glint.visible = this.overlays.day;
-    if (this.sheen) this.sheen.visible = this.overlays.day;
-    if (this.medSheen) this.medSheen.visible = this.overlays.day;
-    if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day;
+    if (this.sheen) this.sheen.visible = this.overlays.day && !this.lite;
+    if (this.medSheen) this.medSheen.visible = this.overlays.day && !this.lite;
+    if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day && !this.lite;
     if (this.oceanMesh) this.oceanMesh.visible = this.overlays.day;
     this.applyMaps();
   }
@@ -736,6 +754,7 @@ export class EarthGlobe {
       const takeDay = (): void => {
         if (this.disposed || !dayStill.naturalWidth) return;
         this.dayTex = makeDayTex(this.lite, dayStill);
+        this.paintOcean(dayStill);
         this.applyMaps();
       };
       dayStill.addEventListener('load', takeDay, { once: true });
@@ -750,6 +769,7 @@ export class EarthGlobe {
       ocean.renderOrder = 3;
       group.add(ocean);
       this.oceanMesh = ocean;
+      if (dayStillReady()) this.paintOcean(dayStill);
     }
     if (!this.lite) group.add(this.graticule());
 
@@ -944,28 +964,21 @@ export class EarthGlobe {
         undefined,
         ignore,
       );
-    }
-    loader.load(
-      WATER_TEX,
-      (tex) => {
-        tex.colorSpace = THREE.LinearSRGBColorSpace;
-        if (this.lite) {
-          const mat = this.oceanMesh?.material as THREE.ShaderMaterial | undefined;
+      loader.load(
+        WATER_TEX,
+        (tex) => {
+          tex.colorSpace = THREE.LinearSRGBColorSpace;
+          const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
           if (!mat) return;
-          mat.uniforms.water.value = tex;
+          mat.metalnessMap = tex;
+          mat.metalness = 0.42;
+          mat.roughness = 0.38;
           mat.needsUpdate = true;
-          return;
-        }
-        const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
-        if (!mat) return;
-        mat.metalnessMap = tex;
-        mat.metalness = 0.42;
-        mat.roughness = 0.38;
-        mat.needsUpdate = true;
-      },
-      undefined,
-      ignore,
-    );
+        },
+        undefined,
+        ignore,
+      );
+    }
 
     scene.add(new THREE.AmbientLight(0x8ea0b8, this.lite ? 0.62 : 0.36));
     const key = new THREE.DirectionalLight(0xfff4e5, 1.85);
@@ -1265,6 +1278,13 @@ export class EarthGlobe {
     }
   }
 
+  private paintOcean(img: HTMLImageElement): void {
+    const mat = this.oceanMesh?.material as THREE.ShaderMaterial | undefined;
+    if (!mat || !img.naturalWidth) return;
+    mat.uniforms.water.value = waterSpecTex(img);
+    mat.needsUpdate = true;
+  }
+
   private applyMaps(): void {
     const mat = this.globeMesh?.material as (THREE.MeshStandardMaterial | THREE.MeshBasicMaterial) | undefined;
     if (mat) {
@@ -1281,9 +1301,9 @@ export class EarthGlobe {
     }
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.glint) this.glint.visible = this.overlays.day;
-    if (this.sheen) this.sheen.visible = this.overlays.day;
-    if (this.medSheen) this.medSheen.visible = this.overlays.day;
-    if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day;
+    if (this.sheen) this.sheen.visible = this.overlays.day && !this.lite;
+    if (this.medSheen) this.medSheen.visible = this.overlays.day && !this.lite;
+    if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day && !this.lite;
     if (this.oceanMesh) this.oceanMesh.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;

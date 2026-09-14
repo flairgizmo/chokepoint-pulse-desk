@@ -444,16 +444,18 @@ vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 1.08);
+float liteFres = pow(1.0 - liteFacing, 1.12);
+vec3 flash = diffuseColor.rgb;
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
-diffuseColor.rgb = vec3(0.72, 0.86, 1.0) * (0.18 + liteFres * 1.6);
-diffuseColor.rgb += envRefl * liteFres * 1.2;
-diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * 0.95;
-diffuseColor.a = liteFres * 0.64;`;
+float kite = clamp(flash.r * 0.7 + flash.b * 0.3, 0.0, 1.0);
+diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.1 + liteFres * 1.75);
+diffuseColor.rgb += envRefl * liteFres * kite * 0.48;
+diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.35 + kite * 0.8);
+diffuseColor.a = liteFres * mix(0.22, 0.82, kite);`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
@@ -571,7 +573,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-28-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-29-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -582,6 +584,7 @@ function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
     side: THREE.BackSide,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
+    vertexColors: true,
   });
   mat.toneMapped = false;
   attachLiteFire(mat, env, 'halo');
@@ -1092,7 +1095,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       booth(0xffe8c4, 2.2, 0.32, 2.4, 2.6, 2.2);
       booth(0xb4dcff, 1.8, 0.26, -2.2, 1.8, 2.0);
       booth(0xffffff, 2.4, 0.28, 0.1, 3.2, 0.8);
-      booth(0xffb0d2, 1.6, 0.24, -2.0, 1.6, -2.2);
+      booth(0xdce8ff, 1.6, 0.24, -2.0, 1.6, -2.2);
     } catch {
       cubeCam = null;
       cubeRT = null;
@@ -1202,9 +1205,16 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }
   };
   const haloRoot = new THREE.Group();
-  haloRoot.scale.setScalar(1.03);
+  haloRoot.scale.setScalar(1.016);
   crystal.add(haloRoot);
   const haloMat = lite ? iceHaloMat(roomEnv) : null;
+  if (haloMat) {
+    const tableHalo = new THREE.Mesh(table.geometry, haloMat);
+    tableHalo.position.copy(table.position);
+    tableHalo.userData.nodeId = 6;
+    tableHalo.renderOrder = 5;
+    haloRoot.add(tableHalo);
+  }
   for (let i = 0; i < sides; i++) {
     const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
     const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
@@ -1435,7 +1445,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const fires = [
       fireSprite(0xffffff, 0, BOT_Y + 0.1, 0.02, 0.58),
       fireSprite(0xb4dcff, 0.05, BOT_Y + 0.06, -0.03, 0.34),
-      fireSprite(0xffb0d2, -0.04, BOT_Y + 0.08, 0.04, 0.3),
+      fireSprite(0xffe4c4, -0.04, BOT_Y + 0.08, 0.04, 0.3),
     ];
     fires.forEach((spark) => {
       crystal.add(spark);
