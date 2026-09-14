@@ -463,15 +463,17 @@ vec3 wR = reflect(-wV, wN);
 vec3 wT = refract(-wV, wN, 0.413);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 vec3 envRefr = textureCube(liteEnv, dot(wT, wT) > 0.001 ? wT : wR).rgb;
-diffuseColor.rgb = mix(diffuseColor.rgb, envRefr, 0.18 + liteFacing * 0.42);
-diffuseColor.rgb += envRefl * pow(liteFres, 1.7) * 0.82;
+float spec = pow(liteFres, 1.22);
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefr, 0.04 + liteFacing * 0.08);
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.28);
+diffuseColor.rgb += envRefl * spec * 1.45;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.78, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-12';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-13';
 }
 
 function glassMat(
@@ -842,6 +844,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let cubeCam: THREE.CubeCamera | null = null;
   let cubeRT: THREE.WebGLCubeRenderTarget | null = null;
   let roomEnv = duskCubeMap();
+  const studio: THREE.Mesh[] = [];
   if (lite) {
     try {
       cubeRT = new THREE.WebGLCubeRenderTarget(128, {
@@ -854,6 +857,27 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       cubeCam.position.set(0, 0.22, 0);
       scene.add(cubeCam);
       roomEnv = cubeRT.texture;
+      const booth = (color: number, w: number, h: number, x: number, y: number, z: number): void => {
+        const mesh = new THREE.Mesh(
+          new THREE.PlaneGeometry(w, h),
+          new THREE.MeshBasicMaterial({
+            color,
+            toneMapped: false,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+          }),
+        );
+        mesh.position.set(x, y, z);
+        mesh.lookAt(0, 0.22, 0);
+        mesh.visible = false;
+        scene.add(mesh);
+        studio.push(mesh);
+      };
+      booth(0xfff6e8, 4.4, 2.6, 2.8, 3.2, 2.5);
+      booth(0xe8ddd0, 3.4, 2.0, -2.6, 1.7, 2.3);
+      booth(0xffffff, 3.8, 2.4, 0.15, 3.6, 0.35);
+      booth(0xc4a888, 3.0, 2.2, -2.4, 1.9, -2.5);
+      booth(0xb8a090, 4.2, 2.2, 0.4, -1.05, 1.7);
     } catch {
       cubeCam = null;
       cubeRT = null;
@@ -1216,11 +1240,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     backdrop.visible = false;
     left.visible = false;
     right.visible = false;
+    caustic.visible = false;
+    for (const card of studio) card.visible = true;
     cubeCam.update(renderer, scene);
+    for (const card of studio) card.visible = false;
     lean.visible = true;
     backdrop.visible = true;
     left.visible = true;
     right.visible = true;
+    caustic.visible = true;
   };
 
   const resize = (): void => {
@@ -1375,7 +1403,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
     roomFrames += 1;
-    if (lite && cubeCam && roomFrames > 1 && roomFrames % 10 === 0) paintRoom();
+    if (lite && cubeCam && roomFrames > 1 && roomFrames % 6 === 0) paintRoom();
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
