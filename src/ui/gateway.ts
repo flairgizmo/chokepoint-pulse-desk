@@ -70,11 +70,11 @@ function glassGrade(cut: GlassCut, lane: GlassLane, heart = false): GlassGrade {
       ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 1.08, contrast: 1.12, saturate: 0.62, multiply: 0.03 }
       : cut === 'crown'
         ? lane === 0
-          ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 1.1, contrast: 1.16, saturate: 0.94, multiply: 0.02 }
-          : { sx: 0.34, sy: 0.28, sw: 0.52, sh: 0.46, brightness: 0.92, contrast: 1.18, saturate: 0.86, multiply: 0.04 }
+          ? { sx: 0.28, sy: 0.14, sw: 0.22, sh: 0.32, brightness: 1.16, contrast: 1.2, saturate: 1, multiply: 0.01 }
+          : { sx: 0.46, sy: 0.16, sw: 0.2, sh: 0.3, brightness: 1.04, contrast: 1.22, saturate: 0.94, multiply: 0.02 }
         : lane === 0
-          ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.8, contrast: 1.2, saturate: 0.74, multiply: 0.1 }
-          : { sx: 0.4, sy: 0.44, sw: 0.44, sh: 0.34, brightness: 0.64, contrast: 1.22, saturate: 0.66, multiply: 0.14 };
+          ? { sx: 0.34, sy: 0.2, sw: 0.18, sh: 0.26, brightness: 1.02, contrast: 1.22, saturate: 0.9, multiply: 0.04 }
+          : { sx: 0.52, sy: 0.22, sw: 0.16, sh: 0.24, brightness: 0.88, contrast: 1.24, saturate: 0.84, multiply: 0.06 };
   if (!heart) return base;
   return {
     ...base,
@@ -793,7 +793,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   scene.background = new THREE.Color(0x070b14);
-  const cycMat = duskWall(backdropTex, 0x453c36);
+  const cycMat = duskWall(backdropTex, 0x2a221c);
   cycMat.depthWrite = false;
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(32, 15.2), cycMat);
   backdrop.position.set(0, 1.45, -5.6);
