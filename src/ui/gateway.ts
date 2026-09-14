@@ -652,6 +652,13 @@ function tableFan(r: number, sides: number): THREE.BufferGeometry {
   return g;
 }
 
+/** Lite table is a bezel, not a cap — the window looks through to the pavilion. */
+function tableRing(r: number, inner: number, sides: number): THREE.BufferGeometry {
+  const g = new THREE.RingGeometry(inner, r, sides);
+  g.rotateX(-Math.PI / 2);
+  return g;
+}
+
 function triGeo(
   ax: number,
   ay: number,
@@ -1001,7 +1008,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     env: roomEnv,
   });
   const table = new THREE.Mesh(
-    tableFan(tableR, sides),
+    lite ? tableRing(tableR, tableR * 0.42, sides) : tableFan(tableR, sides),
     lite
       ? glassMat(tableLidTex(), true, {
           tint: 0xffffff,
