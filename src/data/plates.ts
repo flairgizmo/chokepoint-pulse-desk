@@ -522,6 +522,16 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'donate-btc': PLATES.hongkong,
   'donate-usdt': PLATES.singapore,
   'grok-ask': PLATES.radio,
+  'filter-news-filter': PLATES.newsroom,
+  'filter-notes-search': PLATES.radio,
+  'filter-story-search': PLATES.library,
+  'filter-tech-search': PLATES.datacenter,
+  'filter-patent-search': PLATES.patentsHall,
+  'filter-inst-search': PLATES.washington,
+  'filter-prog-search': PLATES.canary,
+  'filter-people-search': PLATES.ucl,
+  'filter-lib-search': PLATES.boston,
+  'filter-gloss-search': PLATES.cambridge,
 }
 
 const PREFIXES = [

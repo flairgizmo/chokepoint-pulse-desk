@@ -442,7 +442,7 @@ function glassTex(
   return tex;
 }
 
-type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle' | 'halo' | 'pav';
+type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle' | 'halo' | 'pav' | 'bezel';
 
 /** Hard studio glints on dark ice. Broad cube fresnel was the milky paper hull. */
 function liteIcePreamble(): string {
@@ -509,49 +509,60 @@ vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 2.85);
+float liteFres = pow(1.0 - liteFacing, 3.15);
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
-diffuseColor.rgb = vec3(0.42, 0.62, 0.95) * liteFres * 0.55;
-diffuseColor.rgb += envRefl * liteFres * liteFres * 0.22;
-diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * pow(liteFres, 4.2) * 0.7;
-diffuseColor.a = liteFres * liteFres * 0.16;`;
+diffuseColor.rgb = vec3(0.55, 0.72, 1.0) * liteFres * 0.42;
+diffuseColor.rgb += envRefl * liteFres * liteFres * 0.12;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * pow(liteFres, 4.6) * 0.82;
+diffuseColor.a = liteFres * liteFres * 0.1;`;
+  }
+  if (kind === 'bezel') {
+    return `#include <map_fragment>
+${liteIcePreamble()}
+vec3 body = vec3(0.004, 0.005, 0.012);
+diffuseColor.rgb = body;
+diffuseColor.rgb += glint * (0.1 + rim * 0.9);
+diffuseColor.rgb += vec3(0.95, 0.97, 1.0) * pow(rim, 2.2) * 0.42;
+diffuseColor.rgb += texture2D(map, vMapUv).rgb * specCam * 0.18;
+diffuseColor.a = mix(0.78, 0.96, rim);`;
   }
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float fleck = pow(kite, 3.15);
-vec3 body = mix(vec3(0.002, 0.003, 0.008), vec3(0.018, 0.024, 0.042), kite);
+float fleck = pow(kite, 2.7);
+vec3 body = mix(vec3(0.001, 0.002, 0.006), vec3(0.012, 0.016, 0.03), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * 0.08;
-diffuseColor.rgb += vec3(0.78, 0.9, 1.0) * fleck * 0.18;
-diffuseColor.rgb += glint * (0.28 + fleck * 2.35 + rim * 0.16);
+diffuseColor.rgb += envRefl * fleck * 0.06;
+diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * fleck * 0.55;
+diffuseColor.rgb += glint * (0.08 + fleck * 3.2 + rim * 0.42);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float fleck = pow(kite, 2.8);
-vec3 body = mix(vec3(0.006, 0.008, 0.014), vec3(0.035, 0.045, 0.07), kite);
+float fleck = pow(kite, 2.45);
+vec3 body = mix(vec3(0.004, 0.005, 0.01), vec3(0.022, 0.028, 0.045), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * 0.1;
-diffuseColor.rgb += vec3(0.9, 0.95, 1.0) * fleck * 0.2;
-diffuseColor.rgb += glint * (0.36 + fleck * 2.2 + rim * 0.18);
+diffuseColor.rgb += envRefl * fleck * 0.07;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * fleck * 0.72;
+diffuseColor.rgb += glint * (0.1 + fleck * 3.4 + rim * 0.5);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float fleck = pow(kite, 3.2);
-vec3 body = mix(vec3(0.003, 0.004, 0.01), vec3(0.022, 0.03, 0.05), kite);
+float fleck = pow(kite, 2.55);
+vec3 body = mix(vec3(0.0015, 0.002, 0.006), vec3(0.01, 0.014, 0.026), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * 0.1;
-diffuseColor.rgb += vec3(0.82, 0.92, 1.0) * fleck * 0.24;
-diffuseColor.rgb += glint * (0.42 + fleck * 3.05 + rim * 0.2);
+diffuseColor.rgb += envRefl * fleck * 0.07;
+diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * fleck * 1.12;
+diffuseColor.rgb += vec3(0.7, 0.86, 1.0) * fleck * fleck * 0.55;
+diffuseColor.rgb += glint * (0.06 + fleck * 4.2 + rim * 0.62);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -627,7 +638,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-57-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-58-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -828,10 +839,10 @@ function triGeo(
 type WellLane = 0 | 1 | 2 | 3;
 
 function wellGrade(lane: WellLane): GlassGrade {
-  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 1.04, contrast: 1.22, saturate: 0.82, multiply: 0.22 };
-  if (lane === 1) return { sx: 0.38, sy: 0.06, sw: 0.3, sh: 0.7, brightness: 0.98, contrast: 1.2, saturate: 0.8, multiply: 0.14 };
-  if (lane === 2) return { sx: 0.58, sy: 0.05, sw: 0.3, sh: 0.7, brightness: 0.86, contrast: 1.24, saturate: 0.74, multiply: 0.16 };
-  return { sx: 0.24, sy: 0.1, sw: 0.34, sh: 0.68, brightness: 0.94, contrast: 1.18, saturate: 0.78, multiply: 0.14 };
+  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 0.42, contrast: 1.28, saturate: 0.68, multiply: 0.82 };
+  if (lane === 1) return { sx: 0.38, sy: 0.06, sw: 0.3, sh: 0.7, brightness: 0.38, contrast: 1.26, saturate: 0.64, multiply: 0.86 };
+  if (lane === 2) return { sx: 0.58, sy: 0.05, sw: 0.3, sh: 0.7, brightness: 0.34, contrast: 1.3, saturate: 0.6, multiply: 0.88 };
+  return { sx: 0.24, sy: 0.1, sw: 0.34, sh: 0.68, brightness: 0.4, contrast: 1.24, saturate: 0.66, multiply: 0.84 };
 }
 
 function wellCanvas(photo: HTMLImageElement | null, on: boolean, lane: WellLane): HTMLCanvasElement {
@@ -855,11 +866,11 @@ function wellCanvas(photo: HTMLImageElement | null, on: boolean, lane: WellLane)
     ctx.fillStyle = on ? 'rgba(242, 235, 224, 0.22)' : `rgba(36, 22, 16, ${grade.multiply})`;
     ctx.fillRect(0, 0, c.width, c.height);
     const vig = ctx.createLinearGradient(0, 0, 0, c.height);
-    vig.addColorStop(0, 'rgba(12, 16, 28, 0.1)');
-    vig.addColorStop(0.16, 'rgba(8, 12, 22, 0.78)');
-    vig.addColorStop(0.4, 'rgba(7, 11, 20, 0.9)');
-    vig.addColorStop(0.72, 'rgba(5, 8, 16, 0.95)');
-    vig.addColorStop(1, 'rgba(5, 8, 14, 0.98)');
+    vig.addColorStop(0, 'rgba(6, 10, 18, 0.78)');
+    vig.addColorStop(0.16, 'rgba(5, 8, 16, 0.9)');
+    vig.addColorStop(0.4, 'rgba(4, 7, 14, 0.94)');
+    vig.addColorStop(0.72, 'rgba(3, 6, 12, 0.97)');
+    vig.addColorStop(1, 'rgba(2, 4, 10, 0.99)');
     ctx.fillStyle = vig;
     ctx.fillRect(0, 0, c.width, c.height);
     ctx.globalCompositeOperation = 'source-over';
@@ -1243,7 +1254,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
             map: tableLidTex(photo0),
             color: 0xffffff,
             transparent: true,
-            opacity: 0.42,
+            opacity: 0.88,
             side: THREE.DoubleSide,
             depthWrite: false,
           });
@@ -1261,7 +1272,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   table.userData.nodeId = 6;
   table.renderOrder = 2;
   if (lite && table.material instanceof THREE.MeshBasicMaterial) {
-    attachLiteFire(table.material, roomEnv, 'window');
+    attachLiteFire(table.material, roomEnv, 'bezel');
     table.material.polygonOffset = true;
     table.material.polygonOffsetFactor = -2;
     table.material.polygonOffsetUnits = -2;
@@ -1537,9 +1548,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         Math.cos(a) * midR,
         midY + 0.03,
         Math.sin(a) * midR,
-        i === 1 ? 0.17 : 0.11,
+        i === 1 ? 0.2 : 0.13,
       );
-      spark.material.opacity = i === 1 ? 0.92 : 0.7;
+      spark.material.opacity = i === 1 ? 0.96 : 0.78;
       crystal.add(spark);
       crownFires.push(spark);
     });

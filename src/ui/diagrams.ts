@@ -388,6 +388,17 @@ export function posterFrame(still: string, copy: string): string {
   return `<div class="poster-frame">${still}<div class="poster-copy">${copy}</div></div>`;
 }
 
+/** Dusk still under a search strip. Inputs keep their ids so existing filters still bind. */
+export function cinemaFilterBar(id: string, placeholder: string, value = '', extra = ''): string {
+  return `<div class="toolbar filter-bar cinema-filter">
+    ${photoFigure(plateFor(`filter-${id}`), 'filter-still')}
+    <div class="filter-row">
+      <input type="search" id="${esc(id)}" placeholder="${esc(placeholder)}" value="${esc(value)}" />
+      ${extra}
+    </div>
+  </div>`;
+}
+
 /** Light-chrome nav row: still thumb + label. Never nest this inside a button. */
 export function cinemaNavLink(href: string, label: string, current = false): string {
   const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');

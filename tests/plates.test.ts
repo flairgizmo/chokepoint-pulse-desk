@@ -346,6 +346,13 @@ describe('Topic plates', () => {
     expect(renderDonate()).toContain('/visuals/cities/hong-kong.jpg');
     expect(renderDonate()).toContain('0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD');
     expect(renderVision()).toContain('flip-back-still');
+    expect(renderNews()).toContain('filter-still');
+    expect(renderGlossary()).toContain('filter-still');
+    expect(renderGlossary()).toContain('letter-still');
+    expect(renderStory()).toContain('filter-still');
+    expect(renderTechnology()).toContain('filter-still');
+    expect(plateFor('filter-news-filter').src).toBe(PLATES.newsroom.src);
+    expect(plateFor('filter-gloss-search').src).toBe(PLATES.cambridge.src);
     expect(plateFor('lloyds-bank').src).toBe(PLATES.royal.src);
     expect(plateFor('wm-lloyds-bank').src).toBe(PLATES.paris.src);
     expect(plateFor('wm-nationwide').src).toBe(PLATES.singapore.src);

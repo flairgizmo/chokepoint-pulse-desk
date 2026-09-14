@@ -2818,6 +2818,108 @@ button.chip {
   background: linear-gradient(180deg, rgba(7, 11, 20, 0.22), rgba(7, 11, 20, 0.78));
 }
 
+.toolbar.filter-bar.cinema-filter {
+  display: grid;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #0b1220;
+}
+
+.cinema-filter > .filter-still,
+.cinema-filter > .filter-row {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.filter-still {
+  margin: 0;
+  min-height: 5.2rem;
+}
+
+.filter-still img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 5.2rem;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.42);
+}
+
+.filter-still figcaption {
+  display: none;
+}
+
+.filter-row {
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.18), rgba(7, 11, 20, 0.72));
+}
+
+.cinema-filter .chip-row,
+.cinema-filter .chips {
+  width: auto;
+  margin: 0;
+}
+
+.cinema-filter input[type='search'] {
+  flex: 1;
+  min-width: 12rem;
+  background: rgba(234, 241, 255, 0.12);
+  color: #eaf1ff;
+  border: 1px solid rgba(234, 241, 255, 0.22);
+}
+
+.cinema-filter .subtle,
+.cinema-filter .density {
+  color: #eaf1ff;
+  margin: 0;
+}
+
+.cinema-filter select {
+  min-height: 2.5rem;
+  padding: 0 0.7rem;
+  border-radius: 8px;
+  border: 1px solid rgba(234, 241, 255, 0.22);
+  background: rgba(234, 241, 255, 0.12);
+  color: #eaf1ff;
+  font: inherit;
+}
+
+.letter-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.letter-still {
+  flex: 0 0 3.2rem;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #070b14;
+}
+
+.letter-still img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.68);
+}
+
+.letter-still figcaption {
+  display: none;
+}
+
 .player-play,
 .player-skip {
   min-height: 2.6rem;

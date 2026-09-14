@@ -7,7 +7,7 @@ import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
-import { diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, diagramFigure, posterFrame } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
@@ -138,17 +138,19 @@ export function renderStory(): string {
     .join('');
   return `${hero('Story / Timeline', 'First the committee. Then the operating system. Then the sterling.', 'Quiet months collapse. There are no empty holes. Each node opens the stake, the filing, and the source. Start at ISO 2015. End at live tokenised sterling.', 'story-hero', 'story')}
     ${stillStrip('story', 'Photographs on this rail')}
-    <div class="toolbar filter-bar">
-      <input type="search" id="story-search" placeholder="Search the rail…" />
-      <div class="chip-row" id="story-themes">${chips}</div>
+    ${cinemaFilterBar(
+      'story-search',
+      'Search the rail…',
+      '',
+      `<div class="chip-row" id="story-themes">${chips}</div>
       <label class="density">Density
         <select id="story-density">
           <option value="decade">Decade</option>
           <option value="year" selected>Year</option>
           <option value="month">Month</option>
         </select>
-      </label>
-    </div>
+      </label>`,
+    )}
     <p class="notes-count mono subtle" data-story-count>${STORY.length} events on the rail</p>
     <p class="story-suggest" data-story-suggest hidden></p>
     <ol class="story-rail" id="story-rail">${nodes}</ol>
@@ -218,9 +220,7 @@ export function renderTechnology(): string {
   ).join('');
   return `${hero('Technology', 'Not another chain. The layer that makes the others usable.', 'The books already exist. Isolated ledgers were the 2018 problem. Overledger was filed as the operating layer. Then the network, the standards, and the sterling that is already live.', 'tech-hero', 'technology')}
     ${stillStrip('technology', 'Photographs in the stack', 5)}
-    <div class="toolbar filter-bar">
-      <input type="search" id="tech-search" placeholder="Search chapters…" />
-    </div>
+    ${cinemaFilterBar('tech-search', 'Search chapters…')}
     <nav class="tech-spine" aria-label="Technology chapters">${spine}</nav>
     <div class="tech-stack cinema-room" id="tech-stack">${chapters}</div>
     <p class="empty-note" id="tech-empty" hidden>No chapter matches. Try SATP, Fusion, or PayScript.</p>`;
@@ -241,9 +241,7 @@ export function renderPatents(): string {
   ).join('');
   return `${hero('Patents', 'A grant is a method. Not a deployment.', 'Numbers match the public file. Each card opens why the claim matters to Overledger, SATP, or Fusion — and where it still sits on paper.', 'patents-hero', 'patents')}
     ${stillStrip('patents', 'Photographs of the claims')}
-    <div class="toolbar filter-bar">
-      <input type="search" id="patent-search" placeholder="Search numbers, inventors, claims…" />
-    </div>
+    ${cinemaFilterBar('patent-search', 'Search numbers, inventors, claims…')}
     <div class="patent-grid" id="patent-grid">${cards}</div>
     <p class="empty-note" id="patent-empty" hidden>No filing matches. Try US11842335B2 or Hargreaves.</p>`;
 }
@@ -266,15 +264,17 @@ export function renderInstitutions(): string {
   }).join('');
   return `${hero('Institutions & boards', 'Who is in the room — and who is only next to it.', 'Current, historical, adjacency: labelled. Official marks where they are on file. A typeset name where they are not. Mixing those up is how a lab becomes a mandate in someone else’s recap.', 'inst-hero', 'institutions')}
     ${stillStrip('institutions', 'Photographs of the rooms')}
-    <div class="toolbar filter-bar">
-      <input type="search" id="inst-search" placeholder="Search institutions…" />
-      <div class="chip-row" id="inst-status">
+    ${cinemaFilterBar(
+      'inst-search',
+      'Search institutions…',
+      '',
+      `<div class="chip-row" id="inst-status">
         <button type="button" class="chip is-on" data-inst-status="all">All</button>
         <button type="button" class="chip" data-inst-status="current">Current</button>
         <button type="button" class="chip" data-inst-status="historical">Historical</button>
         <button type="button" class="chip" data-inst-status="adjacency">Adjacency</button>
-      </div>
-    </div>
+      </div>`,
+    )}
     <div class="inst-grid" id="inst-grid">${cards}</div>
     <p class="empty-note" id="inst-empty" hidden>No room matches. Try IETF, Lloyds, or Rosalind.</p>`;
 }

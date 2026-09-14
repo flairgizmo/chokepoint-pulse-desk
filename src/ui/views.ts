@@ -28,7 +28,7 @@ import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
 import { photoFigure, plateFor, PLATES, type VisualId } from '../data/plates';
-import { diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, diagramFigure, posterFrame } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
 import { FILM_SETS, filmStageMarkup, stillStrip } from './filmSets';
 import { PROGRAMMES } from '../data/programmes';
@@ -343,10 +343,7 @@ export function storyArt(id: string, era: NoteEra): string {
 }
 
 function filterBox(id: string, placeholder: string, value: string, extra = ''): string {
-  return `<div class="toolbar filter-bar">
-    <input type="search" id="${esc(id)}" placeholder="${esc(placeholder)}" value="${esc(value)}" />
-    ${extra}
-  </div>`;
+  return cinemaFilterBar(id, placeholder, value, extra);
 }
 
 export function sparklineSvg(values: number[]): string {
@@ -865,16 +862,18 @@ export function renderProgrammes(): string {
       <p class="cohort-note">UK Finance’s press: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters. The GBTD programme page fetched 13 September 2026 also lists Monzo as a seventh participant and states GBTD was accepted into the Bank of England Synchronisation Lab. No join date is printed. ${extLink(sources.ukFinanceRln, 'Programme page')}</p>
     </div>
     ${quoteRail('programmes', 24)}
-    <div class="toolbar filter-bar">
-      <input type="search" id="prog-search" placeholder="Search programmes, banks, labs…" />
-      <div class="chip-row" id="prog-status">
+    ${cinemaFilterBar(
+      'prog-search',
+      'Search programmes, banks, labs…',
+      '',
+      `<div class="chip-row" id="prog-status">
         <button type="button" class="chip is-on" data-prog-status="all">All</button>
         <button type="button" class="chip" data-prog-status="active">Active</button>
         <button type="button" class="chip" data-prog-status="incubating">Incubating</button>
         <button type="button" class="chip" data-prog-status="completed">Completed</button>
         <button type="button" class="chip" data-prog-status="upcoming">Upcoming</button>
-      </div>
-    </div>
+      </div>`,
+    )}
     <p class="empty-note" id="prog-empty" hidden>No programme matches. Try GBTD, Murex, or Sibos.</p>
     <div class="prog-grid" id="prog-grid">${cards}</div>
     ${fold('This month and the calendar', `${renderThisMonth()}${renderCalendar()}`)}
@@ -1006,9 +1005,7 @@ export function renderPeople(): string {
     'people',
   )}
   ${stillStrip('people', 'Official portraits on the record', 5)}
-  <div class="toolbar filter-bar">
-    <input type="search" id="people-search" placeholder="Search names, roles, rooms…" />
-  </div>
+  ${cinemaFilterBar('people-search', 'Search names, roles, rooms…')}
   ${peopleRail()}${overledgerRoster()}${quoteRail('people')}${fold('Full records by role', blocks, true)}${dykBlock()}`;
 }
 
@@ -1134,10 +1131,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
   )}
     ${stillStrip('research', 'Photographs in the library')}
   ${quoteRail('research')}
-  <div class="toolbar filter-bar">
-    <input type="search" id="lib-search" placeholder="Search titles, authors, venues" value="${esc(filter)}" />
-    <p class="mono subtle">${papersNewestFirst().length} documents</p>
-  </div>
+  ${cinemaFilterBar('lib-search', 'Search titles, authors, venues', filter, `<p class="mono subtle">${papersNewestFirst().length} documents</p>`)}
   <div class="chip-row" id="research-regions">${regionChips}</div>
   <div class="chip-row" id="research-kinds">${kindChips}</div>
   <section class="block">
@@ -1203,15 +1197,12 @@ export function renderGlossary(filter = ''): string {
           </article>`,
         )
         .join('');
-      return `<section class="letter"><h3>${esc(L)}</h3>${items}</section>`;
+      return `<section class="letter"><h3 class="letter-head">${photoFigure(plateFor(`letter-${L}`), 'letter-still')}<span>${esc(L)}</span></h3>${items}</section>`;
     })
     .join('');
   return `${pageHero('Language', 'Say the objects by their names.', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition. Mixing them up is how the sector stayed noisy.', '', undefined, 'glossary')}
     ${stillStrip('glossary', 'Photographs of the objects')}
-    <div class="toolbar">
-      <input type="search" id="gloss-search" placeholder="Search the terms" value="${esc(filter)}" />
-      <p class="mono subtle">${terms.length} terms</p>
-    </div>
+    ${cinemaFilterBar('gloss-search', 'Search the terms', filter, `<p class="mono subtle">${terms.length} terms</p>`)}
     ${groups || '<p class="empty-note">No term matches. Try SATP, GBTD, or Herstatt.</p>'}`;
 }
 
