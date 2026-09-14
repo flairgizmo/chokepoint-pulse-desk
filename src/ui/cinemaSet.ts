@@ -24,12 +24,12 @@ const CANARY_CROP: Record<CubeFace, readonly [number, number, number, number]> =
 };
 
 const CANARY_WASH: Record<CubeFace, string> = {
-  px: 'rgba(10, 22, 48, 0.16)',
-  nx: 'rgba(8, 16, 36, 0.22)',
-  py: 'rgba(8, 14, 28, 0.48)',
-  ny: 'rgba(2, 6, 15, 0.55)',
-  pz: 'rgba(12, 24, 52, 0.1)',
-  nz: 'rgba(6, 18, 44, 0.18)',
+  px: 'rgba(36, 22, 16, 0.16)',
+  nx: 'rgba(28, 18, 14, 0.22)',
+  py: 'rgba(18, 16, 20, 0.42)',
+  ny: 'rgba(8, 8, 12, 0.55)',
+  pz: 'rgba(36, 24, 16, 0.1)',
+  nz: 'rgba(24, 18, 16, 0.18)',
 };
 
 function paintDuskFace(kind: CubeFace, canvas = document.createElement('canvas')): HTMLCanvasElement {
@@ -39,19 +39,19 @@ function paintDuskFace(kind: CubeFace, canvas = document.createElement('canvas')
   if (!ctx) return canvas;
   const g = ctx.createLinearGradient(0, 0, kind === 'px' || kind === 'nx' ? FACE : 0, FACE);
   if (kind === 'py') {
-    g.addColorStop(0, '#8aa3c8');
-    g.addColorStop(1, '#2a3d5c');
+    g.addColorStop(0, '#c4b8a8');
+    g.addColorStop(1, '#3d342c');
   } else if (kind === 'ny') {
     g.addColorStop(0, '#0b1220');
     g.addColorStop(1, '#02060f');
   } else if (kind === 'pz' || kind === 'px') {
-    g.addColorStop(0, '#1a3a6a');
+    g.addColorStop(0, '#3a2a1c');
     g.addColorStop(0.42, '#e0b56a');
-    g.addColorStop(1, '#061018');
+    g.addColorStop(1, '#100c0a');
   } else {
-    g.addColorStop(0, '#0d2248');
-    g.addColorStop(0.55, '#1557FF');
-    g.addColorStop(1, '#02060f');
+    g.addColorStop(0, '#2a2218');
+    g.addColorStop(0.55, '#c4a888');
+    g.addColorStop(1, '#100c0a');
   }
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, FACE, FACE);

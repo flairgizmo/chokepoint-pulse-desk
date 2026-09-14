@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, visionStill } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -405,13 +405,17 @@ function glassTex(
 }
 
 function attachLiteFire(mat: THREE.MeshBasicMaterial): void {
+  const env = duskCubeMap();
   mat.onBeforeCompile = (shader) => {
+    shader.uniforms.liteEnv = { value: env };
     shader.vertexShader = shader.vertexShader
       .replace(
         '#include <common>',
         `#include <common>
 varying vec3 vLiteNormal;
-varying vec3 vLiteView;`,
+varying vec3 vLiteView;
+varying vec3 vLiteWorldN;
+varying vec3 vLiteWorldV;`,
       )
       .replace(
         '#include <project_vertex>',
@@ -419,14 +423,19 @@ varying vec3 vLiteView;`,
 #include <defaultnormal_vertex>
 #include <project_vertex>
 vLiteNormal = normalize(transformedNormal);
-vLiteView = normalize(-mvPosition.xyz);`,
+vLiteView = normalize(-mvPosition.xyz);
+vLiteWorldN = normalize(mat3(modelMatrix) * objectNormal);
+vLiteWorldV = cameraPosition - (modelMatrix * vec4(transformed, 1.0)).xyz;`,
       );
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
         `#include <common>
+uniform samplerCube liteEnv;
 varying vec3 vLiteNormal;
-varying vec3 vLiteView;`,
+varying vec3 vLiteView;
+varying vec3 vLiteWorldN;
+varying vec3 vLiteWorldV;`,
       )
       .replace(
         '#include <map_fragment>',
@@ -440,13 +449,18 @@ float liteFlash = smoothstep(0.88, 1.0, liteSpark) * liteFres;
 vec2 iorOff = liteN.xy * liteFres * 0.045;
 vec4 iorSamp = texture2D(map, vMapUv + iorOff);
 diffuseColor.rgb = mix(diffuseColor.rgb, iorSamp.rgb, 0.12 + liteFres * 0.4);
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wR = reflect(-normalize(vLiteWorldV), wN);
+vec3 envSamp = textureCube(liteEnv, wR).rgb;
+diffuseColor.rgb = mix(diffuseColor.rgb, envSamp, liteFres * 0.52);
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.55, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-6';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-7';
 }
 
 function glassMat(
