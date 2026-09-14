@@ -78,9 +78,9 @@ function glassGrade(cut: GlassCut, lane: GlassLane, heart = false): GlassGrade {
   if (!heart) return base;
   return {
     ...base,
-    brightness: Math.min(1.18, base.brightness + 0.28),
-    multiply: Math.max(0.03, base.multiply * 0.28),
-    saturate: Math.min(1, base.saturate + 0.1),
+    brightness: Math.min(1.32, base.brightness + 0.4),
+    multiply: Math.max(0.02, base.multiply * 0.16),
+    saturate: Math.min(1, base.saturate + 0.12),
   };
 }
 
@@ -1149,6 +1149,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     new THREE.SphereGeometry(0.038, lite ? 12 : 24, lite ? 12 : 24),
     cinemaChrome(lite),
   );
+  if (lite && bead.material instanceof THREE.MeshBasicMaterial) {
+    bead.material.color.setHex(0x8a7a62);
+    bead.material.envMap = null;
+    bead.material.reflectivity = 0;
+  }
   group.add(bead);
   const pickables: THREE.Object3D[] = [
     ...crowns,

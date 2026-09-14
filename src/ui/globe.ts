@@ -134,17 +134,17 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   c.height = Math.max(1, img.naturalHeight || img.height);
   const ctx = c.getContext('2d');
   if (!ctx) return c;
-  ctx.filter = 'contrast(1.32) saturate(0.58) brightness(0.88)';
+  ctx.filter = 'contrast(1.28) saturate(0.68) brightness(0.92)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = 'rgba(28, 18, 32, 0.16)';
+  ctx.fillStyle = 'rgba(28, 18, 32, 0.1)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = 'rgba(255, 172, 100, 0.12)';
+  ctx.fillStyle = 'rgba(255, 172, 100, 0.1)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'color';
-  ctx.fillStyle = 'rgba(196, 164, 112, 0.14)';
+  ctx.fillStyle = 'rgba(196, 164, 112, 0.08)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'multiply';
   ctx.globalAlpha = 0.18;
@@ -714,7 +714,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.32 : 0.36,
+        opacity: this.lite ? 0.36 : 0.4,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -732,7 +732,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.34 : 0.38,
+        opacity: this.lite ? 0.4 : 0.44,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -750,7 +750,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.32 : 0.36,
+        opacity: this.lite ? 0.36 : 0.4,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -1120,7 +1120,7 @@ export class EarthGlobe {
     if (mat) {
       if (this.overlays.day && this.dayTex) {
         mat.map = this.dayTex;
-        mat.color = new THREE.Color(this.lite ? 0xedd8bc : 0xffffff);
+        mat.color = new THREE.Color(this.lite ? 0xf2e6d4 : 0xffffff);
         if ('emissive' in mat) mat.emissive = new THREE.Color(0x0a1218);
       } else {
         mat.map = this.overlays.night && this.nightTex ? this.nightTex : null;
