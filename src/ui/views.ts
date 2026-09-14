@@ -667,7 +667,7 @@ export function renderHome(): string {
         'intro-pulse',
         `${kicker('Pulse')}<h2 class="display">The wire, as headlines.</h2><a class="text-link" href="/news">The wire →</a>`,
       )}
-      <ul class="pulse-list" data-home-pulse><li class="empty-note">Headlines load when the ingest answers.</li></ul>
+      <ul class="pulse-list" data-home-pulse>${liveEmptyNote('pulse-empty', 'Headlines load when the ingest answers.')}</ul>
     </section>
 
     ${renderLiveRail()}
@@ -1400,6 +1400,10 @@ export function renderMarkets(print?: MarketPrint): string {
   </section>`;
 }
 
+export function liveEmptyNote(plateKey: string, text: string): string {
+  return `<li class="empty-note">${posterFrame(photoFigure(plateFor(plateKey), `${plateKey}-still`), `<p>${esc(text)}</p>`)}</li>`;
+}
+
 export function headlinePosterButton(h: Headline, withLane = false): string {
   rememberHeadline({
     id: h.id,
@@ -1566,7 +1570,7 @@ export function renderLiveRail(): string {
         photoFigure(plateFor('home-wire'), 'live-news-still'),
         `${kicker('On Quant, right now')}<p class="subtle" data-home-news-meta>Headlines that name Quant, Overledger or QNT.</p><a class="text-link" href="/news">News →</a>`,
       )}
-      <ul class="headlines compact" data-home-news><li class="empty-note">Headlines load when the wire answers.</li></ul>
+      <ul class="headlines compact" data-home-news>${liveEmptyNote('wire-empty', 'Headlines load when the wire answers.')}</ul>
     </article>
   </section>`;
 }

@@ -619,6 +619,8 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'grok-min': PLATES.brussels,
   'grok-close': PLATES.paris,
   'nav-menu': PLATES.lisbon,
+  'pulse-empty': PLATES.sydney,
+  'wire-empty': PLATES.cable,
 }
 
 const PREFIXES = [

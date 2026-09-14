@@ -430,13 +430,23 @@ export function addCinemaFloor(
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = y;
   scene.add(floor);
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(radius * 0.36, Math.max(0.012, radius * 0.003), lite ? 8 : 12, lite ? 48 : 72),
-    cinemaChrome(lite, undefined, lite),
-  );
-  ring.rotation.x = Math.PI / 2;
-  ring.position.y = y + 0.007;
-  scene.add(ring);
+  const chrome = cinemaChrome(lite, undefined, lite);
+  const addRing = (frac: number, tube = 1): void => {
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(
+        radius * frac,
+        Math.max(0.011, radius * 0.0032 * tube),
+        lite ? 8 : 12,
+        lite ? 48 : 72,
+      ),
+      chrome,
+    );
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = y + 0.007;
+    scene.add(ring);
+  };
+  addRing(0.36);
+  addRing(0.2, 1.28);
   onPhotoEnv(backdropSrc, () => {
     const prev = floorMat.map;
     floorMat.map = cinemaFloorMap(photoFor(backdropSrc) ?? visionStill());

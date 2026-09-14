@@ -11,6 +11,7 @@ import {
   DISCLAIMER,
   newsListMarkup,
   headlinePosterButton,
+  liveEmptyNote,
   sparklineSvg,
   venueBarsHtml,
   renderCbdc,
@@ -830,7 +831,7 @@ export class QntDesk {
             .slice(0, 8)
             .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
             .join('')
-        : `<li class="empty-note">${esc(this.news.error ?? 'The river is quiet. Sourced notes stay on the wire.')}</li>`;
+        : liveEmptyNote('pulse-empty', this.news.error ?? 'The river is quiet. Sourced notes stay on the wire.');
     }
     const price = this.root.querySelector('[data-home-price]');
     const meta = this.root.querySelector('[data-home-meta]');
@@ -849,7 +850,7 @@ export class QntDesk {
             .slice(0, 4)
             .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
             .join('')
-        : `<li class="empty-note">${esc(this.news.error ?? 'No matching headlines yet.')}</li>`;
+        : liveEmptyNote('wire-empty', this.news.error ?? 'No matching headlines yet.');
     }
   }
 

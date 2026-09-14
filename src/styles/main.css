@@ -7838,12 +7838,19 @@ section.block .kicker {
 .pulse-list .empty-note,
 .live-news-panel .empty-note {
   grid-column: 1 / -1;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  color: #eaf1ff;
 }
 
 .pulse-list .poster-frame,
 .pulse-list .poster-frame img,
 .live-news-panel .poster-frame,
-.live-news-panel .poster-frame img {
+.live-news-panel .poster-frame img,
+.pulse-list .photo-plate.pulse-empty-still img,
+.live-news-panel .photo-plate.wire-empty-still img {
   min-height: 8.5rem;
   max-height: 10.5rem;
   aspect-ratio: 16 / 9;
@@ -8558,6 +8565,11 @@ section.block .kicker {
 
 .tech-spine-hit[data-stage-id='trusted-node'] .poster-frame .photo-plate.spine-still img {
   object-position: 18% 0%;
+}
+
+.tech-spine-hit[data-stage-id='x402'] .poster-frame .photo-plate.spine-still img {
+  object-position: 8% 48%;
+  filter: saturate(0.92) contrast(1.2) brightness(0.92);
 }
 
 .donate-list .poster-frame .photo-plate.donate-usdt-still img,

@@ -494,6 +494,12 @@ describe('Topic plates', () => {
     expect(chatMarkup()).toContain('data-grok-min');
     expect(chatMarkup()).toContain('/visuals/cities/brussels.jpg');
     expect(chatMarkup()).toContain('/visuals/cities/paris.jpg');
+    expect(plateFor('pulse-empty').src).toBe(PLATES.sydney.src);
+    expect(plateFor('wire-empty').src).toBe(PLATES.cable.src);
+    expect(renderHome()).toContain('pulse-empty-still');
+    expect(renderHome()).toContain('wire-empty-still');
+    expect(renderHome()).toContain('Headlines load when the ingest answers.');
+    expect(renderHome()).toContain('Headlines load when the wire answers.');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {
