@@ -460,7 +460,7 @@ diffuseColor.rgb += envRefl * spec * 1.85;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.7;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.46;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.62;
-diffuseColor.a *= mix(0.55, 0.94, spec);`;
+diffuseColor.a *= mix(0.32, 0.9, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -532,7 +532,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-19-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-20-${kind}`;
 }
 
 function glassMat(
@@ -977,8 +977,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xf6f0e8,
-    window: lite ? 0.7 : undefined,
-    writeDepth: lite,
+    window: lite ? 0.62 : undefined,
     crown: lite,
     env: roomEnv,
   });
@@ -986,8 +985,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xe8ddd0,
-    window: lite ? 0.7 : undefined,
-    writeDepth: lite,
+    window: lite ? 0.62 : undefined,
     crown: lite,
     env: roomEnv,
   });
@@ -1037,6 +1035,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
     const mesh = new THREE.Mesh(geo, mat);
     mesh.userData.nodeId = 6;
+    mesh.renderOrder = list === pavs ? 0 : 1;
     crystal.add(mesh);
     list.push(mesh);
   };
