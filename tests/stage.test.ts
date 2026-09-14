@@ -32,6 +32,18 @@ describe('Stage primitive', () => {
     expect(doc?.original?.label).toMatch(/Open original/i);
   });
 
+  it('opens quote, patent and SATP stages on Vision stills while keeping the instrument SVG', () => {
+    const quote = resolveStage('quote', 'whitepaper-abstract-trap');
+    const patent = resolveStage('patent', 'patent-us');
+    const satp = resolveStage('satp', '3');
+    expect(quote?.visual).toContain('stage-still');
+    expect(quote?.visual).toContain('<svg');
+    expect(patent?.visual).toContain('stage-still');
+    expect(patent?.visual).toContain('CLAIM SEQUENCE');
+    expect(satp?.visual).toContain('stage-still');
+    expect(satp?.visual).toContain('2PC');
+  });
+
   it('resolves news as an on-site brief, not a leave-the-desk card', () => {
     const el = {
       dataset: {

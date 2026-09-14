@@ -124,7 +124,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       fact: factLine('Source', q.role),
       related: q.personId ? chipsFromIds([q.personId]) : [],
       original: { href: sourceUrl(q.href), label: 'Open original' },
-      visual: diagramSvg(q.id, 'quote', q.who),
+      visual: `${plateVisual(q.id, q.who, q.role)}${diagramSvg(q.id, 'quote', q.who)}`,
     };
   }
   if (kind === 'event') {
@@ -179,7 +179,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       ],
       related: chipsFromIds(p.related),
       original: { href: sourceUrl(p.hrefKey), label: 'Open original' },
-      visual: diagramSvg(p.id, 'patent', p.number),
+      visual: `${plateVisual(p.id, p.number)}${diagramSvg(p.id, 'patent', p.number)}`,
     };
   }
   if (kind === 'institution') {
@@ -331,7 +331,7 @@ export function resolveStage(kind: string, id: string, el?: HTMLElement): StageD
       fact: factLine('Room', 'IETF SATP — not a Quant SKU'),
       related: chipsFromIds(['satp', 'hargreaves', 'chiriac', 'facer', 'overledger']),
       original: { href: sourceUrl('satpCore'), label: 'Open original' },
-      visual: diagramSvg(`satp-${s.n}`, 'satp', s.title),
+      visual: `${plateVisual(`satp-${s.n}`, s.title)}${diagramSvg(`satp-${s.n}`, 'satp', s.title)}`,
     };
   }
   if (kind === 'money') {

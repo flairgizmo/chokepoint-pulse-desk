@@ -500,10 +500,10 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = mix(vec3(0.04, 0.045, 0.06), vec3(0.2, 0.26, 0.38), kite);
+vec3 body = mix(vec3(0.028, 0.032, 0.048), vec3(0.14, 0.18, 0.28), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.1 + kite * 0.1);
-diffuseColor.rgb += glint * (0.12 + kite * 1.7);
+diffuseColor.rgb += envRefl * (rim * 0.08 + kite * 0.08);
+diffuseColor.rgb += glint * (0.1 + kite * 1.55);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
@@ -597,7 +597,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-51-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-52-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -692,9 +692,9 @@ function facetFire(
   const key = Math.max(0, n.dot(KEY_DIR));
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
-  /** 16-cut: adjacent kites are π/8 apart, so *8 flips neighbors. Rest camera sees the stripe. */
+  /** Adjacent kites still differ; rest 3/4 key is the cut, not a watermelon stripe. */
   const stripe = 0.5 + 0.5 * Math.cos(Math.atan2(n.x, n.z) * 8);
-  const shade = Math.min(1, 0.06 + stripe * 0.9 + key * 0.08 + facing * 0.04 + rim * 0.04);
+  const shade = Math.min(1, 0.07 + key * 0.58 + facing * 0.26 + rim * 0.18 + stripe * 0.14);
   return new THREE.Color(
     Math.min(1, 0.05 + shade * 0.95 + key * 0.06),
     Math.min(1, 0.04 + shade * 0.82),

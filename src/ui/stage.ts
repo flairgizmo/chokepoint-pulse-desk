@@ -1,4 +1,5 @@
 import { sourceUrl } from '../data/catalog';
+import { plateFor } from '../data/plates';
 import { esc, extLink } from './html';
 import { forceGrokIdle } from './chat';
 import { sameDeskPath, stageRoute, type RelatedChip } from './relate';
@@ -116,7 +117,7 @@ function paint(root: HTMLElement, doc: StageDoc): void {
     ? `<div class="stage-related" aria-label="Related">${relatedChips
         .map(
           (r) =>
-            `<button type="button" class="stage-chip" data-stage="${esc(r.kind)}" data-stage-id="${esc(r.id)}">${esc(r.label)}</button>`,
+            `<button type="button" class="stage-chip" data-stage="${esc(r.kind)}" data-stage-id="${esc(r.id)}"><img src="${esc(plateFor(r.id, r.kind, r.label).src)}" alt="" width="240" height="135" /><span>${esc(r.label)}</span></button>`,
         )
         .join('')}</div>`
     : '';
