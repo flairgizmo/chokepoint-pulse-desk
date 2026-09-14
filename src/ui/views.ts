@@ -28,7 +28,7 @@ import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
 import { photoFigure, plateFor, PLATES, type VisualId } from '../data/plates';
-import { cinemaFilterBar, diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
 import { FILM_SETS, filmStageMarkup, stillStrip } from './filmSets';
 import { PROGRAMMES } from '../data/programmes';
@@ -319,7 +319,11 @@ function wordmarkLi(label: string, href: string): string {
 }
 
 function fold(title: string, inner: string, open = false): string {
-  return `<details class="fold"${open ? ' open' : ''}><summary>${esc(title)}</summary><div class="fold-body">${inner}</div></details>`;
+  const key = /calendar/i.test(title) ? 'fold-calendar' : /records/i.test(title) ? 'fold-people' : `fold-${title}`;
+  return `<details class="fold cinema-fold"${open ? ' open' : ''}><summary>${posterFrame(
+    photoFigure(plateFor(key), 'fold-still'),
+    `<span>${esc(title)}</span>`,
+  )}</summary><div class="fold-body">${inner}</div></details>`;
 }
 
 export function storyArt(id: string, era: NoteEra): string {
@@ -797,9 +801,12 @@ export function renderVision(): string {
       </article>`;
     })
     .join('');
-  const extra = `<blockquote class="pull">
-      <p>This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.</p>
-      <footer>Verdian, Tasca, Paterson, Mondelli — Quant Overledger whitepaper v0.1, UCL Discovery abstract. ${extLink(sources.whitepaperUcl, 'Open the record')}</footer>
+  const extra = `    <blockquote class="pull">
+      ${posterFrame(
+        photoFigure(PLATES.ucl, 'pull-still'),
+        `<p>This paper proposes a solution to the problem of single-ledger dependency, by introducing a new technology for the design, deployment and execution of multi-ledger decentralized applications. This technology is called Overledger.</p>
+      <footer>Verdian, Tasca, Paterson, Mondelli — Quant Overledger whitepaper v0.1, UCL Discovery abstract. ${extLink(sources.whitepaperUcl, 'Open the record')}</footer>`,
+      )}
     </blockquote>
     <div class="compare">
       <article class="panel">${posterFrame(diagramFigure('vision-2018', 'page', '2018'), '<h3>The 2018 problem</h3>')}<p>The UCL Discovery abstract states the problem as single-ledger dependency: applications bound to one DLT cannot execute across others without a layer above those books.</p></article>
@@ -1132,8 +1139,8 @@ export function renderResearch(filter = '', region = 'ALL'): string {
     ${stillStrip('research', 'Photographs in the library')}
   ${quoteRail('research')}
   ${cinemaFilterBar('lib-search', 'Search titles, authors, venues', filter, `<p class="mono subtle">${papersNewestFirst().length} documents</p>`)}
-  <div class="chip-row" id="research-regions">${regionChips}</div>
-  <div class="chip-row" id="research-kinds">${kindChips}</div>
+  ${cinemaStrip('chips-research-regions', `<div class="chip-row">${regionChips}</div>`, '', 'research-regions')}
+  ${cinemaStrip('chips-research-kinds', `<div class="chip-row">${kindChips}</div>`, '', 'research-kinds')}
   <section class="block">
     ${kicker('Start here')}
     <div class="paper-grid">${featured.map(paperCard).join('')}</div>
@@ -1270,16 +1277,20 @@ export function renderMarkets(print?: MarketPrint): string {
     <p class="stat" data-mk-price>${p?.priceUsd != null ? fmtMoney(p.priceUsd) : '—'}</p>
     <p class="${up ? 'up' : 'down'}" data-mk-change>${change} 24h</p>`,
     )}
-    <div class="stats">
+    ${cinemaStrip(
+      'mk-stats',
+      `<div class="stats">
       <div><p class="kicker">Volume 24h</p><p class="stat" data-mk-vol>${p?.volume24h != null ? fmtMoney(p.volume24h, 0) : '—'}</p></div>
       <div><p class="kicker">Market cap</p><p class="stat" data-mk-cap>${p?.marketCap != null ? fmtMoney(p.marketCap, 0) : '—'}</p></div>
       <div><p class="kicker">24h high / low</p><p class="stat" data-mk-range>${p?.high24h != null ? fmtMoney(p.high24h) : '—'} <span class="subtle">/</span> ${p?.low24h != null ? fmtMoney(p.low24h) : '—'}</p></div>
       <div><p class="kicker">Circulating</p><p class="stat" data-mk-circ>${circ != null ? fmtQty(circ) : '—'}</p></div>
       <div><p class="kicker">Total supply</p><p class="stat" data-mk-total>${total != null ? fmtQty(total) : '—'}</p></div>
-    </div>
+    </div>`,
+      'stats-strip',
+    )}
     <p class="mono contract">Contract ${extLink(sources.qntEtherscan, QNT_CONTRACT)}</p>
     ${p?.error ? `<p class="note" data-mk-error>${esc(p.error)}</p>` : '<p class="note" data-mk-error hidden></p>'}
-    <div data-mk-spark>${sparklineSvg(p?.sparkline ?? [])}</div>
+    ${cinemaStrip('mk-spark', `<div data-mk-spark>${sparklineSvg(p?.sparkline ?? [])}</div>`, 'spark-strip')}
   </section>
   <section class="chapter token-board">
     ${posterFrame(

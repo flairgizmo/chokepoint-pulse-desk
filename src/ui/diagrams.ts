@@ -399,6 +399,16 @@ export function cinemaFilterBar(id: string, placeholder: string, value = '', ext
   </div>`;
 }
 
+/** Chip row or stats on a Vision still. Keep the id on this wrapper so existing filters still bind. */
+export function cinemaStrip(plateKey: string, inner: string, extraClass = '', id = ''): string {
+  const idAttr = id ? ` id="${esc(id)}"` : '';
+  const extra = extraClass ? ` ${extraClass}` : '';
+  return `<div class="cinema-filter${extra}"${idAttr}>
+    ${photoFigure(plateFor(plateKey), 'filter-still')}
+    <div class="filter-row">${inner}</div>
+  </div>`;
+}
+
 /** Light-chrome nav row: still thumb + label. Never nest this inside a button. */
 export function cinemaNavLink(href: string, label: string, current = false): string {
   const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');

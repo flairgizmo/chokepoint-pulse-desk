@@ -2818,14 +2818,20 @@ button.chip {
   background: linear-gradient(180deg, rgba(7, 11, 20, 0.22), rgba(7, 11, 20, 0.78));
 }
 
-.toolbar.filter-bar.cinema-filter {
+.cinema-filter {
   display: grid;
   align-items: stretch;
   gap: 0;
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin: 0 auto 1.5rem;
   padding: 0;
   overflow: hidden;
   border-radius: 16px;
   background: #0b1220;
+}
+
+.toolbar.filter-bar.cinema-filter {
+  margin-bottom: 1.5rem;
 }
 
 .cinema-filter > .filter-still,
@@ -2863,9 +2869,16 @@ button.chip {
 }
 
 .cinema-filter .chip-row,
-.cinema-filter .chips {
+.cinema-filter .chips,
+.cinema-filter .stack-tools {
   width: auto;
   margin: 0;
+}
+
+.cinema-filter .stack-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 .cinema-filter input[type='search'],
@@ -2892,6 +2905,105 @@ button.chip {
   background: rgba(234, 241, 255, 0.12);
   color: #eaf1ff;
   font: inherit;
+}
+
+.stats-strip .stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0;
+}
+
+.stats-strip .kicker,
+.stats-strip .stat,
+.stats-strip .subtle {
+  color: #eaf1ff;
+  margin: 0;
+}
+
+.stats-strip .stat {
+  font-size: clamp(1.05rem, 2.2vw, 1.55rem);
+}
+
+.spark-strip .spark {
+  width: 100%;
+  max-width: none;
+  height: 6.4rem;
+  margin: 0;
+}
+
+.cinema-tape > .cinema-filter,
+.stack-exploded > .cinema-filter {
+  width: 100%;
+  margin: 0.85rem 0 1rem;
+}
+
+.cinema-tape .stats-strip .stats,
+.cinema-tape .spark-strip [data-mk-spark] {
+  padding-inline: 0;
+}
+
+@media (max-width: 959px) {
+  .stats-strip .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cinema-filter.stats-strip .photo-plate.filter-still img {
+    height: 13rem;
+    max-height: 13rem;
+  }
+}
+
+.fold.cinema-fold {
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+.fold.cinema-fold .poster-frame {
+  min-height: 0;
+}
+
+.fold.cinema-fold > summary {
+  padding: 0;
+}
+
+.fold.cinema-fold .poster-copy {
+  padding: 1.15rem 1.05rem 0.7rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(7, 11, 20, 0.9) 58%);
+}
+
+.fold.cinema-fold .poster-copy span {
+  color: #f4f7fb;
+  font-weight: 650;
+}
+
+.pull:has(.poster-frame) {
+  width: min(var(--max), calc(100% - 2.5rem));
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #0b1220;
+}
+
+.pull .poster-copy {
+  padding: 5.2rem 1.35rem 1.2rem;
+}
+
+.fold-still {
+  margin: 0;
+}
+
+.fold-still figcaption,
+.pull-still figcaption {
+  display: none;
+}
+
+.pull .poster-copy p,
+.pull .poster-copy footer {
+  color: #f4f7fb;
 }
 
 .letter-head {
@@ -4957,6 +5069,32 @@ body.stage-open .grok {
   filter: saturate(0.86) contrast(1.14) brightness(0.42);
 }
 
+.cinema-filter.stats-strip .photo-plate.filter-still img,
+.cinema-filter.spark-strip .photo-plate.filter-still img {
+  min-height: 0;
+  height: 9rem;
+  max-height: 9rem;
+  aspect-ratio: 21 / 7;
+}
+
+.fold.cinema-fold .poster-frame .photo-plate.fold-still img,
+.fold.cinema-fold .poster-frame img {
+  min-height: 0;
+  height: 5.4rem;
+  max-height: 5.4rem;
+  aspect-ratio: 21 / 5;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.42);
+}
+
+.pull .poster-frame .photo-plate.pull-still img {
+  min-height: 20rem;
+  max-height: 28rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
 .letter-head .photo-plate.letter-still img {
   width: 3.2rem;
   height: 3.2rem;
@@ -5516,6 +5654,36 @@ body.stage-open .grok {
   max-height: 28rem;
   object-fit: cover;
   filter: saturate(0.86) contrast(1.16) brightness(0.68);
+}
+
+.fold.cinema-fold .poster-frame {
+  min-height: 0;
+}
+
+.fold.cinema-fold .poster-frame .photo-plate.fold-still img,
+.fold.cinema-fold .poster-frame img {
+  min-height: 0;
+  height: 5.4rem;
+  max-height: 5.4rem;
+  aspect-ratio: 21 / 5;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.42);
+}
+
+.pull .poster-frame .photo-plate.pull-still img {
+  min-height: 20rem;
+  max-height: 28rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
+.cinema-filter.stats-strip .photo-plate.filter-still img,
+.cinema-filter.spark-strip .photo-plate.filter-still img {
+  min-height: 0;
+  height: 9rem;
+  max-height: 9rem;
+  aspect-ratio: 21 / 7;
 }
 
 .poster-copy {

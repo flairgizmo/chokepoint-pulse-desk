@@ -7,7 +7,7 @@ import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
-import { cinemaFilterBar, diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
@@ -177,10 +177,13 @@ export function renderStack(): string {
     ${stillStrip('stack', 'Photographs in the layers', 5)}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
-      <div class="stack-tools">
+      ${cinemaStrip(
+        'chips-stack-tools',
+        `<div class="stack-tools">
         <button type="button" class="chip is-on" data-stack-all>All layers</button>
         ${layers.map((l) => `<button type="button" class="chip" data-stack-iso="${esc(l.id)}">${esc(l.title)}</button>`).join('')}
-      </div>
+      </div>`,
+      )}
       <ol class="stack-rungs exploded">${layers
         .map(
           (l) => `<li data-rung="${esc(l.id)}">

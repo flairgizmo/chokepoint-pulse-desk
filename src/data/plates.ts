@@ -532,6 +532,13 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'filter-people-search': PLATES.ucl,
   'filter-lib-search': PLATES.boston,
   'filter-gloss-search': PLATES.cambridge,
+  'chips-research-regions': PLATES.geneva,
+  'chips-research-kinds': PLATES.patentsHall,
+  'chips-stack-tools': PLATES.datacenter,
+  'fold-calendar': PLATES.miami,
+  'fold-people': PLATES.ucl,
+  'mk-stats': PLATES.exchange,
+  'mk-spark': PLATES.fiber,
 }
 
 const PREFIXES = [
