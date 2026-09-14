@@ -326,7 +326,7 @@ export class EarthGlobe {
   private phi = 1.08;
   private theta = 2.05;
   private earthSpin = 0.42;
-  private distance = 2.08;
+  private distance = 2.42;
   private velTheta = 0;
   private velPhi = 0;
   private followId: string | undefined;
@@ -404,7 +404,7 @@ export class EarthGlobe {
     this.velTheta = 0;
     this.velPhi = 0;
     this.panX = 0;
-    this.distance = 2.08;
+    this.distance = 2.42;
     const london = cityById('london');
     if (london) this.lookAtCity(london);
   }
