@@ -1,6 +1,6 @@
 import { quotes } from '../data/catalog';
 import { photoFigure, plateFor, PLATES, type Plate } from '../data/plates';
-import { posterFrame } from './diagrams';
+import { cinemaIntro, cinemaStrip, posterFrame } from './diagrams';
 import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
 
@@ -30,6 +30,10 @@ const EPISODE_STILL: Record<string, Plate> = {
 
 function episodeStill(id: string): Plate {
   return EPISODE_STILL[id] ?? plateFor(id);
+}
+
+function kick(text: string): string {
+  return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
 }
 
 function quoteStageId(text: string): string | undefined {
@@ -112,11 +116,14 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
         </select>
         </div>
       </div>
-      <p class="player-byline">
+      ${cinemaStrip(
+        'player-byline',
+        `<p class="player-byline">
         <span class="host-tile james" aria-hidden="true"><img src="${esc(PLATES.radio.src)}" alt="" width="64" height="64" /><span>JH</span></span>
         <span class="host-tile amelia" aria-hidden="true"><img src="${esc(PLATES.newsroom.src)}" alt="" width="64" height="64" /><span>AC</span></span>
         <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · hosts · series ${String(ep.n).padStart(2, '0')} of 20
-      </p>
+      </p>`,
+      )}
       <nav class="series-dots" aria-label="Series">${dots}</nav>
       <nav class="player-adjacent">
         ${
@@ -138,15 +145,15 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
       </nav>
     </section>
     <section class="pod-quotes">
-      <p class="kicker">In this episode</p>
+      ${cinemaIntro('intro-pod-quotes', `${kick('In this episode')}<h2 class="display">Lines that stay on the record.</h2>`)}
       ${quoteCards}
     </section>
     <details class="pod-transcript">
-      <summary>The conversation</summary>
+      <summary>${cinemaIntro('intro-pod-transcript', `${kick('The conversation')}<h2 class="display">Hale and Crowe, in order.</h2>`)}</summary>
       ${bubbles}
     </details>
     <nav class="pod-list" aria-label="All episodes">
-      <p class="kicker">The series, in order</p>
+      ${cinemaIntro('intro-pod-list', `${kick('The series, in order')}<h2 class="display">Twenty conversations.</h2>`)}
       <ol>${list}</ol>
     </nav>`;
 }

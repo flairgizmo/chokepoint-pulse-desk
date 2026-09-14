@@ -579,6 +579,11 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'cohort-home': PLATES.canaryDay,
   'cohort-programmes': PLATES.payments,
   'mk-contract': PLATES.datacenter,
+  'mk-burn': PLATES.cable,
+  'player-byline': PLATES.newsroom,
+  'intro-pod-quotes': PLATES.history,
+  'intro-pod-list': PLATES.radio,
+  'intro-pod-transcript': PLATES.library,
 }
 
 const PREFIXES = [

@@ -207,7 +207,7 @@ export function renderTechnology(): string {
     (t, i) => `<article class="tech-chapter" id="${esc(t.id)}" data-q="${esc(`${t.name} ${t.purpose} ${t.does}`)}">
       ${posterFrame(
         diagramFigure(t.id, 'tech', t.era),
-        `<p class="kicker">${esc(t.era)}</p><h2>${esc(t.name)}</h2><p class="lede-sm">${esc(t.purpose)}</p>`,
+        `<p class="kicker">${esc(t.era)}</p><h2>${esc(t.name)}</h2><p class="lede-sm">${esc(t.purpose)}</p><p>${esc(t.does)}</p>`,
       )}
       <details class="card-more"${i < 2 ? ' open' : ''}>
         <summary>Chapter</summary>
@@ -235,10 +235,9 @@ export function renderPatents(): string {
       <button type="button" data-stage="patent" data-stage-id="${esc(p.id)}">
         ${posterFrame(
           photoFigure(plateFor(p.id, p.number, p.title), 'patent-still'),
-          `<p class="kicker">${esc(p.number)}</p><h2>${esc(p.title)}</h2><p>${esc(p.claim)}</p>`,
+          `<p class="kicker">${esc(p.number)}</p><h2>${esc(p.title)}</h2><p>${esc(p.claim)}</p><p class="mono subtle">${esc(p.granted || p.filed || '')}${p.inventors.length ? ` · ${esc(p.inventors.join(', '))}` : ''}</p>`,
         )}
         ${diagramFigure(p.id, 'patent', p.number)}
-        <p class="mono subtle">${esc(p.granted || p.filed || '')}${p.inventors.length ? ` · ${esc(p.inventors.join(', '))}` : ''}</p>
       </button>
     </article>`,
   ).join('');
@@ -296,10 +295,9 @@ export function overledgerRoster(): string {
           <span class="cinema-grain" aria-hidden="true"></span>
           ${face}
           <span class="people-wash" aria-hidden="true"></span>
-          <span class="people-credit"><strong>${esc(p.name)}</strong><span class="people-credit-role">${esc(b.role)}</span></span>
+          <span class="people-credit"><strong>${esc(p.name)}</strong><span class="people-credit-role">${esc(b.role)} · ${esc(b.era)}</span></span>
           <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
         </span>
-        <em>${esc(b.era)}</em>
       </button>
     </li>`;
   }).join('');

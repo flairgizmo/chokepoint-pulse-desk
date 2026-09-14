@@ -425,8 +425,9 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   scene.add(right);
 
   const floorMat = lite
-    ? new THREE.MeshBasicMaterial({
+    ? new THREE.MeshLambertMaterial({
         map: cinemaFloorMap(photoFor(backdropSrc)),
+        color: 0x6e829c,
         transparent: true,
         opacity: 0.96,
       })

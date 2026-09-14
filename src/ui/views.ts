@@ -43,6 +43,14 @@ export function kicker(text: string): string {
   return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
 }
 
+function splitLead(text: string): { lead: string; rest: string } {
+  const paras = text
+    .split(/(?<=\.)\s+(?=[A-Z“"])/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return { lead: paras[0] ?? '', rest: paras.slice(1).join(' ') };
+}
+
 function displayTitle(title: string, mute = ''): string {
   if (!mute) return esc(title);
   return `${esc(title)} <span class="display-mute">${esc(mute)}</span>`;
@@ -207,9 +215,8 @@ function filmRail(): string {
               f.thumb
                 ? `<figure class="beat-figure photo-plate cinema-frame"><img class="film-bed" src="${esc(f.thumb)}" alt="" width="640" height="360" loading="lazy" decoding="async" /></figure>`
                 : diagramFigure(`film-${f.title}`, 'source', f.kind),
-              `<p class="kicker">${esc(f.kind)}</p><strong>${esc(f.title)}</strong>`,
+              `<p class="kicker">${esc(f.kind)}</p><strong>${esc(f.title)}</strong><span>${esc(f.who)}</span>`,
             )}
-            <span>${esc(f.who)}</span>
           </button>
         </li>`,
       )
@@ -226,7 +233,7 @@ function chapterReveal(c: Chapter, open = false): string {
     <summary>
       ${posterFrame(
         diagramFigure(c.id, 'chapter', c.kicker),
-        `${kicker(c.kicker)}<h2>${esc(c.title)}</h2>`,
+        `${kicker(c.kicker)}<h2>${esc(c.title)}</h2><p>${esc(c.body.length > 180 ? `${c.body.slice(0, 180).trim()}…` : c.body)}</p>`,
       )}
     </summary>
     <div class="reveal-body">${essayParas(c.body)}</div>
@@ -375,9 +382,8 @@ function dykBlock(): string {
   const list = items
     .map(
       (d) => `<li class="dyk-card">
-        <p class="kicker">${esc(d.category)}</p>
         <details>
-          <summary class="dyk-q">${posterFrame(photoFigure(dykPlate(d), 'dyk-still'), `<span class="dyk-q-label">${esc(d.q)}</span>`)}</summary>
+          <summary class="dyk-q">${posterFrame(photoFigure(dykPlate(d), 'dyk-still'), `<span class="kicker">${esc(d.category)}</span><span class="dyk-q-label">${esc(d.q)}</span>`)}</summary>
           <p>${esc(d.a)}</p>
         </details>
         <a class="text-link" href="${esc(d.to || '/')}">${esc(d.cta || 'Open')} →</a>
@@ -446,12 +452,12 @@ export function featuredStory(): string {
       diagramFigure('featured-trusted-node', 'news', 'This month'),
       `<p class="kicker">On the record</p>
       <h2 class="display">What most coverage skips.</h2>
+      <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order: the 2018 paper, the IETF drafts, the bank names. Latest first. A title on every quote.</p>
       <div class="cta-row">
         ${pill('/news', 'Open the news', 'Official wire')}
         ${pill('/podcast', 'Start the series', 'From the beginning', 'ghost')}
       </div>`,
     )}
-    <p>Six UK commercial banks already issue tokenised sterling on a live UK Finance pilot. Overledger and PayScript are the named technology. QNT licences that network. The interesting part is not another ticker chart. It is the order: the 2018 paper, the IETF drafts, the bank names. Latest first. A title on every quote.</p>
     <div class="featured-grid">
       ${noteCard(n, true)}
     </div>
@@ -467,7 +473,7 @@ export function latestStrip(): string {
           photoFigure(plateFor(n.id, n.source, n.title), 'month-still'),
           `<time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
         <p class="mono">${esc(n.source)}</p>
-        <h3>${esc(n.title)}</h3>`,
+        <h3>${esc(n.title)}</h3><p>${esc(n.body.length > 110 ? `${n.body.slice(0, 110).trim()}…` : n.body)}</p>`,
         )}
         ${extLink(sourceUrl(n.href), 'Open the source')}
       </li>`;
@@ -572,10 +578,10 @@ export function renderHome(): string {
     .map((t) => {
       const sid = beatStage[t.year];
       const still = photoFigure(plateFor(sid, t.year, t.title), 'beat-still');
-      const inner = `${posterFrame(
+      const inner = posterFrame(
         still,
-        `<span class="year">${esc(t.year)}</span><h3>${esc(t.title)}</h3>`,
-      )}<p>${esc(t.body)}</p>`;
+        `<span class="year">${esc(t.year)}</span><h3>${esc(t.title)}</h3><p>${esc(t.body)}</p>`,
+      );
       return `<li class="beat">${
         sid
           ? `<button type="button" data-stage="event" data-stage-id="${esc(sid)}">${inner}</button>`
@@ -789,9 +795,10 @@ export function renderVision(): string {
             )}
           </div>
           <div class="flip-face flip-back">
-            ${photoFigure(plateFor(`essay-${c.id}`), 'flip-back-still')}
-            ${kicker(c.kicker)}
-            <h3>${esc(c.title)}</h3>
+            ${posterFrame(
+              photoFigure(plateFor(`essay-${c.id}`), 'flip-back-still'),
+              `${kicker(c.kicker)}<h3>${esc(c.title)}</h3>`,
+            )}
             ${essayParas(c.body)}
           </div>
         </div>
@@ -842,6 +849,7 @@ export function renderProgrammes(): string {
         <h2>${esc(p.title)}</h2>
         <p class="lede-sm">${esc(p.owner)}</p>
         <p class="mono subtle">Next: ${esc(p.milestone)}</p>
+        <p class="still-lede">${esc(p.body.length > 150 ? `${p.body.slice(0, 150).trim()}…` : p.body)}</p>
         <p class="prog-tech">${p.tech.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</p>`,
         )}
         <div class="prog-marks">${marks}</div>
@@ -1085,8 +1093,10 @@ function personCard(p: Person): string {
   return `<article class="person group-${esc(p.group)}" id="${esc(p.id)}" data-q="${esc(`${p.name} ${p.role} ${p.bio}`)}">
     ${face}
     <div>
-      <h2>${esc(p.name)}</h2>
-      <p class="role">${esc(p.role)}${p.current ? '' : ' · <span class="chip">left / documentary</span>'}</p>
+      ${posterFrame(
+        photoFigure(plateFor(`bio-${p.id}`, p.group), 'person-bio-still'),
+        `<h2>${esc(p.name)}</h2><p class="role">${esc(p.role)}${p.current ? '' : ' · <span class="chip">left / documentary</span>'}</p><p class="still-lede">${esc(p.bio.length > 160 ? `${p.bio.slice(0, 160).trim()}…` : p.bio)}</p>`,
+      )}
       <details class="person-more">
         <summary>Record</summary>
         <p>${esc(p.bio)}</p>
@@ -1160,10 +1170,11 @@ export function renderResearch(filter = '', region = 'ALL'): string {
 
 function paperCard(p: Paper): string {
   const verify = p.id === 'synchro' ? '<span class="chip">needs verification</span>' : '';
+  const teaser = p.lede.length > 140 ? `${p.lede.slice(0, 140).trim()}…` : p.lede;
   return `<article class="paper" id="${esc(p.id)}" data-kind="${esc(p.kind)}" data-region="${esc(paperRegions(p).join(' '))}">
     ${posterFrame(
       diagramFigure(p.id, `paper-${p.kind}`, p.year),
-      `<span class="year-num">${esc(p.year)}</span><p class="kicker">${esc(p.kind)} ${verify}</p><h2>${esc(p.title)}</h2><p class="meta">${esc(p.venue)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>`,
+      `<span class="year-num">${esc(p.year)}</span><p class="kicker">${esc(p.kind)} ${verify}</p><h2>${esc(p.title)}</h2><p class="meta">${esc(p.venue)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p><p class="still-lede">${esc(teaser)}</p>`,
     )}
     <details class="paper-more">
       <summary>What the document says</summary>
@@ -1177,14 +1188,14 @@ export function renderRead(id: string): string {
   const p = paperById(id);
   if (!p) return renderNotFound();
   const href = sources[p.hrefKey];
+  const { lead, rest } = splitLead(p.lede);
   return `${pageHero(p.kind, p.title, p.lede, '', undefined, 'research')}
     <article class="chapter city-essay cinema-room">
       ${posterFrame(
         photoFigure(plateFor(p.id, p.kind, p.title), 'city-essay-still'),
-        `<p class="kicker">${esc(p.kind)} · ${esc(p.year)}</p><h2>${esc(p.title)}</h2>`,
+        `<p class="kicker">${esc(p.kind)} · ${esc(p.year)}</p><h2>${esc(p.title)}</h2><p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p><p>${esc(lead)}</p>`,
       )}
-      <p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
-      ${essayParas(p.lede)}
+      ${essayParas(rest)}
       <p>The original sits with the publisher. Open it if you want the sentence in its first room.</p>
       ${href?.startsWith('http') ? `<p>${extLink(href, 'Open the original')}</p>` : '<p class="note">Held locally on the live QntDesk library when a PDF exists; this build points at the publisher URL when it is public.</p>'}
       <p><a class="text-link" href="/research">← Library</a></p>
@@ -1322,27 +1333,29 @@ export function renderMarkets(print?: MarketPrint): string {
         'float-strip',
       )}
     </div>
-    <p>The 2018 burn retired the unsold allocation. Bitstamp’s MiCA filing records that licences can lock QNT for the term of the licence. Circulating and price are the live CoinGecko print.</p>
+    ${cinemaStrip(
+      'mk-burn',
+      '<p>The 2018 burn retired the unsold allocation. Bitstamp’s MiCA filing records that licences can lock QNT for the term of the licence. Circulating and price are the live CoinGecko print.</p>',
+    )}
   </section>
   <section class="token-lab" id="tokenomics">
     ${cinemaIntro('intro-tokenomics', `${kicker('Tokenomics')}<h2 class="display">Why QNT exists.</h2>`)}
     <div class="tokencards">
-      <details class="tokencard" open>
-        <summary>${posterFrame(photoFigure(PLATES.fiber, 'token-still'), '<span class="tokencard-label"><span class="n">01</span> Utility</span>')}</summary>
-        <p>Overledger licences settle in QNT. That is the product reason the token trades. It is the utility token of Quant Network, distinct from equity in Quant Network Ltd.</p>
-      </details>
-      <details class="tokencard">
-        <summary>${posterFrame(photoFigure(PLATES.exchange, 'token-still'), '<span class="tokencard-label"><span class="n">02</span> Scarcity</span>')}</summary>
-        <p>On 14 September 2018 Quant sent the unsold allocation to the contract itself. Their post records total supply 14,612,493.080826178 QNT. Bitstamp’s MiCA whitepaper cites a post-burn maximum of 14,881,364. Both figures sit on the record. Today’s circulating print is CoinGecko’s.</p>
-      </details>
-      <details class="tokencard">
-        <summary>${posterFrame(photoFigure(PLATES.canary, 'token-still'), '<span class="tokencard-label"><span class="n">03</span> Licence lock</span>')}</summary>
-        <p>Bitstamp’s MiCA filing (13 May 2026) records that licences can lock QNT for the term of the licence. Locked tokens are not a claim that a holder never sells. They are a contractual term on a utility token.</p>
-      </details>
-      <details class="tokencard">
-        <summary>${posterFrame(photoFigure(PLATES.datacenter, 'token-still'), '<span class="tokencard-label"><span class="n">04</span> The contract</span>')}</summary>
-        <p>ERC-20 on Ethereum. ${esc(QNT_CONTRACT)}. Check it on Etherscan before you send anything. Burn transaction ${extLink(sources.qntBurnTx, '0x763f32a0…')}.</p>
-      </details>
+      <article class="tokencard">
+        ${posterFrame(photoFigure(PLATES.fiber, 'token-still'), '<span class="tokencard-label"><span class="n">01</span> Utility</span><p>Overledger licences settle in QNT. That is the product reason the token trades. It is the utility token of Quant Network, distinct from equity in Quant Network Ltd.</p>')}
+      </article>
+      <article class="tokencard">
+        ${posterFrame(photoFigure(PLATES.exchange, 'token-still'), '<span class="tokencard-label"><span class="n">02</span> Scarcity</span><p>On 14 September 2018 Quant sent the unsold allocation to the contract itself. Their post records total supply 14,612,493.080826178 QNT. Bitstamp’s MiCA whitepaper cites a post-burn maximum of 14,881,364. Both figures sit on the record. Today’s circulating print is CoinGecko’s.</p>')}
+      </article>
+      <article class="tokencard">
+        ${posterFrame(photoFigure(PLATES.canary, 'token-still'), '<span class="tokencard-label"><span class="n">03</span> Licence lock</span><p>Bitstamp’s MiCA filing (13 May 2026) records that licences can lock QNT for the term of the licence. Locked tokens are not a claim that a holder never sells. They are a contractual term on a utility token.</p>')}
+      </article>
+      <article class="tokencard">
+        ${posterFrame(
+          photoFigure(PLATES.datacenter, 'token-still'),
+          `<span class="tokencard-label"><span class="n">04</span> The contract</span><p>ERC-20 on Ethereum. ${esc(QNT_CONTRACT)}. Check it on Etherscan before you send anything. Burn transaction ${extLink(sources.qntBurnTx, '0x763f32a0…')}.</p>`,
+        )}
+      </article>
     </div>
     <p class="source-row">${extLink(sources.qntEtherscan, 'Etherscan')} ${extLink(sources.qntBurnTweet, 'Burn tweet')} ${extLink(sources.micaBitstamp, 'Bitstamp MiCA')} ${extLink(sources.treasuryPdf.startsWith('http') ? sources.treasuryPdf : sources.overledger, 'Treasury note')}</p>
   </section>
@@ -1454,9 +1467,8 @@ function renderCalendar(compact = false): string {
         photoFigure(plateFor(e.id, e.where, e.title), 'cal-still'),
         `<time datetime="${esc(e.when)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(e.where)}</p>
-      <h3>${esc(e.title)}</h3>`,
+      <h3>${esc(e.title)}</h3>${compact ? '' : `<p>${esc(e.body)}</p>`}`,
       )}
-      ${compact ? '' : `<p>${esc(e.body)}</p>`}
       </button>
     </li>`;
   }).join('');
@@ -1478,9 +1490,8 @@ function renderThisMonth(compact = false): string {
         photoFigure(plateFor(n.id, n.lane, n.title), 'month-still'),
         `<time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(n.source)} · ${esc(n.lane)}</p>
-      <h3>${esc(n.title)}</h3>`,
+      <h3>${esc(n.title)}</h3>${compact ? '' : `<p>${esc(n.body)}</p>`}`,
       )}
-      ${compact ? '' : `<p>${esc(n.body)}</p>`}
       </button>
     </li>`;
   }).join('');
@@ -1570,6 +1581,7 @@ export function renderCity(city: City): string {
       </a>`,
     )
     .join('');
+  const { lead, rest } = splitLead(city.body);
   return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
     ${cinemaStrip(
       city.id,
@@ -1579,9 +1591,9 @@ export function renderCity(city: City): string {
     <article class="chapter city-essay cinema-room">
       ${posterFrame(
         photoFigure(plateFor(city.id, city.name), 'city-essay-still'),
-        `<p class="kicker">${esc(city.country)}</p><h2>${esc(city.name)}</h2>`,
+        `<p class="kicker">${esc(city.country)}</p><h2>${esc(city.name)}</h2><p>${esc(lead)}</p>`,
       )}
-      ${essayParas(city.body)}
+      ${essayParas(rest)}
       <p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>
     </article>
     <section class="city-neighbors" aria-label="Other rooms on the map">
@@ -1607,9 +1619,8 @@ export function renderDonate(): string {
   <article class="chapter city-essay cinema-room">
     ${posterFrame(
       photoFigure(plateFor('donate', 'support'), 'city-essay-still'),
-      '<p class="kicker">Support</p><h2>The only published addresses</h2>',
+      `<p class="kicker">Support</p><h2>The only published addresses</h2><p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>`,
     )}
-    <p>QNT token contract for verification only — a separate address from the published recipients: ${extLink(sources.qntEtherscan, QNT_CONTRACT)}. Copy into a wallet you already control. A seed is never requested.</p>
     <p>Published recipients:</p>
     <ul class="donate-list">
       <li class="cinema-bar">${posterFrame(photoFigure(plateFor('donate-eth'), 'donate-code-still'), '<span class="kicker">ETH / QNT ERC-20</span><code>0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD</code>')}</li>
@@ -1630,9 +1641,8 @@ export function renderNotFound(): string {
   <article class="chapter city-essay cinema-room">
     ${posterFrame(
       photoFigure(plateFor('news', '404'), 'city-essay-still'),
-      '<p class="kicker">404</p><h2>This page is not on the map.</h2>',
+      '<p class="kicker">404</p><h2>This page is not on the map.</h2><p>This URL is not on the desk. The live rooms are News, Podcast, Vision, Programmes, Research and Markets.</p>',
     )}
-    <p>This URL is not on the desk. The live rooms are News, Podcast, Vision, Programmes, Research and Markets.</p>
   </article>
   <p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
 }
@@ -1653,6 +1663,7 @@ export function renderPodcast(): string {
 export function renderEpisode(id: string): string {
   const ep = episodeById(id);
   if (!ep) return renderNotFound();
+  const { lead, rest } = splitLead(ep.lede);
   return `${pageHero(
     `Episode ${String(ep.n).padStart(2, '0')}`,
     ep.title,
@@ -1664,9 +1675,9 @@ export function renderEpisode(id: string): string {
   <article class="chapter city-essay cinema-room">
     ${posterFrame(
       photoFigure(plateFor('podcast', ep.id, ep.title), 'city-essay-still'),
-      `<p class="kicker">Episode ${String(ep.n).padStart(2, '0')}</p><h2>${esc(ep.title)}</h2>`,
+      `<p class="kicker">Episode ${String(ep.n).padStart(2, '0')}</p><h2>${esc(ep.title)}</h2><p>${esc(lead)}</p>`,
     )}
-    ${essayParas(ep.lede)}
+    ${essayParas(rest)}
   </article>`;
 }
 
@@ -1708,15 +1719,15 @@ export function renderNote(id: string): string {
       ? `<a class="text-link" href="${esc(n.related)}">Related chapter →</a>`
       : '';
   const bed: VisualId = n.era === 'future' ? 'future' : n.era === 'history' ? 'history' : 'sterling';
+  const { lead, rest } = splitLead(n.body);
   return `<article class="note-page">
     ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed, 'notes')}
     <article class="chapter city-essay note-body cinema-room">
       ${posterFrame(
         photoFigure(plateFor(n.id, n.era, n.title), 'city-essay-still'),
-        `<p class="kicker">${esc(n.kicker)} · ${esc(n.dateLabel)}</p><h2>${esc(n.title)}</h2>`,
+        `<p class="kicker">${esc(n.kicker)} · ${esc(n.dateLabel)}</p><h2>${esc(n.title)}</h2><p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p><p>${esc(lead)}</p>`,
       )}
-      <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
-      ${essayParas(n.body)}
+      ${essayParas(rest)}
       <p class="source-row">${source}</p>
       <p><a class="text-link" href="/news">← The wire</a></p>
     </article>

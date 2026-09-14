@@ -399,6 +399,16 @@ describe('Topic plates', () => {
     expect(plateFor('cohort-programmes').src).toBe(PLATES.payments.src);
     expect(plateFor('mk-contract').src).toBe(PLATES.datacenter.src);
     expect(plateFor('group-c-suite').src).toBe(PLATES.ucl.src);
+    expect(renderHome()).toContain('2015</span><h3>');
+    expect(renderPodcast()).toContain('intro-still');
+    expect(renderPodcast()).toContain('player-byline');
+    expect(renderPatents()).toContain('patent-still');
+    expect(plateFor('mk-burn').src).toBe(PLATES.cable.src);
+    expect(plateFor('intro-pod-quotes').src).toBe(PLATES.history.src);
+    expect(plateFor('player-byline').src).toBe(PLATES.newsroom.src);
+    expect(renderPeople()).toContain('person-bio-still');
+    expect(renderDonate()).toContain('The only published addresses</h2><p>QNT token');
+    expect(renderCity(cityById('london')!)).toContain('United Kingdom</p><h2>London</h2><p>');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

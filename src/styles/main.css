@@ -2940,8 +2940,15 @@ button.chip {
 
 .float-strip .scarcity {
   width: 100%;
-  margin: 0;
-  background: rgba(234, 241, 255, 0.12);
+  height: 12px;
+  margin: 0.15rem 0 0.55rem;
+  background: rgba(234, 241, 255, 0.14);
+  border: 1px solid rgba(234, 241, 255, 0.22);
+}
+
+.float-strip .scarcity i {
+  background: linear-gradient(90deg, #2f5bff, #00d4aa);
+  box-shadow: 0 0 14px rgba(0, 212, 170, 0.45);
 }
 
 .float-strip .float-grid {
@@ -2971,7 +2978,8 @@ button.chip {
 .people-group .cinema-filter,
 .proof-row > .cinema-filter,
 .block > .cinema-filter,
-.notes-related > .cinema-filter {
+.notes-related > .cinema-filter,
+.player > .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
 }
@@ -3953,7 +3961,7 @@ button.chip {
   border-radius: 16px;
   background: #0b1220;
   color: #f4f7fb;
-  padding: 0 0 0.9rem;
+  padding: 0;
   overflow: hidden;
 }
 
@@ -6357,15 +6365,11 @@ body.stage-open .grok {
 }
 
 .beat:not(:has(> button)) {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr;
-  gap: 0.75rem 1rem;
+  display: block;
 }
 
 .beat button {
-  display: grid;
-  grid-template-columns: 5.5rem 1fr;
-  gap: 0.75rem 1rem;
+  display: block;
   width: 100%;
   appearance: none;
   background: transparent;
@@ -7689,16 +7693,73 @@ section.block .kicker {
   color: #7dffc4;
 }
 
-.film-card > span {
-  padding: 0.75rem 1.05rem 1.05rem;
-  margin: 0;
+.film-card .poster-copy span {
+  display: block;
+  margin-top: 0.2rem;
 }
 
 .month-card .poster-copy .day {
   color: #8eb0ff;
 }
 
-.featured-note > .poster-frame img,
+.cinema-filter .player-byline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  color: #eaf1ff;
+  margin: 0;
+}
+
+.beat .poster-frame img,
+.cal-card .poster-frame img,
+.month-card .poster-frame img,
+.film-card .poster-frame img,
+.tokencard .poster-frame img,
+.tech-chapter .poster-frame img {
+  min-height: 16rem;
+  max-height: 26rem;
+}
+
+.tokencard .poster-frame img,
+.cal-card .poster-frame img,
+.month-card .poster-frame img {
+  min-height: 18rem;
+  max-height: 28rem;
+}
+
+.featured-note > .poster-frame img {
+  min-height: 24rem;
+  max-height: 34rem;
+}
+
+.pod-quotes > .poster-frame,
+.pod-list > .poster-frame,
+.pod-transcript > summary > .poster-frame,
+.beat .poster-frame {
+  width: 100%;
+  margin: 0 0 1rem;
+  border-radius: 16px;
+}
+
+.pod-transcript > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.pod-transcript > summary::-webkit-details-marker {
+  display: none;
+}
+
+.film-card .poster-copy span,
+.beat .poster-copy p,
+.cal-card .poster-copy p,
+.month-card .poster-copy p,
+.tokencard .poster-copy p,
+.tech-chapter .poster-copy p {
+  color: #d5deea;
+}
+
 .essay-order .poster-frame img,
 .treaty-stage .poster-frame img,
 .city-essay .poster-frame img {
@@ -7707,7 +7768,7 @@ section.block .kicker {
 }
 
 .featured-note > .poster-frame img {
-  min-height: 20rem;
+  min-height: 24rem;
 }
 
 .featured-note > .poster-frame .cta-row {
@@ -7715,12 +7776,11 @@ section.block .kicker {
 }
 
 .film-card .poster-frame img {
-  min-height: 12rem;
-  max-height: 16rem;
+  min-height: 16rem;
+  max-height: 22rem;
 }
 
 .acid .poster-frame img,
-.tokencard .poster-frame img,
 .satp-lab .stage .poster-frame img {
   min-height: 14rem;
   max-height: 18rem;
@@ -8197,10 +8257,16 @@ section.block .kicker {
   color: #eaf1ff;
 }
 
+.flip-back > .poster-frame {
+  margin: 0;
+  min-height: 0;
+}
+
 .flip-back .flip-back-still {
   margin: 0;
 }
 
+.flip-back .poster-frame img,
 .flip-back .flip-back-still img {
   min-height: 9.2rem;
   max-height: 11rem;
@@ -8208,16 +8274,39 @@ section.block .kicker {
   filter: saturate(0.86) contrast(1.16) brightness(0.68);
 }
 
-.flip-back > .kicker,
-.flip-back > h3,
 .flip-back > p {
   padding-inline: 1.2rem;
 }
 
-.flip-back > .kicker {
+.flip-back > p:first-of-type {
   padding-top: 0.85rem;
 }
 
 .flip-back > p:last-child {
   padding-bottom: 1.15rem;
+}
+
+.person .poster-frame {
+  margin: 0 0 0.7rem;
+  min-height: 0;
+  border-radius: 14px;
+}
+
+.person .person-bio-still img,
+.person .poster-frame img {
+  min-height: 11rem;
+  max-height: 14rem;
+  aspect-ratio: 16 / 9;
+  filter: saturate(0.86) contrast(1.16) brightness(0.62);
+}
+
+.person .poster-copy .role {
+  color: #8eb0ff;
+}
+
+.poster-copy p.still-lede {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
