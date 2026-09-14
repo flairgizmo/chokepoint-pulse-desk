@@ -7077,7 +7077,7 @@ section.block .kicker {
 .quote-card .poster-copy .qmark {
   font-size: 2.4rem;
   line-height: 0.7;
-  color: #8eb0ff;
+  color: #eaf1ff;
   margin: 0;
 }
 
@@ -7131,7 +7131,18 @@ section.block .kicker {
 
 .quote-scroll .quote-card .poster-copy p,
 .pod-quotes .quote-card .poster-copy p {
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
+}
+
+.quote-scroll .quote-card .poster-copy,
+.pod-quotes .quote-card .poster-copy {
+  padding: 2.35rem 0.85rem 0.7rem;
+}
+
+.quote-scroll .quote-card .poster-copy .qmark,
+.pod-quotes .quote-card .poster-copy .qmark {
+  font-size: 1.55rem;
+  color: #eaf1ff;
 }
 
 .constellation-grid a {

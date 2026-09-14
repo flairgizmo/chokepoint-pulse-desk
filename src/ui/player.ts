@@ -68,7 +68,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
   const quoteCards = ep.quotes
     .map((q) => {
       const id = quoteStageId(q.text);
-      const copy = `<p>${esc(q.text)}</p><footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`;
+      const copy = `<span class="qmark" aria-hidden="true">“</span><p>${esc(q.text)}</p><footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`;
       const still = posterFrame(photoFigure(plateFor(id ?? `pod-${q.who}`), 'quote-still'), copy);
       return id
         ? `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(id)}">${still}</button>`
