@@ -1307,6 +1307,51 @@ main {
   font-size: 0.82rem;
 }
 
+.bars li.cinema-bar {
+  display: block;
+  margin: 0 0 0.75rem;
+  border: 0;
+}
+
+.cinema-bar .poster-frame {
+  min-height: 8.5rem;
+}
+
+.cinema-bar .poster-frame img,
+.cinema-bar .venue-bar-still img {
+  min-height: 8.5rem;
+  max-height: 11rem;
+  aspect-ratio: 21 / 7;
+}
+
+.cinema-bar .poster-copy {
+  padding: 2.2rem 1.1rem 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 0.8rem;
+  align-items: end;
+}
+
+.cinema-bar .bar-name {
+  font-weight: 650;
+}
+
+.cinema-bar em {
+  font-style: normal;
+  font-family: var(--mono);
+  color: #eaf1ff;
+}
+
+.cinema-bar i {
+  grid-column: 1 / -1;
+  height: 5px;
+  border-radius: 99px;
+  background: #00d4aa;
+  width: var(--w);
+  max-width: 100%;
+  display: block;
+}
+
 .bars i {
   height: 8px;
   border-radius: 99px;
@@ -4250,9 +4295,46 @@ button.chip {
   background: var(--elevated);
   color: inherit;
   font: inherit;
-  padding: 0.65rem 0.8rem;
+  padding: 0.55rem 0.7rem;
   display: grid;
-  gap: 0.15rem;
+  grid-template-columns: 5.2rem minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 0.75rem;
+  row-gap: 0.08rem;
+  align-items: start;
+}
+
+#desk-search-hits .search-still {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  margin: 0;
+  min-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0b1220;
+}
+
+#desk-search-hits .search-still img {
+  display: block;
+  width: 100%;
+  height: 3.55rem;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.12) brightness(0.78);
+}
+
+#desk-search-hits .search-still figcaption {
+  display: none;
+}
+
+#desk-search-hits .kicker,
+#desk-search-hits strong,
+#desk-search-hits .search-sub {
+  grid-column: 2;
+}
+
+#desk-search-hits .search-sub {
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 .story-node.is-focus .story-hit {
@@ -5208,6 +5290,7 @@ body.stage-open .grok {
 .poster-frame > .token-still,
 .poster-frame > .token-board-still,
 .poster-frame > .venue-still,
+.poster-frame > .venue-bar-still,
 .poster-frame > .essay-order-still,
 .poster-frame > .city-essay-still,
 .poster-frame > .city-neighbor-still,

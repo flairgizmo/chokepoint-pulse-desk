@@ -78,6 +78,9 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
     const rim = new THREE.DirectionalLight(0x3b7bff, 0.64);
     rim.position.set(-1.6, 0.45, -0.9);
     scene.add(rim);
+    const bounce = new THREE.DirectionalLight(0xffc56a, 0.28);
+    bounce.position.set(0.12, -1.45, 0.95);
+    scene.add(bounce);
   }
   const composer = addUnrealLook(renderer, scene, camera, probe.lite, src);
 

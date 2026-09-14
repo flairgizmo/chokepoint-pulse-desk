@@ -6,6 +6,7 @@ import { papers } from '../src/data/catalog';
 import { motionBedFor, plateFor, PLATES } from '../src/data/plates';
 import { STORY } from '../src/data/story';
 import { TECH } from '../src/data/tech';
+import { searchHitButton } from '../src/ui/search';
 import { diagramFigure } from '../src/ui/diagrams';
 import { renderInstitutions, renderPatents, renderStack, renderStory } from '../src/ui/pages';
 import {
@@ -23,6 +24,7 @@ import {
   renderResearch,
   renderStandards,
   renderVision,
+  venueBarsHtml,
 } from '../src/ui/views';
 import { FILM_BACKDROPS, FILM_SETS } from '../src/ui/filmSets';
 import { cityById } from '../src/data/cities';
@@ -259,6 +261,39 @@ describe('Topic plates', () => {
     expect(renderMarkets()).toContain('token-still');
     expect(renderMarkets()).toContain('/visuals/topics/fiber.jpg');
     expect(renderMarkets()).toContain('/visuals/topics/datacenter.jpg');
+    const venues = venueBarsHtml({
+      status: 'live',
+      venue: 'CoinGecko',
+      priceUsd: 1,
+      change24h: 0,
+      volume24h: 1,
+      high24h: 1,
+      low24h: 1,
+      marketCap: 1,
+      circulating: 1,
+      totalSupply: 1,
+      ath: 1,
+      atl: 1,
+      sparkline: [],
+      tickers: [
+        { name: 'Binance', volume: 10 },
+        { name: 'Coinbase Exchange', volume: 6 },
+        { name: 'Kraken', volume: 3 },
+      ],
+      updated: null,
+    });
+    expect(venues).toContain('venue-bar-still');
+    expect(venues).toContain('cinema-bar');
+    expect(venues).toContain('Binance');
+    expect(venues).toContain('/visuals/cities/hong-kong.jpg');
+    expect(venues).toContain('/visuals/cities/new-york.jpg');
+    expect(venues).toContain('/visuals/topics/city.jpg');
+    expect(searchHitButton({ stageKind: 'term', id: 'overledger', kind: 'Glossary', title: 'Overledger', sub: 'Gateway OS' })).toContain(
+      '/visuals/',
+    );
+    expect(searchHitButton({ stageKind: 'person', id: 'verdian', kind: 'People', title: 'Gilbert Verdian', sub: 'CEO' })).toContain(
+      '/people/verdian.jpg',
+    );
     expect(renderStandards()).toContain('still-strip');
     expect(renderStandards()).toContain('treaty-still');
     expect(renderStandards()).toContain('satp-still');
@@ -311,6 +346,9 @@ describe('Topic plates', () => {
     expect(plateFor('iso-23516').src).not.toBe(plateFor('satp-core').src);
     expect(plateFor('boe-lab').src).toBe(PLATES.london.src);
     expect(plateFor('x402').src).toBe(PLATES.fiber.src);
+    expect(plateFor('binance').src).toBe(PLATES.hongkong.src);
+    expect(plateFor('coinbase-exchange').src).toBe(PLATES.newyork.src);
+    expect(plateFor('kraken').src).toBe(PLATES.city.src);
     const inst = INSTITUTIONS.map((i) => plateFor(i.id, 'institution').src);
     expect(new Set(inst).size).toBeGreaterThanOrEqual(20);
     const pods = [...renderPodcast().matchAll(/class="pod-still"[^>]*src="(\/visuals\/[^"]+)"/g)].map((m) => m[1]);

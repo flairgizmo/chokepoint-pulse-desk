@@ -6,6 +6,7 @@ import { STORY } from '../data/story';
 import { PATENTS } from '../data/patents';
 import { INSTITUTIONS } from '../data/institutions';
 import { PROGRAMMES } from '../data/programmes';
+import { photoFigure, plateFor } from '../data/plates';
 import { esc } from './html';
 import { isStageOpen, revealStage } from './stage';
 
@@ -68,6 +69,14 @@ function collect(): Hit[] {
   ];
 }
 
+export function searchHitButton(h: Hit): string {
+  const person = h.stageKind === 'person' ? PEOPLE.find((p) => p.id === h.id) : undefined;
+  const still = person?.photo
+    ? `<figure class="photo-plate cinema-frame search-still"><img src="${esc(person.photo)}" alt="${esc(person.name)}" width="160" height="100" /></figure>`
+    : photoFigure(plateFor(h.id, h.stageKind), 'search-still');
+  return `<li><button type="button" data-stage="${esc(h.stageKind)}" data-stage-id="${esc(h.id)}">${still}<span class="kicker">${esc(h.kind)}</span><strong>${esc(h.title)}</strong><span class="search-sub">${esc(h.sub)}</span></button></li>`;
+}
+
 export function searchMarkup(): string {
   return `<div class="desk-search" id="desk-search" hidden>
     <div class="desk-search-backdrop" data-search-close></div>
@@ -107,12 +116,7 @@ export function wireSearch(root: HTMLElement): void {
           .slice(0, 12)
       : corpus.slice(0, 8);
     empty.hidden = hits.length > 0;
-    list.innerHTML = hits
-      .map(
-        (h) =>
-          `<li><button type="button" data-stage="${esc(h.stageKind)}" data-stage-id="${esc(h.id)}"><span class="kicker">${esc(h.kind)}</span><strong>${esc(h.title)}</strong><span>${esc(h.sub)}</span></button></li>`,
-      )
-      .join('');
+    list.innerHTML = hits.map(searchHitButton).join('');
   };
 
   const setOpen = (open: boolean): void => {

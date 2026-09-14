@@ -1213,14 +1213,28 @@ export function renderGlossary(filter = ''): string {
     ${groups || '<p class="empty-note">No term matches. Try SATP, GBTD, or Herstatt.</p>'}`;
 }
 
+function venuePlate(name: string) {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+  return plateFor(slug, name);
+}
+
 export function venueBarsHtml(print?: MarketPrint): string {
   const tickers = print?.tickers ?? [];
   if (!tickers.length) return '<p class="empty-note">Venue volumes will appear when CoinGecko lists them.</p>';
   const maxVol = Math.max(...tickers.map((t) => t.volume), 1);
   return tickers
-    .map(
-      (t) => `<li class="bar"><span>${esc(t.name)}</span><i style="--w:${(t.volume / maxVol) * 100}%"></i><em>${fmtMoney(t.volume, 0)}</em></li>`,
-    )
+    .map((t) => {
+      const pct = (t.volume / maxVol) * 100;
+      return `<li class="bar cinema-bar">
+        ${posterFrame(
+          photoFigure(venuePlate(t.name), 'venue-bar-still'),
+          `<span class="bar-name">${esc(t.name)}</span><em>${fmtMoney(t.volume, 0)}</em><i style="--w:${pct}%"></i>`,
+        )}
+      </li>`;
+    })
     .join('');
 }
 

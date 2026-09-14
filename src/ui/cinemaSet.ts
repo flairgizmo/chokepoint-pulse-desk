@@ -464,6 +464,9 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   const rim = new THREE.DirectionalLight(0x3b7bff, lite ? 0.78 : 0.95);
   rim.position.set(-2.4, 1.3, -1.6);
   scene.add(rim);
+  const bounce = new THREE.DirectionalLight(0xffc56a, lite ? 0.32 : 0.16);
+  bounce.position.set(0.2, -2.2, 1.1);
+  scene.add(bounce);
   addCinemaHaze(scene);
   addPracticals(scene);
 }

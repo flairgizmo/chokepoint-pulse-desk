@@ -322,7 +322,7 @@ function fireSprite(tint: number, x: number, y: number, z: number, scale: number
     map: culetFireTex(),
     color: tint,
     transparent: true,
-    opacity: 0.5,
+    opacity: 0.64,
     depthWrite: false,
     depthTest: false,
     blending: THREE.AdditiveBlending,
@@ -376,7 +376,7 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
     ctx.lineTo(256 + Math.cos(a0) * 238, 256 + Math.sin(a0) * 238);
     ctx.lineTo(256 + Math.cos(a1) * 238, 256 + Math.sin(a1) * 238);
     ctx.closePath();
-    ctx.fillStyle = i % 2 === 0 ? 'rgba(234, 241, 255, 0.28)' : 'rgba(255, 196, 128, 0.14)';
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(234, 241, 255, 0.38)' : 'rgba(255, 196, 128, 0.2)';
     ctx.fill();
   }
   if (photo?.naturalWidth) {
@@ -528,8 +528,8 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
 ${liteIcePreamble()}
 vec3 body = mix(vec3(0.028, 0.032, 0.048), vec3(0.14, 0.18, 0.28), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.08 + kite * 0.08);
-diffuseColor.rgb += glint * (0.1 + kite * 1.55);
+diffuseColor.rgb += envRefl * (rim * 0.1 + kite * 0.1);
+diffuseColor.rgb += glint * (0.14 + kite * 1.75);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
@@ -537,8 +537,8 @@ diffuseColor.a = 1.0;`;
 ${liteIcePreamble()}
 vec3 body = mix(vec3(0.07, 0.08, 0.11), vec3(0.32, 0.4, 0.52), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.12);
-diffuseColor.rgb += glint * (0.16 + kite * 1.45);
+diffuseColor.rgb += envRefl * (rim * 0.14 + kite * 0.14);
+diffuseColor.rgb += glint * (0.2 + kite * 1.6);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
@@ -546,8 +546,8 @@ diffuseColor.a = 1.0;`;
 ${liteIcePreamble()}
 vec3 body = mix(vec3(0.05, 0.06, 0.09), vec3(0.36, 0.44, 0.58), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.16);
-diffuseColor.rgb += glint * (0.18 + kite * 1.85);
+diffuseColor.rgb += envRefl * (rim * 0.16 + kite * 0.22);
+diffuseColor.rgb += glint * (0.24 + kite * 2.15);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -577,8 +577,8 @@ float spec = pow(liteFres, 1.85);
 diffuseColor.rgb *= mix(0.8, 1.0, spec);
 diffuseColor.rgb += envRefr * liteFacing * 0.05;
 diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.42);
-diffuseColor.rgb += envRefl * spec * 1.7;
-diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
+diffuseColor.rgb += envRefl * spec * 2.05;
+diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.58;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.22, 0.96, liteFres);`;
@@ -623,7 +623,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-52-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-53-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
