@@ -431,6 +431,7 @@ vec3 wN = normalize(vLiteWorldN);
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.15);
 diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.28);
 diffuseColor.rgb += envRefl * spec * 0.55;
@@ -451,9 +452,10 @@ if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float kite = clamp(flash.r * 0.7 + flash.b * 0.3, 0.0, 1.0);
 diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.1 + liteFres * 1.75);
-diffuseColor.rgb += envRefl * liteFres * kite * 0.48;
+diffuseColor.rgb += envRefl * liteFres * kite * 0.28;
 diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.35 + kite * 0.8);
 diffuseColor.a = liteFres * mix(0.22, 0.82, kite);`;
   }
@@ -471,6 +473,7 @@ if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 0.95);
 vec3 body = vec3(0.78, 0.86, 0.96);
 diffuseColor.rgb = mix(body, envRefl, spec * 0.9);
@@ -494,6 +497,7 @@ if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.12);
 vec3 body = vec3(0.74, 0.84, 0.96);
 diffuseColor.rgb = mix(body, envRefl, spec * 0.88);
@@ -523,7 +527,9 @@ vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 wT = refract(-wV, wN, 0.413);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 vec3 envRefr = textureCube(liteEnv, dot(wT, wT) > 0.001 ? wT : wR).rgb;
+envRefr = mix(vec3(dot(envRefr, vec3(0.28, 0.52, 0.2))), envRefr * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.85);
 diffuseColor.rgb *= mix(0.8, 1.0, spec);
 diffuseColor.rgb += envRefr * liteFacing * 0.05;
@@ -573,7 +579,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-29-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-30-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -1208,13 +1214,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   haloRoot.scale.setScalar(1.016);
   crystal.add(haloRoot);
   const haloMat = lite ? iceHaloMat(roomEnv) : null;
-  if (haloMat) {
-    const tableHalo = new THREE.Mesh(table.geometry, haloMat);
-    tableHalo.position.copy(table.position);
-    tableHalo.userData.nodeId = 6;
-    tableHalo.renderOrder = 5;
-    haloRoot.add(tableHalo);
-  }
   for (let i = 0; i < sides; i++) {
     const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
     const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
@@ -1606,9 +1605,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         haze.push(obj);
       }
     });
+    for (const card of cards) card.visible = false;
+    for (const puddle of puddles) puddle.visible = false;
+    bead.visible = false;
+    rt2.visible = false;
+    rt2Label.visible = false;
     for (const card of studio) card.visible = true;
     cubeCam.update(renderer, scene);
     for (const card of studio) card.visible = false;
+    bead.visible = true;
+    rt2.visible = true;
+    rt2Label.visible = true;
+    for (const puddle of puddles) puddle.visible = true;
+    for (const card of cards) card.visible = true;
     for (const obj of haze) obj.visible = true;
     lean.visible = true;
     backdrop.visible = true;

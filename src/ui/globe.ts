@@ -347,9 +347,9 @@ function sunGlintTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (!ctx) return hardenCanvasTex(new THREE.CanvasTexture(c));
   const g = ctx.createRadialGradient(128, 128, 2, 128, 128, 118);
-  g.addColorStop(0, 'rgba(255, 248, 230, 0.95)');
-  g.addColorStop(0.08, 'rgba(255, 220, 168, 0.55)');
-  g.addColorStop(0.22, 'rgba(180, 200, 255, 0.16)');
+  g.addColorStop(0, 'rgba(236, 246, 255, 0.9)');
+  g.addColorStop(0.08, 'rgba(210, 228, 248, 0.42)');
+  g.addColorStop(0.22, 'rgba(180, 200, 255, 0.12)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 256, 256);
@@ -861,12 +861,12 @@ export class EarthGlobe {
       this.terminator = term;
     }
     const glint = new THREE.Mesh(
-      new THREE.PlaneGeometry(0.28, 0.18),
+      new THREE.PlaneGeometry(this.lite ? 0.14 : 0.28, this.lite ? 0.09 : 0.18),
       new THREE.MeshBasicMaterial({
         map: sunGlintTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.88 : 0.92,
+        opacity: this.lite ? 0.52 : 0.92,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -894,6 +894,7 @@ export class EarthGlobe {
     sheen.position.copy(sheenDir.multiplyScalar(1.015));
     sheen.lookAt(0, 0, 0);
     sheen.renderOrder = 4;
+    sheen.visible = !this.lite;
     scene.add(sheen);
     this.sheen = sheen;
     const med = new THREE.Mesh(
@@ -912,6 +913,7 @@ export class EarthGlobe {
     med.position.copy(medDir.multiplyScalar(1.016));
     med.lookAt(0, 0, 0);
     med.renderOrder = 4;
+    med.visible = !this.lite;
     scene.add(med);
     this.medSheen = med;
     const biscay = new THREE.Mesh(
@@ -930,6 +932,7 @@ export class EarthGlobe {
     biscay.position.copy(biscayDir.multiplyScalar(1.016));
     biscay.lookAt(0, 0, 0);
     biscay.renderOrder = 4;
+    biscay.visible = !this.lite;
     scene.add(biscay);
     this.biscaySheen = biscay;
 
