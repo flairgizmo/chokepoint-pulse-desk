@@ -2870,7 +2870,10 @@ button.chip {
 
 .cinema-filter .chip-row,
 .cinema-filter .chips,
-.cinema-filter .stack-tools {
+.cinema-filter .stack-tools,
+.cinema-filter .notes-count,
+.cinema-filter .coord-block,
+.cinema-filter .tape-head {
   width: auto;
   margin: 0;
 }
@@ -2892,7 +2895,10 @@ button.chip {
 }
 
 .cinema-filter .subtle,
-.cinema-filter .density {
+.cinema-filter .density,
+.cinema-filter .notes-count,
+.cinema-filter .coord-block,
+.cinema-filter .tape-head {
   color: #eaf1ff;
   margin: 0;
 }
@@ -2926,15 +2932,40 @@ button.chip {
   font-size: clamp(1.05rem, 2.2vw, 1.55rem);
 }
 
-.spark-strip .spark {
+.float-strip .filter-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+.float-strip .scarcity {
   width: 100%;
-  max-width: none;
-  height: 6.4rem;
+  margin: 0;
+  background: rgba(234, 241, 255, 0.12);
+}
+
+.float-strip .float-grid {
+  width: 100%;
   margin: 0;
 }
 
+.float-strip .float-grid li {
+  background: rgba(234, 241, 255, 0.08);
+  border-color: rgba(234, 241, 255, 0.16);
+  color: #eaf1ff;
+  box-shadow: none;
+}
+
+.float-strip .kicker,
+.float-strip strong,
+.float-strip .subtle {
+  color: #eaf1ff;
+}
+
 .cinema-tape > .cinema-filter,
-.stack-exploded > .cinema-filter {
+.stack-exploded > .cinema-filter,
+.cinema-wire > .cinema-filter,
+.token-board .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
 }
@@ -5686,7 +5717,22 @@ body.stage-open .grok {
   aspect-ratio: 21 / 7;
 }
 
-.poster-copy {
+.cinema-filter.float-strip .photo-plate.filter-still img {
+  min-height: 0;
+  height: 14rem;
+  max-height: 14rem;
+  aspect-ratio: 21 / 9;
+}
+
+.liability-cards .poster-frame img {
+  min-height: 22rem;
+  max-height: 32rem;
+}
+
+.satp-lab .poster-frame img {
+  min-height: 18rem;
+  max-height: 24rem;
+}
   position: absolute;
   left: 0;
   right: 0;
@@ -7474,7 +7520,8 @@ section.block .kicker {
 .month-card .poster-copy,
 .featured-note > .poster-frame .poster-copy,
 .essay-order .poster-copy,
-.satp-lab .poster-copy {
+.satp-lab .poster-copy,
+.liability-cards .poster-copy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -7497,6 +7544,37 @@ section.block .kicker {
   padding: 0;
   margin: 0;
   color: #f4f7fb;
+}
+
+.satp-lab .poster-copy .stage-body,
+.satp-lab .poster-copy .mono {
+  display: block;
+  width: 100%;
+  padding: 0;
+  color: #d5deea;
+}
+
+.liability-cards .poster-copy h3,
+.liability-cards .poster-copy .n,
+.liability-cards .poster-copy p {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  color: #f4f7fb;
+}
+
+.liability-cards .poster-copy p {
+  color: #d5deea;
+}
+
+.prog-card .poster-copy .prog-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.2rem 0 0;
+  margin: 0;
 }
 
 .acid .poster-copy > span,

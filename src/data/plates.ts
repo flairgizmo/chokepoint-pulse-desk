@@ -539,6 +539,10 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'fold-people': PLATES.ucl,
   'mk-stats': PLATES.exchange,
   'mk-spark': PLATES.fiber,
+  'mk-float': PLATES.city,
+  'wire-head': PLATES.newsroom,
+  'count-notes': PLATES.history,
+  'count-story': PLATES.brussels,
 }
 
 const PREFIXES = [

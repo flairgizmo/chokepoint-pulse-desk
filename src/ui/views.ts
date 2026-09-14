@@ -845,9 +845,9 @@ export function renderProgrammes(): string {
           `<p class="kicker"><span class="chip status-${esc(p.status)}">${esc(p.status)}</span> ${esc(p.kicker)}</p>
         <h2>${esc(p.title)}</h2>
         <p class="lede-sm">${esc(p.owner)}</p>
-        <p class="mono subtle">Next: ${esc(p.milestone)}</p>`,
+        <p class="mono subtle">Next: ${esc(p.milestone)}</p>
+        <p class="prog-tech">${p.tech.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</p>`,
         )}
-        <p class="prog-tech">${p.tech.map((t) => `<span class="chip">${esc(t)}</span>`).join('')}</p>
         <div class="prog-marks">${marks}</div>
       </button>
       <details class="card-more"><summary>Filing</summary><p>${esc(p.body)}</p></details>
@@ -928,9 +928,18 @@ export function renderCbdc(): string {
   ${quoteRail('cbdc')}
   ${cinemaDiagram('liability', '/visuals/plates/liability-line.svg', 'Three liabilities: central-bank, commercial-bank deposit, private stablecoin')}
   <ol class="liability-cards">
-    <li data-kind="cbdc">${posterFrame(photoFigure(PLATES.payments, 'liability-still'), '<span class="n">01</span><h3>CBDC</h3>')}<div><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> The Bank of England Synchronisation Lab is adjacent experimentation on wholesale rails.</p></div></li>
-    <li data-kind="deposit">${posterFrame(photoFigure(PLATES.canary, 'liability-still'), '<span class="n">02</span><h3>Tokenised deposit</h3>')}<div><p><b>Who owes it.</b> A commercial bank.</p><p><b>Example.</b> GBTD tokens between ${GBTD_BANKS.map(bankDisplay).join(', ')}.</p><p><b>On this map.</b> The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</p></div></li>
-    <li data-kind="stable">${posterFrame(photoFigure(PLATES.exchange, 'liability-still'), '<span class="n">03</span><h3>Stablecoin / crypto</h3>')}<div><p><b>Who owes it.</b> Usually a private issuer or protocol.</p><p><b>Example.</b> x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</p><p><b>On this map.</b> Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</p></div></li>
+    <li data-kind="cbdc">${posterFrame(
+      photoFigure(PLATES.payments, 'liability-still'),
+      `<span class="n">01</span><h3>CBDC</h3><p><b>Who owes it.</b> A central bank.</p><p><b>Example.</b> A digital pound, if issued, would sit here.</p><p><b>On this map.</b> The Bank of England Synchronisation Lab is adjacent experimentation on wholesale rails.</p>`,
+    )}</li>
+    <li data-kind="deposit">${posterFrame(
+      photoFigure(PLATES.canary, 'liability-still'),
+      `<span class="n">02</span><h3>Tokenised deposit</h3><p><b>Who owes it.</b> A commercial bank.</p><p><b>Example.</b> GBTD tokens between ${GBTD_BANKS.map(bankDisplay).join(', ')}.</p><p><b>On this map.</b> The live UK Finance pilot. Quant is the named technology partner (Overledger + PayScript), not the issuer.</p>`,
+    )}</li>
+    <li data-kind="stable">${posterFrame(
+      photoFigure(PLATES.exchange, 'liability-still'),
+      `<span class="n">03</span><h3>Stablecoin / crypto</h3><p><b>Who owes it.</b> Usually a private issuer or protocol.</p><p><b>Example.</b> x402 agent payments can use tokens; Quant’s thesis is to settle them in bank money.</p><p><b>On this map.</b> Layer 3 in Verdian’s architecture. Do not read a city pin as a coin listing.</p>`,
+    )}</li>
   </ol>
   <section class="cbdc-models">
     ${kicker('Three models')}
@@ -948,10 +957,9 @@ export function renderStandards(): string {
       <button type="button" class="stage-btn" data-stage="satp" data-stage-id="${esc(s.n)}">
         ${posterFrame(
           photoFigure(satpStills[Number(s.n)] ?? PLATES.geneva, 'satp-still'),
-          `<span class="n">${esc(s.n)}</span><span class="satp-title">${esc(s.title)}</span>`,
+          `<span class="n">${esc(s.n)}</span><span class="satp-title">${esc(s.title)}</span><span class="stage-body">${esc(s.body)}</span><span class="mono subtle">${esc(s.tags)}</span>`,
         )}
       </button>
-      <p class="stage-body"><span>${esc(s.body)}</span><span class="mono subtle">${esc(s.tags)}</span></p>
     </li>`,
   ).join('');
   return `${pageHero(
@@ -1299,15 +1307,17 @@ export function renderMarkets(print?: MarketPrint): string {
     )}
     <div class="token-visual">
       ${supplyRing(pct)}
-      <div>
-        <div class="scarcity" role="img" aria-label="Circulating share of total supply"><i data-mk-bar style="width:${pct}%"></i></div>
+      ${cinemaStrip(
+        'mk-float',
+        `<div class="scarcity" role="img" aria-label="Circulating share of total supply"><i data-mk-bar style="width:${pct}%"></i></div>
         <ul class="float-grid">
           <li><span class="kicker">Circulating</span><strong data-mk-circ2>${circ != null ? fmtQty(circ) : '—'}</strong><span>CoinGecko live print</span></li>
           <li><span class="kicker">Total</span><strong data-mk-total2>${total != null ? fmtQty(total) : '—'}</strong><span>Reported outstanding</span></li>
           <li><span class="kicker">Outside the float</span><strong data-mk-outside>${outside != null ? fmtQty(outside) : '—'}</strong><span>Total minus circulating</span></li>
         </ul>
-        <p class="mono subtle" data-mk-ath>${pct ? `${pct.toFixed(1)}% circulating` : 'Supply figures will appear when CoinGecko answers.'} · ATH ${p?.ath != null ? fmtMoney(p.ath) : '—'} · ATL ${p?.atl != null ? fmtMoney(p.atl) : '—'}</p>
-      </div>
+        <p class="mono subtle" data-mk-ath>${pct ? `${pct.toFixed(1)}% circulating` : 'Supply figures will appear when CoinGecko answers.'} · ATH ${p?.ath != null ? fmtMoney(p.ath) : '—'} · ATL ${p?.atl != null ? fmtMoney(p.atl) : '—'}</p>`,
+        'float-strip',
+      )}
     </div>
     <p>The 2018 burn retired the unsold allocation. Bitstamp’s MiCA filing records that licences can lock QNT for the term of the licence. Circulating and price are the live CoinGecko print.</p>
   </section>
@@ -1421,7 +1431,11 @@ export function renderNews(river?: NewsRiver, filter = ''): string {
   ${stillStrip('news', 'Photographs on the wire')}
   ${filterBox('news-filter', 'Search headlines…', filter)}
   <section class="wire cinema-wire">
-    <div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>
+    ${cinemaStrip(
+      'wire-head',
+      `<div class="tape-head"><span class="chip ${(river?.status ?? 'loading').toLowerCase()}" data-news-status>${esc(river?.status ?? 'loading')}</span><span class="mono subtle" data-news-count>${list.count} matching headlines</span></div>`,
+      'news-tape-strip',
+    )}
     <ul class="headlines" data-news-list>${list.html}</ul>
   </section>
   ${sourcedNews()}${renderThisMonth()}${renderCalendar()}${renderVoices()}`;
@@ -1550,7 +1564,11 @@ export function renderCity(city: City): string {
     )
     .join('');
   return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
-    <p class="mono subtle coord-block">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
+    ${cinemaStrip(
+      city.id,
+      `<p class="mono subtle coord-block">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>`,
+      'coord-strip',
+    )}
     <article class="chapter city-essay cinema-room">
       ${posterFrame(
         photoFigure(plateFor(city.id, city.name), 'city-essay-still'),
@@ -1663,7 +1681,7 @@ export function renderNotes(filter = '', era: NoteEra | 'ALL' = 'ALL'): string {
   )}
   ${stillStrip('notes', 'Photographs in the notes')}
   ${filterBox('notes-search', 'Search news…', filter, `<div class="chips" id="notes-eras">${chips}</div>`)}
-  <p class="notes-count mono subtle">${list.length} filings on the record</p>
+  ${cinemaStrip('count-notes', `<p class="notes-count mono subtle">${list.length} filings on the record</p>`, 'count-strip')}
   <div class="notes-index">${cards || '<p class="empty-note">No filing matches that filter.</p>'}</div>`;
 }
 

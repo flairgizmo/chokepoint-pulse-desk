@@ -451,6 +451,7 @@ if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float ndv = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float rim = pow(1.0 - ndv, 2.35);
+float crease = smoothstep(0.03, 0.14, length(fwidth(liteN)));
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
@@ -538,6 +539,7 @@ vec3 body = vec3(0.003, 0.004, 0.01);
 diffuseColor.rgb = body;
 diffuseColor.rgb += glint * (0.02 + pin * 3.4 + rim * 0.32);
 diffuseColor.rgb += vec3(0.95, 0.97, 1.0) * pow(rim, 2.6) * 0.16;
+diffuseColor.rgb += vec3(0.88, 0.94, 1.0) * crease * 0.55;
 diffuseColor.rgb += texture2D(map, vMapUv).rgb * pin * 0.4;
 diffuseColor.a = mix(0.86, 0.96, rim);`;
   }
@@ -551,7 +553,8 @@ diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * fleck * pin * 0.14;
 diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * fleck * pin * 0.9;
 diffuseColor.rgb += glint * (0.012 + pin * 3.6 + fleck * pin * 2.4);
-diffuseColor.rgb += vec3(0.7, 0.84, 1.0) * pow(rim, 3.15) * 0.42;
+diffuseColor.rgb += vec3(0.78, 0.9, 1.0) * crease * (0.4 + pow(rim, 2.2) * 0.55);
+diffuseColor.rgb += vec3(0.65, 0.8, 1.0) * pow(rim, 4.8) * 0.16;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
@@ -564,7 +567,8 @@ diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * fleck * pin * 0.12;
 diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * fleck * pin * 1.0;
 diffuseColor.rgb += glint * (0.018 + pin * 4.0 + fleck * pin * 2.8 + rim * 0.1);
-diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * pow(rim, 2.35) * 0.55;
+diffuseColor.rgb += vec3(1.0, 0.93, 0.8) * crease * (0.48 + pow(rim, 1.8) * 0.5);
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * pow(rim, 4.4) * 0.18;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
@@ -577,7 +581,8 @@ diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * fleck * pin * 0.12;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * fleck * pin * 1.2;
 diffuseColor.rgb += glint * (0.012 + pin * 4.8 + fleck * pin * 3.6);
-diffuseColor.rgb += vec3(0.78, 0.9, 1.0) * pow(rim, 3.05) * 0.78;
+diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * crease * (0.58 + pow(rim, 2.0) * 0.72);
+diffuseColor.rgb += vec3(0.72, 0.86, 1.0) * pow(rim, 5.0) * 0.14;
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -653,7 +658,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-62-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-63-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {

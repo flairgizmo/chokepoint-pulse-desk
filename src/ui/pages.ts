@@ -151,7 +151,7 @@ export function renderStory(): string {
         </select>
       </label>`,
     )}
-    <p class="notes-count mono subtle" data-story-count>${STORY.length} events on the rail</p>
+    ${cinemaStrip('count-story', `<p class="notes-count mono subtle" data-story-count>${STORY.length} events on the rail</p>`, 'count-strip')}
     <p class="story-suggest" data-story-suggest hidden></p>
     <ol class="story-rail" id="story-rail">${nodes}</ol>
     <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>
