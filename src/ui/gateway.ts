@@ -413,7 +413,7 @@ function glassTex(
   return tex;
 }
 
-type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle';
+type LiteFire = 'window' | 'mirror' | 'crown' | 'girdle' | 'halo';
 
 function liteFireChunk(kind: LiteFire): string {
   if (kind === 'mirror') {
@@ -438,6 +438,23 @@ diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.22;
 diffuseColor.a = mix(0.9, 0.96, spec);
 }`;
   }
+  if (kind === 'halo') {
+    return `#include <map_fragment>
+vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+vec3 liteV = normalize(vLiteView);
+float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
+float liteFres = pow(1.0 - liteFacing, 1.08);
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+diffuseColor.rgb = vec3(0.72, 0.86, 1.0) * (0.18 + liteFres * 1.6);
+diffuseColor.rgb += envRefl * liteFres * 1.2;
+diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * 0.95;
+diffuseColor.a = liteFres * 0.64;`;
+  }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -459,7 +476,7 @@ diffuseColor.rgb += envRefl * spec * 2.4;
 diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * liteFres * 1.15;
 diffuseColor.rgb += vec3(0.62, 0.82, 1.0) * liteFres * liteFres * 0.7;
 diffuseColor.rgb += vec3(1.0, 0.97, 0.9) * liteFlash * 0.9;
-diffuseColor.a *= mix(0.5, 0.92, spec);`;
+diffuseColor.a *= mix(0.2, 0.88, spec);`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
@@ -482,7 +499,7 @@ diffuseColor.rgb += envRefl * spec * 2.35;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 1.05;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.7;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.85;
-diffuseColor.a *= mix(0.5, 0.9, spec);`;
+diffuseColor.a *= mix(0.16, 0.84, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -554,7 +571,21 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-27-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-28-${kind}`;
+}
+
+function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    transparent: true,
+    opacity: 1,
+    side: THREE.BackSide,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+  mat.toneMapped = false;
+  attachLiteFire(mat, env, 'halo');
+  return mat;
 }
 
 function glassMat(
@@ -1163,7 +1194,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     mesh.renderOrder = list === pavs ? 0 : 1;
     crystal.add(mesh);
     list.push(mesh);
+    if (haloMat) {
+      const halo = new THREE.Mesh(geo, haloMat);
+      halo.userData.nodeId = 6;
+      halo.renderOrder = 4;
+      haloRoot.add(halo);
+    }
   };
+  const haloRoot = new THREE.Group();
+  haloRoot.scale.setScalar(1.03);
+  crystal.add(haloRoot);
+  const haloMat = lite ? iceHaloMat(roomEnv) : null;
   for (let i = 0; i < sides; i++) {
     const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
     const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
@@ -1217,40 +1258,42 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       sparks.push(spark);
     }
   }
-  const edgePts: number[] = [];
-  for (let i = 0; i < sides; i++) {
-    const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-    const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
-    const x = Math.cos(a) * eqR;
-    const z = Math.sin(a) * eqR;
-    const tx = Math.cos(a) * tableR;
-    const tz = Math.sin(a) * tableR;
-    const mx = Math.cos(a) * midR;
-    const mz = Math.sin(a) * midR;
-    const px = Math.cos(a) * pavR;
-    const pz = Math.sin(a) * pavR;
-    edgePts.push(x, girdleTop, z, Math.cos(n) * eqR, girdleTop, Math.sin(n) * eqR);
-    edgePts.push(x, girdleBot, z, Math.cos(n) * eqR, girdleBot, Math.sin(n) * eqR);
-    edgePts.push(x, girdleTop, z, x, girdleBot, z);
-    edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
-    edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
-    edgePts.push(tx, tableY, tz, mx, midY, mz);
-    edgePts.push(mx, midY, mz, x, girdleTop, z);
-    edgePts.push(x, girdleBot, z, px, pavY, pz);
-    edgePts.push(px, pavY, pz, 0, botY, 0);
+  if (!lite) {
+    const edgePts: number[] = [];
+    for (let i = 0; i < sides; i++) {
+      const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const n = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const x = Math.cos(a) * eqR;
+      const z = Math.sin(a) * eqR;
+      const tx = Math.cos(a) * tableR;
+      const tz = Math.sin(a) * tableR;
+      const mx = Math.cos(a) * midR;
+      const mz = Math.sin(a) * midR;
+      const px = Math.cos(a) * pavR;
+      const pz = Math.sin(a) * pavR;
+      edgePts.push(x, girdleTop, z, Math.cos(n) * eqR, girdleTop, Math.sin(n) * eqR);
+      edgePts.push(x, girdleBot, z, Math.cos(n) * eqR, girdleBot, Math.sin(n) * eqR);
+      edgePts.push(x, girdleTop, z, x, girdleBot, z);
+      edgePts.push(tx, tableY, tz, Math.cos(n) * tableR, tableY, Math.sin(n) * tableR);
+      edgePts.push(mx, midY, mz, Math.cos(n) * midR, midY, Math.sin(n) * midR);
+      edgePts.push(tx, tableY, tz, mx, midY, mz);
+      edgePts.push(mx, midY, mz, x, girdleTop, z);
+      edgePts.push(x, girdleBot, z, px, pavY, pz);
+      edgePts.push(px, pavY, pz, 0, botY, 0);
+    }
+    const edgeGeo = new THREE.BufferGeometry();
+    edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
+    crystal.add(
+      new THREE.LineSegments(
+        edgeGeo,
+        new THREE.LineBasicMaterial({
+          color: 0xeaf1ff,
+          transparent: true,
+          opacity: 0.08,
+        }),
+      ),
+    );
   }
-  const edgeGeo = new THREE.BufferGeometry();
-  edgeGeo.setAttribute('position', new THREE.Float32BufferAttribute(edgePts, 3));
-  crystal.add(
-    new THREE.LineSegments(
-      edgeGeo,
-      new THREE.LineBasicMaterial({
-        color: lite ? 0xf2e6d4 : 0xeaf1ff,
-        transparent: true,
-        opacity: lite ? 0.1 : 0.08,
-      }),
-    ),
-  );
   const addGirdleLoop = (y: number, opacity: number): void => {
     const pts: THREE.Vector3[] = [];
     for (let i = 0; i < sides; i++) {
@@ -1269,8 +1312,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     loop.renderOrder = 3;
     crystal.add(loop);
   };
-  addGirdleLoop(girdleTop, lite ? 0.84 : 0.24);
-  addGirdleLoop(girdleBot, lite ? 0.7 : 0.18);
+  addGirdleLoop(girdleTop, lite ? 0.28 : 0.24);
+  addGirdleLoop(girdleBot, lite ? 0.2 : 0.18);
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
@@ -1377,7 +1420,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       new THREE.LineBasicMaterial({
         color: 0xf2e6d4,
         transparent: true,
-        opacity: 0.36,
+        opacity: 0.12,
       }),
     );
     wellSeams.renderOrder = 1;

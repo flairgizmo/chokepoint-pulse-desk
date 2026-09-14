@@ -166,6 +166,55 @@ function cinemaDayTexture(img: HTMLImageElement): THREE.CanvasTexture {
   return hardenCanvasTex(tex);
 }
 
+function oceanSpecMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
+  const hold = document.createElement('canvas');
+  hold.width = 1;
+  hold.height = 1;
+  const hctx = hold.getContext('2d');
+  if (hctx) {
+    hctx.fillStyle = '#000';
+    hctx.fillRect(0, 0, 1, 1);
+  }
+  const holdTex = new THREE.CanvasTexture(hold);
+  holdTex.needsUpdate = true;
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      water: { value: holdTex },
+      sunDir: { value: sunDir.clone() },
+    },
+    vertexShader: `
+      varying vec3 vN;
+      varying vec3 vV;
+      varying vec2 vUv;
+      void main(){
+        vUv = uv;
+        vN = normalize(mat3(modelMatrix) * normal);
+        vec4 wpos = modelMatrix * vec4(position, 1.0);
+        vV = cameraPosition - wpos.xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform sampler2D water;
+      uniform vec3 sunDir;
+      varying vec3 vN;
+      varying vec3 vV;
+      varying vec2 vUv;
+      void main(){
+        float wet = texture2D(water, vUv).g;
+        vec3 n = normalize(vN);
+        vec3 v = normalize(vV);
+        vec3 l = normalize(sunDir);
+        float fres = pow(1.0 - abs(dot(n, v)), 2.4);
+        float spec = pow(max(0.0, dot(reflect(-l, n), v)), 42.0);
+        float a = wet * (fres * 0.34 + spec * 0.82);
+        gl_FragColor = vec4(0.76, 0.88, 1.0, a);
+      }`,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+  });
+}
+
 function makeDayTex(lite: boolean, img: HTMLImageElement): THREE.Texture {
   const tex = lite ? cinemaDayTexture(img) : new THREE.Texture(img);
   tex.colorSpace = THREE.SRGBColorSpace;
@@ -354,6 +403,7 @@ export class EarthGlobe {
   private sheen: THREE.Mesh | null = null;
   private medSheen: THREE.Mesh | null = null;
   private biscaySheen: THREE.Mesh | null = null;
+  private oceanMesh: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
   private hoverId: string | undefined;
@@ -382,6 +432,7 @@ export class EarthGlobe {
     if (this.sheen) this.sheen.visible = this.overlays.day;
     if (this.medSheen) this.medSheen.visible = this.overlays.day;
     if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day;
+    if (this.oceanMesh) this.oceanMesh.visible = this.overlays.day;
     this.applyMaps();
   }
 
@@ -693,6 +744,13 @@ export class EarthGlobe {
     const globe = new THREE.Mesh(new THREE.SphereGeometry(1, segs, rings), globeMat);
     this.globeMesh = globe;
     group.add(globe);
+    if (this.lite) {
+      const oceanMat = oceanSpecMat(this.sunDir);
+      const ocean = new THREE.Mesh(new THREE.SphereGeometry(1.006, segs, rings), oceanMat);
+      ocean.renderOrder = 3;
+      group.add(ocean);
+      this.oceanMesh = ocean;
+    }
     if (!this.lite) group.add(this.graticule());
 
     const lights = new THREE.Mesh(
@@ -806,7 +864,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.7 : 0.58,
+        opacity: this.lite ? 0.26 : 0.58,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -824,7 +882,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.74 : 0.6,
+        opacity: this.lite ? 0.3 : 0.6,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -842,7 +900,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.7 : 0.58,
+        opacity: this.lite ? 0.26 : 0.58,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -886,20 +944,28 @@ export class EarthGlobe {
         undefined,
         ignore,
       );
-      loader.load(
-        WATER_TEX,
-        (tex) => {
-          const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
-          if (!mat) return;
-          mat.metalnessMap = tex;
-          mat.metalness = 0.42;
-          mat.roughness = 0.38;
-          mat.needsUpdate = true;
-        },
-        undefined,
-        ignore,
-      );
     }
+    loader.load(
+      WATER_TEX,
+      (tex) => {
+        tex.colorSpace = THREE.LinearSRGBColorSpace;
+        if (this.lite) {
+          const mat = this.oceanMesh?.material as THREE.ShaderMaterial | undefined;
+          if (!mat) return;
+          mat.uniforms.water.value = tex;
+          mat.needsUpdate = true;
+          return;
+        }
+        const mat = this.globeMesh?.material as THREE.MeshPhysicalMaterial | undefined;
+        if (!mat) return;
+        mat.metalnessMap = tex;
+        mat.metalness = 0.42;
+        mat.roughness = 0.38;
+        mat.needsUpdate = true;
+      },
+      undefined,
+      ignore,
+    );
 
     scene.add(new THREE.AmbientLight(0x8ea0b8, this.lite ? 0.62 : 0.36));
     const key = new THREE.DirectionalLight(0xfff4e5, 1.85);
@@ -1218,6 +1284,7 @@ export class EarthGlobe {
     if (this.sheen) this.sheen.visible = this.overlays.day;
     if (this.medSheen) this.medSheen.visible = this.overlays.day;
     if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day;
+    if (this.oceanMesh) this.oceanMesh.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
       const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));
