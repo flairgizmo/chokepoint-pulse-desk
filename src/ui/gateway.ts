@@ -70,11 +70,11 @@ function glassGrade(cut: GlassCut, lane: GlassLane, heart = false): GlassGrade {
       ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 1.08, contrast: 1.12, saturate: 0.62, multiply: 0.03 }
       : cut === 'crown'
         ? lane === 0
-          ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.88, contrast: 1.16, saturate: 0.84, multiply: 0.1 }
-          : { sx: 0.34, sy: 0.28, sw: 0.52, sh: 0.46, brightness: 0.7, contrast: 1.2, saturate: 0.74, multiply: 0.18 }
+          ? { sx: 0.16, sy: 0.2, sw: 0.6, sh: 0.5, brightness: 0.98, contrast: 1.18, saturate: 0.86, multiply: 0.04 }
+          : { sx: 0.34, sy: 0.28, sw: 0.52, sh: 0.46, brightness: 0.8, contrast: 1.2, saturate: 0.76, multiply: 0.08 }
         : lane === 0
-          ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.7, contrast: 1.2, saturate: 0.72, multiply: 0.2 }
-          : { sx: 0.4, sy: 0.44, sw: 0.44, sh: 0.34, brightness: 0.56, contrast: 1.22, saturate: 0.64, multiply: 0.28 };
+          ? { sx: 0.22, sy: 0.4, sw: 0.5, sh: 0.38, brightness: 0.8, contrast: 1.2, saturate: 0.74, multiply: 0.1 }
+          : { sx: 0.4, sy: 0.44, sw: 0.44, sh: 0.34, brightness: 0.64, contrast: 1.22, saturate: 0.66, multiply: 0.14 };
   if (!heart) return base;
   return {
     ...base,
@@ -144,7 +144,7 @@ function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: nu
   for (let i = 0; i < sides; i++) {
     const x0 = i * bw;
     if (i % 2) {
-      ctx.fillStyle = lane === 0 ? 'rgba(2, 6, 14, 0.12)' : 'rgba(2, 6, 14, 0.28)';
+      ctx.fillStyle = lane === 0 ? 'rgba(16, 10, 8, 0.06)' : 'rgba(16, 10, 8, 0.18)';
       ctx.fillRect(x0, 0, bw, h);
     }
     ctx.fillStyle = lane === 0 ? 'rgba(234, 241, 255, 0.1)' : 'rgba(234, 241, 255, 0.05)';
@@ -776,7 +776,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   right.position.set(11.4, 1.25, -2.6);
   right.rotation.y = -0.74;
   scene.add(right);
-  addCinemaHaze(scene);
+  addCinemaHaze(scene, 'warm');
 
   scene.add(new THREE.AmbientLight(0xc4b8a8, lite ? 0.36 : 0.38));
   scene.add(new THREE.HemisphereLight(0xe8ddd0, 0x1a1410, lite ? 0.42 : 0.55));
@@ -817,28 +817,28 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crownA = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xe8ddd0,
+    tint: 0xf6f0e8,
     vertexColors: lite,
     window: lite ? 0.74 : undefined,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xc4b4a0,
+    tint: 0xe8ddd0,
     vertexColors: lite,
     window: lite ? 0.74 : undefined,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0xb8a898,
+    tint: 0xddd2c0,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x8e8074,
+    tint: 0xc4b8a6,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
   });

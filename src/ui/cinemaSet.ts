@@ -268,14 +268,14 @@ export function cinemaFloorMap(photo: HTMLImageElement | null = visionStill()): 
       ctx.filter = 'none';
     }
     const g = ctx.createRadialGradient(256, 256, 10, 256, 256, 248);
-    g.addColorStop(0, 'rgba(234, 241, 255, 0.52)');
-    g.addColorStop(0.22, 'rgba(90, 240, 255, 0.2)');
-    g.addColorStop(0.48, 'rgba(21, 87, 255, 0.14)');
-    g.addColorStop(0.72, 'rgba(10, 18, 32, 0.62)');
-    g.addColorStop(1, 'rgba(7, 11, 20, 0.92)');
+    g.addColorStop(0, 'rgba(242, 228, 204, 0.2)');
+    g.addColorStop(0.22, 'rgba(180, 150, 110, 0.08)');
+    g.addColorStop(0.48, 'rgba(22, 18, 16, 0.36)');
+    g.addColorStop(0.72, 'rgba(10, 12, 16, 0.72)');
+    g.addColorStop(1, 'rgba(7, 11, 20, 0.94)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, 512, 512);
-    ctx.strokeStyle = 'rgba(234, 241, 255, 0.1)';
+    ctx.strokeStyle = 'rgba(232, 212, 180, 0.06)';
     ctx.lineWidth = 2;
     for (const r of [70, 130, 190, 250]) {
       ctx.beginPath();
@@ -448,11 +448,11 @@ function addPracticals(scene: THREE.Scene): void {
 }
 
 /** Additive dusk shafts. Reads on software GL; hardware bloom picks them up. */
-export function addCinemaHaze(scene: THREE.Scene): void {
+export function addCinemaHaze(scene: THREE.Scene, grade: 'cool' | 'warm' = 'cool'): void {
   const cool = new THREE.MeshBasicMaterial({
-    color: 0x6aa8ff,
+    color: grade === 'warm' ? 0xc4a888 : 0x6aa8ff,
     transparent: true,
-    opacity: 0.08,
+    opacity: grade === 'warm' ? 0.05 : 0.08,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
     side: THREE.DoubleSide,
