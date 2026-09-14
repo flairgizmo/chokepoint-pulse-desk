@@ -118,9 +118,11 @@ export function renderStory(): string {
       (e) => `<li class="story-node" data-year="${e.year}" data-decade="${Math.floor(e.year / 10) * 10}" data-theme="${esc(e.theme)}" data-q="${esc(`${e.title} ${e.body} ${e.date}`)}">
         <button type="button" class="story-hit" data-stage="event" data-stage-id="${esc(e.id)}">
           ${diagramFigure(e.id, 'event', e.date)}
-          <span class="mono">${esc(e.date)}</span>
-          <h3>${esc(e.title)}</h3>
-          <p>${esc(e.stake)}</p>
+          <span class="story-copy">
+            <span class="mono">${esc(e.date)}</span>
+            <h3>${esc(e.title)}</h3>
+            <p>${esc(e.stake)}</p>
+          </span>
         </button>
       </li>`,
     )

@@ -183,7 +183,7 @@ export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
 }
 
 /** Draw filter before printGradeStill — daylight Vision stills into the dusk set. */
-export const DUSK_STILL_FILTER = 'saturate(0.78) contrast(1.22) brightness(0.66)';
+export const DUSK_STILL_FILTER = 'saturate(0.72) contrast(1.26) brightness(0.58)';
 
 /** Keep bright Vision stills on dusk plates. Official portraits skip this. */
 export function printGradeStill(
@@ -219,17 +219,17 @@ export function printGradeStill(
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = `rgba(10, 16, 32, ${(0.2 + t * 0.36 + sky * 0.28).toFixed(3)})`;
+  ctx.fillStyle = `rgba(8, 14, 32, ${(0.32 + t * 0.38 + sky * 0.36).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'screen';
-  ctx.fillStyle = `rgba(255, 176, 108, ${(0.05 + t * 0.06).toFixed(3)})`;
+  ctx.fillStyle = `rgba(255, 168, 96, ${(0.06 + t * 0.08).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   ctx.globalCompositeOperation = 'source-over';
   const vig = ctx.createLinearGradient(x, y, x, y + h);
-  vig.addColorStop(0, 'rgba(7, 11, 20, 0.28)');
-  vig.addColorStop(0.38, 'rgba(7, 11, 20, 0)');
-  vig.addColorStop(0.7, 'rgba(7, 11, 20, 0)');
-  vig.addColorStop(1, 'rgba(7, 11, 20, 0.42)');
+  vig.addColorStop(0, 'rgba(7, 11, 20, 0.38)');
+  vig.addColorStop(0.32, 'rgba(7, 11, 20, 0)');
+  vig.addColorStop(0.68, 'rgba(7, 11, 20, 0)');
+  vig.addColorStop(1, 'rgba(7, 11, 20, 0.5)');
   ctx.fillStyle = vig;
   ctx.fillRect(x, y, w, h);
   ctx.restore();
