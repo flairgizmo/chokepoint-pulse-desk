@@ -489,13 +489,13 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 0.95);
-vec3 body = vec3(0.78, 0.86, 0.96);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.9);
-diffuseColor.rgb += envRefl * spec * 2.4;
-diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * liteFres * 1.15;
-diffuseColor.rgb += vec3(0.62, 0.82, 1.0) * liteFres * liteFres * 0.7;
-diffuseColor.rgb += vec3(1.0, 0.97, 0.9) * liteFlash * 0.9;
-diffuseColor.a *= mix(0.2, 0.88, spec);`;
+vec3 body = vec3(0.18, 0.26, 0.38);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.72);
+diffuseColor.rgb += envRefl * spec * 1.85;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * liteFres * 0.95;
+diffuseColor.rgb += vec3(0.62, 0.82, 1.0) * liteFres * liteFres * 0.55;
+diffuseColor.rgb += vec3(1.0, 0.97, 0.9) * liteFlash * 0.8;
+diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
@@ -515,14 +515,14 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.12);
-vec3 body = vec3(0.7, 0.82, 0.96);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.88);
-diffuseColor.rgb += envRefl * spec * 2.35;
-diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 1.05;
-diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.7;
-diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 1.15;
-diffuseColor.rgb += vec3(0.72, 0.88, 1.0) * liteFlash2 * 0.85;
-diffuseColor.a *= mix(0.4, 0.9, spec);`;
+vec3 body = vec3(0.16, 0.22, 0.32);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.55);
+diffuseColor.rgb += envRefl * spec * 1.65;
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.9;
+diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.55;
+diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 1.05;
+diffuseColor.rgb += vec3(0.72, 0.88, 1.0) * liteFlash2 * 0.75;
+diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -596,7 +596,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-38-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-39-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -1161,7 +1161,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xf6f0e8,
-    window: lite ? 0.62 : undefined,
+    window: lite ? 1 : undefined,
     crown: lite,
     env: roomEnv,
   });
@@ -1169,7 +1169,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xe8ddd0,
-    window: lite ? 0.62 : undefined,
+    window: lite ? 1 : undefined,
     crown: lite,
     env: roomEnv,
   });
@@ -1195,7 +1195,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.48,
     thickness: 0.18,
     tint: lite ? 0xffffff : 0xf6f0e8,
-    window: lite ? 0.62 : undefined,
+    window: lite ? 1 : undefined,
     girdle: lite,
     env: roomEnv,
   });
