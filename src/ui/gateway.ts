@@ -489,28 +489,28 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.032, 0.046, 0.078) * (0.16 + kite * 1.55 + rim * 0.5);
+vec3 body = vec3(0.26, 0.34, 0.48);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.1 + kite * 0.08);
-diffuseColor.rgb += glint * (0.55 + kite * 0.9);
+diffuseColor.rgb += envRefl * (rim * 0.16 + kite * 0.1);
+diffuseColor.rgb += glint * (0.7 + kite * 1.05);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.07, 0.1, 0.15) * (0.28 + kite * 1.15 + rim * 0.55);
+vec3 body = vec3(0.34, 0.42, 0.55);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.18 + kite * 0.12);
-diffuseColor.rgb += glint * (0.7 + kite * 0.85);
+diffuseColor.rgb += envRefl * (rim * 0.2 + kite * 0.12);
+diffuseColor.rgb += glint * (0.85 + kite * 0.95);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.04, 0.055, 0.09) * (0.14 + kite * 1.72 + rim * 0.48);
+vec3 body = vec3(0.3, 0.4, 0.55);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.12 + kite * 0.1);
-diffuseColor.rgb += glint * (0.5 + kite * 1.15);
+diffuseColor.rgb += envRefl * (rim * 0.18 + kite * 0.12);
+diffuseColor.rgb += glint * (0.75 + kite * 1.25);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -585,7 +585,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-46-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-48-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -683,14 +683,11 @@ function facetFire(
   const fres = (1 - facing) ** 1.55;
   /** 16-cut: adjacent kites are π/8 apart, so *8 flips neighbors. Rest camera sees the stripe. */
   const stripe = 0.5 + 0.5 * Math.cos(Math.atan2(n.x, n.z) * 8);
-  const shade = Math.min(
-    1,
-    0.05 + key * 0.46 + stripe * (0.22 + facing * 0.38) + rim * 0.12 + fres * 0.1,
-  );
+  const shade = Math.min(1, 0.16 + stripe * 0.78 + key * 0.14 + facing * 0.08 + rim * 0.06 + fres * 0.05);
   return new THREE.Color(
-    Math.min(1, shade + key * 0.12 + stripe * 0.1 + fres * 0.06),
-    shade * 0.93,
-    Math.min(1, shade * 0.82 + rim * 0.1 + (1 - stripe) * 0.05),
+    Math.min(1, 0.22 + shade * 0.82 + key * 0.08),
+    Math.min(1, 0.2 + shade * 0.72),
+    Math.min(1, 0.28 + shade * 0.62 + (1 - stripe) * 0.06),
   );
 }
 
