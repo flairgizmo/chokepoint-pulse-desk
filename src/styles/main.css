@@ -2851,6 +2851,10 @@ button.chip {
   margin-top: 0.85rem;
 }
 
+.player-adjacent:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+
 .player-adj {
   display: block;
   color: #f4f7fb;

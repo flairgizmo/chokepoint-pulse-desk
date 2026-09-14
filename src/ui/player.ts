@@ -125,7 +125,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
                 photoFigure(episodeStill(prev.id), 'player-adj-still'),
                 `<span class="kicker">Previous</span><strong>← ${esc(prev.title)}</strong>`,
               )}</a>`
-            : '<span></span>'
+            : ''
         }
         ${
           next
@@ -133,7 +133,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
                 photoFigure(episodeStill(next.id), 'player-adj-still'),
                 `<span class="kicker">Next</span><strong>${esc(next.title)} →</strong>`,
               )}</a>`
-            : '<span></span>'
+            : ''
         }
       </nav>
     </section>
