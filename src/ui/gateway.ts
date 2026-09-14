@@ -1310,7 +1310,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   base.position.y = -0.24;
   base.userData.nodeId = 6;
   const lean = new THREE.Group();
-  lean.rotation.x = -0.34;
+  lean.rotation.x = -0.16;
   lean.add(crystal);
   lean.add(base);
   group.add(lean);
@@ -1553,7 +1553,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
     const travel = reduced ? 0.35 : ((now - t0) / 6200) % 1;
     camera.position.setFromSphericalCoords(lite ? 3.48 : 3.36, ax, ay);
-    camera.lookAt(0, lite ? 0.38 : 0.4, 0);
+    camera.lookAt(0, lite ? 0.28 : 0.3, 0);
     BANKS.forEach((_, i) => {
       const [x, , z] = bankXYZ(i, pulse);
       sitIssuerStill(cards[i], x, z);
