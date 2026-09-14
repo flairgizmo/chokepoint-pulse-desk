@@ -975,8 +975,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
   let flareRoot: THREE.Group | null = null;
-  let roomMat: THREE.MeshBasicMaterial | null = null;
-  let roomMesh: THREE.Mesh | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
@@ -988,9 +986,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       vertexColors: true,
     });
     const heart = new THREE.Group();
-    heart.scale.setScalar(0.94);
+    heart.scale.setScalar(1.02);
     heart.rotation.set(0.08, 0.28, 0.04);
-    heart.position.set(0.016, 0.004, 0.01);
+    heart.position.set(0.016, 0.07, 0.01);
     const addHeart = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial): void => {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.userData.nodeId = 6;
@@ -1015,17 +1013,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(heart);
     heartRoot = heart;
     core.visible = false;
-    roomMat = new THREE.MeshBasicMaterial({
-      map: glassTex(photo0, false, 'crown', 0, true),
-      color: 0xf6f0e8,
-      transparent: true,
-      opacity: 0.9,
-    });
-    roomMat.toneMapped = false;
-    roomMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 28, 18), roomMat);
-    roomMesh.position.y = 0.255;
-    roomMesh.userData.nodeId = 6;
-    crystal.add(roomMesh);
     heartStamp.push(heartPavA, heartPavB);
     const ghost = heart.clone(true);
     ghost.scale.setScalar(0.76);
@@ -1184,7 +1171,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     ...(heartRoot ? [heartRoot] : []),
     ...(ghostRoot ? [ghostRoot] : []),
     ...(flareRoot ? [flareRoot] : []),
-    ...(roomMesh ? [roomMesh] : []),
   ];
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -1245,7 +1231,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
-    if (roomMat) swapMap(roomMat, glassTex(photo, on, 'crown', 0, true));
     if (heartStamp.length >= 2) {
       const kinds = [
         ['pav', 0, on],
