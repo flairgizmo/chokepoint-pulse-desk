@@ -457,10 +457,10 @@ diffuseColor.rgb += envSamp * pow(liteFres, 2.4) * 0.78;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
-diffuseColor.a *= mix(0.55, 1.0, liteFres);`,
+diffuseColor.a *= mix(0.7, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-8';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-9';
 }
 
 function glassMat(
@@ -480,7 +480,7 @@ function glassMat(
     const mat = new THREE.MeshBasicMaterial({
       map: tex,
       color: opts.tint ?? (opts.shade === false ? 0x5a6c88 : 0x93a6c0),
-      side: THREE.DoubleSide,
+      side: opts.window != null ? THREE.FrontSide : THREE.DoubleSide,
       vertexColors: Boolean(opts.vertexColors),
       transparent: opts.window != null,
       opacity: opts.window ?? 1,
@@ -584,6 +584,19 @@ function triGeo(
   cz: number,
   band: 'crown' | 'pav' = 'crown',
 ): THREE.BufferGeometry {
+  const n = new THREE.Vector3(bx - ax, by - ay, bz - az).cross(new THREE.Vector3(cx - ax, cy - ay, cz - az));
+  const mid = new THREE.Vector3((ax + bx + cx) / 3, (ay + by + cy) / 3, (az + bz + cz) / 3);
+  if (n.dot(mid) < 0) {
+    const tx = bx;
+    const ty = by;
+    const tz = bz;
+    bx = cx;
+    by = cy;
+    bz = cz;
+    cx = tx;
+    cy = ty;
+    cz = tz;
+  }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz], 3));
   const us = seamUv([wrapU(ax, az), wrapU(bx, bz), wrapU(cx, cz)]);
@@ -818,7 +831,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavs: THREE.Mesh[] = [];
   const stars: THREE.Mesh[] = [];
   const sparks: THREE.Mesh[] = [];
-  const sides = lite ? 8 : 16;
+  const sides = 16;
   const restAyFace = 0.72;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
   const tableR = 0.36;
