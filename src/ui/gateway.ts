@@ -95,7 +95,7 @@ function paintPhotoGlass(
   heart = false,
 ): void {
   const grade = glassGrade(cut, lane, heart);
-  ctx.fillStyle = '#02060f';
+  ctx.fillStyle = '#100c0a';
   ctx.fillRect(0, 0, w, h);
   if (photo?.naturalWidth) {
     const sx = photo.naturalWidth * grade.sx;
@@ -113,14 +113,14 @@ function paintPhotoGlass(
     ctx.restore();
     ctx.globalCompositeOperation = 'multiply';
     ctx.fillStyle = on
-      ? 'rgba(234, 241, 255, 0.35)'
-      : `rgba(6, 16, 40, ${grade.multiply})`;
+      ? 'rgba(242, 235, 224, 0.28)'
+      : `rgba(36, 22, 16, ${grade.multiply})`;
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = 'source-over';
   } else {
     const g = ctx.createLinearGradient(0, 0, w, h);
-    g.addColorStop(0, on ? '#f4f7fb' : lane === 0 ? '#8eb0ff' : '#1557FF');
-    g.addColorStop(1, '#02060f');
+    g.addColorStop(0, on ? '#f4f7fb' : lane === 0 ? '#c4b4a0' : '#8e8074');
+    g.addColorStop(1, '#100c0a');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
   }
@@ -510,9 +510,9 @@ function facetFire(
   const fres = (1 - facing) ** 1.55;
   const shade = Math.min(1, 0.46 + key * 0.48 + rim * 0.16);
   return new THREE.Color(
-    Math.min(1, shade + key * 0.08 + fres * 0.04),
+    Math.min(1, shade + key * 0.12 + fres * 0.08),
     shade,
-    Math.min(1, shade - key * 0.06 + rim * 0.1 + fres * 0.06),
+    Math.min(1, shade - key * 0.04 + rim * 0.06 + fres * 0.03),
   );
 }
 
@@ -603,7 +603,7 @@ function logoCanvas(
   if (!ctx) return c;
   ctx.clearRect(0, 0, CARD_W, CARD_H);
   if (still?.complete && still.naturalWidth) {
-    ctx.filter = 'saturate(0.88) contrast(1.2) brightness(0.48)';
+    ctx.filter = 'saturate(0.9) contrast(1.16) brightness(0.66)';
     coverDraw(ctx, still, CARD_W, CARD_H);
     ctx.filter = 'none';
   } else {
@@ -763,7 +763,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
   backdropTex.colorSpace = THREE.SRGBColorSpace;
   scene.background = new THREE.Color(0x070b14);
-  const cycMat = duskWall(backdropTex, 0x3f5168);
+  const cycMat = duskWall(backdropTex, 0x453c36);
   cycMat.depthWrite = false;
   const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(32, 15.2), cycMat);
   backdrop.position.set(0, 1.45, -5.6);
@@ -778,21 +778,21 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   scene.add(right);
   addCinemaHaze(scene);
 
-  scene.add(new THREE.AmbientLight(0x8ea0c0, lite ? 0.36 : 0.38));
-  scene.add(new THREE.HemisphereLight(0xc9d6f0, 0x0a1220, lite ? 0.42 : 0.55));
+  scene.add(new THREE.AmbientLight(0xc4b8a8, lite ? 0.36 : 0.38));
+  scene.add(new THREE.HemisphereLight(0xe8ddd0, 0x1a1410, lite ? 0.42 : 0.55));
   const key = new THREE.DirectionalLight(0xfff1dc, lite ? 0.88 : 2.05);
   key.position.set(2.4, 3.2, 2.1);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x3b7bff, 1.15);
+  const rim = new THREE.DirectionalLight(0xc4a888, lite ? 0.42 : 0.7);
   rim.position.set(-2.8, 1.2, -2.4);
   scene.add(rim);
-  const fill = new THREE.PointLight(0x6aa8ff, 0.55, 6);
+  const fill = new THREE.PointLight(0xc4a888, 0.38, 6);
   fill.position.set(0, 0.9, 0);
   scene.add(fill);
-  const bounce = new THREE.DirectionalLight(0x9eb4d4, lite ? 0.14 : 0.1);
+  const bounce = new THREE.DirectionalLight(0xb8a898, lite ? 0.14 : 0.1);
   bounce.position.set(0.35, -1.15, 1.45);
   scene.add(bounce);
-  const culet = new THREE.PointLight(0x8eb0ff, lite ? 0.12 : 0.08, 1.8);
+  const culet = new THREE.PointLight(0xe8d4b0, lite ? 0.12 : 0.08, 1.8);
   culet.position.set(0.05, -0.42, 0.28);
   scene.add(culet);
 
@@ -817,28 +817,28 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crownA = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xd4e2f0,
+    tint: 0xe8ddd0,
     vertexColors: lite,
     window: lite ? 0.74 : undefined,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xa4b6cc,
+    tint: 0xc4b4a0,
     vertexColors: lite,
     window: lite ? 0.74 : undefined,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x9aacc2,
+    tint: 0xb8a898,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
-    tint: 0x7a8ca6,
+    tint: 0x8e8074,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
   });
@@ -848,7 +848,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       ? (() => {
           const ice = new THREE.MeshBasicMaterial({
             map: iceCatchTex(),
-            color: 0xe8f0fa,
+            color: 0xf2ebe0,
             transparent: true,
             opacity: 0.11,
             depthWrite: false,
@@ -1084,14 +1084,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     lite
       ? cinemaChrome(true)
       : new THREE.MeshPhysicalMaterial({
-          color: 0x3d4f6c,
+          color: 0x2c281f,
           metalness: 0.86,
           roughness: 0.18,
-          emissive: 0x1557ff,
-          emissiveIntensity: 0.18,
+          emissive: 0xc4a888,
+          emissiveIntensity: 0.12,
           clearcoat: 0.8,
         }),
   );
+  if (lite && rt2.material instanceof THREE.MeshBasicMaterial) {
+    rt2.material.color.setHex(0x2c281f);
+    rt2.material.envMap = null;
+    rt2.material.reflectivity = 0;
+  }
   rt2.rotation.x = Math.PI / 2;
   rt2.position.y = -0.305;
   rt2.userData.nodeId = 7;
@@ -1209,7 +1214,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     if (lite && tmat instanceof THREE.MeshBasicMaterial) {
       tmat.opacity = on ? 0.16 : 0.11;
-      tmat.color.setHex(on ? 0xffffff : 0xe8f0fa);
+      tmat.color.setHex(on ? 0xffffff : 0xf2ebe0);
       tmat.needsUpdate = true;
     } else {
       swapMap(tmat, glassTex(photo, on, 'table'));
@@ -1268,7 +1273,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       rt2.material.emissiveIntensity = selected === 7 || hover === 7 ? 0.95 : 0.55;
     } else {
       (rt2.material as THREE.MeshBasicMaterial).color.setHex(
-        selected === 7 || hover === 7 ? 0x8eb0ff : 0x3d4f6c,
+        selected === 7 || hover === 7 ? 0xc4a888 : 0x2c281f,
       );
     }
   };
