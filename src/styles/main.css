@@ -965,6 +965,9 @@ main {
   .letter {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .letter > .term:last-child:nth-child(even) {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (min-width: 900px) {

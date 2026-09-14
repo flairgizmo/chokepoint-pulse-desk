@@ -83,6 +83,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   future: PLATES.future,
   'the-future of money': PLATES.payments,
   era: PLATES.geneva,
+  present: PLATES.geneva,
   'the-era': PLATES.geneva,
   'the interop era': PLATES.geneva,
   taxonomy: PLATES.boston,
@@ -210,6 +211,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   payscript: PLATES.payments,
   rln: PLATES.payments,
   murex: PLATES.paris,
+  'murex-2026': PLATES.paris,
   apps: PLATES.city,
   script: PLATES.payments,
   ledgers: PLATES.cable,
@@ -245,6 +247,9 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'three-layer-2026': PLATES.payments,
   'x402-2026': PLATES.fiber,
   'ukf-2026': PLATES.canary,
+  'ukf-roadmap': PLATES.canary,
+  'ukf-report': PLATES.royal,
+  'hmt-digit': PLATES.sterling,
   'digit-2027': PLATES.sterling,
   'sibos-miami-note': PLATES.miami,
   'sync-lab': PLATES.boeFacade,
@@ -363,21 +368,82 @@ export function motionBedFor(...keys: Array<string | undefined | null>): VisualI
   return 'hero'
 }
 
+/** Category kinds that steal uniqueness when used as plateFor() arguments. */
+const GENERIC_PLATE_ARGS = new Set([
+  'news',
+  'page',
+  'chapter',
+  'programme',
+  'institution',
+  'event',
+  'source',
+  'tech',
+  'stack',
+  'proof',
+  'paper',
+  'money',
+  'cbdc',
+  'primary',
+  'history',
+  'present',
+  'future',
+  'podcast',
+  'notes',
+  'wire',
+])
+
+function isGenericPlateArg(raw: string): boolean {
+  const key = raw.toLowerCase().trim()
+  if (key.startsWith('paper-')) return true
+  return GENERIC_PLATE_ARGS.has(key)
+}
+
+let stillCycle: Plate[] | undefined
+
+function uniqueStills(): Plate[] {
+  if (stillCycle) return stillCycle
+  const seen = new Set<string>()
+  const out: Plate[] = []
+  for (const plate of Object.values(PLATES)) {
+    if (seen.has(plate.src)) continue
+    seen.add(plate.src)
+    out.push(plate)
+  }
+  stillCycle = out
+  return out
+}
+
+function hashPlate(seed: string): Plate {
+  const cycle = uniqueStills()
+  let h = 2166136261
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(h ^ seed.charCodeAt(i), 16777619)
+  }
+  return cycle[(h >>> 0) % cycle.length]
+}
+
+function plateTokens(raw: string): string[] {
+  return raw
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((token) => token.length > 3 && !isGenericPlateArg(token) && !/^\d+$/.test(token))
+}
+
 export function plateFor(...keys: Array<string | undefined | null>): Plate {
+  const seed =
+    keys.find((key) => key && String(key).trim() && !isGenericPlateArg(key)) ??
+    keys.find((key) => key && String(key).trim()) ??
+    'desk'
   for (const key of keys) {
-    if (!key) continue
+    if (!key || isGenericPlateArg(key)) continue
     const hit = lookup(key)
     if (hit) return hit
-    const tokens = key
-      .toLowerCase()
-      .split(/[^a-z0-9]+/)
-      .filter((t) => t.length > 2)
-    for (const token of tokens) {
-      const tok = lookup(token)
-      if (tok) return tok
-    }
   }
-  return PLATES.hero
+  for (const token of plateTokens(String(seed))) {
+    const hit = lookup(token)
+    if (hit) return hit
+  }
+  return hashPlate(String(seed))
 }
 
 export function photoFigure(plate: Plate, extraClass = ''): string {

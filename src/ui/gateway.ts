@@ -480,21 +480,18 @@ if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.05);
-float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
-float liteFlash = smoothstep(0.82, 1.0, liteSpark) * liteFres;
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
-envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
 float spec = pow(liteFres, 0.95);
-vec3 body = vec3(0.18, 0.26, 0.38);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.72);
-diffuseColor.rgb += envRefl * spec * 1.85;
-diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * liteFres * 0.95;
-diffuseColor.rgb += vec3(0.62, 0.82, 1.0) * liteFres * liteFres * 0.55;
-diffuseColor.rgb += vec3(1.0, 0.97, 0.9) * liteFlash * 0.8;
+vec3 body = vec3(0.14, 0.2, 0.3);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.42);
+diffuseColor.rgb += envRefl * spec * 0.95;
+diffuseColor.rgb += vec3(0.92, 0.88, 0.8) * liteFres * 0.42;
+diffuseColor.rgb += vec3(0.5, 0.7, 0.92) * liteFres * liteFres * 0.22;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
@@ -504,24 +501,18 @@ if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.2);
-float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
-float liteSpark2 = fract(sin(dot(vMapUv, vec2(78.233, 12.9898))) * 23421.631);
-float liteFlash = smoothstep(0.72, 1.0, liteSpark) * liteFres;
-float liteFlash2 = smoothstep(0.9, 1.0, liteSpark2) * liteFres;
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
-envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
+envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.28);
 float spec = pow(liteFres, 1.12);
-vec3 body = vec3(0.16, 0.22, 0.32);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.55);
-diffuseColor.rgb += envRefl * spec * 1.65;
-diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.9;
-diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.55;
-diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 1.05;
-diffuseColor.rgb += vec3(0.72, 0.88, 1.0) * liteFlash2 * 0.75;
+vec3 body = vec3(0.11, 0.16, 0.24);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.28);
+diffuseColor.rgb += envRefl * spec * 0.82;
+diffuseColor.rgb += vec3(0.9, 0.86, 0.78) * liteFres * 0.36;
+diffuseColor.rgb += vec3(0.46, 0.66, 0.9) * liteFres * liteFres * 0.2;
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -596,7 +587,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-39-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-40-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -692,11 +683,11 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(1, 0.46 + key * 0.48 + rim * 0.16);
+  const shade = Math.min(1, 0.24 + key * 0.68 + rim * 0.22);
   return new THREE.Color(
-    Math.min(1, shade + key * 0.12 + fres * 0.08),
-    shade,
-    Math.min(1, shade - key * 0.04 + rim * 0.06 + fres * 0.03),
+    Math.min(1, shade + key * 0.16 + fres * 0.08),
+    shade * 0.94,
+    Math.min(1, shade * 0.86 + rim * 0.1 + fres * 0.05),
   );
 }
 
@@ -1161,6 +1152,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xf6f0e8,
+    vertexColors: lite,
     window: lite ? 1 : undefined,
     crown: lite,
     env: roomEnv,
@@ -1169,6 +1161,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.7,
     thickness: 0.52,
     tint: lite ? 0xffffff : 0xe8ddd0,
+    vertexColors: lite,
     window: lite ? 1 : undefined,
     crown: lite,
     env: roomEnv,
@@ -1195,6 +1188,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     transmission: 0.48,
     thickness: 0.18,
     tint: lite ? 0xffffff : 0xf6f0e8,
+    vertexColors: lite,
     window: lite ? 1 : undefined,
     girdle: lite,
     env: roomEnv,

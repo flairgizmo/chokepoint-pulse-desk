@@ -22,6 +22,21 @@ import { FILM_BACKDROPS, FILM_SETS } from '../src/ui/filmSets';
 import { cityById } from '../src/data/cities';
 
 describe('Topic plates', () => {
+  it('does not collapse untitled news seeds onto the Reuters still', () => {
+    expect(plateFor('ukf-roadmap', 'news', 'present').src).toBe(PLATES.canary.src);
+    expect(plateFor('hmt-digit', 'news', 'present').src).toBe(PLATES.sterling.src);
+    const srcs = [
+      plateFor('ukf-roadmap', 'news', 'present').src,
+      plateFor('hmt-digit', 'news', 'present').src,
+      plateFor('ukf-report', 'news', 'present').src,
+      plateFor('sibos-miami-note', 'news', 'present').src,
+      plateFor('trusted-node', 'news', 'present').src,
+    ];
+    expect(srcs).not.toContain(PLATES.newsroom.src);
+    expect(new Set(srcs).size).toBeGreaterThanOrEqual(4);
+    expect(plateFor('vision').src).toBe(PLATES.ucl.src);
+  });
+
   it('maps Vision and essays to real photographs, not leftover SVGs', () => {
     expect(plateFor('vision').src).toBe(PLATES.ucl.src);
     expect(plateFor('philosophy').src).toBe(PLATES.fiber.src);
