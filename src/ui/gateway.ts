@@ -706,6 +706,57 @@ function triGeo(
   return g;
 }
 
+function wellTex(photo: HTMLImageElement | null, on: boolean): THREE.CanvasTexture {
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(glassCanvas(photo, on, 'pav', 0, true)));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.ClampToEdgeWrapping;
+  tex.wrapT = THREE.ClampToEdgeWrapping;
+  return tex;
+}
+
+function wellTri(
+  ax: number,
+  ay: number,
+  az: number,
+  bx: number,
+  by: number,
+  bz: number,
+  cx: number,
+  cy: number,
+  cz: number,
+  ua: number,
+  va: number,
+  ub: number,
+  vb: number,
+  uc: number,
+  vc: number,
+): THREE.BufferGeometry {
+  const n = new THREE.Vector3(bx - ax, by - ay, bz - az).cross(new THREE.Vector3(cx - ax, cy - ay, cz - az));
+  const mid = new THREE.Vector3((ax + bx + cx) / 3, (ay + by + cy) / 3, (az + bz + cz) / 3);
+  if (n.dot(mid) < 0) {
+    const tx = bx;
+    const ty = by;
+    const tz = bz;
+    const tu = ub;
+    const tv = vb;
+    bx = cx;
+    by = cy;
+    bz = cz;
+    ub = uc;
+    vb = vc;
+    cx = tx;
+    cy = ty;
+    cz = tz;
+    uc = tu;
+    vc = tv;
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute([ax, ay, az, bx, by, bz, cx, cy, cz], 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute([ua, va, ub, vb, uc, vc], 2));
+  g.computeVertexNormals();
+  return g;
+}
+
 function logoCanvas(
   img: HTMLImageElement | null,
   short: string,
@@ -1139,7 +1190,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
     const wrapMat = new THREE.MeshBasicMaterial({
-      map: glassTex(photo0, false, 'pav', 0, true),
+      map: wellTex(photo0, false),
       color: 0xffffff,
       side: THREE.DoubleSide,
       depthWrite: true,
@@ -1148,10 +1199,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     wellMat = wrapMat;
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
-    const wellTopR = tableR * 0.52;
+    const wellTopR = tableR * 0.5;
     const wellTopY = tableY - 0.016;
-    const wellBotR = tableR * 0.44;
-    const wellBotY = tableY - 0.13;
+    const wellBotR = tableR * 0.1;
+    const wellBotY = botY + 0.05;
     const addWell = (geo: THREE.BufferGeometry): void => {
       const mesh = new THREE.Mesh(geo, wrapMat);
       mesh.userData.nodeId = 6;
@@ -1161,6 +1212,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     for (let i = 0; i < sides; i++) {
       const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
       const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const u0 = i / sides;
+      const u1 = (i + 1) / sides;
       const tx0 = Math.cos(a0) * wellTopR;
       const tz0 = Math.sin(a0) * wellTopR;
       const tx1 = Math.cos(a1) * wellTopR;
@@ -1169,8 +1222,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       const bz0 = Math.sin(a0) * wellBotR;
       const bx1 = Math.cos(a1) * wellBotR;
       const bz1 = Math.sin(a1) * wellBotR;
-      addWell(triGeo(tx0, wellTopY, tz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, 'pav'));
-      addWell(triGeo(tx0, wellTopY, tz0, bx1, wellBotY, bz1, tx1, wellTopY, tz1, 'pav'));
+      addWell(wellTri(tx0, wellTopY, tz0, bx0, wellBotY, bz0, bx1, wellBotY, bz1, u0, 0, u0, 1, u1, 1));
+      addWell(wellTri(tx0, wellTopY, tz0, bx1, wellBotY, bz1, tx1, wellTopY, tz1, u0, 0, u1, 1, u1, 0));
     }
     const wellFloor = new THREE.Mesh(tableFan(wellBotR, sides), wrapMat);
     wellFloor.position.y = wellBotY;
@@ -1383,7 +1436,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     swapMap(crownB, glassTex(photo, on, 'crown', 1));
     swapMap(pavA, glassTex(photo, false, 'pav', 0));
     swapMap(pavB, glassTex(photo, false, 'pav', 1));
-    if (wellMat) swapMap(wellMat, glassTex(photo, on, 'pav', 0, true));
+    if (wellMat) swapMap(wellMat, wellTex(photo, on));
     for (const mat of [crownA, crownB]) {
       if (mat instanceof THREE.MeshPhysicalMaterial) {
         mat.emissive.setHex(on ? 0xeaf1ff : 0x1557ff);
