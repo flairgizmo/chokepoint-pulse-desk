@@ -525,7 +525,7 @@ diffuseColor.a = liteFres * liteFres * 0.16;`;
     return `#include <map_fragment>
 ${liteIcePreamble()}
 float fleck = pow(kite, 3.15);
-vec3 body = mix(vec3(0.006, 0.008, 0.016), vec3(0.04, 0.055, 0.09), kite);
+vec3 body = mix(vec3(0.002, 0.003, 0.008), vec3(0.018, 0.024, 0.042), kite);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * fleck * 0.08;
 diffuseColor.rgb += vec3(0.78, 0.9, 1.0) * fleck * 0.18;
@@ -536,7 +536,7 @@ diffuseColor.a = 1.0;`;
     return `#include <map_fragment>
 ${liteIcePreamble()}
 float fleck = pow(kite, 2.8);
-vec3 body = mix(vec3(0.016, 0.02, 0.032), vec3(0.08, 0.1, 0.16), kite);
+vec3 body = mix(vec3(0.006, 0.008, 0.014), vec3(0.035, 0.045, 0.07), kite);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * fleck * 0.1;
 diffuseColor.rgb += vec3(0.9, 0.95, 1.0) * fleck * 0.2;
@@ -547,7 +547,7 @@ diffuseColor.a = 1.0;`;
     return `#include <map_fragment>
 ${liteIcePreamble()}
 float fleck = pow(kite, 3.2);
-vec3 body = mix(vec3(0.008, 0.01, 0.02), vec3(0.05, 0.065, 0.11), kite);
+vec3 body = mix(vec3(0.003, 0.004, 0.01), vec3(0.022, 0.03, 0.05), kite);
 diffuseColor.rgb = body;
 diffuseColor.rgb += envRefl * fleck * 0.1;
 diffuseColor.rgb += vec3(0.82, 0.92, 1.0) * fleck * 0.24;
@@ -627,7 +627,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-56-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-57-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
