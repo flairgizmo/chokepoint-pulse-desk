@@ -1273,9 +1273,17 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     caustic.visible = false;
     floor.visible = false;
     pool.visible = false;
+    const haze: THREE.Object3D[] = [];
+    scene.traverse((obj) => {
+      if (obj.userData.cinemaHaze) {
+        obj.visible = false;
+        haze.push(obj);
+      }
+    });
     for (const card of studio) card.visible = true;
     cubeCam.update(renderer, scene);
     for (const card of studio) card.visible = false;
+    for (const obj of haze) obj.visible = true;
     lean.visible = true;
     backdrop.visible = true;
     left.visible = true;

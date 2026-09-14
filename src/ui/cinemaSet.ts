@@ -459,6 +459,7 @@ export function addCinemaHaze(scene: THREE.Scene, grade: 'cool' | 'warm' = 'cool
   });
   const wash = new THREE.Mesh(new THREE.PlaneGeometry(20, 11), cool);
   wash.position.set(0, 1.35, -4.4);
+  wash.userData.cinemaHaze = true;
   scene.add(wash);
   const warm = cool.clone();
   warm.color.setHex(0xffc56a);
@@ -466,6 +467,7 @@ export function addCinemaHaze(scene: THREE.Scene, grade: 'cool' | 'warm' = 'cool
   const shaft = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 15), warm);
   shaft.position.set(-2.6, 1.7, -3.5);
   shaft.rotation.z = 0.2;
+  shaft.userData.cinemaHaze = true;
   scene.add(shaft);
 }
 
