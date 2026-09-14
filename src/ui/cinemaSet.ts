@@ -402,6 +402,44 @@ export function cinemaFloorMap(photo: HTMLImageElement | null = visionStill()): 
   return tex;
 }
 
+export function addCinemaFloor(
+  scene: THREE.Scene,
+  lite: boolean,
+  backdropSrc: string,
+  radius = 6.4,
+  y = -0.62,
+): THREE.Mesh {
+  const floorMat = lite
+    ? new THREE.MeshLambertMaterial({
+        map: cinemaFloorMap(photoFor(backdropSrc)),
+        color: 0x6e829c,
+        transparent: true,
+        opacity: 0.96,
+      })
+    : new THREE.MeshPhysicalMaterial({
+        map: cinemaFloorMap(photoFor(backdropSrc)),
+        color: 0xffffff,
+        roughness: 0.06,
+        metalness: 0.42,
+        clearcoat: 1,
+        clearcoatRoughness: 0.04,
+        transparent: true,
+        opacity: 0.9,
+        envMapIntensity: 1.65,
+      });
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(radius, lite ? 48 : 96), floorMat);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = y;
+  scene.add(floor);
+  onPhotoEnv(backdropSrc, () => {
+    const prev = floorMat.map;
+    floorMat.map = cinemaFloorMap(photoFor(backdropSrc) ?? visionStill());
+    floorMat.needsUpdate = true;
+    prev?.dispose();
+  });
+  return floor;
+}
+
 export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: string): void {
   const tex = new THREE.TextureLoader().load(backdropSrc, (next) => {
     next.colorSpace = THREE.SRGBColorSpace;
@@ -424,35 +462,8 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
   right.rotation.y = -0.78;
   scene.add(right);
 
-  const floorMat = lite
-    ? new THREE.MeshLambertMaterial({
-        map: cinemaFloorMap(photoFor(backdropSrc)),
-        color: 0x6e829c,
-        transparent: true,
-        opacity: 0.96,
-      })
-    : new THREE.MeshPhysicalMaterial({
-        map: cinemaFloorMap(photoFor(backdropSrc)),
-        color: 0xffffff,
-        roughness: 0.06,
-        metalness: 0.42,
-        clearcoat: 1,
-        clearcoatRoughness: 0.04,
-        transparent: true,
-        opacity: 0.9,
-        envMapIntensity: 1.65,
-      });
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(6.4, lite ? 48 : 96), floorMat);
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -0.62;
-  scene.add(floor);
+  addCinemaFloor(scene, lite, backdropSrc);
   scene.add(makeFloorPool(-0.605));
-  onPhotoEnv(backdropSrc, () => {
-    const prev = floorMat.map;
-    floorMat.map = cinemaFloorMap(photoFor(backdropSrc) ?? visionStill());
-    floorMat.needsUpdate = true;
-    prev?.dispose();
-  });
 
   scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.26 : 0.4));
   scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.2 : 0.52));

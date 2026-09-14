@@ -524,10 +524,9 @@ function essayOrder(): string {
   return `<section class="essay-order" aria-labelledby="essay-order-title">
     ${posterFrame(
       photoFigure(plateFor('canary', 'gbtd'), 'essay-order-still'),
-      `${kicker('In order')}<h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2>`,
+      `${kicker('In order')}<h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2><p>We’ve gotten used to seeing a new rail arrive before anyone can trust it.</p>`,
     )}
     <div class="essay-flow">
-      <p>We’ve gotten used to seeing a new rail arrive before anyone can trust it.</p>
       <p>It happened with the internet. First the thrill of being connected. Then the patches: passwords everywhere, data moving without a clear owner. The network won anyway. We filled it with workarounds.</p>
       <p>Digital finance is having the same argument. Only this time the payload is not a photo. It is a pound, a contract, a market.</p>
       <p>Blockchains arrived as the next big thing: decentralised, transparent, programmable. On paper, perfect. In the rooms that actually issue sterling, something else was missing.</p>
@@ -1223,7 +1222,7 @@ export function renderGlossary(filter = ''): string {
           </article>`,
         )
         .join('');
-      return `<section class="letter"><h3 class="letter-head">${photoFigure(plateFor(`letter-${L}`), 'letter-still')}<span>${esc(L)}</span></h3>${items}</section>`;
+      return `<section class="letter">${posterFrame(photoFigure(plateFor(`letter-${L}`), 'letter-still'), `<h3 class="letter-head"><span>${esc(L)}</span></h3>`)}${items}</section>`;
     })
     .join('');
   return `${pageHero('Language', 'Say the objects by their names.', 'Overledger, GBTD, SATP, QuantNet, a tokenised deposit, a CBDC — different objects, one story. Search. Each term opens a definition. Mixing them up is how the sector stayed noisy.', '', undefined, 'glossary')}
@@ -1402,7 +1401,7 @@ export function newsListMarkup(river?: NewsRiver, filter = ''): { html: string; 
     .map((lane) => {
       const laneRows = rows.filter((h) => h.lane === lane);
       if (!laneRows.length) return '';
-      return `<li class="headline-lane"><p class="kicker">${esc(lane)}</p><ul>${laneRows
+      return `<li class="headline-lane">${cinemaStrip(`news-lane-${lane.toLowerCase()}`, `<p class="kicker">${esc(lane)}</p>`)}<ul>${laneRows
         .map(
           (h) => `<li class="headline">
               ${headlinePosterButton(h)}
@@ -1467,7 +1466,7 @@ function renderCalendar(compact = false): string {
         photoFigure(plateFor(e.id, e.where, e.title), 'cal-still'),
         `<time datetime="${esc(e.when)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(e.where)}</p>
-      <h3>${esc(e.title)}</h3>${compact ? '' : `<p>${esc(e.body)}</p>`}`,
+      <h3>${esc(e.title)}</h3><p>${esc(compact && e.body.length > 110 ? `${e.body.slice(0, 110).trim()}…` : e.body)}</p>`,
       )}
       </button>
     </li>`;
@@ -1490,7 +1489,7 @@ function renderThisMonth(compact = false): string {
         photoFigure(plateFor(n.id, n.lane, n.title), 'month-still'),
         `<time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
       <p class="mono">${esc(n.source)} · ${esc(n.lane)}</p>
-      <h3>${esc(n.title)}</h3>${compact ? '' : `<p>${esc(n.body)}</p>`}`,
+      <h3>${esc(n.title)}</h3><p>${esc(compact && n.body.length > 110 ? `${n.body.slice(0, 110).trim()}…` : n.body)}</p>`,
       )}
       </button>
     </li>`;

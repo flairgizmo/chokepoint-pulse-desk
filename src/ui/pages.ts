@@ -201,7 +201,7 @@ export function renderStack(): string {
 
 export function renderTechnology(): string {
   const spine = TECH.map(
-    (t) => `<button type="button" class="tech-spine-hit" data-stage="tech" data-stage-id="${esc(t.id)}">${photoFigure(plateFor(t.id), 'spine-still')}<span>${esc(t.name)}</span></button>`,
+    (t) => `<button type="button" class="tech-spine-hit" data-stage="tech" data-stage-id="${esc(t.id)}">${posterFrame(photoFigure(plateFor(t.id), 'spine-still'), `<span>${esc(t.name)}</span>`)}</button>`,
   ).join('');
   const chapters = TECH.map(
     (t, i) => `<article class="tech-chapter" id="${esc(t.id)}" data-q="${esc(`${t.name} ${t.purpose} ${t.does}`)}">

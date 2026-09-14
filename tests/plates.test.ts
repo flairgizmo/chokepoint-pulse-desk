@@ -409,6 +409,12 @@ describe('Topic plates', () => {
     expect(renderPeople()).toContain('person-bio-still');
     expect(renderDonate()).toContain('The only published addresses</h2><p>QNT token');
     expect(renderCity(cityById('london')!)).toContain('United Kingdom</p><h2>London</h2><p>');
+    expect(chatMarkup()).toContain('grok-welcome-still');
+    expect(renderHome()).toContain('Discover Stage');
+    expect(plateFor('grok-welcome').src).toBe(PLATES.library.src);
+    expect(plateFor('news-lane-official').src).toBe(PLATES.newsroom.src);
+    expect(plateFor('news-lane-markets').src).toBe(PLATES.exchange.src);
+    expect(plateFor('news-lane-industry').src).toBe(PLATES.city.src);
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

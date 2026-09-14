@@ -2979,7 +2979,9 @@ button.chip {
 .proof-row > .cinema-filter,
 .block > .cinema-filter,
 .notes-related > .cinema-filter,
-.player > .cinema-filter {
+.player > .cinema-filter,
+.headline-lane > .cinema-filter,
+.headlines .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
 }
@@ -8312,3 +8314,99 @@ section.block .kicker {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.tech-spine {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.45rem;
+}
+
+.tech-spine-hit {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tech-spine-hit .poster-frame {
+  min-height: 4.4rem;
+  margin: 0;
+}
+
+.tech-spine-hit .poster-frame .photo-plate.spine-still img,
+.tech-spine-hit .poster-frame img {
+  display: block;
+  width: 100%;
+  height: 4.4rem;
+  min-height: 4.4rem;
+  max-height: 4.4rem;
+  aspect-ratio: 21 / 6;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.62);
+}
+
+.tech-spine-hit .poster-copy {
+  padding: 1.4rem 0.7rem 0.45rem;
+}
+
+.tech-spine-hit .poster-copy span {
+  color: #f4f7fb;
+  font-weight: 650;
+}
+
+.letter .poster-frame {
+  min-height: 4.2rem;
+  margin: 0 0 0.75rem;
+}
+
+.letter .poster-frame .photo-plate.letter-still img,
+.letter-head .photo-plate.letter-still img {
+  width: 100%;
+  height: 4.2rem;
+  min-height: 4.2rem;
+  max-height: 4.2rem;
+  aspect-ratio: 21 / 5;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
+.letter .poster-copy .letter-head,
+.letter .poster-copy span {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: #f4f7fb;
+}
+
+.grok-welcome {
+  padding: 0 0 0.35rem;
+  overflow: hidden;
+}
+
+.grok-welcome .poster-frame {
+  min-height: 7.2rem;
+  margin: 0 0 0.65rem;
+  border-radius: 12px;
+}
+
+.grok-welcome .poster-frame .photo-plate.grok-welcome-still img {
+  height: 7.2rem;
+  min-height: 7.2rem;
+  max-height: 7.2rem;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+}
+
+.grok-welcome .poster-copy p,
+.grok-welcome .poster-copy {
+  color: #eaf1ff;
+}
+
+.grok-chips {
+  padding: 0 0.2rem 0.35rem;
+}
+

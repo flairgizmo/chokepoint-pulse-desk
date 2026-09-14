@@ -64,7 +64,7 @@ export function chatMarkup(): string {
       </header>
       <ol class="grok-log" id="grok-log">
         <li class="grok-assistant grok-welcome" data-grok-welcome>
-          <p>Ask about Overledger, GBTD, QNT, SATP, Fusion, or the people who signed the papers. I keep the thread as you move through the desk.</p>
+          ${posterFrame(photoFigure(plateFor('grok-welcome'), 'grok-welcome-still'), '<p>Ask about Overledger, GBTD, QNT, SATP, Fusion, or the people who signed the papers. I keep the thread as you move through the desk.</p>')}
           <div class="grok-chips">
             ${PROMPTS.map((p) => `<button type="button" class="grok-chip" data-grok-prompt="${esc(p)}">${esc(p)}</button>`).join('')}
           </div>
