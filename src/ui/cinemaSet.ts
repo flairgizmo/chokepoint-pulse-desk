@@ -221,6 +221,14 @@ export function printGradeStill(
   ctx.globalCompositeOperation = 'multiply';
   ctx.fillStyle = `rgba(8, 14, 32, ${(0.32 + t * 0.38 + sky * 0.36).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
+  if (sky > 0.1) {
+    const skyWash = ctx.createLinearGradient(x, y, x, y + h * 0.52);
+    skyWash.addColorStop(0, `rgba(6, 12, 28, ${(0.28 + sky * 0.42).toFixed(3)})`);
+    skyWash.addColorStop(0.55, `rgba(6, 12, 28, ${(0.1 + sky * 0.18).toFixed(3)})`);
+    skyWash.addColorStop(1, 'rgba(6, 12, 28, 0)');
+    ctx.fillStyle = skyWash;
+    ctx.fillRect(x, y, w, h * 0.52);
+  }
   ctx.globalCompositeOperation = 'screen';
   ctx.fillStyle = `rgba(255, 168, 96, ${(0.06 + t * 0.08).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);

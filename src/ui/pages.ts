@@ -7,7 +7,7 @@ import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
-import { diagramFigure } from './diagrams';
+import { diagramFigure, posterFrame } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
@@ -74,19 +74,22 @@ export function renderHome(): string {
       ${kicker('Three proofs')}
       <div class="proof-grid">
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="interop">
-          ${diagramFigure('home-interop', 'proof', 'Interop')}
-          <strong>Interoperability</strong>
-          <span>Overledger maps one request onto more than one ledger. 2018 whitepaper, UCL Discovery.</span>
+          ${posterFrame(
+            diagramFigure('home-interop', 'proof', 'Interop'),
+            '<strong>Interoperability</strong><span>Overledger maps one request onto more than one ledger. 2018 whitepaper, UCL Discovery.</span>',
+          )}
         </button>
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="standards">
-          ${diagramFigure('home-standards', 'proof', 'Standards')}
-          <strong>Standards</strong>
-          <span>IETF SATP and ISO/TC 307. Rooms with names.</span>
+          ${posterFrame(
+            diagramFigure('home-standards', 'proof', 'Standards'),
+            '<strong>Standards</strong><span>IETF SATP and ISO/TC 307. Rooms with names.</span>',
+          )}
         </button>
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="institutions">
-          ${diagramFigure('home-institutions', 'proof', 'Rooms')}
-          <strong>Institutions</strong>
-          <span>Who they still sit with — current, historical, adjacency.</span>
+          ${posterFrame(
+            diagramFigure('home-institutions', 'proof', 'Rooms'),
+            '<strong>Institutions</strong><span>Who they still sit with — current, historical, adjacency.</span>',
+          )}
         </button>
       </div>
     </section>
@@ -173,10 +176,10 @@ export function renderStack(): string {
         .map(
           (l) => `<li data-rung="${esc(l.id)}">
             <button type="button" data-stage="tech" data-stage-id="${l.id === 'gate' ? 'overledger' : l.id === 'script' ? 'payscript' : l.id === 'apps' ? 'quant-connect' : l.id === 'ledgers' ? 'connectors' : 'fusion'}">
-              ${diagramFigure(`stack-${l.id}`, 'stack', l.title)}
-              <strong>${esc(l.title)}</strong>
-              <span>${esc(l.job)}</span>
-              <small>${esc(l.std)}</small>
+              ${posterFrame(
+                diagramFigure(`stack-${l.id}`, 'stack', l.title),
+                `<strong>${esc(l.title)}</strong><span>${esc(l.job)}</span><small>${esc(l.std)}</small>`,
+              )}
             </button>
           </li>`,
         )
@@ -190,10 +193,10 @@ export function renderTechnology(): string {
   ).join('');
   const chapters = TECH.map(
     (t, i) => `<article class="tech-chapter" id="${esc(t.id)}" data-q="${esc(`${t.name} ${t.purpose} ${t.does}`)}">
-      ${diagramFigure(t.id, 'tech', t.era)}
-      <p class="kicker">${esc(t.era)}</p>
-      <h2>${esc(t.name)}</h2>
-      <p class="lede-sm">${esc(t.purpose)}</p>
+      ${posterFrame(
+        diagramFigure(t.id, 'tech', t.era),
+        `<p class="kicker">${esc(t.era)}</p><h2>${esc(t.name)}</h2><p class="lede-sm">${esc(t.purpose)}</p>`,
+      )}
       <details class="card-more"${i < 2 ? ' open' : ''}>
         <summary>Chapter</summary>
         <div class="tech-grid">
@@ -220,11 +223,11 @@ export function renderPatents(): string {
   const cards = PATENTS.map(
     (p) => `<article class="patent-card" id="${esc(p.id)}">
       <button type="button" data-stage="patent" data-stage-id="${esc(p.id)}">
-        ${photoFigure(plateFor(p.id, p.number, p.title), 'patent-still')}
+        ${posterFrame(
+          photoFigure(plateFor(p.id, p.number, p.title), 'patent-still'),
+          `<p class="kicker">${esc(p.number)}</p><h2>${esc(p.title)}</h2><p>${esc(p.claim)}</p>`,
+        )}
         ${diagramFigure(p.id, 'patent', p.number)}
-        <p class="kicker">${esc(p.number)}</p>
-        <h2>${esc(p.title)}</h2>
-        <p>${esc(p.claim)}</p>
         <p class="mono subtle">${esc(p.granted || p.filed || '')}${p.inventors.length ? ` · ${esc(p.inventors.join(', '))}` : ''}</p>
       </button>
     </article>`,
@@ -247,12 +250,10 @@ export function renderInstitutions(): string {
       : `<span class="wordmark-label">${esc(caption)} <em>wordmark</em></span>`;
     return `<article class="inst-card" id="${esc(i.id)}" data-status="${esc(i.status)}" data-q="${esc(`${i.name} ${i.body}`)}">
       <button type="button" data-stage="institution" data-stage-id="${esc(i.id)}">
-        ${diagramFigure(i.id, 'institution', i.status)}
-        <div class="inst-mark">${logo}</div>
-        <p class="kicker">${esc(i.role)} · ${esc(i.status)}</p>
-        <h2>${esc(caption)}</h2>
-        <p class="mono subtle">${esc(i.dates ?? '')}</p>
-        <p>${esc(i.body.length > 160 ? `${i.body.slice(0, 160).trim()}…` : i.body)}</p>
+        ${posterFrame(
+          diagramFigure(i.id, 'institution', i.status),
+          `<div class="inst-mark">${logo}</div><p class="kicker">${esc(i.role)} · ${esc(i.status)}</p><h2>${esc(caption)}</h2><p class="mono subtle">${esc(i.dates ?? '')}</p><p>${esc(i.body.length > 160 ? `${i.body.slice(0, 160).trim()}…` : i.body)}</p>`,
+        )}
       </button>
     </article>`;
   }).join('');

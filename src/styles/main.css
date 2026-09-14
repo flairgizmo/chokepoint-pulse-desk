@@ -3387,6 +3387,10 @@ button.chip {
   cursor: pointer;
 }
 
+.reveal.cinema-chapter > summary {
+  padding: 0;
+}
+
 .reveal > summary::-webkit-details-marker {
   display: none;
 }
@@ -3624,8 +3628,9 @@ button.chip {
 }
 
 .proof-chip {
-  display: grid;
-  gap: 0.55rem;
+  display: block;
+  gap: 0;
+  padding: 0;
 }
 
 .pulse-list {
@@ -3709,10 +3714,10 @@ button.chip {
 }
 
 .stack-rungs.exploded li button {
-  display: grid;
-  gap: 0.75rem;
+  display: block;
+  gap: 0;
   width: 100%;
-  padding: 0 1rem 1.15rem;
+  padding: 0;
   border: 0;
   background: transparent;
   color: inherit;
@@ -4981,6 +4986,236 @@ body.stage-open .grok {
 
 .story-hit p {
   color: #b7c4d8;
+}
+
+.poster-frame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #070b14;
+  min-height: 16rem;
+}
+
+.poster-frame > .photo-plate,
+.poster-frame > .beat-figure,
+.poster-frame > .patent-still,
+.poster-frame > .term-still,
+.poster-frame > .beat-still,
+.poster-frame > .headline-still,
+.poster-frame > .satp-still,
+.poster-frame > .cal-still,
+.poster-frame > .month-still,
+.poster-frame > .voice-still,
+.poster-frame > .markets-still,
+.poster-frame > .liability-still,
+.poster-frame > .layer-still,
+.poster-frame > .dyk-still {
+  margin: 0;
+}
+
+.poster-frame .photo-plate figcaption,
+.poster-frame .beat-figure figcaption,
+.poster-copy + figcaption {
+  display: none;
+}
+
+.poster-frame .photo-plate img,
+.poster-frame .beat-figure img,
+.poster-frame img {
+  width: 100%;
+  min-height: 16rem;
+  aspect-ratio: 21 / 9;
+  max-height: 28rem;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.18) brightness(0.55);
+}
+
+.poster-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 4.4rem 1.15rem 1.1rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(7, 11, 20, 0.92) 70%);
+  color: #f4f7fb;
+  pointer-events: none;
+}
+
+.poster-copy a,
+.poster-copy .text-link,
+.poster-copy button {
+  pointer-events: auto;
+}
+
+.poster-copy > * {
+  position: relative;
+  z-index: 2;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.poster-copy h2,
+.poster-copy h3,
+.poster-copy strong {
+  margin: 0.18rem 0 0.35rem;
+  color: #f4f7fb;
+}
+
+.poster-copy p,
+.poster-copy span:not(.chip):not(.year-num):not(.n):not(.status-active):not(.status-incubating):not(.status-completed):not(.status-upcoming) {
+  color: #b7c4d8;
+}
+
+.poster-copy .kicker,
+.poster-copy .year-num,
+.poster-copy .mono,
+.poster-copy .year,
+.poster-copy .n {
+  color: #8aa3c8;
+}
+
+.poster-copy .text-link,
+.poster-copy a {
+  color: #eaf1ff;
+}
+
+.paper .paper-more,
+.paper > .text-link,
+.tech-chapter > .card-more,
+.prog-card .prog-tech,
+.prog-card .prog-marks,
+.prog-card > .card-more,
+.patent-card .mono,
+.essay-card > .text-link,
+.triptych .panel > p,
+.triptych .panel > .text-link,
+.compare .panel > p,
+.beat > p,
+.beat button > p,
+.cal-card button > p,
+.month-card button > p,
+.voice > a,
+.live-rail .panel > .text-link,
+.liability-cards li > div {
+  position: relative;
+  z-index: 2;
+  padding: 0.85rem 1.15rem 0.35rem;
+}
+
+.paper > .text-link,
+.essay-card > .text-link,
+.voice > a,
+.live-rail .panel > .text-link {
+  display: inline-block;
+  padding-bottom: 1rem;
+}
+
+.term .poster-copy p,
+.cbdc-model .poster-copy p,
+.era-grid .poster-copy p,
+.patent-card .poster-copy p {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.paper,
+.term,
+.note-card,
+.note-card.news-card,
+.proof-chip,
+.tech-chapter,
+.inst-card button,
+.patent-card button,
+.term button,
+.prog-card,
+.essay-card,
+.cbdc-model button,
+.headline button,
+.cinema-voice {
+  padding: 0;
+}
+
+.proof-chip {
+  display: block;
+}
+
+.beat button,
+.beat:not(:has(> button)) {
+  display: block;
+  grid-template-columns: none;
+}
+
+.layer-bands li {
+  display: block;
+  grid-template-columns: none;
+  padding: 0;
+}
+
+.satp-lab .stage-btn {
+  display: block;
+  grid-template-columns: none;
+}
+
+.cinema-chapter > summary {
+  padding: 0;
+}
+
+.cinema-chapter .reveal-body {
+  padding: 0.9rem 1.2rem 1.3rem;
+}
+
+.patent-card .beat-figure:not(.photo-plate) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.flip-face:not(.flip-back) {
+  padding: 0;
+  overflow: hidden;
+}
+
+.flip-face:not(.flip-back) .poster-frame,
+.flip-face:not(.flip-back) .poster-frame img {
+  min-height: 42rem;
+  max-height: none;
+  height: 100%;
+}
+
+.era-grid li {
+  padding: 0;
+}
+
+.era-grid .poster-frame img {
+  min-height: 22rem;
+}
+
+.proof-chip .poster-frame img,
+.term .poster-frame img,
+.paper .poster-frame img,
+.prog-card .poster-frame img,
+.inst-card .poster-frame img,
+.tech-chapter .poster-frame img {
+  min-height: 18rem;
+  max-height: 26rem;
+}
+
+.note-card .poster-frame img,
+.headline .poster-frame img,
+.month-card .poster-frame img,
+.cal-card .poster-frame img {
+  min-height: 16rem;
+  max-height: 22rem;
 }
 
 .paper,
@@ -6376,4 +6611,97 @@ section.block .kicker {
 .desk-stage-sheet h2,
 .desk-stage-sheet h3 {
   color: #f4f7fb;
+}
+
+.poster-copy > *,
+.poster-copy .year-num,
+.poster-copy .kicker,
+.poster-copy h2,
+.poster-copy h3,
+.poster-copy .meta,
+.poster-copy .mono,
+.poster-copy p,
+.poster-copy .lede-sm,
+.poster-copy .inst-mark,
+.poster-copy time,
+.poster-copy .text-link {
+  padding-inline: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.term,
+.term button,
+.note-card,
+.note-card.news-card,
+.note-card.is-feature,
+.inst-card button,
+.proof-chip,
+.headline button,
+.cbdc-model button,
+.cinema-voice {
+  padding: 0;
+}
+
+.paper {
+  padding: 0 0 1rem;
+}
+
+.poster-copy .stat {
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: #f4f7fb;
+}
+
+.stack-rungs.exploded li button,
+.stack-rungs.cinema-rungs li button {
+  display: block;
+  padding: 0;
+  gap: 0;
+}
+
+.stack-visual .cinema-rungs li,
+.stack-rungs.cinema-rungs li,
+.stack-rungs.exploded li {
+  padding: 0;
+}
+
+.stack-visual .cinema-rungs strong,
+.stack-rungs.cinema-rungs strong,
+.stack-visual .cinema-rungs span,
+.stack-rungs.cinema-rungs span {
+  padding: 0;
+}
+
+.dyk-q {
+  display: block;
+  padding: 0;
+}
+
+.dyk-still {
+  margin: 0;
+}
+
+.triptych .panel,
+.compare .panel,
+.essay-card,
+.live-rail .panel {
+  overflow: hidden;
+  padding: 0 0 0.4rem;
+}
+
+.prog-card .prog-tech,
+.prog-card .prog-marks {
+  padding-bottom: 0.85rem;
+}
+
+.inst-card .poster-copy .inst-mark {
+  margin-bottom: 0.35rem;
+}
+
+.inst-card .poster-copy .wm-logo {
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
 }

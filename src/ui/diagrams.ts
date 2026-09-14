@@ -383,6 +383,11 @@ export function diagramFigure(seed: string, kind: string, title: string): string
   return `<figure class="beat-figure" data-beat="${esc(seed)}" data-kind="${esc(kind)}">${diagramSvg(seed, kind, title)}</figure>`;
 }
 
+/** Photograph fills the card; titles sit on the still. Long copy stays after this wrap. */
+export function posterFrame(still: string, copy: string): string {
+  return `<div class="poster-frame">${still}<div class="poster-copy">${copy}</div></div>`;
+}
+
 export function topicFigure(...keys: Array<string | undefined | null>): string {
   return photoFigure(plateFor(...keys));
 }
