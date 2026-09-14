@@ -818,7 +818,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const pavs: THREE.Mesh[] = [];
   const stars: THREE.Mesh[] = [];
   const sparks: THREE.Mesh[] = [];
-  const sides = 16;
+  const sides = lite ? 8 : 16;
   const restAyFace = 0.72;
   const face0 = Math.PI / 2 - restAyFace + Math.PI / sides;
   const tableR = 0.36;
@@ -1164,11 +1164,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   });
 
   const bead = new THREE.Mesh(
-    new THREE.SphereGeometry(0.038, lite ? 12 : 24, lite ? 12 : 24),
+    new THREE.SphereGeometry(lite ? 0.022 : 0.038, lite ? 12 : 24, lite ? 12 : 24),
     cinemaChrome(lite),
   );
   if (lite && bead.material instanceof THREE.MeshBasicMaterial) {
-    bead.material.color.setHex(0x8a7a62);
+    bead.material.color.setHex(0x5a4e40);
     bead.material.envMap = null;
     bead.material.reflectivity = 0;
   }
