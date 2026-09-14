@@ -380,6 +380,25 @@ describe('Topic plates', () => {
     expect(plateFor('wm-lloyds-bank').src).toBe(PLATES.paris.src);
     expect(plateFor('wm-nationwide').src).toBe(PLATES.singapore.src);
     expect(plateFor('wm-barclays').src).toBe(PLATES.city.src);
+    expect(renderHome()).toContain('intro-still');
+    expect(renderHome()).toContain('A gateway OS</h2><p>Overledger connects');
+    expect(renderVision()).toContain('The 2018 problem</h3><p>The UCL Discovery');
+    expect(renderVision()).toContain('intro-still');
+    expect(renderNews()).toContain('intro-still');
+    expect(renderStandards()).toContain('intro-still');
+    expect(renderPeople()).toContain('intro-still');
+    expect(renderStory()).toContain('story-keys');
+    expect(renderMarkets()).toContain('class="mono contract"');
+    expect(renderProgrammes()).toContain('cohort-note');
+    expect(plateFor('intro-calendar').src).toBe(PLATES.miami.src);
+    expect(plateFor('intro-month').src).toBe(PLATES.canary.src);
+    expect(plateFor('intro-satp').src).toBe(PLATES.geneva.src);
+    expect(plateFor('intro-voices').src).toBe(PLATES.radio.src);
+    expect(plateFor('story-keys').src).toBe(PLATES.history.src);
+    expect(plateFor('cohort-home').src).toBe(PLATES.canaryDay.src);
+    expect(plateFor('cohort-programmes').src).toBe(PLATES.payments.src);
+    expect(plateFor('mk-contract').src).toBe(PLATES.datacenter.src);
+    expect(plateFor('group-c-suite').src).toBe(PLATES.ucl.src);
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

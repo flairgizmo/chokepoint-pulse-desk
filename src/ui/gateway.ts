@@ -451,7 +451,12 @@ if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float ndv = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float rim = pow(1.0 - ndv, 2.35);
-float crease = smoothstep(0.03, 0.14, length(fwidth(liteN)));
+#ifdef USE_COLOR
+float kite = clamp(dot(vColor.rgb, vec3(0.3, 0.54, 0.16)), 0.0, 1.0);
+#else
+float kite = 0.42;
+#endif
+float crease = smoothstep(0.03, 0.14, max(length(fwidth(liteN)), abs(fwidth(kite))));
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
@@ -472,12 +477,7 @@ vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 3.35
   + vec3(1.0, 0.96, 0.88) * specCam * 2.55
   + vec3(0.7, 0.86, 1.0) * specFill * 1.55
   + vec3(0.96, 0.98, 1.0) * specBack * 1.45
-  + vec3(0.58, 0.8, 1.0) * specCool * 1.28;
-#ifdef USE_COLOR
-float kite = clamp(dot(vColor.rgb, vec3(0.3, 0.54, 0.16)), 0.0, 1.0);
-#else
-float kite = 0.42;
-#endif`;
+  + vec3(0.58, 0.8, 1.0) * specCool * 1.28;`;
 }
 
 /** Sparse gaussian pins — high-frequency noise turned the crown into grit. */
@@ -658,7 +658,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-63-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-64-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {

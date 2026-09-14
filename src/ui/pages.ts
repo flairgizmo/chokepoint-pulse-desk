@@ -7,7 +7,7 @@ import { STORY, storyChronological, type StoryTheme } from '../data/story';
 import { TECH } from '../data/tech';
 import { GBTD_BANKS } from '../data/timeline';
 import { photoFigure, plateFor, type VisualId } from '../data/plates';
-import { cinemaFilterBar, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, cinemaIntro, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
 import { esc } from './html';
 import { chipsFromIds } from './relate';
 import { relatedButtons } from './stage';
@@ -155,7 +155,7 @@ export function renderStory(): string {
     <p class="story-suggest" data-story-suggest hidden></p>
     <ol class="story-rail" id="story-rail">${nodes}</ol>
     <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>
-    <p class="subtle story-keys">j and k move the visible rail. Each node opens a stage — object, filing, source.</p>`;
+    ${cinemaStrip('story-keys', `<p class="subtle story-keys">j and k move the visible rail. Each node opens a stage — object, filing, source.</p>`)}`;
 }
 
 export function renderStack(): string {
@@ -176,7 +176,7 @@ export function renderStack(): string {
     ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero', undefined, false, false)}
     ${stillStrip('stack', 'Photographs in the layers', 5)}
     <section class="stack-exploded" id="stack-exploded">
-      ${kicker('Exploded instrument')}
+      ${cinemaStrip('intro-stack-exploded', kicker('Exploded instrument'))}
       ${cinemaStrip(
         'chips-stack-tools',
         `<div class="stack-tools">
@@ -304,9 +304,10 @@ export function overledgerRoster(): string {
     </li>`;
   }).join('');
   return `<section class="ol-roster">
-    ${kicker('Overledger architects & operators')}
-    <h2 class="display">Builders of the interoperability layer.</h2>
-    <p class="lede-sm">The people who made the gate speak — role and era, in order. Some have left. The documents remain.</p>
+    ${cinemaIntro(
+      'intro-ol-roster',
+      `${kicker('Overledger architects & operators')}<h2 class="display">Builders of the interoperability layer.</h2><p class="lede-sm">The people who made the gate speak — role and era, in order. Some have left. The documents remain.</p>`,
+    )}
     <ul class="ol-list">${rows}</ul>
   </section>`;
 }

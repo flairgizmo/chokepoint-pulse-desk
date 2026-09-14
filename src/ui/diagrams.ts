@@ -388,6 +388,11 @@ export function posterFrame(still: string, copy: string): string {
   return `<div class="poster-frame">${still}<div class="poster-copy">${copy}</div></div>`;
 }
 
+/** Section kicker + display title on a Vision still. Too tall for a 5.8rem filter banner. */
+export function cinemaIntro(plateKey: string, copy: string): string {
+  return posterFrame(photoFigure(plateFor(plateKey), 'intro-still'), copy);
+}
+
 /** Dusk still under a search strip. Inputs keep their ids so existing filters still bind. */
 export function cinemaFilterBar(id: string, placeholder: string, value = '', extra = ''): string {
   return `<div class="toolbar filter-bar cinema-filter">

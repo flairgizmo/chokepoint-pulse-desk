@@ -2965,9 +2965,30 @@ button.chip {
 .cinema-tape > .cinema-filter,
 .stack-exploded > .cinema-filter,
 .cinema-wire > .cinema-filter,
-.token-board .cinema-filter {
+.token-board .cinema-filter,
+.partner-strip .cinema-filter,
+.cohort-marks .cinema-filter,
+.people-group .cinema-filter,
+.proof-row > .cinema-filter,
+.block > .cinema-filter,
+.notes-related > .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
+}
+
+.cinema-filter .kicker,
+.cinema-filter .cohort-note,
+.cinema-filter .contract,
+.cinema-filter .story-keys,
+.cinema-filter .lede-sm {
+  color: #eaf1ff;
+  margin: 0;
+  max-width: none;
+}
+
+.cinema-filter .contract a,
+.cinema-filter .cohort-note a {
+  color: #8eb0ff;
 }
 
 .cinema-tape .stats-strip .stats,
@@ -5666,7 +5687,8 @@ body.stage-open .grok {
 .poster-frame > .pod-tease-still,
 .poster-frame > .stage-still,
 .poster-frame > .grok-still,
-.poster-frame > .donate-code-still {
+.poster-frame > .donate-code-still,
+.poster-frame > .intro-still {
   margin: 0;
 }
 
@@ -5732,6 +5754,78 @@ body.stage-open .grok {
 .satp-lab .poster-frame img {
   min-height: 18rem;
   max-height: 24rem;
+}
+
+.poster-frame .photo-plate.intro-still img,
+.poster-frame img.intro-still {
+  min-height: 16rem;
+  height: 16rem;
+  max-height: 22rem;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.68);
+}
+
+.calendar > .poster-frame .photo-plate.intro-still img,
+.voices > .poster-frame .photo-plate.intro-still img,
+.satp-lab > .poster-frame .photo-plate.intro-still img,
+.people-rail > .poster-frame .photo-plate.intro-still img,
+.constellation > .poster-frame .photo-plate.intro-still img,
+.film-rail > .poster-frame .photo-plate.intro-still img,
+.ol-roster > .poster-frame .photo-plate.intro-still img,
+.quote-rail > .poster-frame .photo-plate.intro-still img {
+  min-height: 20rem;
+  height: 20rem;
+  max-height: 26rem;
+}
+
+.calendar > .poster-frame,
+.voices > .poster-frame,
+.satp-lab > .poster-frame,
+.people-rail > .poster-frame,
+.essays > .poster-frame,
+.layers-wrap > .poster-frame,
+.timeline-wrap > .poster-frame,
+.token-lab > .poster-frame,
+.vision-deck > .poster-frame,
+.quote-rail > .poster-frame,
+.dyk > .poster-frame,
+.era-strip > .poster-frame,
+.latest-strip > .poster-frame,
+.pod-home > .poster-frame,
+.notes-strip > .poster-frame,
+.pulse-strip > .poster-frame,
+.cbdc-models > .poster-frame,
+.ol-roster > .poster-frame,
+.city-neighbors > .poster-frame,
+.constellation > .poster-frame,
+.film-rail > .poster-frame,
+.stack-visual > .poster-frame,
+.treaty-table .treaty-stage > .poster-frame {
+  width: 100%;
+  margin: 0 0 1.25rem;
+  border-radius: 18px;
+}
+
+.triptych .poster-frame img,
+.compare .poster-frame img {
+  min-height: 24rem;
+  max-height: 34rem;
+  aspect-ratio: 16 / 9;
+}
+
+.triptych .poster-copy,
+.compare .poster-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+}
+
+.triptych .poster-copy p,
+.compare .poster-copy p {
+  color: #d5deea;
+  margin: 0;
 }
 
 .poster-copy {
@@ -7627,9 +7721,15 @@ section.block .kicker {
 
 .acid .poster-frame img,
 .tokencard .poster-frame img,
-.satp-lab .poster-frame img {
+.satp-lab .stage .poster-frame img {
   min-height: 14rem;
   max-height: 18rem;
+}
+
+.satp-lab > .poster-frame .photo-plate.intro-still img {
+  min-height: 20rem;
+  height: 20rem;
+  max-height: 26rem;
 }
 
 .pulse-list .empty-note,

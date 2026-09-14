@@ -28,7 +28,7 @@ import { esc, extLink, fmtMoney, fmtPct, fmtQty } from './html';
 import { bankDisplay, markFor } from '../data/marks';
 import { playerMarkup, relatedEpisodeCard } from './player';
 import { photoFigure, plateFor, PLATES, type VisualId } from '../data/plates';
-import { cinemaFilterBar, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
+import { cinemaFilterBar, cinemaIntro, cinemaStrip, diagramFigure, posterFrame } from './diagrams';
 import { heroPlate, overledgerRoster } from './pages';
 import { FILM_SETS, filmStageMarkup, stillStrip } from './filmSets';
 import { PROGRAMMES } from '../data/programmes';
@@ -99,11 +99,10 @@ export function constellation(): string {
     ['@gverdian', 'https://x.com/gverdian', 'Founder'],
   ];
   return `<section class="constellation">
-    ${kicker('Open the sources')}
-    <div class="section-head">
-      <h2 class="display">The original pages. Not a recap.</h2>
-      <p class="lede-sm">If a sentence matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. The original, not a recap.</p>
-    </div>
+    ${cinemaIntro(
+      'intro-constellation',
+      `${kicker('Open the sources')}<h2 class="display">The original pages. Not a recap.</h2><p class="lede-sm">If a sentence matters, it has a door. The 2018 paper. The IETF drafts. The bank rooms. The original, not a recap.</p>`,
+    )}
     <ul class="constellation-grid">${nodes
       .map(
         ([label, href, sub]) =>
@@ -196,11 +195,10 @@ function filmRail(): string {
     },
   ];
   return `<section class="film-rail">
-    ${kicker('Watch and read')}
-    <div class="section-head">
-      <h2 class="display">Interviews, conferences, the original pages.</h2>
-      <p class="lede-sm">Each card opens a briefing. The original is one click further.</p>
-    </div>
+    ${cinemaIntro(
+      'intro-film-rail',
+      `${kicker('Watch and read')}<h2 class="display">Interviews, conferences, the original pages.</h2><p class="lede-sm">Each card opens a briefing. The original is one click further.</p>`,
+    )}
     <ul class="film-grid">${films
       .map(
         (f) => `<li>
@@ -255,8 +253,7 @@ function quoteRail(page?: string, limit = 6): string {
   if (!list.length) return '';
   const [first, ...rest] = list;
   return `<section class="quote-rail">
-    ${kicker('In their words')}
-    <h2 class="display">In their own words. Titles attached.</h2>
+    ${cinemaIntro('intro-quote-rail', `${kicker('In their words')}<h2 class="display">In their own words. Titles attached.</h2>`)}
     ${quoteCard(first).replace('class="quote-card"', 'class="quote-card quote-feature"')}
     ${rest.length ? `<div class="quote-scroll">${rest.map(quoteCard).join('')}</div>` : ''}
   </section>`;
@@ -271,8 +268,7 @@ export function stackVisual(): string {
     ['ledgers', 'Ledgers & rails', 'Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments. The gateway maps; it does not replace.'],
   ];
   return `<section class="stack-visual">
-    ${kicker('The stack')}
-    <h2 class="display">One gate. The books stay themselves.</h2>
+    ${cinemaIntro('intro-stack-visual', `${kicker('The stack')}<h2 class="display">One gate. The books stay themselves.</h2>`)}
     <ol class="stack-rungs cinema-rungs">${rungs
       .map(
         ([id, title, body]) =>
@@ -389,8 +385,7 @@ function dykBlock(): string {
     )
     .join('');
   return `<section class="dyk">
-    ${kicker('Did you know')}
-    <h2 class="display">Facts that sit beside the record.</h2>
+    ${cinemaIntro('intro-dyk', `${kicker('Did you know')}<h2 class="display">Facts that sit beside the record.</h2>`)}
     <ul class="dyk-list">${list}</ul>
     <p><a class="text-link" href="/news">The official wire →</a></p>
   </section>`;
@@ -408,8 +403,10 @@ function noteCard(n: NotePost, featured = false): string {
 
 export function eraStrip(): string {
   return `<section class="era-strip" id="eras">
-    ${kicker('History · Present · Future')}
-    <h2 class="display">Three chapters. <span class="display-mute">One network of networks.</span></h2>
+    ${cinemaIntro(
+      'intro-era',
+      `${kicker('History · Present · Future')}<h2 class="display">Three chapters. <span class="display-mute">One network of networks.</span></h2>`,
+    )}
     <ol class="era-grid">
       <li data-era="history">
         ${posterFrame(
@@ -445,7 +442,6 @@ export function eraStrip(): string {
 export function featuredStory(): string {
   const n = featuredNote();
   return `<section class="featured-note">
-    ${kicker('Featured news')}
     ${posterFrame(
       diagramFigure('featured-trusted-node', 'news', 'This month'),
       `<p class="kicker">On the record</p>
@@ -479,11 +475,10 @@ export function latestStrip(): string {
     .join('');
   const first = episodeByN(1);
   return `<section class="latest-strip">
-    ${kicker('Latest')}
-    <div class="section-head">
-      <h2 class="display">On the record this month.</h2>
-      <a class="text-link" href="/news">The wire →</a>
-    </div>
+    ${cinemaIntro(
+      'intro-latest',
+      `${kicker('Latest')}<h2 class="display">On the record this month.</h2><a class="text-link" href="/news">The wire →</a>`,
+    )}
     <ul class="month-cards">${month}</ul>
     ${first ? relatedEpisodeCard(first.id) : ''}
   </section>`;
@@ -495,11 +490,10 @@ export function podcastTease(): string {
     .map((e) => relatedEpisodeCard(e.id))
     .join('');
   return `<section class="pod-home">
-    ${kicker('Podcast')}
-    <div class="section-head">
-      <h2 class="display">Twenty conversations. The Quant story, from the beginning.</h2>
-      <a class="text-link" href="/podcast">Start the series →</a>
-    </div>
+    ${cinemaIntro(
+      'intro-podcast',
+      `${kicker('Podcast')}<h2 class="display">Twenty conversations. The Quant story, from the beginning.</h2><a class="text-link" href="/podcast">Start the series →</a>`,
+    )}
     <div class="pod-tease-grid">${cards}</div>
   </section>`;
 }
@@ -512,22 +506,19 @@ export function notesReel(): string {
     .map((n) => noteCard(n))
     .join('');
   return `<section class="notes-strip">
-    ${kicker('News')}
-    <div class="section-head">
-      <h2 class="display">Scroll the record. <span class="display-mute">A card is a filing.</span></h2>
-      <a class="text-link" href="/news">The wire →</a>
-    </div>
+    ${cinemaIntro(
+      'intro-notes-reel',
+      `${kicker('News')}<h2 class="display">Scroll the record. <span class="display-mute">A card is a filing.</span></h2><a class="text-link" href="/news">The wire →</a>`,
+    )}
     <div class="notes-reel" tabindex="0">${cards}</div>
   </section>`;
 }
 
 function essayOrder(): string {
   return `<section class="essay-order" aria-labelledby="essay-order-title">
-    ${kicker('In order')}
-    <h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2>
     ${posterFrame(
       photoFigure(plateFor('canary', 'gbtd'), 'essay-order-still'),
-      '<p class="kicker">In order</p><h2>Technology arrived before trust.</h2>',
+      `${kicker('In order')}<h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2>`,
     )}
     <div class="essay-flow">
       <p>We’ve gotten used to seeing a new rail arrive before anyone can trust it.</p>
@@ -557,12 +548,10 @@ function homeFaces(): string {
     .map(peoplePoster)
     .join('');
   return `<section class="people-rail home-faces" aria-label="Official portraits">
-    ${kicker('The people')}
-    <div class="section-head">
-      <h2 class="display">The faces on the record. Not stock stills.</h2>
-      <a class="text-link" href="/people">Everyone →</a>
-    </div>
-    <p class="lede-sm">Official portraits Quant or the person published. Click a face for the filing. Two names still sit as initials: Quant has not published Chris Lovesey or Colin Paterson.</p>
+    ${cinemaIntro(
+      'intro-people-home',
+      `${kicker('The people')}<h2 class="display">The faces on the record. Not stock stills.</h2><p class="lede-sm">Official portraits Quant or the person published. Click a face for the filing. Two names still sit as initials: Quant has not published Chris Lovesey or Colin Paterson.</p><a class="text-link" href="/people">Everyone →</a>`,
+    )}
     <div class="people-tiles">${faces}</div>
   </section>`;
 }
@@ -636,7 +625,7 @@ export function renderHome(): string {
     ${essayOrder()}
 
     <section class="proof-row">
-      ${kicker('Three proofs')}
+      ${cinemaStrip('intro-proofs', kicker('Three proofs'))}
       <div class="proof-grid">
         <button type="button" class="proof-chip" data-stage="proof" data-stage-id="interop">
           ${posterFrame(
@@ -660,11 +649,10 @@ export function renderHome(): string {
     </section>
 
     <section class="pulse-strip">
-      ${kicker('Pulse')}
-      <div class="section-head">
-        <h2 class="display">The wire, as headlines.</h2>
-        <a class="text-link" href="/news">The wire →</a>
-      </div>
+      ${cinemaIntro(
+        'intro-pulse',
+        `${kicker('Pulse')}<h2 class="display">The wire, as headlines.</h2><a class="text-link" href="/news">The wire →</a>`,
+      )}
       <ul class="pulse-list" data-home-pulse><li class="empty-note">Headlines load when the ingest answers.</li></ul>
     </section>
 
@@ -708,10 +696,13 @@ export function renderHome(): string {
     </section>
 
     <section class="strip partner-strip">
-      ${kicker('GBTD cohort — names as UK Finance printed them, 26 September 2025')}
+      ${cinemaStrip('intro-partner-gbtd', kicker('GBTD cohort — names as UK Finance printed them, 26 September 2025'))}
       <ul class="wordmarks wordmarks-banks">${banks}</ul>
-      <p class="cohort-note">Captions follow the press list: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, Santander. Marks are each bank’s public wordmark. Quant, EY and Linklaters are named as support, not as issuers.</p>
-      ${kicker('Institutions around that cohort')}
+      ${cinemaStrip(
+        'cohort-home',
+        '<p class="cohort-note">Captions follow the press list: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, Santander. Marks are each bank’s public wordmark. Quant, EY and Linklaters are named as support, not as issuers.</p>',
+      )}
+      ${cinemaStrip('intro-partner-inst', kicker('Institutions around that cohort'))}
       <ul class="wordmarks wordmarks-inst muted">
         ${wordmarkLi('Quant', sources.about)}
         ${wordmarkLi('UK Finance', sources.ukFinanceHome)}
@@ -732,30 +723,36 @@ export function renderHome(): string {
     ${latestStrip()}
 
     <section class="essays">
-      ${kicker('Essays')}
-      <h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>
+      ${cinemaIntro(
+        'intro-essays',
+        `${kicker('Essays')}<h2 class="display">Philosophy. The future of money. <span class="display-mute">The interop era.</span></h2>`,
+      )}
       <div class="essay-grid">${essays}</div>
     </section>
     <section class="layers-wrap">
-      ${kicker('Three layers, one horizontal gate')}
-      <h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>
+      ${cinemaIntro(
+        'intro-layers',
+        `${kicker('Three layers, one horizontal gate')}<h2 class="display">Each band is a different liability. <span class="display-mute">The gate is Overledger.</span></h2>`,
+      )}
       ${layerBands()}
     </section>
     <section class="timeline-wrap">
-      ${kicker('Then and now')}
-      <h2 class="display">From ISO in 2015 <span class="display-mute">to live sterling in 2025.</span></h2>
+      ${cinemaIntro(
+        'intro-timeline',
+        `${kicker('Then and now')}<h2 class="display">From ISO in 2015 <span class="display-mute">to live sterling in 2025.</span></h2>`,
+      )}
       <ol class="timeline">${beats}</ol>
       <p><a class="text-link" href="/story">Open the scored rail →</a></p>
     </section>
 
     ${renderThisMonth(true)}${renderCalendar(true)}${renderVoices()}
     <section class="triptych hex">
-      <article class="panel">${posterFrame(diagramFigure('home-thesis', 'page', 'Thesis'), `${kicker('Thesis')}<h2 class="display">A gateway OS</h2>`)}<p>Overledger connects DLT domains and legacy cores without minting a native settlement chain. The 2018 whitepaper’s problem is single-ledger dependency. Tasca called interoperability a risky necessity. Verdian incorporated a company to ship the gate.</p><a class="text-link" href="/vision">Vision →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-satp', 'page', 'SATP'), `${kicker('SATP')}<h2 class="display">How an asset leaves one network</h2>`)}<p>Secure Asset Transfer Protocol is IETF work. Quant authors appear on the drafts; Facer is a co-chair. Stage 3 is burn-and-mint under two-phase commit, so the asset exists in one network when the transfer ends. SATP is not a Quant SKU.</p><a class="text-link" href="/standards">Standards →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-gbtd', 'page', 'GBTD'), `${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2>`)}<p>On 26 September 2025 UK Finance selected Quant as technology partner for tokenised deposits with six commercial banks. The banks owe the holder. Overledger and PayScript are the named foundation. GBTD is not a CBDC.</p><a class="text-link" href="/cbdc">The distinction →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-tokenomics', 'page', 'QNT'), `${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2>`)}<p>QNT is an ERC-20 at 0x4a220E6096B25EADb88358cb44068A3248254675. Unsold allocation was burned in 2018. Overledger licences settle in it. Live circulating comes from CoinGecko. Utility token, not equity in Quant Network.</p><a class="text-link" href="/markets#tokenomics">Markets →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-stack', 'page', 'Stack'), `${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2>`)}<p>Gateway OS, Layer 2.5 rollup (Fusion mainnet, 2 June 2026), programmability on the deposit. Oracle and Murex are named vendors sitting on that stack, not on a new chain.</p><a class="text-link" href="/technology">The stack →</a></article>
-      <article class="panel">${posterFrame(diagramFigure('home-programmes', 'page', 'Rooms'), `${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2>`)}<p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source.</p><a class="text-link" href="/programmes">Programmes →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-thesis', 'page', 'Thesis'), `${kicker('Thesis')}<h2 class="display">A gateway OS</h2><p>Overledger connects DLT domains and legacy cores without minting a native settlement chain. The 2018 whitepaper’s problem is single-ledger dependency. Tasca called interoperability a risky necessity. Verdian incorporated a company to ship the gate.</p>`)}<a class="text-link" href="/vision">Vision →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-satp', 'page', 'SATP'), `${kicker('SATP')}<h2 class="display">How an asset leaves one network</h2><p>Secure Asset Transfer Protocol is IETF work. Quant authors appear on the drafts; Facer is a co-chair. Stage 3 is burn-and-mint under two-phase commit, so the asset exists in one network when the transfer ends. SATP is not a Quant SKU.</p>`)}<a class="text-link" href="/standards">Standards →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-gbtd', 'page', 'GBTD'), `${kicker('GBTD')}<h2 class="display">Live sterling, programmed</h2><p>On 26 September 2025 UK Finance selected Quant as technology partner for tokenised deposits with six commercial banks. The banks owe the holder. Overledger and PayScript are the named foundation. GBTD is not a CBDC.</p>`)}<a class="text-link" href="/cbdc">The distinction →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-tokenomics', 'page', 'QNT'), `${kicker('Tokenomics')}<h2 class="display">Why QNT exists</h2><p>QNT is an ERC-20 at 0x4a220E6096B25EADb88358cb44068A3248254675. Unsold allocation was burned in 2018. Overledger licences settle in it. Live circulating comes from CoinGecko. Utility token, not equity in Quant Network.</p>`)}<a class="text-link" href="/markets#tokenomics">Markets →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-stack', 'page', 'Stack'), `${kicker('Stack')}<h2 class="display">Overledger, Fusion, PayScript</h2><p>Gateway OS, Layer 2.5 rollup (Fusion mainnet, 2 June 2026), programmability on the deposit. Oracle and Murex are named vendors sitting on that stack, not on a new chain.</p>`)}<a class="text-link" href="/technology">The stack →</a></article>
+      <article class="panel">${posterFrame(diagramFigure('home-programmes', 'page', 'Rooms'), `${kicker('Programmes')}<h2 class="display">Rooms already on the record</h2><p>LACChain, 2021. Rosalind, concluded 2023. GBTD, 2025. Dentsu Soken, Murex MX.3, and the Bank of England Synchronisation Lab in 2026. Each date has a source.</p>`)}<a class="text-link" href="/programmes">Programmes →</a></article>
     </section>
 
     ${constellation()}${featuredStory()}${notesReel()}${podcastTease()}${quoteRail('home', 10)}${eraStrip()}${dykBlock()}
@@ -809,12 +806,11 @@ export function renderVision(): string {
       )}
     </blockquote>
     <div class="compare">
-      <article class="panel">${posterFrame(diagramFigure('vision-2018', 'page', '2018'), '<h3>The 2018 problem</h3>')}<p>The UCL Discovery abstract states the problem as single-ledger dependency: applications bound to one DLT cannot execute across others without a layer above those books.</p></article>
-      <article class="panel">${posterFrame(diagramFigure('vision-gate', 'page', 'Gateway'), '<h3>What Overledger is</h3>')}<p>A gateway operating system for multi-ledger applications. Fabric, Ethereum, Corda, or a bank core remain the settlement domains. The gate maps the request. It does not replace the book.</p></article>
+      <article class="panel">${posterFrame(diagramFigure('vision-2018', 'page', '2018'), '<h3>The 2018 problem</h3><p>The UCL Discovery abstract states the problem as single-ledger dependency: applications bound to one DLT cannot execute across others without a layer above those books.</p>')}</article>
+      <article class="panel">${posterFrame(diagramFigure('vision-gate', 'page', 'Gateway'), '<h3>What Overledger is</h3><p>A gateway operating system for multi-ledger applications. Fabric, Ethereum, Corda, or a bank core remain the settlement domains. The gate maps the request. It does not replace the book.</p>')}</article>
     </div>
     <section class="vision-deck">
-      ${kicker('Three essays')}
-      <h2 class="display">Three essays from the record.</h2>
+      ${cinemaIntro('intro-vision-deck', `${kicker('Three essays')}<h2 class="display">Three essays from the record.</h2>`)}
       <div class="flip-grid">${flips}</div>
     </section>`;
   return `${pageHero(
@@ -864,9 +860,12 @@ export function renderProgrammes(): string {
   )}
     ${stillStrip('programmes', 'Photographs of the rooms')}
     <div class="cohort-marks">
-      ${kicker('The six commercial banks named by UK Finance, 26 September 2025')}
+      ${cinemaStrip('intro-cohort-marks', kicker('The six commercial banks named by UK Finance, 26 September 2025'))}
       <ul class="wordmarks">${GBTD_BANKS.map((b) => wordmarkLi(b, '/programmes#gbtd')).join('')}</ul>
-      <p class="cohort-note">UK Finance’s press: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters. The GBTD programme page fetched 13 September 2026 also lists Monzo as a seventh participant and states GBTD was accepted into the Bank of England Synchronisation Lab. No join date is printed. ${extLink(sources.ukFinanceRln, 'Programme page')}</p>
+      ${cinemaStrip(
+        'cohort-programmes',
+        `<p class="cohort-note">UK Finance’s press: Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide, and Santander, with support from Quant, EY and Linklaters. The GBTD programme page fetched 13 September 2026 also lists Monzo as a seventh participant and states GBTD was accepted into the Bank of England Synchronisation Lab. No join date is printed. ${extLink(sources.ukFinanceRln, 'Programme page')}</p>`,
+      )}
     </div>
     ${quoteRail('programmes', 24)}
     ${cinemaFilterBar(
@@ -942,8 +941,7 @@ export function renderCbdc(): string {
     )}</li>
   </ol>
   <section class="cbdc-models">
-    ${kicker('Three models')}
-    <h2 class="display">Issuance, wholesale, tokenised deposits.</h2>
+    ${cinemaIntro('intro-cbdc-models', `${kicker('Three models')}<h2 class="display">Issuance, wholesale, tokenised deposits.</h2>`)}
     <ol class="model-grid">${models}</ol>
   </section>
   <div class="chapter-stack cinema-room">${chaptersFor('cbdc').map((c) => chapterCard(c)).join('')}</div>
@@ -974,11 +972,10 @@ export function renderStandards(): string {
   ${quoteRail('standards')}
   ${cinemaDiagram('standards', '/visuals/plates/satp-stages.svg', 'SATP stages 0 verify, 1 init, 2 lock, 3 two-phase commit')}
   <section class="treaty-table">
-    ${kicker('Treaty table')}
     <div class="treaty-stage">
       ${posterFrame(
-        photoFigure(plateFor('standards', 'geneva'), 'treaty-still'),
-        '<p class="kicker">Treaty table</p><h2>IETF SATP and ISO</h2>',
+        photoFigure(plateFor('intro-treaty', 'geneva'), 'treaty-still'),
+        `${kicker('Treaty table')}<h2>IETF SATP and ISO</h2>`,
       )}
       <ul class="treaty-row">
         <li><button type="button" data-stage="satp" data-stage-id="3">${posterFrame(photoFigure(PLATES.fiber, 'treaty-still'), '<span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em>')}</button></li>
@@ -989,8 +986,10 @@ export function renderStandards(): string {
     </div>
   </section>
   <section class="satp-lab" id="satp-method">
-    ${kicker('Verify, initiate, lock, then 2PC')}
-    <h2 class="display">SATP’s two-phase commit sits inside stage 3 — not instead of the stages.</h2>
+    ${cinemaIntro(
+      'intro-satp',
+      `${kicker('Verify, initiate, lock, then 2PC')}<h2 class="display">SATP’s two-phase commit sits inside stage 3 — not instead of the stages.</h2>`,
+    )}
     <ol class="stages">${stages}</ol>
     <ul class="acid">
       <li>${posterFrame(photoFigure(PLATES.canary, 'acid-still'), '<strong>Atomicity</strong><span>The transfer commits on both networks or fails with no state change.</span>')}</li>
@@ -1008,7 +1007,7 @@ export function renderPeople(): string {
   const blocks = groups
     .map((g) => {
       const people = PEOPLE.filter((p) => p.group === g).map(personCard).join('');
-      return `<section class="people-group cinema-room"><p class="lede-sm">${esc(GROUP_LABEL[g])}</p>${people}</section>`;
+      return `<section class="people-group cinema-room">${cinemaStrip(`group-${g}`, `<p class="lede-sm">${esc(GROUP_LABEL[g])}</p>`)}${people}</section>`;
     })
     .join('');
   return `${pageHero(
@@ -1043,9 +1042,10 @@ function peoplePoster(p: Person): string {
 function peopleRail(): string {
   const faces = PEOPLE.map(peoplePoster).join('');
   return `<nav class="people-rail" aria-label="Official portraits">
-    ${kicker('On the record')}
-    <h2 class="display">Their professional portraits. The whole picture.</h2>
-    <p class="lede-sm">Quant people pages, Tasca’s site, Mondelli’s published GitHub identity. Chris Lovesey and Colin Paterson stay as initials until an official portrait is published. We do not invent faces.</p>
+    ${cinemaIntro(
+      'intro-people-rail',
+      `${kicker('On the record')}<h2 class="display">Their professional portraits. The whole picture.</h2><p class="lede-sm">Quant people pages, Tasca’s site, Mondelli’s published GitHub identity. Chris Lovesey and Colin Paterson stay as initials until an official portrait is published. We do not invent faces.</p>`,
+    )}
     <div class="people-tiles">${faces}</div>
   </nav>`;
 }
@@ -1150,7 +1150,7 @@ export function renderResearch(filter = '', region = 'ALL'): string {
   ${cinemaStrip('chips-research-regions', `<div class="chip-row">${regionChips}</div>`, '', 'research-regions')}
   ${cinemaStrip('chips-research-kinds', `<div class="chip-row">${kindChips}</div>`, '', 'research-kinds')}
   <section class="block">
-    ${kicker('Start here')}
+    ${cinemaStrip('intro-research', kicker('Start here'))}
     <div class="paper-grid">${featured.map(paperCard).join('')}</div>
   </section>
   <div id="research-grid">${lanes}</div>
@@ -1296,7 +1296,10 @@ export function renderMarkets(print?: MarketPrint): string {
     </div>`,
       'stats-strip',
     )}
-    <p class="mono contract">Contract ${extLink(sources.qntEtherscan, QNT_CONTRACT)}</p>
+    ${cinemaStrip(
+      'mk-contract',
+      `<p class="mono contract">Contract ${extLink(sources.qntEtherscan, QNT_CONTRACT)}</p>`,
+    )}
     ${p?.error ? `<p class="note" data-mk-error>${esc(p.error)}</p>` : '<p class="note" data-mk-error hidden></p>'}
     ${cinemaStrip('mk-spark', `<div data-mk-spark>${sparklineSvg(p?.sparkline ?? [])}</div>`, 'spark-strip')}
   </section>
@@ -1322,8 +1325,7 @@ export function renderMarkets(print?: MarketPrint): string {
     <p>The 2018 burn retired the unsold allocation. Bitstamp’s MiCA filing records that licences can lock QNT for the term of the licence. Circulating and price are the live CoinGecko print.</p>
   </section>
   <section class="token-lab" id="tokenomics">
-    ${kicker('Tokenomics')}
-    <h2 class="display">Why QNT exists.</h2>
+    ${cinemaIntro('intro-tokenomics', `${kicker('Tokenomics')}<h2 class="display">Why QNT exists.</h2>`)}
     <div class="tokencards">
       <details class="tokencard" open>
         <summary>${posterFrame(photoFigure(PLATES.fiber, 'token-still'), '<span class="tokencard-label"><span class="n">01</span> Utility</span>')}</summary>
@@ -1412,8 +1414,10 @@ function sourcedNews(): string {
     .map((n) => noteCard(n))
     .join('');
   return `<section class="notes-strip">
-    ${kicker('On the record')}
-    <h2 class="display">Sourced notes. <span class="display-mute">When the wire is quiet, these stay visible.</span></h2>
+    ${cinemaIntro(
+      'intro-sourced',
+      `${kicker('On the record')}<h2 class="display">Sourced notes. <span class="display-mute">When the wire is quiet, these stay visible.</span></h2>`,
+    )}
     <div class="notes-index">${cards}</div>
   </section>`;
 }
@@ -1457,9 +1461,10 @@ function renderCalendar(compact = false): string {
     </li>`;
   }).join('');
   return `<section class="calendar">
-    ${kicker('Upcoming')}
-    <h2 class="display">Miami is <span class="display-mute">next</span></h2>
-    <p>Quant at Sibos, stand DISL51, with Murex on stage — posted from @quantnetwork. DIGIT gilt is the Treasury, speaking at the UK Finance launch on 8 September. The speech does not name Quant; it sits in the same week as the UK Finance filing.</p>
+    ${cinemaIntro(
+      'intro-calendar',
+      `${kicker('Upcoming')}<h2 class="display">Miami is <span class="display-mute">next</span></h2><p>Quant at Sibos, stand DISL51, with Murex on stage — posted from @quantnetwork. DIGIT gilt is the Treasury, speaking at the UK Finance launch on 8 September. The speech does not name Quant; it sits in the same week as the UK Finance filing.</p>`,
+    )}
     <ul class="cal-grid">${items}</ul>
   </section>`;
 }
@@ -1480,9 +1485,10 @@ function renderThisMonth(compact = false): string {
     </li>`;
   }).join('');
   return `<section class="calendar month-rail">
-    ${kicker('September 2026')}
-    <h2 class="display">This month <span class="display-mute">on Quant</span></h2>
-    <p>Quant’s Trusted Node essay. UK Finance naming GBTD as UK innovation. Sibos in Miami still ahead.</p>
+    ${cinemaIntro(
+      'intro-month',
+      `${kicker('September 2026')}<h2 class="display">This month <span class="display-mute">on Quant</span></h2><p>Quant’s Trusted Node essay. UK Finance naming GBTD as UK innovation. Sibos in Miami still ahead.</p>`,
+    )}
     <ul class="month-cards">${items}</ul>
   </section>`;
 }
@@ -1498,9 +1504,10 @@ function renderVoices(): string {
     </article>`,
   ).join('');
   return `<section class="voices">
-    ${kicker('Voices')}
-    <h2 class="display">Hear it from the people <span class="display-mute">building it</span></h2>
-    <p class="lede">The accounts Quant points to: the company, Overledger developers, and founder Gilbert Verdian. Each card opens the original profile.</p>
+    ${cinemaIntro(
+      'intro-voices',
+      `${kicker('Voices')}<h2 class="display">Hear it from the people <span class="display-mute">building it</span></h2><p class="lede">The accounts Quant points to: the company, Overledger developers, and founder Gilbert Verdian. Each card opens the original profile.</p>`,
+    )}
     <div class="voice-grid">${voices}</div>
   </section>`;
 }
@@ -1578,8 +1585,10 @@ export function renderCity(city: City): string {
       <p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>
     </article>
     <section class="city-neighbors" aria-label="Other rooms on the map">
-      ${kicker('Other rooms')}
-      <h2 class="display">The same story, in another postcode.</h2>
+      ${cinemaIntro(
+        'intro-city-neighbors',
+        `${kicker('Other rooms')}<h2 class="display">The same story, in another postcode.</h2>`,
+      )}
       <div class="city-neighbor-grid">${neighbors}</div>
     </section>
     <p><a class="text-link" href="/">← Earth</a></p>`;
@@ -1711,6 +1720,6 @@ export function renderNote(id: string): string {
       <p class="source-row">${source}</p>
       <p><a class="text-link" href="/news">← The wire</a></p>
     </article>
-    ${related ? `<section class="notes-related">${kicker('Same era')}<div class="notes-index">${related}</div></section>` : ''}
+    ${related ? `<section class="notes-related">${cinemaStrip('intro-sourced', kicker('Same era'))}<div class="notes-index">${related}</div></section>` : ''}
   </article>`;
 }
