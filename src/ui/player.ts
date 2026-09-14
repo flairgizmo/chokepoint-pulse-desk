@@ -52,10 +52,9 @@ function fmtTime(sec: number): string {
 export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string {
   const list = playlist
     .map((item, i) => {
-      const eager = i < 8;
       return `<li>
         <a class="pod-item${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}">
-          <img class="pod-still" src="${esc(episodeStill(item.id).src)}" alt="" width="1280" height="720" loading="${eager ? 'eager' : 'lazy'}" decoding="async"${i < 2 ? ' fetchpriority="high"' : ''} />
+          <img class="pod-still" src="${esc(episodeStill(item.id).src)}" alt="" width="1280" height="720" loading="eager" decoding="async"${i < 2 ? ' fetchpriority="high"' : ''} />
           <span class="n">${String(item.n).padStart(2, '0')}</span>
           <span>
             <strong>${esc(item.title)}</strong>
