@@ -227,16 +227,16 @@ function tableLidTex(): THREE.CanvasTexture {
   if (ctx) {
     ctx.fillStyle = '#0a0806';
     ctx.fillRect(0, 0, 256, 256);
-    const catchL = ctx.createRadialGradient(96, 82, 2, 96, 82, 70);
-    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.62)');
-    catchL.addColorStop(0.22, 'rgba(234, 241, 255, 0.14)');
+    const catchL = ctx.createRadialGradient(96, 82, 1, 96, 82, 42);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.38)');
+    catchL.addColorStop(0.28, 'rgba(234, 241, 255, 0.08)');
     catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
     ctx.fillStyle = catchL;
     ctx.fillRect(0, 0, 256, 256);
-    const rim = ctx.createRadialGradient(128, 128, 88, 128, 128, 127);
+    const rim = ctx.createRadialGradient(128, 128, 108, 128, 128, 127);
     rim.addColorStop(0, 'rgba(234, 241, 255, 0)');
-    rim.addColorStop(0.7, 'rgba(234, 241, 255, 0.05)');
-    rim.addColorStop(1, 'rgba(255, 236, 210, 0.38)');
+    rim.addColorStop(0.78, 'rgba(234, 241, 255, 0.04)');
+    rim.addColorStop(1, 'rgba(255, 236, 210, 0.16)');
     ctx.fillStyle = rim;
     ctx.fillRect(0, 0, 256, 256);
   }
@@ -449,10 +449,10 @@ vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 float spec = pow(liteFres, 1.15);
-diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, 0.4 + spec * 0.48);
-diffuseColor.rgb += envRefl * spec * 1.45;
-diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.55;
-diffuseColor.a = mix(0.9, 0.98, spec);`
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.28);
+diffuseColor.rgb += envRefl * spec * 0.55;
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.22;
+diffuseColor.a = mix(0.9, 0.96, spec);`
       : `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
@@ -495,7 +495,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', fire);
   };
-  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-16-mirror' : 'qd-lite-fire-16-window');
+  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-17-mirror' : 'qd-lite-fire-17-window');
 }
 
 function glassMat(
@@ -903,7 +903,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       booth(0xb4dcff, 1.8, 0.26, -2.2, 1.8, 2.0);
       booth(0xffffff, 2.4, 0.28, 0.1, 3.2, 0.8);
       booth(0xffb0d2, 1.6, 0.24, -2.0, 1.6, -2.2);
-      booth(0xffc56a, 2.0, 0.26, 0.5, -0.55, 1.8);
     } catch {
       cubeCam = null;
       cubeRT = null;
@@ -968,7 +967,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
           window: 0.92,
           writeDepth: true,
           mirror: true,
-          doubleSide: true,
           env: roomEnv,
         })
       : glassMat(glassTex(photo0, false, 'table'), lite, {
@@ -1268,6 +1266,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     left.visible = false;
     right.visible = false;
     caustic.visible = false;
+    floor.visible = false;
+    pool.visible = false;
     for (const card of studio) card.visible = true;
     cubeCam.update(renderer, scene);
     for (const card of studio) card.visible = false;
@@ -1276,6 +1276,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     left.visible = true;
     right.visible = true;
     caustic.visible = true;
+    floor.visible = true;
+    pool.visible = true;
   };
 
   const resize = (): void => {
