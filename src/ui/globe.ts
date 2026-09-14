@@ -260,8 +260,9 @@ function nightLightsMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
       void main(){
         float night = smoothstep(0.18, -0.22, dot(normalize(vN), normalize(sunDir)));
         vec3 c = texture2D(lights, vUv).rgb;
-        float glow = max(c.r, max(c.g, c.b));
-        gl_FragColor = vec4(c * vec3(1.15, 0.96, 0.72), night * glow * 0.9);
+        float glow = max(c.r, max(c.g * 0.85, c.b * 0.55));
+        float city = smoothstep(0.08, 0.2, glow);
+        gl_FragColor = vec4(vec3(1.25, 0.94, 0.62) * city, night * city * 0.95);
       }`,
     transparent: true,
     depthWrite: false,
