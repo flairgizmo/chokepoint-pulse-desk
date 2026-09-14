@@ -1771,7 +1771,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       const fire = spark.material as THREE.SpriteMaterial;
       const beat = reduced ? 0.52 : 0.5 + Math.abs(Math.sin((now - t0) / 1400 + i * 0.9)) * 0.28;
       fire.opacity = beat;
-      const base = i === 0 ? 0.52 : i === 1 ? 0.32 : 0.28;
+      const base = i === 0 ? 0.22 : i === 1 ? 0.14 : 0.12;
       spark.scale.set(base + beat * 0.08, base + beat * 0.08, 1);
     });
     girdleFires.forEach((spark, i) => {
