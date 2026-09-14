@@ -1167,14 +1167,18 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     lite ? tableRing(tableR, tableR * 0.55, sides) : tableFan(tableR, sides),
     lite
-      ? glassMat(tableLidTex(), true, {
-          tint: 0xffffff,
-          window: 0.92,
-          writeDepth: true,
-          mirror: true,
-          doubleSide: true,
-          env: roomEnv,
-        })
+      ? (() => {
+          const mat = new THREE.MeshBasicMaterial({
+            map: tableLidTex(),
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.38,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+          });
+          mat.toneMapped = false;
+          return mat;
+        })()
       : glassMat(glassTex(photo0, false, 'table'), lite, {
           transmission: 0.38,
           thickness: 0.28,
