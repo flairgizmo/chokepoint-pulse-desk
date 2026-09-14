@@ -97,6 +97,8 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
       </div>
       <audio preload="metadata"></audio>
       <div class="player-controls">
+        ${photoFigure(episodeStill(ep.id), 'player-ctrl-still')}
+        <div class="player-ctrl-row">
         <button type="button" class="player-skip" data-skip="-15" aria-label="Back fifteen seconds">−15</button>
         <button type="button" class="player-play" data-play aria-label="Play">Play</button>
         <button type="button" class="player-skip" data-skip="15" aria-label="Forward fifteen seconds">+15</button>
@@ -108,6 +110,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
           <option value="1" selected>1×</option>
           <option value="1.1">1.1×</option>
         </select>
+        </div>
       </div>
       <p class="player-byline">
         <span class="host-tile james" aria-hidden="true"><img src="${esc(PLATES.radio.src)}" alt="" width="64" height="64" /><span>JH</span></span>
@@ -116,8 +119,22 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
       </p>
       <nav class="series-dots" aria-label="Series">${dots}</nav>
       <nav class="player-adjacent">
-        ${prev ? `<a class="text-link" href="/podcast/${esc(prev.id)}">← ${esc(prev.title)}</a>` : '<span></span>'}
-        ${next ? `<a class="text-link" href="/podcast/${esc(next.id)}">${esc(next.title)} →</a>` : '<span></span>'}
+        ${
+          prev
+            ? `<a class="player-adj" href="/podcast/${esc(prev.id)}">${posterFrame(
+                photoFigure(episodeStill(prev.id), 'player-adj-still'),
+                `<span class="kicker">Previous</span><strong>← ${esc(prev.title)}</strong>`,
+              )}</a>`
+            : '<span></span>'
+        }
+        ${
+          next
+            ? `<a class="player-adj" href="/podcast/${esc(next.id)}">${posterFrame(
+                photoFigure(episodeStill(next.id), 'player-adj-still'),
+                `<span class="kicker">Next</span><strong>${esc(next.title)} →</strong>`,
+              )}</a>`
+            : '<span></span>'
+        }
       </nav>
     </section>
     <section class="pod-quotes">

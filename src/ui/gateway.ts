@@ -467,11 +467,11 @@ float specFill = pow(max(dot(wR, fillL), 0.0), 48.0);
 float specBack = pow(max(dot(wR, backL), 0.0), 32.0);
 float specCool = pow(max(dot(wR, coolL), 0.0), 40.0);
 float specCam = pow(max(dot(wR, camL), 0.0), 26.0);
-vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 2.85
-  + vec3(1.0, 0.96, 0.88) * specCam * 2.15
-  + vec3(0.7, 0.86, 1.0) * specFill * 1.45
-  + vec3(0.96, 0.98, 1.0) * specBack * 1.32
-  + vec3(0.58, 0.8, 1.0) * specCool * 1.18;
+vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 3.35
+  + vec3(1.0, 0.96, 0.88) * specCam * 2.55
+  + vec3(0.7, 0.86, 1.0) * specFill * 1.55
+  + vec3(0.96, 0.98, 1.0) * specBack * 1.45
+  + vec3(0.58, 0.8, 1.0) * specCool * 1.28;
 #ifdef USE_COLOR
 float kite = clamp(dot(vColor.rgb, vec3(0.3, 0.54, 0.16)), 0.0, 1.0);
 #else
@@ -509,45 +509,49 @@ vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
-float liteFres = pow(1.0 - liteFacing, 2.15);
-vec3 flash = diffuseColor.rgb;
+float liteFres = pow(1.0 - liteFacing, 2.85);
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
 vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
-float kite = clamp(flash.r * 0.7 + flash.b * 0.3, 0.0, 1.0);
-diffuseColor.rgb = mix(vec3(0.62, 0.78, 0.96), flash, 0.55) * (0.04 + liteFres * 0.85);
-diffuseColor.rgb += envRefl * liteFres * kite * 0.12;
-diffuseColor.rgb += vec3(1.0, 0.93, 0.78) * liteFres * liteFres * (0.12 + kite * 0.28);
-diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
+diffuseColor.rgb = vec3(0.42, 0.62, 0.95) * liteFres * 0.55;
+diffuseColor.rgb += envRefl * liteFres * liteFres * 0.22;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * pow(liteFres, 4.2) * 0.7;
+diffuseColor.a = liteFres * liteFres * 0.16;`;
   }
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = mix(vec3(0.012, 0.016, 0.03), vec3(0.1, 0.14, 0.24), kite);
+float fleck = pow(kite, 3.15);
+vec3 body = mix(vec3(0.006, 0.008, 0.016), vec3(0.04, 0.055, 0.09), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.14 + kite * 0.16);
-diffuseColor.rgb += glint * (0.22 + kite * 2.05);
+diffuseColor.rgb += envRefl * (rim * 0.1 + fleck * 0.18);
+diffuseColor.rgb += vec3(0.78, 0.9, 1.0) * fleck * 0.18;
+diffuseColor.rgb += glint * (0.28 + fleck * 2.35);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = mix(vec3(0.028, 0.032, 0.048), vec3(0.2, 0.26, 0.38), kite);
+float fleck = pow(kite, 2.8);
+vec3 body = mix(vec3(0.016, 0.02, 0.032), vec3(0.08, 0.1, 0.16), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.18 + kite * 0.18);
-diffuseColor.rgb += glint * (0.3 + kite * 1.95);
+diffuseColor.rgb += envRefl * (rim * 0.14 + fleck * 0.2);
+diffuseColor.rgb += vec3(0.9, 0.95, 1.0) * fleck * 0.2;
+diffuseColor.rgb += glint * (0.36 + fleck * 2.2);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = mix(vec3(0.016, 0.02, 0.036), vec3(0.17, 0.23, 0.36), kite);
+float fleck = pow(kite, 3.2);
+vec3 body = mix(vec3(0.008, 0.01, 0.02), vec3(0.05, 0.065, 0.11), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.22 + kite * 0.3);
-diffuseColor.rgb += glint * (0.34 + kite * 2.65);
+diffuseColor.rgb += envRefl * (rim * 0.14 + fleck * 0.28);
+diffuseColor.rgb += vec3(0.82, 0.92, 1.0) * fleck * 0.24;
+diffuseColor.rgb += glint * (0.42 + fleck * 3.05);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -623,7 +627,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-54-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-55-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -720,11 +724,11 @@ function facetFire(
   const facing = Math.max(0, n.dot(VIEW_DIR));
   /** Adjacent kites still differ; rest 3/4 key is the cut, not a watermelon stripe. */
   const stripe = 0.5 + 0.5 * Math.cos(Math.atan2(n.x, n.z) * 8);
-  const shade = Math.min(1, 0.03 + key * 0.7 + facing * 0.2 + rim * 0.14 + stripe * 0.1);
+  const shade = Math.min(1, 0.02 + key * 0.78 + facing * 0.14 + rim * 0.1 + stripe * 0.08);
   return new THREE.Color(
-    Math.min(1, 0.03 + shade * 0.86 + key * 0.1),
-    Math.min(1, 0.028 + shade * 0.68),
-    Math.min(1, 0.06 + shade * 0.58 + (1 - stripe) * 0.04),
+    Math.min(1, 0.02 + shade * 0.9 + key * 0.12),
+    Math.min(1, 0.018 + shade * 0.62),
+    Math.min(1, 0.05 + shade * 0.5 + (1 - stripe) * 0.04),
   );
 }
 
@@ -1257,6 +1261,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   table.userData.nodeId = 6;
   table.renderOrder = 2;
   if (lite && table.material instanceof THREE.MeshBasicMaterial) {
+    attachLiteFire(table.material, roomEnv, 'window');
     table.material.polygonOffset = true;
     table.material.polygonOffsetFactor = -2;
     table.material.polygonOffsetUnits = -2;

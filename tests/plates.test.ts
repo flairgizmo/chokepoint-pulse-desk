@@ -253,6 +253,8 @@ describe('Topic plates', () => {
     expect(renderPodcast()).toContain('/visuals/stills/gateway.jpg');
     expect(renderPodcast()).toContain('/visuals/topics/city.jpg');
     expect(renderPodcast()).toContain('/visuals/topics/payments.jpg');
+    expect(renderPodcast()).toContain('player-ctrl-still');
+    expect(renderPodcast()).toContain('player-adj-still');
     expect(renderHome()).toContain('still-strip');
     expect(renderHome()).toContain('live-news-still');
     expect(renderHome()).toContain('/visuals/cities/paris.jpg');

@@ -2778,15 +2778,44 @@ button.chip {
 }
 
 .player-controls {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  margin-top: 0.9rem;
+  padding: 0;
+  border-radius: 16px;
+  background: #0b1220;
+  color: #eaf1ff;
+}
+
+.player-ctrl-still {
+  margin: 0;
+}
+
+.player-ctrl-still img {
+  display: block;
+  width: 100%;
+  min-height: 5.6rem;
+  max-height: 6.4rem;
+  aspect-ratio: 21 / 6;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.42);
+}
+
+.player-ctrl-still figcaption {
+  display: none;
+}
+
+.player-ctrl-row {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.9rem;
   padding: 0.85rem 1rem;
-  border-radius: 16px;
-  background: #0b1220;
-  color: #eaf1ff;
+  background: linear-gradient(180deg, rgba(7, 11, 20, 0.22), rgba(7, 11, 20, 0.78));
 }
 
 .player-play,
@@ -2816,10 +2845,42 @@ button.chip {
 }
 
 .player-adjacent {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
   margin-top: 0.85rem;
+}
+
+.player-adj {
+  display: block;
+  color: #f4f7fb;
+  text-decoration: none;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.player-adj .poster-frame {
+  min-height: 8.2rem;
+}
+
+.player-adj .player-adj-still img,
+.player-adj .poster-frame img {
+  min-height: 8.2rem;
+  max-height: 10rem;
+  aspect-ratio: 21 / 8;
+}
+
+.player-adj .poster-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 2.2rem 1rem 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .player-adjacent {
+    grid-template-columns: 1fr;
+  }
 }
 
 .host-tile {
