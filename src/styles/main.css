@@ -1649,7 +1649,7 @@ main {
 
   .hero-split {
     grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.75fr);
-    align-items: end;
+    align-items: start;
     gap: 3rem;
   }
 
@@ -4423,8 +4423,9 @@ body.stage-open .grok {
 
 .hero-stage.cinema-stage {
   aspect-ratio: 16 / 9;
-  min-height: 560px;
-  max-height: min(86dvh, 980px);
+  min-height: 400px;
+  max-height: min(52dvh, 540px);
+  margin-bottom: 1.1rem;
   background:
     radial-gradient(ellipse at 50% 38%, #2a3d62 0%, #141c2e 52%, #0a101c 100%);
   border-color: #111827;
