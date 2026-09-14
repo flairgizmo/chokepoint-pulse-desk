@@ -97,6 +97,31 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
   return out;
 }
 
+/** Oceans from the raw NASA still — not a full-sphere overlay, not a baked terminator. */
+function oceanWetMask(img: HTMLImageElement, w: number, h: number): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return c;
+  ctx.drawImage(img, 0, 0, w, h);
+  const data = ctx.getImageData(0, 0, w, h);
+  const p = data.data;
+  for (let i = 0; i < p.length; i += 4) {
+    const r = p[i];
+    const g = p[i + 1];
+    const b = p[i + 2];
+    const lum = 0.3 * r + 0.59 * g + 0.11 * b;
+    const ocean = b > r + 6 && b >= g - 4 && lum < 96 && Math.max(r, g, b) < 130;
+    p[i] = 206;
+    p[i + 1] = 222;
+    p[i + 2] = 236;
+    p[i + 3] = ocean ? 255 : 0;
+  }
+  ctx.putImageData(data, 0, 0);
+  return c;
+}
+
 /** Uniform cinema crush for the NASA day still. Not a terminator — that stays a scene mesh. */
 function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   const c = document.createElement('canvas');
@@ -116,6 +141,10 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   ctx.globalCompositeOperation = 'color';
   ctx.fillStyle = 'rgba(196, 164, 112, 0.14)';
   ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'screen';
+  ctx.globalAlpha = 0.2;
+  ctx.drawImage(oceanWetMask(img, c.width, c.height), 0, 0);
+  ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
   return c;
 }

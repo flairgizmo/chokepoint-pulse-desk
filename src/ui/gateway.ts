@@ -404,6 +404,44 @@ function glassTex(
   return tex;
 }
 
+function attachLiteFire(mat: THREE.MeshBasicMaterial): void {
+  mat.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+varying vec3 vLiteNormal;
+varying vec3 vLiteView;`,
+      )
+      .replace(
+        '#include <project_vertex>',
+        `#include <beginnormal_vertex>
+#include <defaultnormal_vertex>
+#include <project_vertex>
+vLiteNormal = normalize(transformedNormal);
+vLiteView = normalize(-mvPosition.xyz);`,
+      );
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+varying vec3 vLiteNormal;
+varying vec3 vLiteView;`,
+      )
+      .replace(
+        '#include <map_fragment>',
+        `#include <map_fragment>
+vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+float liteFacing = clamp(abs(dot(liteN, normalize(vLiteView))), 0.0, 1.0);
+float liteFres = pow(1.0 - liteFacing, 1.55);
+diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.36;
+diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.24;`,
+      );
+  };
+  mat.customProgramCacheKey = () => 'qd-lite-fire-1';
+}
+
 function glassMat(
   tex: THREE.Texture,
   lite: boolean,
@@ -428,6 +466,7 @@ function glassMat(
       depthWrite: opts.window == null || opts.window > 0.84,
     });
     mat.toneMapped = false;
+    if (opts.window != null) attachLiteFire(mat);
     return mat;
   }
   return diamondPhysical(tex, opts);
