@@ -225,7 +225,7 @@ function tableLidTex(): THREE.CanvasTexture {
   c.height = 256;
   const ctx = c.getContext('2d');
   if (ctx) {
-    ctx.fillStyle = '#16120e';
+    ctx.fillStyle = '#0a0806';
     ctx.fillRect(0, 0, 256, 256);
     const catchL = ctx.createRadialGradient(96, 82, 2, 96, 82, 70);
     catchL.addColorStop(0, 'rgba(255, 236, 210, 0.62)');
@@ -452,7 +452,7 @@ float spec = pow(liteFres, 1.15);
 diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, 0.4 + spec * 0.48);
 diffuseColor.rgb += envRefl * spec * 1.45;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.55;
-diffuseColor.a = mix(0.54, 0.9, spec);`
+diffuseColor.a = mix(0.9, 0.98, spec);`
       : `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
@@ -495,7 +495,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', fire);
   };
-  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-15-mirror' : 'qd-lite-fire-15-window');
+  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-16-mirror' : 'qd-lite-fire-16-window');
 }
 
 function glassMat(
@@ -511,6 +511,7 @@ function glassMat(
     window?: number;
     writeDepth?: boolean;
     mirror?: boolean;
+    doubleSide?: boolean;
     env?: THREE.CubeTexture;
   } = {},
 ): CutMat | THREE.MeshBasicMaterial {
@@ -518,7 +519,7 @@ function glassMat(
     const mat = new THREE.MeshBasicMaterial({
       map: tex,
       color: opts.tint ?? (opts.shade === false ? 0x5a6c88 : 0x93a6c0),
-      side: opts.window != null ? THREE.FrontSide : THREE.DoubleSide,
+      side: opts.doubleSide ? THREE.DoubleSide : opts.window != null ? THREE.FrontSide : THREE.DoubleSide,
       vertexColors: Boolean(opts.vertexColors),
       transparent: opts.window != null,
       opacity: opts.window ?? 1,
@@ -964,9 +965,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     lite
       ? glassMat(tableLidTex(), true, {
           tint: 0xffffff,
-          window: 0.62,
+          window: 0.92,
           writeDepth: true,
           mirror: true,
+          doubleSide: true,
           env: roomEnv,
         })
       : glassMat(glassTex(photo0, false, 'table'), lite, {
@@ -978,6 +980,12 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   table.position.y = tableY;
   table.userData.nodeId = 6;
+  table.renderOrder = 2;
+  if (lite && table.material instanceof THREE.MeshBasicMaterial) {
+    table.material.polygonOffset = true;
+    table.material.polygonOffsetFactor = -2;
+    table.material.polygonOffsetUnits = -2;
+  }
   crystal.add(table);
   const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
     const mesh = new THREE.Mesh(geo, mat);
