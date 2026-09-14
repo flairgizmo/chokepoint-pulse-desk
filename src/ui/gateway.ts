@@ -927,8 +927,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pav = i % 2 ? pavB : pavA;
     addCut(triGeo(mx0, midY, mz0, x0, eqY, z0, x1, eqY, z1, 'crown'), crown, crowns);
     addCut(triGeo(mx0, midY, mz0, x1, eqY, z1, mx1, midY, mz1, 'crown'), crown, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns);
-    addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns);
+    if (!lite) {
+      addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns);
+      addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns);
+    }
     addCut(triGeo(x0, eqY, z0, px0, pavY, pz0, px1, pavY, pz1, 'pav'), pav, pavs);
     addCut(triGeo(x0, eqY, z0, px1, pavY, pz1, x1, eqY, z1, 'pav'), pav, pavs);
     addCut(triGeo(px0, pavY, pz0, 0, botY, 0, px1, pavY, pz1, 'pav'), pav, pavs);
@@ -954,6 +956,22 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       crystal.add(spark);
       sparks.push(spark);
     }
+  }
+  if (lite) {
+    const rimMat = new THREE.MeshBasicMaterial({
+      map: iceCatchTex(),
+      color: 0xe8ddd0,
+      transparent: true,
+      opacity: 0.42,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    rimMat.toneMapped = false;
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(tableR, 0.01, 8, 48), rimMat);
+    rim.rotation.x = Math.PI / 2;
+    rim.position.y = tableY;
+    rim.userData.nodeId = 6;
+    crystal.add(rim);
   }
   if (!lite) {
     const edgePts: number[] = [];
