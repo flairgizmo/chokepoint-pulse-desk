@@ -2991,7 +2991,11 @@ button.chip {
 .person-more .cinema-filter,
 .desk-stage-story .cinema-filter,
 .desk-stage-foot .cinema-filter,
-.grok-panel .cinema-filter {
+.grok-panel .cinema-filter,
+.hero-split .cinema-filter,
+.masthead .cinema-filter,
+.foot-legal > .cinema-filter,
+.story-suggest .cinema-filter {
   width: 100%;
   margin: 0.85rem 0 1rem;
 }
@@ -8737,5 +8741,120 @@ section.block .kicker {
 
 .person-more .cinema-filter {
   margin: 0.65rem 0 0.35rem;
+}
+
+.nav > a {
+  display: grid;
+  grid-template-columns: 1.55rem auto;
+  gap: 0.38rem;
+  align-items: center;
+  padding: 0.22rem 0.5rem 0.22rem 0.28rem;
+}
+
+.nav > a .nav-still {
+  margin: 0;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 5px;
+  overflow: hidden;
+  background: #0b1220;
+}
+
+.nav > a .nav-still img {
+  display: block;
+  width: 1.55rem;
+  height: 1.55rem;
+  object-fit: cover;
+  filter: saturate(0.9) contrast(1.12) brightness(0.78);
+}
+
+.nav > a .nav-still figcaption {
+  display: none;
+}
+
+.market-bar.cinema-filter {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  overflow-x: auto;
+}
+
+.market-bar.cinema-filter .photo-plate.filter-still img {
+  height: 2.65rem;
+  min-height: 2.65rem;
+  max-height: 2.65rem;
+  aspect-ratio: 21 / 3;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.38);
+}
+
+.market-bar.cinema-filter .filter-row {
+  flex-wrap: nowrap;
+  gap: 1rem;
+  padding: 0.4rem 1.5rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.market-bar.cinema-filter .filter-still figcaption {
+  display: none;
+}
+
+.hero-split .cinema-filter.mast-strip {
+  margin: 1rem 0 0;
+}
+
+.hero-split .cinema-filter.mast-strip .cta-row {
+  margin: 0;
+}
+
+.hero-split .cinema-filter.mast-strip .btn-ghost {
+  --btn-fg: #eaf1ff;
+  --btn-bg: rgba(234, 241, 255, 0.12);
+  --btn-line: rgba(234, 241, 255, 0.32);
+  color: #eaf1ff;
+}
+
+.foot-legal {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.foot-legal > .poster-frame {
+  width: 100%;
+  margin: 0 0 1rem;
+}
+
+.foot .poster-copy,
+.foot .poster-copy p,
+.foot .poster-copy .word,
+.foot .poster-copy .kicker {
+  color: #eaf1ff;
+}
+
+.foot .poster-copy .word span {
+  color: #8eb0ff;
+}
+
+.foot .cinema-filter .voices-inline,
+.foot .cinema-filter .voices-inline a,
+.foot .cinema-filter .mono {
+  color: #eaf1ff;
+  margin: 0;
+}
+
+.foot .cinema-filter .voices-inline a:hover {
+  color: #c4d4ea;
+}
+
+.story-suggest .cinema-filter {
+  margin: 0 0 0.65rem;
+}
+
+.story-suggest .cinema-filter .chip {
+  background: var(--amber);
+  color: var(--graphite-950);
+  border-color: var(--amber);
 }
 

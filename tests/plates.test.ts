@@ -454,6 +454,16 @@ describe('Topic plates', () => {
     expect(renderHome()).toContain('Open the source');
     expect(renderPeople()).toContain('person-cta');
     expect(renderPeople()).toContain('Monogram only');
+    expect(renderHome()).toContain('mast-strip');
+    expect(renderHome()).toContain('See how the gate works');
+    expect(plateFor('home-cta').src).toBe(PLATES.fiber.src);
+    expect(plateFor('market-bar').src).toBe(PLATES.exchange.src);
+    expect(plateFor('intro-foot').src).toBe(PLATES.hero.src);
+    expect(plateFor('foot-disclaimer').src).toBe(PLATES.library.src);
+    expect(plateFor('foot-voices').src).toBe(PLATES.radio.src);
+    expect(plateFor('story-suggest').src).toBe(PLATES.newsroom.src);
+    expect(cinemaNavLink('/news', 'News', true)).toContain('aria-current="page"');
+    expect(cinemaNavLink('/news', 'News', true)).toContain('/visuals/topics/newsroom.jpg');
   });
 
   it('keeps year-suffixed keys and does not collapse SATP drafts onto Geneva', () => {

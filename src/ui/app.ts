@@ -42,7 +42,8 @@ import { resolveStage } from './resolve';
 import { matchProgrammes } from '../data/programmes';
 import { STORY } from '../data/story';
 import { filmSetSlides } from './filmSets';
-import { cinemaNavLink } from './diagrams';
+import { photoFigure, plateFor } from '../data/plates';
+import { cinemaIntro, cinemaNavLink, cinemaStrip } from './diagrams';
 
 interface Route {
   name: string;
@@ -251,12 +252,12 @@ export class QntDesk {
             </span>
           </a>
           <nav class="nav" aria-label="Primary">
-            <a href="/news" ${route.name === 'news' ? 'aria-current="page"' : ''}>News</a>
-            <a href="/story" ${route.name === 'story' ? 'aria-current="page"' : ''}>Story</a>
-            <a href="/technology" ${route.name === 'technology' ? 'aria-current="page"' : ''}>Technology</a>
-            <a href="/people" ${route.name === 'people' ? 'aria-current="page"' : ''}>People</a>
-            <a href="/programmes" ${route.name === 'programmes' || route.name === 'institutional' ? 'aria-current="page"' : ''}>Programmes</a>
-            <a href="/research" ${route.name === 'research' || route.name === 'library' || route.name === 'read' ? 'aria-current="page"' : ''}>Research</a>
+            ${cinemaNavLink('/news', 'News', route.name === 'news' || route.name === 'note')}
+            ${cinemaNavLink('/story', 'Story', route.name === 'story')}
+            ${cinemaNavLink('/technology', 'Technology', route.name === 'technology')}
+            ${cinemaNavLink('/people', 'People', route.name === 'people' || route.name === 'team')}
+            ${cinemaNavLink('/programmes', 'Programmes', route.name === 'programmes' || route.name === 'institutional')}
+            ${cinemaNavLink('/research', 'Research', route.name === 'research' || route.name === 'library' || route.name === 'read')}
             <details class="more">
               <summary>More</summary>
               <div class="more-menu">
@@ -282,7 +283,9 @@ export class QntDesk {
           </div>
           </div>
         </header>
-        <div class="market-bar">
+        <div class="market-bar cinema-filter market-strip">
+          ${photoFigure(plateFor('market-bar'), 'filter-still')}
+          <div class="filter-row">
           <a href="/markets">Markets</a>
           <span data-bar-print>${esc(price)} ${chg != null ? fmtPct(chg) : ''} 24h</span>
           <span data-bar-vol>${esc(vol)}</span>
@@ -290,6 +293,7 @@ export class QntDesk {
           <span class="chip ${live ? 'live' : 'degraded'}" data-bar-status>${live ? 'Live' : esc(this.markets?.status ?? 'loading')}</span>
           <span data-bar-venue>${esc(this.markets?.venue ? `${this.markets.venue} QNT-USD` : '')}</span>
           <a href="/news" class="push">Live news →</a>
+          </div>
         </div>
         <div class="mobile-nav" id="mobile-nav">
           ${cinemaNavLink('/news', 'News', route.name === 'news')}
@@ -310,16 +314,22 @@ export class QntDesk {
         <main>${body}</main>
         <footer class="foot colophon">
           <div class="foot-legal">
-            <p class="word">Qnt<span>Desk</span></p>
-            <p>Independent educational research. Not Quant Network Ltd. The story in order: official Quant surfaces, Overledger docs, IETF SATP, public filings. Ingest about every thirty minutes. Markets via cached CoinGecko with as-of shown.</p>
-            <p>${esc(DISCLAIMER)}</p>
-            <p class="voices-inline">
+            ${cinemaIntro(
+              'intro-foot',
+              `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>Colophon</p><p class="word">Qnt<span>Desk</span></p><p>Independent educational research. Not Quant Network Ltd. The story in order: official Quant surfaces, Overledger docs, IETF SATP, public filings. Ingest about every thirty minutes. Markets via cached CoinGecko with as-of shown.</p>`,
+            )}
+            ${cinemaStrip('foot-disclaimer', `<p class="source-row">${esc(DISCLAIMER)}</p>`, 'source-strip warn-strip')}
+            ${cinemaStrip(
+              'foot-voices',
+              `<p class="voices-inline">
               <a href="/donate">Donate</a>
               <a href="https://x.com/quantnetwork" rel="noopener noreferrer" target="_blank">@quantnetwork</a>
               <a href="https://x.com/OverledgerDev" rel="noopener noreferrer" target="_blank">@OverledgerDev</a>
               <a href="https://x.com/gverdian" rel="noopener noreferrer" target="_blank">@gverdian</a>
               <span class="mono">QNT ${esc(QNT_CONTRACT)}</span>
-            </p>
+            </p>`,
+              'source-strip',
+            )}
           </div>
         </footer>
         ${stageMarkup()}
@@ -909,8 +919,11 @@ export class QntDesk {
       return;
     }
     slot.hidden = false;
-    slot.innerHTML = `<span class="chip">unverified until placed</span>
-      <p class="kicker">On the wire, not yet on this rail</p>
+    slot.innerHTML = `${cinemaStrip(
+      'story-suggest',
+      '<span class="chip">unverified until placed</span><p class="kicker">On the wire, not yet on this rail</p>',
+      'source-strip',
+    )}
       <ul class="mention-posters">${suggestions
         .map((h) => `<li>${headlinePosterButton(h, true)}</li>`)
         .join('')}</ul>`;

@@ -625,11 +625,11 @@ export function renderHome(): string {
         <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
         <div>
           <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. The public record, in order. Independent research. Not Quant’s corporate site.</p>
-          <div class="cta-row">
-            ${pill('/technology', 'See how the gate works', 'Product theatre')}
-            ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')}
-            ${pill('/podcast', 'Start the series', 'Twenty conversations')}
-          </div>
+          ${cinemaStrip(
+            'home-cta',
+            `<div class="cta-row">${pill('/technology', 'See how the gate works', 'Product theatre')} ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')} ${pill('/podcast', 'Start the series', 'Twenty conversations')}</div>`,
+            'mast-strip',
+          )}
         </div>
       </div>
     </section>

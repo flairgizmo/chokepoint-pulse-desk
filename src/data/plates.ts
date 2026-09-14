@@ -599,6 +599,12 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'gone-mast': PLATES.radio,
   'notfound-mast': PLATES.gateway,
   'grok-chips': PLATES.cambridge,
+  'home-cta': PLATES.fiber,
+  'market-bar': PLATES.exchange,
+  'intro-foot': PLATES.hero,
+  'foot-disclaimer': PLATES.library,
+  'foot-voices': PLATES.radio,
+  'story-suggest': PLATES.newsroom,
 }
 
 const PREFIXES = [
