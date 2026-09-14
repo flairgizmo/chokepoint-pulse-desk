@@ -98,7 +98,12 @@ function greatCircle(a: THREE.Vector3, b: THREE.Vector3, n = 64): THREE.Vector3[
 }
 
 /** Oceans from the raw NASA still — not a full-sphere overlay, not a baked terminator. */
-function oceanWetMask(img: HTMLImageElement, w: number, h: number): HTMLCanvasElement {
+function oceanMask(
+  img: HTMLImageElement,
+  w: number,
+  h: number,
+  rgb: [number, number, number],
+): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
@@ -113,9 +118,9 @@ function oceanWetMask(img: HTMLImageElement, w: number, h: number): HTMLCanvasEl
     const b = p[i + 2];
     const lum = 0.3 * r + 0.59 * g + 0.11 * b;
     const ocean = b > r + 6 && b >= g - 4 && lum < 96 && Math.max(r, g, b) < 130;
-    p[i] = 206;
-    p[i + 1] = 222;
-    p[i + 2] = 236;
+    p[i] = rgb[0];
+    p[i + 1] = rgb[1];
+    p[i + 2] = rgb[2];
     p[i + 3] = ocean ? 255 : 0;
   }
   ctx.putImageData(data, 0, 0);
@@ -141,9 +146,12 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   ctx.globalCompositeOperation = 'color';
   ctx.fillStyle = 'rgba(196, 164, 112, 0.14)';
   ctx.fillRect(0, 0, c.width, c.height);
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.globalAlpha = 0.18;
+  ctx.drawImage(oceanMask(img, c.width, c.height, [22, 32, 48]), 0, 0);
   ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = 0.2;
-  ctx.drawImage(oceanWetMask(img, c.width, c.height), 0, 0);
+  ctx.globalAlpha = 0.3;
+  ctx.drawImage(oceanMask(img, c.width, c.height, [206, 222, 236]), 0, 0);
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -706,7 +714,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.26 : 0.32,
+        opacity: this.lite ? 0.32 : 0.36,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -724,7 +732,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.28 : 0.32,
+        opacity: this.lite ? 0.34 : 0.38,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -742,7 +750,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.24 : 0.28,
+        opacity: this.lite ? 0.32 : 0.36,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
