@@ -243,6 +243,38 @@ function iceCatchTex(): THREE.CanvasTexture {
   return tex;
 }
 
+/** Mapped culet catch — not a CAD sphere. Fits inside the pavilion cone. */
+function culetFireTex(): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 256;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.clearRect(0, 0, 256, 256);
+    const warm = ctx.createRadialGradient(122, 134, 2, 128, 128, 92);
+    warm.addColorStop(0, 'rgba(255, 236, 210, 0.78)');
+    warm.addColorStop(0.2, 'rgba(255, 196, 120, 0.42)');
+    warm.addColorStop(0.48, 'rgba(255, 168, 88, 0.12)');
+    warm.addColorStop(1, 'rgba(255, 168, 88, 0)');
+    ctx.fillStyle = warm;
+    ctx.fillRect(0, 0, 256, 256);
+    const cool = ctx.createRadialGradient(150, 112, 1, 150, 112, 52);
+    cool.addColorStop(0, 'rgba(180, 220, 255, 0.58)');
+    cool.addColorStop(0.46, 'rgba(140, 190, 255, 0.16)');
+    cool.addColorStop(1, 'rgba(140, 190, 255, 0)');
+    ctx.fillStyle = cool;
+    ctx.fillRect(0, 0, 256, 256);
+    const mag = ctx.createRadialGradient(104, 146, 1, 104, 146, 36);
+    mag.addColorStop(0, 'rgba(255, 176, 210, 0.32)');
+    mag.addColorStop(1, 'rgba(255, 176, 210, 0)');
+    ctx.fillStyle = mag;
+    ctx.fillRect(0, 0, 256, 256);
+  }
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = 512;
@@ -395,11 +427,11 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(1, 0.46 + key * 0.48 + rim * 0.16);
+  const shade = Math.min(1, 0.42 + key * 0.56 + rim * 0.18);
   return new THREE.Color(
-    Math.min(1, shade + key * 0.08 + fres * 0.04),
+    Math.min(1, shade + key * 0.12 + fres * 0.05),
     shade,
-    Math.min(1, shade - key * 0.06 + rim * 0.1 + fres * 0.06),
+    Math.min(1, shade - key * 0.08 + rim * 0.12 + fres * 0.08),
   );
 }
 
@@ -859,6 +891,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
   let flareRoot: THREE.Group | null = null;
+  let culetFire: THREE.Mesh | null = null;
   if (lite) {
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
@@ -935,6 +968,22 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.add(flare);
     flareRoot = flare;
+    const fireMat = new THREE.MeshBasicMaterial({
+      map: culetFireTex(),
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.4,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      side: THREE.DoubleSide,
+    });
+    fireMat.toneMapped = false;
+    culetFire = new THREE.Mesh(new THREE.CircleGeometry(0.07, 28), fireMat);
+    culetFire.rotation.x = -Math.PI / 2;
+    culetFire.position.y = BOT_Y + 0.07;
+    culetFire.userData.nodeId = 6;
+    culetFire.renderOrder = 2;
+    crystal.add(culetFire);
   }
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.028, 0.046, 0.028, sides),
@@ -1176,6 +1225,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     }
     if (flareRoot) {
       flareRoot.rotation.y = 0.48 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 2.1) * 0.045);
+    }
+    if (culetFire) {
+      const fire = culetFire.material as THREE.MeshBasicMaterial;
+      fire.opacity = reduced ? 0.36 : 0.32 + Math.abs(Math.sin((now - t0) / 1400)) * 0.23;
+      culetFire.rotation.z = reduced ? 0 : Math.sin((now - t0) / 1800) * 0.18;
     }
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;

@@ -256,6 +256,7 @@ export class EarthGlobe {
   private terminator: THREE.Mesh | null = null;
   private glint: THREE.Mesh | null = null;
   private sheen: THREE.Mesh | null = null;
+  private medSheen: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
   private hoverId: string | undefined;
@@ -282,6 +283,7 @@ export class EarthGlobe {
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.glint) this.glint.visible = this.overlays.day;
     if (this.sheen) this.sheen.visible = this.overlays.day;
+    if (this.medSheen) this.medSheen.visible = this.overlays.day;
     this.applyMaps();
   }
 
@@ -685,6 +687,24 @@ export class EarthGlobe {
     sheen.renderOrder = 4;
     scene.add(sheen);
     this.sheen = sheen;
+    const med = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.38, 0.24),
+      new THREE.MeshBasicMaterial({
+        map: oceanSheenTex(),
+        color: 0xffffff,
+        transparent: true,
+        opacity: this.lite ? 0.18 : 0.22,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      }),
+    );
+    const medDir = latLonToVec(37, 6, 1).applyAxisAngle(Y_AXIS, this.earthSpin).normalize();
+    med.position.copy(medDir.multiplyScalar(1.016));
+    med.lookAt(0, 0, 0);
+    med.renderOrder = 4;
+    scene.add(med);
+    this.medSheen = med;
 
     const paintTex = (src: string, assign: (tex: THREE.Texture) => void, cinema = false): void => {
       const img = new Image();
@@ -1055,6 +1075,7 @@ export class EarthGlobe {
     if (this.terminator) this.terminator.visible = this.overlays.day;
     if (this.glint) this.glint.visible = this.overlays.day;
     if (this.sheen) this.sheen.visible = this.overlays.day;
+    if (this.medSheen) this.medSheen.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
       const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));
