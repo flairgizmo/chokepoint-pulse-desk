@@ -652,17 +652,6 @@ function tableFan(r: number, sides: number): THREE.BufferGeometry {
   return g;
 }
 
-/** Opaque wrap dish inside the pavilion — fills the table-axis hole without capping the table. */
-function tableWell(r: number, sides: number, dish: number): THREE.BufferGeometry {
-  const g = tableFan(r, sides);
-  const pos = g.getAttribute('position');
-  for (let i = 0; i < pos.count; i++) {
-    if (Math.abs(pos.getX(i)) < 1e-5 && Math.abs(pos.getZ(i)) < 1e-5) pos.setY(i, -dish);
-  }
-  g.computeVertexNormals();
-  return g;
-}
-
 /** Lite table is a bezel, not a cap — the window looks through to the pavilion. */
 function tableRing(r: number, inner: number, sides: number): THREE.BufferGeometry {
   const g = new THREE.RingGeometry(inner, r, sides);
@@ -1148,7 +1137,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const heartStamp: Array<CutMat | THREE.MeshBasicMaterial> = [];
   let heartRoot: THREE.Group | null = null;
   let wellMat: THREE.MeshBasicMaterial | null = null;
-  let wellRoot: THREE.Mesh | null = null;
+  let wellRoot: THREE.Group | null = null;
   const culetFires: THREE.Sprite[] = [];
   if (lite) {
     wellMat = new THREE.MeshBasicMaterial({
@@ -1158,10 +1147,33 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       depthWrite: true,
     });
     wellMat.toneMapped = false;
-    wellRoot = new THREE.Mesh(tableWell(tableR * 0.58, sides, 0.1), wellMat);
-    wellRoot.position.y = (eqY + botY) * 0.5;
+    wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
-    wellRoot.renderOrder = 0;
+    const wellTopR = tableR * 0.5;
+    const wellTopY = tableY - 0.02;
+    const wellBotY = botY + 0.04;
+    for (let i = 0; i < sides; i++) {
+      const a0 = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const a1 = ((i + 1) / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const mesh = new THREE.Mesh(
+        triGeo(
+          Math.cos(a0) * wellTopR,
+          wellTopY,
+          Math.sin(a0) * wellTopR,
+          0,
+          wellBotY,
+          0,
+          Math.cos(a1) * wellTopR,
+          wellTopY,
+          Math.sin(a1) * wellTopR,
+          'pav',
+        ),
+        wellMat,
+      );
+      mesh.userData.nodeId = 6;
+      mesh.renderOrder = 0;
+      wellRoot.add(mesh);
+    }
     crystal.add(wellRoot);
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
