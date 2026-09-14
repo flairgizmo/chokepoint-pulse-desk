@@ -48,10 +48,10 @@ export function mountStack2D(canvas: HTMLCanvasElement): () => void {
       ctx.filter = 'none';
     }
     imgs.forEach((img, i) => {
-      const pw = w * 0.56;
+      const pw = w * 0.42;
       const ph = pw * (9 / 16);
-      const x = w * 0.1 + i * (w * 0.055);
-      const y = h * 0.1 + i * (h * 0.11);
+      const x = w * 0.08 + i * (w * 0.1);
+      const y = h * 0.14 + i * (h * 0.1);
       ctx.save();
       ctx.translate(x, y);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -117,23 +117,28 @@ function plateTexture(src: string, title: string, onReady: (tex: THREE.CanvasTex
   const img = new Image();
   img.onload = () => {
     if (!ctx) return;
-    const scale = Math.max(1280 / img.naturalWidth, 720 / img.naturalHeight);
-    const dw = img.naturalWidth * scale;
-    const dh = img.naturalHeight * scale;
+    const innerW = 1280;
+    const innerH = 648;
+    const trim = src.includes('cable.jpg') ? 0.12 : 0.03;
+    const sx = img.naturalWidth * trim;
+    const sy = img.naturalHeight * trim;
+    const sw = img.naturalWidth * (1 - trim * 2);
+    const sh = img.naturalHeight * (1 - trim * 2);
+    const scale = Math.min(innerW / sw, innerH / sh);
+    const dw = sw * scale;
+    const dh = sh * scale;
     ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
-    ctx.drawImage(img, (1280 - dw) / 2, (720 - dh) * 0.42, dw, dh);
+    ctx.drawImage(img, sx, sy, sw, sh, (innerW - dw) / 2, 40 + (innerH - dh) / 2, dw, dh);
     ctx.filter = 'none';
     printGradeStill(ctx, 1280, 720);
     ctx.fillStyle = '#05070c';
-    ctx.fillRect(0, 0, 1280, 28);
+    ctx.fillRect(0, 0, 1280, 40);
     ctx.fillRect(0, 692, 1280, 28);
-    ctx.fillStyle = 'rgba(7, 11, 20, 0.58)';
-    ctx.fillRect(0, 662, 1280, 30);
-    ctx.fillStyle = 'rgba(234, 241, 255, 0.82)';
-    ctx.font = '700 18px Outfit, IBM Plex Sans, sans-serif';
+    ctx.fillStyle = 'rgba(234, 241, 255, 0.9)';
+    ctx.font = '700 26px Outfit, IBM Plex Sans, sans-serif';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(title, 22, 678);
+    ctx.fillText(title, 22, 20);
     tex.needsUpdate = true;
     onReady(tex);
   };
@@ -165,7 +170,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   const scene = new THREE.Scene();
   addCinemaSet(scene, lite, PLATES.canary.src);
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.08, 40);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 40);
   const group = new THREE.Group();
   scene.add(group);
   const composer = addUnrealLook(renderer, scene, camera, lite, PLATES.canary.src);
@@ -176,13 +181,13 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   const puddles: THREE.Mesh[] = [];
   STACK_SLABS.forEach((layer) => {
-    const plate = makeCinemaPlate(2.18, 1.22, lite, PLATES.canary.src, 0.07);
+    const plate = makeCinemaPlate(2.08, 1.16, lite, PLATES.canary.src, 0.08);
     plate.root.userData.layerId = layer.id;
     plate.root.userData.stage = layer.stage;
     plate.face.userData.layerId = layer.id;
     group.add(plate.root);
     slabs.push(plate.root);
-    const puddle = makeFloorContact(2.36, 1.28);
+    const puddle = makeFloorContact(2.02, 1.18);
     scene.add(puddle);
     puddles.push(puddle);
     plateTexture(layer.src, layer.title, (tex) => applyPlateMap(plate.mat, tex));
@@ -195,8 +200,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
       const dim = isolated != null && mesh.userData.layerId !== isolated;
       const on = isolated != null && mesh.userData.layerId === isolated;
       const t = i - mid;
-      mesh.position.set(t * 0.2 + drift, 0.86 - i * 0.3 + (on ? 0.12 : 0), 0.08 + i * 0.32 + (on ? -0.38 : 0));
-      mesh.rotation.set(-0.08, -0.26 - t * 0.05, 0.012);
+      mesh.position.set(t * 0.74 + drift, 0.5 - i * 0.15 + (on ? 0.1 : 0), 0.02 + i * 0.16 + (on ? -0.3 : 0));
+      mesh.rotation.set(-0.08, -0.24 - t * 0.04, 0.008);
       mesh.scale.setScalar(on ? 1.06 : dim ? 0.9 : 1);
       dimCinemaPlate(mesh, dim);
       const puddle = puddles[i];
@@ -240,8 +245,8 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
     ay += (ty - ay) * 0.08;
     place(now);
     group.rotation.y = reduced ? 0 : Math.sin(now / 5200) * 0.03;
-    camera.position.setFromSphericalCoords(lite ? 5.12 : 4.92, ax, ay);
-    camera.lookAt(0.02, 0.28, 0.52);
+    camera.position.setFromSphericalCoords(lite ? 5.18 : 4.98, ax, ay);
+    camera.lookAt(0.06, 0.2, 0.28);
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
