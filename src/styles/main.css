@@ -8681,6 +8681,13 @@ section.block .kicker {
   pointer-events: auto;
 }
 
+.cinema-filter.mast-strip .btn-ghost {
+  --btn-fg: #eaf1ff;
+  --btn-bg: rgba(234, 241, 255, 0.12);
+  --btn-line: rgba(234, 241, 255, 0.32);
+  color: #eaf1ff;
+}
+
 .grok-panel .cinema-filter {
   margin: 0.15rem 0 0.45rem;
   border-radius: 12px;
