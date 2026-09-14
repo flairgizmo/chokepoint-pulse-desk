@@ -144,11 +144,8 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   ctx.fillStyle = 'rgba(255, 188, 140, 0.05)';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'multiply';
-  ctx.globalAlpha = 0.16;
+  ctx.globalAlpha = 0.22;
   ctx.drawImage(oceanMask(img, c.width, c.height, [18, 36, 56]), 0, 0);
-  ctx.globalCompositeOperation = 'screen';
-  ctx.globalAlpha = 0.38;
-  ctx.drawImage(oceanMask(img, c.width, c.height, [210, 228, 240]), 0, 0);
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
   return c;
@@ -642,9 +639,9 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.09, this.lite ? 32 : 64, this.lite ? 24 : 48),
+      new THREE.SphereGeometry(1.042, this.lite ? 32 : 64, this.lite ? 24 : 48),
       new THREE.ShaderMaterial({
-        uniforms: { color: { value: new THREE.Color(0xb8c0c8) } },
+        uniforms: { color: { value: new THREE.Color(0xd2c4ae) } },
         vertexShader: `
           varying vec3 vN;
           varying vec3 vV;
@@ -659,8 +656,8 @@ export class EarthGlobe {
           varying vec3 vV;
           uniform vec3 color;
           void main(){
-            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2);
-            gl_FragColor = vec4(color, fresnel * 0.4);
+            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 3.1);
+            gl_FragColor = vec4(color, fresnel * 0.72);
           }`,
         transparent: true,
         side: THREE.BackSide,
@@ -670,6 +667,33 @@ export class EarthGlobe {
     );
     atmo.renderOrder = 3;
     group.add(atmo);
+    const limb = new THREE.Mesh(
+      new THREE.SphereGeometry(1.003, segs, rings),
+      new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec3 vN;
+          varying vec3 vV;
+          void main(){
+            vN = normalize(normalMatrix * normal);
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            vV = normalize(-mv.xyz);
+            gl_Position = projectionMatrix * mv;
+          }`,
+        fragmentShader: `
+          varying vec3 vN;
+          varying vec3 vV;
+          void main(){
+            float f = abs(dot(normalize(vN), normalize(vV)));
+            float edge = pow(1.0 - f, 1.45);
+            gl_FragColor = vec4(0.03, 0.04, 0.07, edge * 0.64);
+          }`,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.FrontSide,
+      }),
+    );
+    limb.renderOrder = 5;
+    group.add(limb);
 
     if (this.lite) {
       const term = new THREE.Mesh(
@@ -693,7 +717,7 @@ export class EarthGlobe {
         map: sunGlintTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.8 : 0.9,
+        opacity: this.lite ? 0.88 : 0.92,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -711,7 +735,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.56 : 0.5,
+        opacity: this.lite ? 0.7 : 0.58,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -729,7 +753,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.6 : 0.54,
+        opacity: this.lite ? 0.74 : 0.6,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,
@@ -747,7 +771,7 @@ export class EarthGlobe {
         map: oceanSheenTex(),
         color: 0xffffff,
         transparent: true,
-        opacity: this.lite ? 0.56 : 0.5,
+        opacity: this.lite ? 0.7 : 0.58,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide,

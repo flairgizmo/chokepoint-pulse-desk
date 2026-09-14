@@ -227,7 +227,25 @@ export function stampFilmGate(
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'source-over';
-  const rail = Math.round(w * (portrait ? 0.048 : 0.072));
+  if (portrait) {
+    ctx.fillStyle = '#080b10';
+    ctx.fillRect(0, 0, w, 16);
+    ctx.fillRect(0, h - 16, w, 16);
+    ctx.fillRect(0, 0, 8, h);
+    ctx.fillRect(w - 8, 0, 8, h);
+    if (title) {
+      ctx.fillStyle = 'rgba(8, 11, 16, 0.72)';
+      ctx.fillRect(8, h - 50, w - 16, 34);
+      ctx.fillStyle = 'rgba(234, 241, 255, 0.92)';
+      ctx.font = `700 ${Math.max(16, Math.round(h * 0.03))}px Outfit, IBM Plex Sans, sans-serif`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(title, 22, h - 33);
+    }
+    ctx.restore();
+    return;
+  }
+  const rail = Math.round(w * 0.072);
   const bar = Math.max(8, Math.round(h * 0.02));
   ctx.fillStyle = '#080b10';
   ctx.fillRect(0, 0, w, bar);
@@ -235,8 +253,8 @@ export function stampFilmGate(
   ctx.fillRect(0, 0, rail, h);
   ctx.fillRect(w - rail, 0, rail, h);
   const holeW = Math.max(6, Math.round(rail * 0.5));
-  const holeH = Math.max(7, Math.round(h * (portrait ? 0.03 : 0.042)));
-  const step = Math.round(h * (portrait ? 0.068 : 0.072));
+  const holeH = Math.max(7, Math.round(h * 0.042));
+  const step = Math.round(h * 0.072);
   const rx = Math.max(1, Math.round(holeW * 0.2));
   ctx.fillStyle = '#04060a';
   ctx.strokeStyle = 'rgba(234, 241, 255, 0.14)';
@@ -258,11 +276,11 @@ export function stampFilmGate(
   ctx.lineTo(w - rail, h - bar);
   ctx.stroke();
   if (title) {
-    const titleH = Math.round(h * (portrait ? 0.07 : 0.086));
+    const titleH = Math.round(h * 0.086);
     ctx.fillStyle = 'rgba(8, 11, 16, 0.72)';
     ctx.fillRect(rail, h - bar - titleH, w - rail * 2, titleH);
     ctx.fillStyle = 'rgba(234, 241, 255, 0.92)';
-    ctx.font = `700 ${Math.max(16, Math.round(h * (portrait ? 0.03 : 0.04)))}px Outfit, IBM Plex Sans, sans-serif`;
+    ctx.font = `700 ${Math.max(16, Math.round(h * 0.04))}px Outfit, IBM Plex Sans, sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
     ctx.fillText(title, rail + Math.round(w * 0.02), h - bar - titleH / 2);
