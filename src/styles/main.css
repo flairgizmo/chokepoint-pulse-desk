@@ -4344,7 +4344,7 @@ body.stage-open .grok {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   object-position: center;
-  filter: saturate(1.1) contrast(1.08);
+  filter: saturate(0.9) contrast(1.12) brightness(0.78);
 }
 
 .page-hero .hero-still {
@@ -4851,7 +4851,7 @@ body.stage-open .grok {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: 16px;
-  filter: saturate(1.06) contrast(1.05);
+  filter: saturate(0.9) contrast(1.12) brightness(0.78);
 }
 
 .city-neighbor span {

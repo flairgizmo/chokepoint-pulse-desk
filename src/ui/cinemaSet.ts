@@ -216,6 +216,30 @@ export function printGradeStill(
   ctx.restore();
 }
 
+/** Cover-draw a Vision still, then print-grade it for a 3D plate. */
+export function printGradeImage(photo: HTMLImageElement, w = 1280, h = 720): THREE.CanvasTexture {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  const ctx = c.getContext('2d');
+  if (ctx) {
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0, 0, w, h);
+    if (photo.naturalWidth) {
+      const scale = Math.max(w / photo.naturalWidth, h / photo.naturalHeight);
+      const dw = photo.naturalWidth * scale;
+      const dh = photo.naturalHeight * scale;
+      ctx.filter = 'saturate(0.9) contrast(1.12) brightness(0.8)';
+      ctx.drawImage(photo, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      ctx.filter = 'none';
+      printGradeStill(ctx, w, h);
+    }
+  }
+  const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 function photoFor(src: string): HTMLImageElement | null {
   return packs.get(src)?.img ?? (src === CANARY_STILL ? canaryImg : null);
 }
