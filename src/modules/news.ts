@@ -1,5 +1,15 @@
 import { fetchText } from './liveHttp';
-import { GNEWS_URL, OVERLEDGER_CHANGELOG, QUANT_FEED, SATP_ATOM } from './liveSources';
+import {
+  BOE_NEWS_RSS,
+  GNEWS_GBTD,
+  GNEWS_SATP,
+  GNEWS_SYNC,
+  GNEWS_URL,
+  IETF_BLOG_RSS,
+  OVERLEDGER_CHANGELOG,
+  QUANT_FEED,
+  SATP_ATOM,
+} from './liveSources';
 
 export type NewsStatus = 'live' | 'degraded' | 'EXAMPLE' | 'loading';
 export type NewsLane = 'Official' | 'Markets' | 'Industry';
@@ -20,9 +30,9 @@ export interface NewsRiver {
   error?: string;
 }
 
-const CACHE_KEY = 'qntdesk.news.v3';
+const CACHE_KEY = 'qntdesk.news.v5';
 const RE =
-  /\b(quant network|overledger|qnt\b|gilbert verdian|gbtd|payscript|quantnet|tokenised sterling|tokenized sterling|trusted node)\b/i;
+  /\b(quant network|overledger|qnt\b|gilbert verdian|gbtd|payscript|quantnet|tokenised sterling|tokenized sterling|tokenised deposit|tokenized deposit|trusted node|satp|synchronisation lab)\b/i;
 
 function cached(): NewsRiver | null {
   try {
@@ -81,8 +91,15 @@ function publishedIso(pub: string): string | null {
   return Number.isFinite(ts) ? new Date(ts).toISOString() : null;
 }
 
-function isQuantinuumNoise(title: string, source: string): boolean {
-  return /\bquantinuum\b/i.test(`${title} ${source}`) && !/\bquant network\b/i.test(title);
+function isQntTickerCollision(title: string, source: string): boolean {
+  const hay = `${title} ${source}`;
+  if (/\bquant network\b/i.test(hay) || /\boverledger\b/i.test(title)) return false;
+  if (/\bquantinuum\b/i.test(hay)) return true;
+  if (/\b(coinmarketcap|coingecko|binance|kraken)\b/i.test(hay) && /\bqnt\b/i.test(title)) return false;
+  if (/\bqnt\b/i.test(title) && /\b(bold|blze|gbts|rgti|ionq|qbts)\b/i.test(title)) return true;
+  if (/\bqnt stocks?\b/i.test(title) && /\b(surge|rally|jump|soar|roundup)\b/i.test(title)) return true;
+  if (/\bqnt stock quote\b/i.test(title) && !/\b(crypto|token|coin)\b/i.test(hay)) return true;
+  return false;
 }
 
 function isFxWidgetNoise(title: string): boolean {
@@ -117,7 +134,7 @@ export function parseNamedRss(
     const source = forced?.source || xmlTag(raw, 'source') || 'RSS';
     const pub = xmlTag(raw, 'pubDate');
     if (!title || !url) continue;
-    if (isQuantinuumNoise(title, source)) continue;
+    if (isQntTickerCollision(title, source)) continue;
     if (isFxWidgetNoise(title)) continue;
     if (forced?.requireMatch !== false && !RE.test(`${title} ${source}`)) continue;
     items.push({
@@ -148,7 +165,7 @@ export function parseAtomFeed(
     const url = href.startsWith('http') ? href : `${forced.linkBase ?? ''}${href}`;
     const pub = xmlTag(raw, 'updated') || xmlTag(raw, 'published');
     if (!title || !url) continue;
-    if (isQuantinuumNoise(title, forced.source)) continue;
+    if (isQntTickerCollision(title, forced.source)) continue;
     items.push({
       id: headlineId(url, title),
       title,
@@ -182,8 +199,17 @@ export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
         linkBase: 'https://datatracker.ietf.org',
       }),
     ),
+    fetchText(GNEWS_GBTD, signal).then((xml) => parseGoogleNewsRss(xml)),
+    fetchText(BOE_NEWS_RSS, signal).then((xml) =>
+      parseNamedRss(xml, { source: 'Bank of England', lane: 'Industry', requireMatch: true }),
+    ),
+    fetchText(IETF_BLOG_RSS, signal).then((xml) =>
+      parseNamedRss(xml, { source: 'IETF', lane: 'Industry', requireMatch: true }),
+    ),
+    fetchText(GNEWS_SATP, signal).then((xml) => parseGoogleNewsRss(xml)),
+    fetchText(GNEWS_SYNC, signal).then((xml) => parseGoogleNewsRss(xml)),
   ]);
-  const items = dedupeHeadlines(settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))).slice(0, 32);
+  const items = dedupeHeadlines(settled.flatMap((r) => (r.status === 'fulfilled' ? r.value : []))).slice(0, 40);
   const failed = settled.filter((r) => r.status === 'rejected').length;
   if (!items.length) {
     if (last?.items.length) {
@@ -194,7 +220,7 @@ export async function fetchNewsRiver(signal?: AbortSignal): Promise<NewsRiver> {
       items: [],
       updated: new Date().toISOString(),
       error:
-        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay visible.',
     };
   }
   const river: NewsRiver = {
@@ -248,7 +274,7 @@ export async function fetchNews(signal?: AbortSignal): Promise<NewsRiver> {
       items: [],
       updated: new Date().toISOString(),
       error:
-        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay on the page.',
+        'News feed blocked or empty. No invented headlines. Official voices and this month’s sourced notes stay visible.',
     };
   }
 }

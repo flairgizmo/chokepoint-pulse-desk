@@ -1,10 +1,10 @@
 {
   "name": "QntDesk",
   "short_name": "QntDesk",
-  "description": "Overledger, programmable sterling, live QNT, and a twenty-part film on the Internet of Value.",
+  "description": "The ledgers already exist. QntDesk walks how they talk: Overledger, live tokenised sterling, and the people on the record.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#eaf1ff",
+  "background_color": "#ffffff",
   "theme_color": "#2F5BFF",
   "icons": [
     {

@@ -26,6 +26,7 @@ describe('QntDesk encyclopedia contract', () => {
     expect(chapters.length).toBeGreaterThanOrEqual(40);
     expect(papers.length).toBe(48);
     expect(CITIES.length).toBe(17);
+    expect(CITIES.every((c) => Boolean(c.photo))).toBe(true);
     expect(PEOPLE.length).toBeGreaterThanOrEqual(18);
     expect(GLOSSARY.length).toBeGreaterThanOrEqual(60);
     expect(didYouKnow.length).toBeGreaterThanOrEqual(40);
@@ -136,6 +137,16 @@ describe('Google News RSS parser', () => {
           <title>Quantinuum (QNT) Stock May Be Too Expensive</title>
           <link>https://example.com/quantinuum</link>
           <source>simplywall.st</source>
+        </item>
+        <item>
+          <title>Why Did BOLD, BLZE, QNT Stocks Surge To 52-Week Highs Today</title>
+          <link>https://example.com/roundup</link>
+          <source>Stocktwits</source>
+        </item>
+        <item>
+          <title>QNT Stock Quote Price and Forecast</title>
+          <link>https://example.com/cnn-qnt</link>
+          <source>CNN</source>
         </item>
         <item>
           <title>Overledger is not a twelfth blockchain</title>

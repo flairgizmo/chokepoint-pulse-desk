@@ -1,5 +1,44 @@
+import { quotes } from '../data/catalog';
+import { photoFigure, plateFor, PLATES, type Plate } from '../data/plates';
+import { cinemaIntro, cinemaStrip, posterFrame } from './diagrams';
 import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
+
+/** One still per episode so the playlist is a film strip, not four recycled beds. */
+const EPISODE_STILL: Record<string, Plate> = {
+  'internet-of-value': PLATES.fiber,
+  'overledger-gateway': PLATES.gateway,
+  'qnt-utility': PLATES.exchange,
+  'iso-decade': PLATES.zurich,
+  lacchain: PLATES.miami,
+  rosalind: PLATES.bisTower,
+  rln: PLATES.royal,
+  gbtd: PLATES.canary,
+  'six-banks': PLATES.canaryDay,
+  satp: PLATES.geneva,
+  fusion: PLATES.cityDay,
+  payscript: PLATES.payments,
+  'flow-agents': PLATES.city,
+  x402: PLATES.cable,
+  'oracle-fabric': PLATES.washington,
+  murex: PLATES.paris,
+  dentsu: PLATES.tokyo,
+  'sync-lab': PLATES.boeFacade,
+  'sibos-trusted': PLATES.frankfurt,
+  'future-money': PLATES.future,
+};
+
+function episodeStill(id: string): Plate {
+  return EPISODE_STILL[id] ?? plateFor(id);
+}
+
+function kick(text: string): string {
+  return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
+}
+
+function quoteStageId(text: string): string | undefined {
+  return quotes.find((q) => q.text === text || q.text.startsWith(text.slice(0, 48)))?.id;
+}
 
 function fmtTime(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
@@ -10,25 +49,28 @@ function fmtTime(sec: number): string {
 
 export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string {
   const list = playlist
-    .map(
-      (item) => `<li>
+    .map((item, i) => {
+      return `<li>
         <a class="pod-item${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}">
+          <img class="pod-still" src="${esc(episodeStill(item.id).src)}" alt="" width="1280" height="720" loading="eager" decoding="async"${i < 2 ? ' fetchpriority="high"' : ''} />
           <span class="n">${String(item.n).padStart(2, '0')}</span>
           <span>
             <strong>${esc(item.title)}</strong>
             <em>James Hale and Amelia Crowe</em>
           </span>
         </a>
-      </li>`,
-    )
+      </li>`;
+    })
     .join('');
-  const quotes = ep.quotes
-    .map(
-      (q) => `<blockquote class="quote-card">
-        <p>${esc(q.text)}</p>
-        <footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>
-      </blockquote>`,
-    )
+  const quoteCards = ep.quotes
+    .map((q) => {
+      const id = quoteStageId(q.text);
+      const copy = `<span class="qmark" aria-hidden="true">“</span><p>${esc(q.text)}</p><footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`;
+      const still = posterFrame(photoFigure(plateFor(id ?? `pod-${q.who}`), 'quote-still'), copy);
+      return id
+        ? `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(id)}">${still}</button>`
+        : `<blockquote class="quote-card">${still}</blockquote>`;
+    })
     .join('');
   const next = episodeByN(ep.n + 1);
   const prev = episodeByN(ep.n - 1);
@@ -44,13 +86,13 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
   const dots = playlist
     .map(
       (item) =>
-        `<a class="series-dot${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}" aria-label="Episode ${item.n}">${String(item.n).padStart(2, '0')}</a>`,
+        `<a class="series-dot${item.id === ep.id ? ' is-on' : ''}" href="/podcast/${esc(item.id)}" aria-label="Episode ${item.n}"><img src="${esc(episodeStill(item.id).src)}" alt="" width="96" height="54" /><span>${String(item.n).padStart(2, '0')}</span></a>`,
     )
     .join('');
   return `
-    <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-next="${next ? `/podcast/${esc(next.id)}` : ''}">
+    <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-poster="${esc(ep.posterSrc)}" data-next="${next ? `/podcast/${esc(next.id)}` : ''}">
       <div class="player-stage">
-        <img class="player-still" src="${esc(ep.posterSrc)}" alt="" width="1920" height="1080" />
+        <img class="player-still" src="${esc(episodeStill(ep.id).src)}" alt="" width="1920" height="1080" />
         <canvas class="player-wave" data-wave aria-hidden="true"></canvas>
         <div class="player-scrim">
           <p class="kicker">Episode ${String(ep.n).padStart(2, '0')} · James Hale and Amelia Crowe</p>
@@ -59,6 +101,8 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
       </div>
       <audio preload="metadata"></audio>
       <div class="player-controls">
+        ${photoFigure(episodeStill(ep.id), 'player-ctrl-still')}
+        <div class="player-ctrl-row">
         <button type="button" class="player-skip" data-skip="-15" aria-label="Back fifteen seconds">−15</button>
         <button type="button" class="player-play" data-play aria-label="Play">Play</button>
         <button type="button" class="player-skip" data-skip="15" aria-label="Forward fifteen seconds">+15</button>
@@ -70,28 +114,46 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
           <option value="1" selected>1×</option>
           <option value="1.1">1.1×</option>
         </select>
+        </div>
       </div>
-      <p class="player-byline">
-        <span class="host-tile james" aria-hidden="true">JH</span>
-        <span class="host-tile amelia" aria-hidden="true">AC</span>
-        <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · correspondents · series ${String(ep.n).padStart(2, '0')} of 20
-      </p>
+      ${cinemaStrip(
+        'player-byline',
+        `<p class="player-byline">
+        <span class="host-tile james" aria-hidden="true"><img src="${esc(PLATES.radio.src)}" alt="" width="64" height="64" /><span>JH</span></span>
+        <span class="host-tile amelia" aria-hidden="true"><img src="${esc(PLATES.newsroom.src)}" alt="" width="64" height="64" /><span>AC</span></span>
+        <strong>James Hale</strong> and <strong>Amelia Crowe</strong> · hosts · series ${String(ep.n).padStart(2, '0')} of 20
+      </p>`,
+      )}
       <nav class="series-dots" aria-label="Series">${dots}</nav>
       <nav class="player-adjacent">
-        ${prev ? `<a class="text-link" href="/podcast/${esc(prev.id)}">← ${esc(prev.title)}</a>` : '<span></span>'}
-        ${next ? `<a class="text-link" href="/podcast/${esc(next.id)}">${esc(next.title)} →</a>` : '<span></span>'}
+        ${
+          prev
+            ? `<a class="player-adj" href="/podcast/${esc(prev.id)}">${posterFrame(
+                photoFigure(episodeStill(prev.id), 'player-adj-still'),
+                `<span class="kicker">Previous</span><strong>← ${esc(prev.title)}</strong>`,
+              )}</a>`
+            : ''
+        }
+        ${
+          next
+            ? `<a class="player-adj" href="/podcast/${esc(next.id)}">${posterFrame(
+                photoFigure(episodeStill(next.id), 'player-adj-still'),
+                `<span class="kicker">Next</span><strong>${esc(next.title)} →</strong>`,
+              )}</a>`
+            : ''
+        }
       </nav>
     </section>
     <section class="pod-quotes">
-      <p class="kicker">In this episode</p>
-      ${quotes}
+      ${cinemaIntro('intro-pod-quotes', `${kick('In this episode')}<h2 class="display">Lines that stay on the record.</h2>`)}
+      ${quoteCards}
     </section>
     <details class="pod-transcript">
-      <summary>The conversation</summary>
+      <summary>${cinemaIntro('intro-pod-transcript', `${kick('The conversation')}<h2 class="display">Hale and Crowe, in order.</h2>`)}</summary>
       ${bubbles}
     </details>
     <nav class="pod-list" aria-label="All episodes">
-      <p class="kicker">The series, in order</p>
+      ${cinemaIntro('intro-pod-list', `${kick('The series, in order')}<h2 class="display">Twenty conversations.</h2>`)}
       <ol>${list}</ol>
     </nav>`;
 }
@@ -207,12 +269,10 @@ export function wirePlayer(root: HTMLElement): void {
 export function relatedEpisodeCard(id: string): string {
   const ep = episodeById(id);
   if (!ep) return '';
-  return `<a class="pod-tease" href="/podcast/${esc(ep.id)}">
-    <img src="${esc(ep.posterSrc)}" alt="" width="640" height="360" />
-    <span>
-      <p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
+  return `<a class="pod-tease" href="/podcast/${esc(ep.id)}">${posterFrame(
+    photoFigure(episodeStill(ep.id), 'pod-tease-still'),
+    `<p class="kicker">Podcast · Episode ${String(ep.n).padStart(2, '0')}</p>
       <strong>${esc(ep.title)}</strong>
-      <em>James Hale and Amelia Crowe</em>
-    </span>
-  </a>`;
+      <em>James Hale and Amelia Crowe</em>`,
+  )}</a>`;
 }

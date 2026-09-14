@@ -12,19 +12,19 @@
       "Colin Paterson",
       "Gaetano Mondelli"
     ],
-    "lede": "The original gateway-OS argument: applications should not be trapped on a single ledger. Historical document, not a product spec."
+    "lede": "The original gateway-OS argument. Applications should not be trapped on a single ledger. Historical document. Not a product spec."
   },
   {
     "id": "mondelli-thesis-2017",
     "title": "Blockchain a business solution in the Bitcoin Era",
     "year": "2017",
-    "venue": "Politecnico di Torino \u00b7 UCL CBT",
+    "venue": "Politecnico di Torino · UCL CBT",
     "kind": "primary",
     "hrefKey": "mondelliThesis",
     "authors": [
       "Gaetano Mondelli"
     ],
-    "lede": "Master\u2019s thesis in Computer Engineering (rel. Elio Piccolo), placed at UCL\u2019s Centre for Blockchain Technologies \u2014 the same centre Tasca directed. Full text is secretated on PoliTo WebThesis; bibliographic record only."
+    "lede": "A master’s thesis in Computer Engineering, rel. Elio Piccolo. Placed at UCL’s Centre for Blockchain Technologies — the same centre Tasca directed. Full text is secretated on PoliTo WebThesis. Bibliographic record only."
   },
   {
     "id": "treasury",
@@ -34,7 +34,7 @@
     "kind": "primary",
     "hrefKey": "treasuryPdf",
     "authors": [],
-    "lede": "Treasury and network-design note from the whitepaper era. Not evidence of a live token economy."
+    "lede": "A treasury and network-design note from the whitepaper era. Not evidence of a live token economy."
   },
   {
     "id": "acm-3564532",
@@ -47,10 +47,10 @@
       "Rafael Belchior",
       "Luke Riley",
       "Thomas Hardjono",
-      "Andr\u00e9 Vasconcelos",
+      "André Vasconcelos",
       "Miguel Correia"
     ],
-    "lede": "The academic paper behind Overledger\u2019s taxonomy. Modes (data transfer, asset transfer, asset exchange) \u00d7 infrastructure (nodes, proxies, gateways). Quant\u2019s product claim sits in the gateway cell."
+    "lede": "The academic paper behind Overledger’s taxonomy. Modes — data transfer, asset transfer, asset exchange — against infrastructure: nodes, proxies, gateways. Quant’s product claim sits in the gateway cell."
   },
   {
     "id": "belchior-survey",
@@ -61,11 +61,11 @@
     "hrefKey": "belchiorSurveyArxiv",
     "authors": [
       "Rafael Belchior",
-      "Andr\u00e9 Vasconcelos",
-      "S\u00e9rgio Guerreiro",
+      "André Vasconcelos",
+      "Sérgio Guerreiro",
       "Miguel Correia"
     ],
-    "lede": "The canonical literature review (284 papers + grey literature). Public connectors, blockchain engines, hybrid connectors. Context for SATP and Cacti, not a Quant SKU."
+    "lede": "The canonical literature review. Two hundred and eighty-four papers, plus grey literature. Public connectors, blockchain engines, hybrid connectors. Context for SATP and Cacti. Not a Quant SKU."
   },
   {
     "id": "sok-interop",
@@ -75,14 +75,14 @@
     "kind": "survey",
     "hrefKey": "sokArxiv",
     "authors": [
-      "Andr\u00e9 Augusto",
+      "André Augusto",
       "Rafael Belchior",
       "Miguel Correia",
-      "Andr\u00e9 Vasconcelos",
+      "André Vasconcelos",
       "Luyao Zhang",
       "Thomas Hardjono"
     ],
-    "lede": "Systematisation of knowledge on what actually breaks when two ledgers talk. The security case for a standard gateway protocol rather than a zoo of bridges."
+    "lede": "What actually breaks when two ledgers talk. The security case for a standard gateway protocol. Not another zoo of bridges."
   },
   {
     "id": "brief-history",
@@ -95,7 +95,7 @@
       "Rafael Belchior",
       "Thomas Hardjono"
     ],
-    "lede": "Why interoperability is needed and what a decade of attempts actually produced. Academic corridor (Lisbon\u2013Boston), not a product brochure."
+    "lede": "Why interoperability is needed. What a decade of attempts actually produced. Academic corridor, Lisbon to Boston. Not a product brochure."
   },
   {
     "id": "dlt-options",
@@ -107,7 +107,7 @@
     "authors": [
       "Luke Riley"
     ],
-    "lede": "WEF-shaped categories compared on resilience, decentralisation and UX. Riley\u2019s conclusion: API gateway, and Overledger as the instance Quant ships."
+    "lede": "WEF-shaped categories, compared on resilience, decentralisation and UX. Riley’s conclusion: an API gateway. Overledger is the instance Quant ships."
   },
   {
     "id": "tasca-enabling",
@@ -120,7 +120,7 @@
       "Paolo Tasca (ed.)",
       "Horst Treiblmaier (ed.)"
     ],
-    "lede": "How blockchain connects global businesses. The philosophical library behind \u2018network of networks\u2019."
+    "lede": "How blockchain connects global businesses. The philosophical library behind a network of networks."
   },
   {
     "id": "tasca-banking",
@@ -147,7 +147,7 @@
     "authors": [
       "Paolo Tasca"
     ],
-    "lede": "Opinion essay: a value layer on the internet is coming; governance risk is the price of admission."
+    "lede": "A value layer on the internet is coming. Governance risk is the price of admission. Tasca’s own essay, 2020."
   },
   {
     "id": "flow-apps",
@@ -159,7 +159,7 @@
     "authors": [
       "Luke Riley"
     ],
-    "lede": "Overledger workflows that the same human UI, HTTP client or MCP-compatible agent can call."
+    "lede": "Overledger workflows. The same human UI, HTTP client or MCP-compatible agent can call them."
   },
   {
     "id": "three-layer",
@@ -171,7 +171,7 @@
     "authors": [
       "Gilbert Verdian"
     ],
-    "lede": "Wholesale CBDC, tokenised deposits, public-chain stablecoins \u2014 plus a horizontal interoperability layer. Quant\u2019s published map of the future of money, not a central-bank paper."
+    "lede": "Wholesale CBDC. Tokenised deposits. Public-chain stablecoins. Then a horizontal interoperability layer. Quant’s published map of the future of money. Not a central-bank paper."
   },
   {
     "id": "satp-core",
@@ -202,7 +202,7 @@
       "Ned Smith",
       "Venkatraman Ramakrishna"
     ],
-    "lede": "Architecture companion to SATP core."
+    "lede": "The architecture companion to SATP core."
   },
   {
     "id": "odap",
@@ -215,7 +215,7 @@
       "Martin Hargreaves",
       "Thomas Hardjono"
     ],
-    "lede": "The 2020 precursor that became SATP. Same gateway-to-gateway shape; different name."
+    "lede": "The 2020 precursor that became SATP. Same gateway-to-gateway shape. A different name."
   },
   {
     "id": "satp-adapt",
@@ -229,22 +229,22 @@
       "Paulina Davita",
       "Luke Riley"
     ],
-    "lede": "UCL master\u2019s work supervised by Riley: how SATP\u2019s transfer machine can be adapted for exchange, not only transfer. Academic adjacency, not a product spec."
+    "lede": "UCL master’s work, supervised by Riley. How SATP’s transfer machine can be adapted for exchange, not only transfer. Academic adjacency. Not a product spec."
   },
   {
     "id": "iso-23516",
-    "title": "ISO/TS 23516:2026 \u2014 DLT interoperability framework",
+    "title": "ISO/TS 23516:2026 — DLT interoperability framework",
     "year": "2026",
     "venue": "ISO/TC 307 (project 82098)",
     "kind": "standards",
     "hrefKey": "iso23516",
     "authors": [],
-    "lede": "Framework for interoperability between DLT systems and entities outside them. Verdian convened WG7; the standard is ISO\u2019s, not a product."
+    "lede": "A framework for interoperability between DLT systems and entities outside them. Verdian convened WG7. The standard is ISO’s. Not a product."
   },
   {
     "id": "iso-tc307",
-    "title": "ISO/TC 307 \u2014 Blockchain and distributed ledger technologies",
-    "year": "2016\u2013",
+    "title": "ISO/TC 307 — Blockchain and distributed ledger technologies",
+    "year": "2016–",
     "venue": "ISO",
     "kind": "standards",
     "hrefKey": "isoTc307",
@@ -264,39 +264,39 @@
       "Gaetano Mondelli",
       "Paolo Tasca"
     ],
-    "lede": "Granted method for chronologically ordering transactions from different blockchains. Assigned to Quant Network Ltd."
+    "lede": "A granted method for chronologically ordering transactions from different blockchains. Assigned to Quant Network Ltd."
   },
   {
     "id": "patent-app",
-    "title": "US20200311718A1 \u2014 application publication",
+    "title": "US20200311718A1 — application publication",
     "year": "2020",
     "venue": "USPTO",
     "kind": "patent",
     "hrefKey": "patentApp",
     "authors": [],
-    "lede": "Application that became US11842335B2. Useful for the claim set as originally published."
+    "lede": "The application that became US11842335B2. Useful for the claim set as originally published."
   },
   {
     "id": "patent-jp",
-    "title": "Japanese patent \u2014 multi-DLT token / Fusion rollup",
+    "title": "Japanese patent — multi-DLT token / Fusion rollup",
     "year": "2026",
     "venue": "Quant / JPO",
     "kind": "patent",
     "hrefKey": "patentJp",
     "authors": [],
-    "lede": "Quant\u2019s note on Japanese acceptance covering updates across two or more ledgers \u2014 the Fusion rollup claim."
+    "lede": "Quant’s note on Japanese acceptance. Updates across two or more ledgers — the Fusion rollup claim. No JPO number is printed here."
   },
   {
     "id": "hargreaves-vocalink",
     "title": "Vocalink / Mastercard payment patents (Hargreaves)",
-    "year": "2018\u20132019",
+    "year": "2018–2019",
     "venue": "USPTO",
     "kind": "patent",
     "hrefKey": "hargreavesPatents",
     "authors": [
       "Martin Hargreaves"
     ],
-    "lede": "Two Vocalink-era filings Quant\u2019s people page cites: data-processing / merchant-mandate review, and international ACH with addressing. Payments rails before DLT."
+    "lede": "Two Vocalink-era filings Quant’s people page cites. Data-processing and merchant-mandate review. International ACH with addressing. Payments rails before DLT."
   },
   {
     "id": "gbtd-quant",
@@ -306,7 +306,7 @@
     "kind": "note",
     "hrefKey": "gbtdQuant",
     "authors": [],
-    "lede": "26 September 2025. UK Finance and six banks select Quant to provide GBTD infrastructure. Overledger + PayScript. Not a CBDC."
+    "lede": "26 September 2025. UK Finance and six banks select Quant to provide GBTD infrastructure. Overledger and PayScript. Not a CBDC."
   },
   {
     "id": "gbtd-ukf",
@@ -316,27 +316,27 @@
     "kind": "note",
     "hrefKey": "gbtdUkFinance",
     "authors": [],
-    "lede": "Primary official-sector announcement. Barclays, HSBC, Lloyds, NatWest, Nationwide, Santander; Quant, EY, Linklaters supporting."
+    "lede": "The primary official-sector announcement. Barclays, HSBC, Lloyds, NatWest, Nationwide, Santander. Quant, EY and Linklaters supporting."
   },
   {
     "id": "rosalind-quant",
-    "title": "Quant on Project Rosalind (BIS \u00d7 Bank of England)",
+    "title": "Quant on Project Rosalind (BIS × Bank of England)",
     "year": "2023",
-    "venue": "Quant news \u00b7 16 June 2023",
+    "venue": "Quant news · 16 June 2023",
     "kind": "note",
     "hrefKey": "rosalindQuant",
     "authors": [],
-    "lede": "Concluded experiment. Quant says it was on the vendor team with UST. BIS is explicit: not BoE policy, not a launch."
+    "lede": "A concluded experiment. Quant says it was on the vendor team with UST. BIS is explicit: not Bank of England policy. Not a launch."
   },
   {
     "id": "rosalind-bis",
-    "title": "Project Rosalind \u2014 CBDC API prototypes",
+    "title": "Project Rosalind — CBDC API prototypes",
     "year": "2023",
     "venue": "BIS Innovation Hub London",
     "kind": "note",
     "hrefKey": "rosalindBis",
     "authors": [],
-    "lede": "Primary official-sector page. Retail-CBDC API experiment run with the Bank of England. Treat as concluded lab work."
+    "lede": "The primary official-sector page. A retail-CBDC API experiment, run with the Bank of England. Treat it as concluded lab work."
   },
   {
     "id": "oracle-blog",
@@ -356,7 +356,7 @@
     "kind": "note",
     "hrefKey": "x402Quant",
     "authors": [],
-    "lede": "Quant joins the Linux Foundation x402 Foundation. Fusion Layer 2.5 claimed x402-ready. Agents settling in tokenised bank money is the thesis, not a live CBDC."
+    "lede": "Quant joins the Linux Foundation x402 Foundation. Fusion Layer 2.5 is claimed x402-ready. Agents settling in tokenised bank money is the thesis. Not a live CBDC."
   },
   {
     "id": "boe-lab",
@@ -366,11 +366,11 @@
     "kind": "note",
     "hrefKey": "boeLab",
     "authors": [],
-    "lede": "Industry experimentation in a simulated RT2 environment. Quant\u2019s own note says this is not BoE endorsement, policy or a live deployment."
+    "lede": "Industry experimentation in a simulated RT2 environment. Quant’s own note says this is not Bank of England endorsement, policy, or a live deployment."
   },
   {
     "id": "murex",
-    "title": "Murex \u00d7 Quant \u2014 tokenised deposits in MX.3",
+    "title": "Murex × Quant — tokenised deposits in MX.3",
     "year": "2026",
     "venue": "Murex / Quant",
     "kind": "note",
@@ -386,27 +386,27 @@
     "kind": "survey",
     "hrefKey": "deloittePdf",
     "authors": [],
-    "lede": "Landscape survey on tokenised deposits and wholesale payments."
+    "lede": "A landscape survey on tokenised deposits and wholesale payments."
   },
   {
     "id": "synchro",
-    "title": "What is Synchro / Synthorus",
-    "year": "n.d.",
-    "venue": "Bank of England adjacency",
+    "title": "RTGS synchronisation — desk research note",
+    "year": "2024",
+    "venue": "Desk file · BoE language, not a Quant SKU",
     "kind": "note",
     "hrefKey": "synchroPdf",
     "authors": [],
-    "lede": "RTGS / research thread. Distinct from the 2026 Synchronisation Lab note."
+    "lede": "Desk research on Bank of England RTGS synchronisation language. Distinct from Quant’s February 2026 Synchronisation Lab participation — simulated RT2. This file is not a Bank of England publication naming Quant as operator of Synthorus."
   },
   {
     "id": "verdian-cv",
-    "title": "Gilbert Verdian \u2014 public biography pack",
+    "title": "Gilbert Verdian — public biography pack",
     "year": "2019",
     "venue": "Source pack",
     "kind": "note",
     "hrefKey": "verdianBioPdf",
     "authors": [],
-    "lede": "Public-source pack used to keep the People chapter honest."
+    "lede": "A public-source pack used to keep the People chapter honest."
   },
   {
     "id": "riley-hyperledger",
@@ -418,7 +418,7 @@
     "authors": [
       "Luke Riley"
     ],
-    "lede": "Riley\u2019s 2021 public walkthrough of the same taxonomy as the Quant research note, hosted by Hyperledger."
+    "lede": "Riley’s 2021 public walkthrough of the same taxonomy as the Quant research note. Hosted by Hyperledger."
   },
   {
     "id": "riley-voting",
@@ -433,7 +433,7 @@
       "Peter McBurney",
       "Luke Riley"
     ],
-    "lede": "Riley\u2019s King\u2019s College years: what a ledger can and cannot do for elections. Pre-Quant academic work, not an Overledger feature."
+    "lede": "Riley’s King’s College years. What a ledger can and cannot do for elections. Pre-Quant academic work. Not an Overledger feature."
   },
   {
     "id": "riley-shareholder",
@@ -449,7 +449,7 @@
       "Toktam Mahmoodi",
       "Peter McBurney"
     ],
-    "lede": "AAMAS paper from the KCL voting-and-governance lab. How a permissioned ledger can record shareholder rights \u2014 adjacency to programmable assets, not a Quant product."
+    "lede": "An AAMAS paper from the KCL voting-and-governance lab. How a permissioned ledger can record shareholder rights. Adjacency to programmable assets. Not a Quant product."
   },
   {
     "id": "hardjono-design",
@@ -463,7 +463,7 @@
       "Alexander Lipton",
       "Alex Pentland"
     ],
-    "lede": "MIT Connection Science: interoperability as a design philosophy, not a bridge. Same year as the Overledger whitepaper; same problem, different room."
+    "lede": "MIT Connection Science. Interoperability as a design philosophy, not a bridge. Same year as the Overledger whitepaper. Same problem. A different room."
   },
   {
     "id": "hardjono-tems",
@@ -477,7 +477,7 @@
       "Alexander Lipton",
       "Alex Pentland"
     ],
-    "lede": "IEEE TEMS special issue. The architecture paper SATP\u2019s gateway model sits next to. MIT, not Quant."
+    "lede": "IEEE TEMS special issue. The architecture paper SATP’s gateway model sits next to. MIT. Not Quant."
   },
   {
     "id": "hardjono-gateways",
@@ -500,11 +500,11 @@
     "hrefKey": "hermes",
     "authors": [
       "Rafael Belchior",
-      "Andr\u00e9 Vasconcelos",
+      "André Vasconcelos",
       "Miguel Correia",
       "Thomas Hardjono"
     ],
-    "lede": "Academic middleware paper. Cousin to Cacti and SATP, not a Quant SKU."
+    "lede": "Academic middleware. A cousin to Cacti and SATP. Not a Quant SKU."
   },
   {
     "id": "satp-recovery",
@@ -516,7 +516,7 @@
     "authors": [
       "Rafael Belchior"
     ],
-    "lede": "How a SATP gateway resumes a transfer after a crash. Individual draft, not a Quant product."
+    "lede": "How a SATP gateway resumes a transfer after a crash. Individual draft. Not a Quant product."
   },
   {
     "id": "satp-views",
@@ -529,7 +529,7 @@
       "Venkatraman Ramakrishna",
       "Vinayaka Pandit"
     ],
-    "lede": "IBM Research SATP adjacency: how two networks share a view of state. Complements core transfer."
+    "lede": "IBM Research SATP adjacency. How two networks share a view of state. Complements core transfer."
   },
   {
     "id": "satp-use-cases",
@@ -541,17 +541,17 @@
     "authors": [
       "Venkatraman Ramakrishna"
     ],
-    "lede": "Why anyone would run SATP: the use-case draft from IBM Research."
+    "lede": "Why anyone would run SATP. The use-case draft from IBM Research."
   },
   {
     "id": "cacti-whitepaper",
     "title": "Hyperledger Cacti whitepaper",
-    "year": "2019\u2013",
+    "year": "2019–",
     "venue": "Linux Foundation",
     "kind": "standards",
     "hrefKey": "cactiWhitepaper",
     "authors": [],
-    "lede": "LF Decentralized Trust\u2019s enterprise interoperability project. Belchior maintains it. Open-source neighbour of Overledger, not a Quant SKU."
+    "lede": "LF Decentralized Trust’s enterprise interoperability project. Belchior maintains it. An open-source neighbour of Overledger. Not a Quant SKU."
   },
   {
     "id": "satp-impl",
@@ -561,7 +561,7 @@
     "kind": "standards",
     "hrefKey": "satpImplGuide",
     "authors": [],
-    "lede": "How a SATP gateway actually locks, burns, mints and commits on the networks it represents. Methodology for implementers, not a Quant SKU."
+    "lede": "How a SATP gateway actually locks, burns, mints and commits on the networks it represents. Methodology for implementers. Not a Quant SKU."
   },
   {
     "id": "satp-exchange",
@@ -573,13 +573,13 @@
     "authors": [
       "Kjell-Erik Marstein"
     ],
-    "lede": "Lock-and-assign instead of burn-and-mint: SATP\u2019s cousin for exchange rather than transfer."
+    "lede": "Lock-and-assign instead of burn-and-mint. SATP’s cousin for exchange rather than transfer."
   },
   {
     "id": "ai-agents-delegation",
     "title": "Authenticated Delegation and Authorized AI Agents",
     "year": "2025",
-    "venue": "arXiv 2501.09674 \u00b7 ICML 2025 position",
+    "venue": "arXiv 2501.09674 · ICML 2025 position",
     "kind": "primary",
     "hrefKey": "aiAgentsArxiv",
     "authors": [
@@ -592,6 +592,6 @@
       "Alan Chan",
       "Alex Pentland"
     ],
-    "lede": "Extends OAuth 2.0 and OpenID Connect with agent-specific credentials. The ethics constraint next to Flow/MCP and x402. MIT, not a Quant product."
+    "lede": "Extends OAuth 2.0 and OpenID Connect with agent-specific credentials. The ethics constraint next to Flow, MCP and x402. MIT. Not a Quant product."
   }
 ]

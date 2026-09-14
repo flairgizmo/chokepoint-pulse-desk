@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Three money liabilities: CBDC, tokenised deposit, stablecoin">
+  <rect width="640" height="360" fill="#ffffff"/>
+  <g font-family="Outfit, sans-serif">
+    <rect x="32" y="56" width="176" height="220" fill="none" stroke="#0B1F5C" stroke-width="2"/>
+    <text x="120" y="92" text-anchor="middle" fill="#0B1F5C" font-size="12" font-weight="700">CBDC</text>
+    <text x="120" y="180" text-anchor="middle" fill="#3D4A63" font-size="13">Central bank</text>
+    <rect x="232" y="56" width="176" height="220" fill="#E8EFFF" stroke="#1557FF" stroke-width="2"/>
+    <text x="320" y="92" text-anchor="middle" fill="#1557FF" font-size="12" font-weight="700">GBTD</text>
+    <text x="320" y="180" text-anchor="middle" fill="#0B1220" font-size="13">Commercial bank</text>
+    <rect x="432" y="56" width="176" height="220" fill="none" stroke="#C45C00" stroke-width="2"/>
+    <text x="520" y="92" text-anchor="middle" fill="#C45C00" font-size="12" font-weight="700">STABLE</text>
+    <text x="520" y="180" text-anchor="middle" fill="#3D4A63" font-size="13">Private issuer</text>
+  </g>
+</svg>

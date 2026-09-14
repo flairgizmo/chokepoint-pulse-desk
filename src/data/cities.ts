@@ -17,6 +17,8 @@ export interface City {
   lede: string;
   body: string;
   href: string;
+  photo?: string;
+  photoCredit?: string;
 }
 
 export const CITIES: City[] = [
@@ -28,9 +30,11 @@ export const CITIES: City[] = [
     lon: -0.1278,
     kind: 'Headquarters',
     kicker: 'Three programmes, one postcode',
-    lede: 'Quant Network is the operating company. GBTD, the Synchronisation Lab, and ISO/IETF staffing all sit here — graded separately.',
-    body: 'London is three programmes sharing a postcode. Quant Network is the operating company and the technology partner UK Finance selected, on 26 September 2025, to provide Overledger and PayScript for live tokenised-sterling-deposit (GBTD) transactions with Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide and Santander, supported by EY and Linklaters. That is commercial-bank money, not a Bank of England CBDC. Separately, in February 2026 Quant was selected for the Bank of England Synchronisation Lab — a simulated RT2 environment; Quant’s own note says this is not endorsement or a live RTGS hook-up. A third thread is ISO and IETF work that happens to be staffed from here (Verdian, Hargreaves, Riley, Facer, Chiriac). Click through to each programme’s sources rather than collapsing them into one mandate.',
+    lede: 'Three programmes share a postcode. The company. The sterling. The lab. Graded separately.',
+    body: 'London is three programmes sharing a postcode. Quant Network is the operating company. UK Finance selected it on 26 September 2025 as technology partner for live tokenised-sterling-deposit (GBTD) transactions with Barclays, HSBC, Lloyds Banking Group, NatWest, Nationwide and Santander, supported by EY and Linklaters. That is commercial-bank money, not a Bank of England CBDC. Separately, in February 2026 Quant was selected for the Bank of England Synchronisation Lab — a simulated RT2 environment. Quant’s own note says this is not endorsement or a live RTGS hook-up. A third thread is ISO and IETF work staffed from here (Verdian, Hargreaves, Riley, Facer, Chiriac). Each programme keeps its own source.',
     href: '/programmes#gbtd',
+    photo: '/visuals/cities/london.jpg',
+    photoCredit: 'Wikimedia Commons — Bank of England',
   },
   {
     id: 'paris',
@@ -40,9 +44,11 @@ export const CITIES: City[] = [
     lon: 2.3522,
     kind: 'Banking',
     kicker: 'Murex MX.3',
-    lede: 'Named Overledger integration inside a cross-asset platform used by more than 300 institutions.',
-    body: 'On 25 March 2026 Murex and Quant announced a partnership to put tokenised deposits and digital-bond settlement inside MX.3. Overledger is the interoperability layer so MX.3 can talk to multiple public and private ledgers without a parallel stack. That is a named vendor integration — announced, with a joint press note — not a central-bank programme and not a GBTD membership. Euro-area clearing adjacency (Frankfurt, Zurich) is corridor geography around this pin.',
+    lede: 'Overledger inside MX.3 — a book more than three hundred institutions already run.',
+    body: 'On 25 March 2026 Murex and Quant announced a partnership to put tokenised deposits and digital-bond settlement inside MX.3. Overledger is the interoperability layer so MX.3 can talk to multiple public and private ledgers without a parallel stack. That is a named vendor integration — announced, with a joint press note. It is not a central-bank programme. It is not a GBTD membership. Euro-area clearing adjacency (Frankfurt, Zurich) is corridor geography around this pin.',
     href: '/programmes#murex',
+    photo: '/visuals/cities/paris.jpg',
+    photoCredit: 'Wikimedia Commons — La Défense, Paris',
   },
   {
     id: 'new-york',
@@ -52,9 +58,11 @@ export const CITIES: City[] = [
     lon: -74.006,
     kind: 'Markets',
     kicker: 'Oracle digital assets',
-    lede: 'US capital-markets counterparties and Oracle’s Fabric-based digital-asset platform conversation.',
-    body: 'New York is where US capital-markets counterparties, Oracle’s digital-asset platform conversation, and Quant’s board-level US expansion (Guy Dietrich’s 2019 Rockefeller-era appointment) sit. Oracle’s February 2025 Blockchain Platform Digital Assets Edition blog names Overledger as the orchestration layer for unified-ledger workflows on Hyperledger Fabric. Do not read a digital-dollar CBDC into a gateway deployment; see the CBDC chapter for the liability test.',
+    lede: 'US counterparties and Oracle’s Fabric conversation. Not a digital dollar.',
+    body: 'New York is where US capital-markets counterparties sit. Oracle’s digital-asset platform conversation sits here. So does Quant’s board-level US expansion — Guy Dietrich’s 2019 Rockefeller-era appointment. Oracle’s February 2025 Blockchain Platform Digital Assets Edition blog names Overledger as the orchestration layer for unified-ledger workflows on Hyperledger Fabric. Do not read a digital-dollar CBDC into a gateway deployment. See the CBDC chapter for the liability test.',
     href: '/programmes#oracle',
+    photo: '/visuals/cities/new-york.jpg',
+    photoCredit: 'Wikimedia Commons — Federal Reserve Bank of New York',
   },
   {
     id: 'boston',
@@ -64,9 +72,11 @@ export const CITIES: City[] = [
     lon: -71.0589,
     kind: 'Research',
     kicker: 'MIT SERC · Hardjono',
-    lede: 'Ethics of computing and authenticated AI agents — landscape next to SATP, not a Quant–MIT joint programme.',
-    body: 'MIT’s Social and Ethical Responsibilities of Computing (SERC) is why Boston sits on this globe next to SATP. Hardjono co-authored Authenticated Delegation and Authorized AI Agents (arXiv 2501.09674) — the documentary join to Flow/MCP and x402. None of this is a Quant–MIT ethics joint programme. It is the academic corridor the encyclopedia files beside the IETF work.',
+    lede: 'The ethics of computing, next to SATP. Landscape. Not a joint programme.',
+    body: 'MIT’s Social and Ethical Responsibilities of Computing (SERC) is why Boston sits on this globe next to SATP. Hardjono co-authored Authenticated Delegation and Authorized AI Agents (arXiv 2501.09674). That is the documentary join to Flow/MCP and x402. None of this is a Quant–MIT ethics joint programme. It is the academic corridor beside the IETF work.',
     href: '/standards#mit-ethics',
+    photo: '/visuals/cities/boston.jpg',
+    photoCredit: 'Wikimedia Commons — MIT Killian Court',
   },
   {
     id: 'cambridge',
@@ -76,9 +86,11 @@ export const CITIES: City[] = [
     lon: -71.1097,
     kind: 'Research',
     kicker: 'MIT Connection Science',
-    lede: 'Hardjono, Lipton, Pentland — interoperability as a design philosophy, same year as the Overledger whitepaper.',
-    body: 'Cambridge, Massachusetts is the MIT room: Towards a Design Philosophy for Interoperable Blockchain Systems (2018), the IEEE TEMS architecture paper (2019), and the gateways-not-bridges vocabulary SATP later standardises. Same problem as the UCL whitepaper, different room. Not a Quant campus.',
+    lede: 'Interoperability as a design philosophy. Same year as the whitepaper. A different room.',
+    body: 'Cambridge, Massachusetts is the MIT room. Towards a Design Philosophy for Interoperable Blockchain Systems was published in 2018. The IEEE TEMS architecture paper followed in 2019. The gateways-not-bridges vocabulary SATP later standardises starts here. Same problem as the UCL whitepaper. A different room. Not a Quant campus.',
     href: '/research',
+    photo: '/visuals/cities/cambridge.jpg',
+    photoCredit: 'Wikimedia Commons — MIT Building 10',
   },
   {
     id: 'washington',
@@ -88,9 +100,11 @@ export const CITIES: City[] = [
     lon: -77.0369,
     kind: 'Markets',
     kicker: 'Policy adjacency',
-    lede: 'US policy and institutional adjacency — not a claimed Quant office or a digital-dollar mandate.',
-    body: 'Washington is corridor geography for US institutional conversation around digital assets and payments policy. This encyclopedia does not invent a Quant–Fed programme. If a named US official-sector credit is published with a URL, it will be added with a grade.',
+    lede: 'The rooms that write policy sit here. A pin is not a mandate.',
+    body: 'Washington is corridor geography for US institutional conversation around digital assets and payments policy. No Quant–Fed programme is on the public record. A named US official-sector credit will be added with a grade when a URL exists.',
     href: '/programmes',
+    photo: '/visuals/cities/washington.jpg',
+    photoCredit: 'Wikimedia Commons — Eccles Building, Federal Reserve Board',
   },
   {
     id: 'miami',
@@ -100,9 +114,11 @@ export const CITIES: City[] = [
     lon: -80.1918,
     kind: 'Markets',
     kicker: 'Sibos 2026 · DISL51',
-    lede: 'Quant at Sibos, Miami Beach Convention Center, 28 September–1 October 2026, stand DISL51.',
-    body: 'Posted from @quantnetwork: Discover Stage 28 September 10:30 with Murex on programmable settlement. Welcome drinks 29 September 16:30–18:30. Conference Stage 4 on 1 October. Conference geography, not a Quant headquarters.',
+    lede: 'Sibos 2026. Stand DISL51. The industry floor — not a headquarters.',
+    body: 'Posted from @quantnetwork: Discover Stage 28 September 10:30 with Murex on programmable settlement. Welcome drinks 29 September 16:30–18:30. Conference Stage 4 on 1 October. Conference geography. Not a Quant headquarters.',
     href: '/programmes#sibos-2026',
+    photo: '/visuals/cities/miami.jpg',
+    photoCredit: 'Wikimedia Commons — Miami Beach Convention Center',
   },
   {
     id: 'frankfurt',
@@ -112,9 +128,11 @@ export const CITIES: City[] = [
     lon: 8.6821,
     kind: 'Markets',
     kicker: 'Sibos 2025 · stand 13',
-    lede: 'SWIFT’s annual banking conference, 29 September–2 October 2025. Corridor node, not a claimed Quant campus.',
-    body: 'Quant at Sibos 2025, Frankfurt, stand 13. Euro-area banking and TARGET2/TIPS adjacency. Frankfurt and Zurich are corridor nodes around the named Murex integration in Paris — not claimed Quant campuses.',
+    lede: 'Sibos 2025. The euro-area floor. Not a campus.',
+    body: 'Quant at Sibos 2025, Frankfurt, stand 13. Euro-area banking and TARGET2/TIPS adjacency. Frankfurt and Zurich are corridor nodes around the named Murex integration in Paris. They are not claimed Quant campuses.',
     href: '/programmes#sibos',
+    photo: '/visuals/cities/frankfurt.jpg',
+    photoCredit: 'Wikimedia Commons — European Central Bank, Frankfurt',
   },
   {
     id: 'zurich',
@@ -124,9 +142,11 @@ export const CITIES: City[] = [
     lon: 8.5417,
     kind: 'Banking',
     kicker: 'Euro-area clearing',
-    lede: 'Corridor geography around Paris/Murex — not a claimed Quant campus.',
+    lede: 'Clearing geography around Paris. The books already sit here.',
     body: 'Zurich sits on the map as euro-area banking and clearing adjacency. Not a Quant office. Not a central-bank programme.',
     href: '/programmes',
+    photo: '/visuals/cities/zurich.jpg',
+    photoCredit: 'Wikimedia Commons — Swiss National Bank, Zurich',
   },
   {
     id: 'geneva',
@@ -136,9 +156,11 @@ export const CITIES: City[] = [
     lon: 6.1432,
     kind: 'Standards',
     kicker: 'ISO/TC 307',
-    lede: 'The room where DLT interoperability vocabulary is written down. Verdian proposed the committee in 2015.',
+    lede: 'The room that writes the vocabulary down. Verdian proposed it in 2015.',
     body: 'ISO/TC 307 — Blockchain and distributed ledger technologies. Verdian convenes WG7 (interoperability). ISO/TS 23516:2026 (project 82098) is the DLT interoperability framework. ISO 22739 is the vocabulary companion. Standards are slow on purpose. Quant’s product bet is that the gateway layer can ship while the vocabulary is still being written in Geneva.',
     href: '/standards#iso',
+    photo: '/visuals/cities/geneva.jpg',
+    photoCredit: 'Wikimedia Commons — Palace of Nations, Geneva',
   },
   {
     id: 'basel',
@@ -148,9 +170,11 @@ export const CITIES: City[] = [
     lon: 7.5886,
     kind: 'Lab',
     kicker: 'BIS bibliography',
-    lede: 'Project Agora, singleness of money, wholesale CBDC research. Not a standing Quant office.',
-    body: 'The BIS is in Basel. Project Agora, “singleness of money” speeches, and wholesale CBDC research live in that building’s bibliography. Quant staff have described work on BIS Innovation Hub / Bank of England Project Rosalind — a concluded CBDC API experiment run from London, not a standing Quant office in Basel. Oracle’s OBP DA blog quotes the BIS singleness-of-money line as the problem Overledger is hired to help with. Geography plus citations; not a secret mandate.',
+    lede: 'The BIS bibliography. Agora. Singleness of money. Citations, not a desk.',
+    body: 'The BIS is in Basel. Project Agora, “singleness of money” speeches, and wholesale CBDC research live in that building’s bibliography. Quant staff have described work on BIS Innovation Hub / Bank of England Project Rosalind — a concluded CBDC API experiment run from London, not a standing Quant office in Basel. Oracle’s OBP DA blog quotes the BIS singleness-of-money line as the problem Overledger is hired to help with. Geography plus citations. Not a secret mandate.',
     href: '/programmes#basel',
+    photo: '/visuals/cities/basel.jpg',
+    photoCredit: 'Wikimedia Commons — Bank for International Settlements, Basel',
   },
   {
     id: 'brussels',
@@ -160,9 +184,11 @@ export const CITIES: City[] = [
     lon: 4.3517,
     kind: 'Standards',
     kicker: 'INATBA',
-    lede: 'International Association for Trusted Blockchain Applications — a policy room, not a product SKU.',
-    body: 'INATBA is the International Association for Trusted Blockchain Applications. Policy room, not a Quant product. Filed here so “Brussels” on the globe is a standards pin rather than a rumour.',
+    lede: 'INATBA. A policy room. Not a product you can buy.',
+    body: 'INATBA is the International Association for Trusted Blockchain Applications. Policy room, not a Quant product. Brussels is the standards pin for that association. Not a rumour.',
     href: '/standards#inatba',
+    photo: '/visuals/cities/brussels.jpg',
+    photoCredit: 'Wikimedia Commons — Berlaymont, Brussels',
   },
   {
     id: 'lisbon',
@@ -172,9 +198,11 @@ export const CITIES: City[] = [
     lon: -9.1393,
     kind: 'Research',
     kicker: 'Técnico Lisboa · Belchior',
-    lede: 'The academic corridor that wrote the interoperability map, then SATP crash recovery.',
-    body: 'Rafael Belchior wrote the ACM interoperability paper while at Quant and is now at Técnico Lisboa. The 2021 ACM Computing Surveys review, the 2023 ACM DLT paper with Riley and Hardjono, the IEEE S&P SoK, Hermes, Cacti — Lisbon is the research engine of the gateway thesis, not a Quant sales office.',
+    lede: 'The academic corridor that mapped interoperability, then SATP crash recovery.',
+    body: 'Rafael Belchior wrote the ACM interoperability paper while at Quant. He is now at Técnico Lisboa. The 2021 ACM Computing Surveys review, the 2023 ACM DLT paper with Riley and Hardjono, the IEEE S&P SoK, Hermes and Cacti sit in that corridor. Lisbon is the research engine of the gateway thesis. Not a Quant sales office.',
     href: '/people',
+    photo: '/visuals/cities/lisbon.jpg',
+    photoCredit: 'Wikimedia Commons — Instituto Superior Técnico, Lisbon',
   },
   {
     id: 'singapore',
@@ -184,9 +212,11 @@ export const CITIES: City[] = [
     lon: 103.8198,
     kind: 'Banking',
     kicker: 'APAC corridor',
-    lede: 'Overledger coverage and banking counterparties. Project Guardian is landscape — Quant is not claimed as operator.',
-    body: 'Singapore is APAC Overledger coverage and banking counterparties. Project Guardian (MAS wholesale tokenisation) is landscape on this pin. Quant is not claimed here as operator. A live corridor, not a claimed BIS programme.',
+    lede: 'APAC coverage. Project Guardian is landscape. Quant is not the operator.',
+    body: 'Singapore is APAC Overledger coverage and banking counterparties. Project Guardian (MAS wholesale tokenisation) is landscape on this pin. Quant is not claimed here as operator. A live corridor. Not a claimed BIS programme.',
     href: '/programmes',
+    photo: '/visuals/cities/singapore.jpg',
+    photoCredit: 'Wikimedia Commons — Monetary Authority of Singapore',
   },
   {
     id: 'tokyo',
@@ -196,9 +226,11 @@ export const CITIES: City[] = [
     lon: 139.6503,
     kind: 'Banking',
     kicker: 'Dentsu Soken',
-    lede: '14 January 2026 partnership on tokenised deposits and programmable settlement. StreamR is BOJ-NET compatible. Announced.',
-    body: 'Japanese systems integrator Dentsu Soken partnered with Quant on 14 January 2026 on tokenised deposits and programmable settlement. StreamR is BOJ-NET compatible. Announced vendor work — not a Bank of Japan CBDC, and not GBTD. A 2026 Japanese patent, Quant says, protects the multi-DLT token method behind Fusion.',
+    lede: 'Dentsu Soken, 14 January 2026. Announced. Not a Bank of Japan CBDC.',
+    body: 'Japanese systems integrator Dentsu Soken partnered with Quant on 14 January 2026 on tokenised deposits and programmable settlement. StreamR is BOJ-NET compatible. Announced vendor work. Not a Bank of Japan CBDC. Not GBTD. A 2026 Japanese patent, Quant says, protects the multi-DLT token method behind Fusion.',
     href: '/programmes#dentsu',
+    photo: '/visuals/cities/tokyo.jpg',
+    photoCredit: 'Wikimedia Commons — Bank of Japan',
   },
   {
     id: 'hong-kong',
@@ -208,9 +240,11 @@ export const CITIES: City[] = [
     lon: 114.1694,
     kind: 'Banking',
     kicker: 'APAC counterparties',
-    lede: 'Banking corridor. Not a claimed Quant campus or a named official-sector programme.',
-    body: 'Hong Kong sits with Singapore, Tokyo and Sydney as APAC Overledger coverage and banking counterparties. A live corridor, not a claimed BIS programme.',
+    lede: 'A banking corridor. The books already sit here.',
+    body: 'Hong Kong sits with Singapore, Tokyo and Sydney as APAC Overledger coverage and banking counterparties. A live corridor. Not a claimed BIS programme.',
     href: '/programmes',
+    photo: '/visuals/cities/hong-kong.jpg',
+    photoCredit: 'Wikimedia Commons — Central, Hong Kong',
   },
   {
     id: 'sydney',
@@ -220,14 +254,37 @@ export const CITIES: City[] = [
     lon: 151.2093,
     kind: 'Standards',
     kicker: 'ISO adjacency',
-    lede: 'APAC standards and banking counterparties. Not a claimed Quant campus.',
-    body: 'Sydney sits on the globe as an APAC standards and banking node. ISO/TC 307 interoperability work is convened from the Quant side in London/Geneva; this pin is corridor geography, not a second ISO secretariat.',
+    lede: 'APAC standards and banking. The secretariat is still Geneva.',
+    body: 'Sydney sits on the globe as an APAC standards and banking node. ISO/TC 307 interoperability work is convened from the Quant side in London/Geneva. This pin is corridor geography. Not a second ISO secretariat.',
     href: '/standards',
+    photo: '/visuals/cities/sydney.jpg',
+    photoCredit: 'Wikimedia Commons — Reserve Bank of Australia, Sydney',
   },
 ];
 
+const CITY_STILL: Record<string, string> = {
+  paris: '/visuals/stills/gateway.jpg',
+  'new-york': '/visuals/stories/city.jpg',
+  boston: '/visuals/stories/exchange.jpg',
+  cambridge: '/visuals/stills/history.jpg',
+  washington: '/visuals/stories/canary.jpg',
+  miami: '/visuals/stills/sterling.jpg',
+  frankfurt: '/visuals/stories/exchange.jpg',
+  zurich: '/visuals/stills/future.jpg',
+  basel: '/visuals/stories/bis.jpg',
+  lisbon: '/visuals/stills/london.jpg',
+  singapore: '/visuals/stills/sterling.jpg',
+  'hong-kong': '/visuals/stories/city.jpg',
+  sydney: '/visuals/stills/hero.jpg',
+};
+
 export function cityById(id: string): City | undefined {
   return CITIES.find((c) => c.id === id);
+}
+
+export function cityVisual(city: City): { src: string; credit?: string } {
+  if (city.photo) return { src: city.photo, credit: city.photoCredit };
+  return { src: CITY_STILL[city.id] ?? '/visuals/stills/london.jpg' };
 }
 
 /** Sourced programme arcs — not live SWIFT. */

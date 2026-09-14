@@ -1,0 +1,324 @@
+import { quotesFor } from '../data/catalog';
+import { INSTITUTIONS } from '../data/institutions';
+import { bankDisplay, markFor } from '../data/marks';
+import { OVERLEDGER_BUILDERS, PEOPLE } from '../data/people';
+import { PATENTS } from '../data/patents';
+import { STORY, storyChronological, type StoryTheme } from '../data/story';
+import { TECH } from '../data/tech';
+import { GBTD_BANKS } from '../data/timeline';
+import { photoFigure, plateFor, type VisualId } from '../data/plates';
+import { cinemaFilterBar, cinemaIntro, cinemaStrip, cinemaSummary, diagramFigure, posterFrame } from './diagrams';
+import { esc } from './html';
+import { chipsFromIds } from './relate';
+import { relatedButtons } from './stage';
+import { filmStageMarkup, stillStrip } from './filmSets';
+
+function kicker(text: string): string {
+  return `<p class="kicker"><i class="section-dot" aria-hidden="true"></i>${esc(text)}</p>`;
+}
+
+function pill(href: string, label: string, hover: string, kind: 'primary' | 'ghost' = 'primary'): string {
+  return `<a class="btn btn-${kind}" href="${esc(href)}"><span class="btn-swap"><span>${esc(label)}</span><span>${esc(hover)}</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>`;
+}
+
+export function heroPlate(k: string, title: string, mute = '', bed?: VisualId, overlay = ''): string {
+  const plate = plateFor(k, bed, title, mute);
+  return `<figure class="hero-plate cinema-frame">
+    <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+    <span class="cinema-grain" aria-hidden="true"></span>
+    <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
+    <span class="hero-wash" aria-hidden="true"></span>
+    ${overlay ? `<div class="poster-copy hero-kicker-copy">${overlay}</div>` : ''}
+    <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+    <figcaption>${esc(plate.credit)}</figcaption>
+  </figure>`;
+}
+
+function hero(k: string, title: string, lede: string, seed: string, film?: string, plate = true, overlayKick = true): string {
+  const skipPlate = Boolean(film) || !plate;
+  const kick = kicker(k);
+  const overlay = overlayKick ? kick : '';
+  const filmHtml = film ? filmStageMarkup(film, title, skipPlate ? overlay : '') : '';
+  const plateHtml = skipPlate ? '' : heroPlate(k, title, seed, undefined, overlay);
+  return `<header class="page-hero enterprise-hero cinema-hero">
+    ${filmHtml}
+    ${plateHtml}
+    ${overlayKick && !filmHtml && !plateHtml ? kick : ''}
+    <div class="hero-split">
+      <h1 class="display">${title}</h1>
+      <p class="lede">${esc(lede)}</p>
+    </div>
+  </header>`;
+}
+
+export function renderHome(): string {
+  const banks = GBTD_BANKS.map((b) => {
+    const mark = markFor(b);
+    const caption = bankDisplay(b);
+    return `<li class="wordmark">${mark ? `<img class="wm-logo" src="${esc(mark)}" alt="" width="160" height="48" />` : ''}<span class="wordmark-caption">${esc(caption)}</span></li>`;
+  }).join('');
+  return `
+    <section class="masthead masthead-lockup" data-proof="hero">
+      <div class="hero-stage">
+        <canvas id="gateway" class="gateway-stage" role="img" aria-label="Sterling corridor: six UK commercial banks around an Overledger plane."></canvas>
+        <p class="tess-hint" data-gateway-hint>Six commercial banks. One gateway plane.</p>
+      </div>
+      ${kicker('QntDesk · independent brief')}
+      <div class="hero-split">
+        <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
+        <div>
+          <p class="lede">We’ve gotten used to seeing a new rail arrive before anyone can trust it. Overledger was filed in 2018 as the operating system for that problem — not another chain. Then six UK banks put live tokenised sterling on it. Independent research. Not Quant’s corporate site.</p>
+          <div class="cta-row">
+            ${pill('/technology', 'Enter the stack', 'Product theatre')}
+            ${pill('/story', 'Walk the timeline', 'Scored history', 'ghost')}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof-row">
+      ${kicker('Three proofs')}
+      <div class="proof-grid">
+        <button type="button" class="proof-chip" data-stage="proof" data-stage-id="interop">
+          ${posterFrame(
+            diagramFigure('home-interop', 'proof', 'Interop'),
+            '<strong>Interoperability</strong><span>Overledger maps one request onto more than one ledger. 2018 whitepaper, UCL Discovery.</span>',
+          )}
+        </button>
+        <button type="button" class="proof-chip" data-stage="proof" data-stage-id="standards">
+          ${posterFrame(
+            diagramFigure('home-standards', 'proof', 'Standards'),
+            '<strong>Standards</strong><span>IETF SATP and ISO/TC 307. Rooms with names.</span>',
+          )}
+        </button>
+        <button type="button" class="proof-chip" data-stage="proof" data-stage-id="institutions">
+          ${posterFrame(
+            diagramFigure('home-institutions', 'proof', 'Rooms'),
+            '<strong>Institutions</strong><span>Who they still sit with — current, historical, adjacency.</span>',
+          )}
+        </button>
+      </div>
+    </section>
+
+    <section class="pulse-strip">
+      ${kicker('Pulse')}
+      <div class="section-head">
+        <h2 class="display">The wire, as headlines.</h2>
+        <a class="text-link" href="/news">News desk →</a>
+      </div>
+      <ul class="pulse-list" data-home-pulse><li class="empty-note">Headlines load when the ingest answers.</li></ul>
+    </section>
+
+    <section class="strip">
+      ${kicker('GBTD cohort — the six commercial banks named by UK Finance')}
+      <ul class="wordmarks">${banks}</ul>
+    </section>
+
+  `;
+}
+
+export function renderStory(): string {
+  const themes: StoryTheme[] = ['product', 'standard', 'institution', 'people', 'market', 'cbdc'];
+  const chips = ['all', ...themes]
+    .map((t) => `<button type="button" class="chip${t === 'all' ? ' is-on' : ''}" data-story-theme="${t}">${esc(t)}</button>`)
+    .join('');
+  const nodes = storyChronological()
+    .map(
+      (e) => `<li class="story-node" data-year="${e.year}" data-decade="${Math.floor(e.year / 10) * 10}" data-theme="${esc(e.theme)}" data-q="${esc(`${e.title} ${e.body} ${e.date}`)}">
+        <button type="button" class="story-hit" data-stage="event" data-stage-id="${esc(e.id)}">
+          ${diagramFigure(e.id, 'event', e.date)}
+          <span class="story-copy">
+            <span class="mono">${esc(e.date)}</span>
+            <h3>${esc(e.title)}</h3>
+            <p>${esc(e.stake)}</p>
+          </span>
+        </button>
+      </li>`,
+    )
+    .join('');
+  return `${hero('Story / Timeline', 'First the committee. Then the operating system. Then the sterling.', 'Quiet months collapse. There are no empty holes. Each node opens the stake, the filing, and the source. Start at ISO 2015. End at live tokenised sterling.', 'story-hero', 'story')}
+    ${stillStrip('story', 'Photographs on this rail')}
+    ${cinemaFilterBar(
+      'story-search',
+      'Search the rail…',
+      '',
+      `<div class="chip-row" id="story-themes">${chips}</div>
+      <label class="density">Density
+        <select id="story-density">
+          <option value="decade">Decade</option>
+          <option value="year" selected>Year</option>
+          <option value="month">Month</option>
+        </select>
+      </label>`,
+    )}
+    ${cinemaStrip('count-story', `<p class="notes-count mono subtle" data-story-count>${STORY.length} events on the rail</p>`, 'count-strip')}
+    <div class="story-suggest" data-story-suggest hidden></div>
+    <ol class="story-rail" id="story-rail">${nodes}</ol>
+    <p class="empty-note" id="story-empty" hidden>No event on this rail matches. Try 2018, SATP, or GBTD.</p>
+    ${cinemaStrip('story-keys', `<p class="subtle story-keys">j and k move the visible rail. Each node opens a stage — object, filing, source.</p>`)}`;
+}
+
+export function renderStack(): string {
+  const layers = [
+    { id: 'apps', title: 'Flow Applications', job: 'MCP-callable workflows. Agents and humans run the same steps.', analogy: 'This layer is the instruction pad — the same ticket a clerk or an agent can stamp.', std: 'MCP is open. Not a Quant product.' },
+    { id: 'script', title: 'PayScript', job: 'Programmability at the account. Named in the GBTD stack.', analogy: 'This layer is the standing order that can see another book.', std: 'GBTD commercial-bank money. Not a CBDC script.' },
+    { id: 'fusion', title: 'Fusion', job: 'Layer 2.5 multi-ledger rollup. Trusted Node is who processes it.', analogy: 'This layer is the clearing house that posts to more than one book.', std: 'Japanese 2026 claim is Quant’s note. Not a USPTO grant.' },
+    { id: 'gate', title: 'Overledger · QuantNet', job: 'Gateway OS. The bank-facing name for the same architecture.', analogy: 'This layer is the correspondent: it speaks every domain and replaces none.', std: 'ACM gateway cell. SATP-implementable. Not SATP.' },
+    { id: 'ledgers', title: 'Ledgers & rails', job: 'Fabric, Ethereum, Corda, RTGS, SWIFT, Faster Payments.', analogy: 'This layer is the SWIFT message and the RTGS book — the things the gate maps onto.', std: 'ISO 20022 adjacency via QuantNet’s published claim.' },
+  ];
+  return `<section class="stack-stage-wrap cinema-stage" aria-label="Exploded Overledger stack">
+      <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+      <span class="cinema-grain" aria-hidden="true"></span>
+      <canvas id="stack-stage" class="stack-stage" role="img" aria-label="Five Overledger layers as film plates. Click a plate."></canvas>
+      <div class="poster-copy hero-kicker-copy">${kicker('Stack')}</div>
+      <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+    </section>
+    ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero', undefined, false, false)}
+    ${stillStrip('stack', 'Photographs in the layers', 5)}
+    <section class="stack-exploded" id="stack-exploded">
+      ${cinemaStrip('intro-stack-exploded', kicker('Exploded instrument'))}
+      ${cinemaStrip(
+        'chips-stack-tools',
+        `<div class="stack-tools">
+        <button type="button" class="chip is-on" data-stack-all>All layers</button>
+        ${layers.map((l) => `<button type="button" class="chip" data-stack-iso="${esc(l.id)}">${esc(l.title)}</button>`).join('')}
+      </div>`,
+      )}
+      <ol class="stack-rungs exploded">${layers
+        .map(
+          (l) => `<li data-rung="${esc(l.id)}">
+            <button type="button" data-stage="tech" data-stage-id="${l.id === 'gate' ? 'overledger' : l.id === 'script' ? 'payscript' : l.id === 'apps' ? 'quant-connect' : l.id === 'ledgers' ? 'connectors' : 'fusion'}">
+              ${posterFrame(
+                diagramFigure(`stack-${l.id}`, 'stack', l.title),
+                `<strong>${esc(l.title)}</strong><span>${esc(l.job)}</span><small>${esc(l.std)}</small>`,
+              )}
+            </button>
+          </li>`,
+        )
+        .join('')}</ol>
+    </section>`;
+}
+
+export function renderTechnology(): string {
+  const spine = TECH.map(
+    (t) => `<button type="button" class="tech-spine-hit" data-stage="tech" data-stage-id="${esc(t.id)}">${posterFrame(photoFigure(plateFor(t.id), 'spine-still'), `<span>${esc(t.name)}</span>`)}</button>`,
+  ).join('');
+  const chapters = TECH.map(
+    (t, i) => `<article class="tech-chapter" id="${esc(t.id)}" data-q="${esc(`${t.name} ${t.purpose} ${t.does}`)}">
+      ${posterFrame(
+        diagramFigure(t.id, 'tech', t.era),
+        `<p class="kicker">${esc(t.era)}</p><h2>${esc(t.name)}</h2><p class="lede-sm">${esc(t.purpose)}</p><p>${esc(t.does)}</p>`,
+      )}
+      <details class="card-more"${i < 2 ? ' open' : ''}>
+        <summary>${cinemaSummary(`chapter-more-${t.id}`, 'Chapter')}</summary>
+        <div class="tech-grid">
+          ${posterFrame(photoFigure(plateFor(`tech-does-${t.id}`), 'tech-cell-still'), `<h3>What it does</h3><p>${esc(t.does)}</p>`)}
+          ${posterFrame(photoFigure(plateFor(`tech-why-${t.id}`), 'tech-cell-still'), `<h3>Why it exists</h3><p>${esc(t.why)}</p>`)}
+          ${posterFrame(photoFigure(plateFor(`tech-std-${t.id}`), 'tech-cell-still'), `<h3>Standards</h3><p>${esc(t.standards)}</p>`)}
+          ${posterFrame(photoFigure(plateFor(`tech-not-${t.id}`), 'tech-cell-still'), `<h3>What it is not</h3><p>${esc(t.isNot)}</p>`)}
+        </div>
+        <div class="stage-related">${relatedButtons(chipsFromIds(t.related))}</div>
+      </details>
+    </article>`,
+  ).join('');
+  return `${hero('Technology', 'Not another chain. The layer that makes the others usable.', 'The books already exist. Isolated ledgers were the 2018 problem. Overledger was filed as the operating layer. Then the network, the standards, and the sterling that is already live.', 'tech-hero', 'technology')}
+    ${stillStrip('technology', 'Photographs in the stack', 5)}
+    ${cinemaFilterBar('tech-search', 'Search chapters…')}
+    <nav class="tech-spine" aria-label="Technology chapters">${spine}</nav>
+    <div class="tech-stack cinema-room" id="tech-stack">${chapters}</div>
+    <p class="empty-note" id="tech-empty" hidden>No chapter matches. Try SATP, Fusion, or PayScript.</p>`;
+}
+
+export function renderPatents(): string {
+  const cards = PATENTS.map(
+    (p) => `<article class="patent-card" id="${esc(p.id)}">
+      <button type="button" data-stage="patent" data-stage-id="${esc(p.id)}">
+        ${posterFrame(
+          photoFigure(plateFor(p.id, p.number, p.title), 'patent-still'),
+          `<p class="kicker">${esc(p.number)}</p><h2>${esc(p.title)}</h2><p>${esc(p.claim)}</p><p class="mono subtle">${esc(p.granted || p.filed || '')}${p.inventors.length ? ` · ${esc(p.inventors.join(', '))}` : ''}</p>`,
+        )}
+        ${diagramFigure(p.id, 'patent', p.number)}
+      </button>
+    </article>`,
+  ).join('');
+  return `${hero('Patents', 'A grant is a method. Not a deployment.', 'Numbers match the public file. Each card opens why the claim matters to Overledger, SATP, or Fusion — and where it still sits on paper.', 'patents-hero', 'patents')}
+    ${stillStrip('patents', 'Photographs of the claims')}
+    ${cinemaFilterBar('patent-search', 'Search numbers, inventors, claims…')}
+    <div class="patent-grid" id="patent-grid">${cards}</div>
+    <p class="empty-note" id="patent-empty" hidden>No filing matches. Try US11842335B2 or Hargreaves.</p>`;
+}
+
+export function renderInstitutions(): string {
+  const cards = INSTITUTIONS.map((i) => {
+    const caption = bankDisplay(i.name);
+    const mark = i.mark ? markFor(i.mark) : undefined;
+    const logo = mark
+      ? `<img class="wm-logo" src="${esc(mark)}" alt="${esc(caption)}" width="128" height="52" />`
+      : `<span class="wordmark-label">${esc(caption)} <em>wordmark</em></span>`;
+    return `<article class="inst-card" id="${esc(i.id)}" data-status="${esc(i.status)}" data-q="${esc(`${i.name} ${i.body}`)}">
+      <button type="button" data-stage="institution" data-stage-id="${esc(i.id)}">
+        ${posterFrame(
+          diagramFigure(i.id, 'institution', i.status),
+          `<div class="inst-mark">${logo}</div><p class="kicker">${esc(i.role)} · ${esc(i.status)}</p><h2>${esc(caption)}</h2><p class="mono subtle">${esc(i.dates ?? '')}</p><p>${esc(i.body.length > 160 ? `${i.body.slice(0, 160).trim()}…` : i.body)}</p>`,
+        )}
+      </button>
+    </article>`;
+  }).join('');
+  return `${hero('Institutions & boards', 'Who is in the room — and who is only next to it.', 'Current, historical, adjacency: labelled. Official marks where they are on file. A typeset name where they are not. Mixing those up is how a lab becomes a mandate in someone else’s recap.', 'inst-hero', 'institutions')}
+    ${stillStrip('institutions', 'Photographs of the rooms')}
+    ${cinemaFilterBar(
+      'inst-search',
+      'Search institutions…',
+      '',
+      `<div class="chip-row" id="inst-status">
+        <button type="button" class="chip is-on" data-inst-status="all">All</button>
+        <button type="button" class="chip" data-inst-status="current">Current</button>
+        <button type="button" class="chip" data-inst-status="historical">Historical</button>
+        <button type="button" class="chip" data-inst-status="adjacency">Adjacency</button>
+      </div>`,
+    )}
+    <div class="inst-grid" id="inst-grid">${cards}</div>
+    <p class="empty-note" id="inst-empty" hidden>No room matches. Try IETF, Lloyds, or Rosalind.</p>`;
+}
+
+export function overledgerRoster(): string {
+  const rows = OVERLEDGER_BUILDERS.map((b) => {
+    const p = PEOPLE.find((x) => x.id === b.id);
+    if (!p) return '';
+    const face = p.photo
+      ? `<img class="ol-face" src="${esc(p.photo)}" alt="${esc(p.name)}" width="640" height="800" />`
+      : `<span class="ol-initials" aria-hidden="true">${esc(p.initials)}</span>`;
+    return `<li>
+      <button type="button" data-stage="person" data-stage-id="${esc(p.id)}">
+        <span class="ol-still cinema-frame">
+          <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
+          <span class="cinema-grain" aria-hidden="true"></span>
+          ${face}
+          <span class="people-wash" aria-hidden="true"></span>
+          <span class="people-credit"><strong>${esc(p.name)}</strong><span class="people-credit-role">${esc(b.role)} · ${esc(b.era)}</span></span>
+          <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
+        </span>
+      </button>
+    </li>`;
+  }).join('');
+  return `<section class="ol-roster">
+    ${cinemaIntro(
+      'intro-ol-roster',
+      `${kicker('Overledger architects & operators')}<h2 class="display">Builders of the interoperability layer.</h2><p class="lede-sm">The people who made the gate speak — role and era, in order. Some have left. The documents remain.</p>`,
+    )}
+    <ul class="ol-list">${rows}</ul>
+  </section>`;
+}
+
+export function quoteButton(id: string): string {
+  const q = quotesFor().find((x) => x.id === id);
+  if (!q) return '';
+  return `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(q.id)}">
+    ${posterFrame(
+      photoFigure(plateFor(q.id), 'quote-still'),
+      `<span class="qmark" aria-hidden="true">“</span>
+    <p>${esc(q.text)}</p>
+    <footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`,
+    )}
+  </button>`;
+}

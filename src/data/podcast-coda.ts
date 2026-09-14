@@ -2,7 +2,7 @@
 export const CODA: Record<number, string> = {
   1: `Listen again to how the whitepaper opens the problem. Verdian, Tasca, Paterson, Mondelli, Overledger whitepaper v0.1, twenty eighteen, UCL Discovery abstract: The traditional Internet architecture has not yet achieved its vision of an open, trusted and secure network. And: This limitation forces distributed applications to be single-ledger-dependent, i.e. limited to be only executed on a single ledger.
 
-That is the origin sentence of this desk. The Internet we have moves packets. The Internet of Value has to move claims — deposits, bonds, invoices, a gilt — without trapping the application on one chain.
+That is the origin sentence of the record. The Internet we have moves packets. The Internet of Value has to move claims — deposits, bonds, invoices, a gilt — without trapping the application on one chain.
 
 Paolo Tasca, Frontiers in Blockchain, twenty twenty: In this Editorial, I argue that the blooming of the Internet of Value is a necessary journey that we need to take in order to accommodate the unfolding of four long-term mega socio-techno trends: datafication, dematerialization, platformization, and social and resources value awareness.
 
@@ -38,9 +38,9 @@ The token of that layer is QNT. The deposits in episode eight are sterling. Two 
 
 Quant, About Quant: The foundation of digital finance. Quant, About Quant: Leading pioneers in unlocking the power of programmable money.
 
-This desk prints both supply notes because both are on the record. Quant’s post-burn figure: fourteen million, six hundred and twelve thousand, four hundred and ninety three point zero eight. Bitstamp’s MiCA post-burn maximum: fourteen million, eight hundred and eighty one thousand, three hundred and sixty four. Initialised contract forty five million, four hundred and sixty seven thousand. TGE split sixty eight point one nine percent market, thirty one point eight one percent company. Burn date: fourteenth of September, twenty eighteen. Burn transaction: zero x seven six three f three two a zero.
+Both supply notes are printed because both are on the record. Quant’s post-burn figure: fourteen million, six hundred and twelve thousand, four hundred and ninety three point zero eight. Bitstamp’s MiCA post-burn maximum: fourteen million, eight hundred and eighty one thousand, three hundred and sixty four. Initialised contract forty five million, four hundred and sixty seven thousand. TGE split sixty eight point one nine percent market, thirty one point eight one percent company. Burn date: fourteenth of September, twenty eighteen. Burn transaction: zero x seven six three f three two a zero.
 
-Live circulating and the live price come from CoinGecko and the venues on the market bar — Coinbase, Kraken, Binance. This desk does not invent a print.
+Live circulating and the live price come from CoinGecko and the venues on the market bar — Coinbase, Kraken, Binance. No invented print.
 
 When you see the QNT chip move in the header, that is the utility token of the gateway. When you see the letter tiles B, H, L, N, N, S, those are the GBTD banks. The future of money is the system those two objects sit inside.
 
@@ -56,7 +56,7 @@ SATP is IETF work. ISO 23516 is the committee vocabulary. Hyperledger Cacti, whe
 
 Martin Hargreaves and Alex Chiriac appear on SATP drafts from Quant. Claire Facer co-chairs the working group. Thomas Hardjono writes from MIT. Belchior writes from Técnico Lisboa. Ramakrishna writes from IBM Research. The protocol is larger than any one vendor. That is what a standard is.
 
-When this desk pins Geneva, Sydney, Brussels, Cambridge and Boston, those pins are documents and the people who sign them.
+When Geneva, Sydney, Brussels, Cambridge and Boston sit on the globe, those pins are documents and the people who sign them.
 
 Quant, Company value — Innovation: We love a challenge and have little respect for the status quo. Experience has taught us that problems are a matter of perspective and that, with new ideas and a fresh way of looking at things, solutions – more often than not – present themselves.
 
@@ -86,7 +86,7 @@ Gilbert Verdian, CEO and Founder, Oracle Blockchain blog, twelfth of February, t
 
 Rosalind was an API experiment. The skill Quant says it brought is orchestration — connecting, programming, moving value across networks. That skill is the Overledger claim, reused wherever the client is a central bank, a commercial bank, or a market infrastructure.
 
-Quant says it was on the vendor team with UST. The BIS page records a concluded experiment. This desk files both sentences.
+Quant says it was on the vendor team with UST. The BIS page records a concluded experiment. Both sentences stay on the file.
 
 Basel on our globe is bibliography: Project Agora, speeches on the singleness of money, wholesale CBDC research. London is the Rosalind room and Quant’s home.
 
@@ -140,7 +140,7 @@ Gilbert Verdian, CEO of Quant, twenty sixth of September, twenty twenty five: Ou
 
 Working alongside is the correct verb. Technology partner. Overledger plus PayScript.
 
-Around the cohort sit the institutions this desk also files. UK Finance convened the selection. The Bank of England runs the Synchronisation Lab. The BIS holds the Rosalind page. Murex puts tokenised deposits inside MX.3. Oracle names Overledger on a Fabric platform.
+Around the cohort sit the institutions also on the record. UK Finance convened the selection. The Bank of England runs the Synchronisation Lab. The BIS holds the Rosalind page. Murex puts tokenised deposits inside MX.3. Oracle names Overledger on a Fabric platform.
 
 Quant, QuantNet product page: QuantNet connects banks to tokenised money and digital assets through a single programmable gateway, enabling value movement across public and private networks, payment systems, and asset platforms with certainty and control.
 
@@ -270,7 +270,7 @@ If you want to know whether the future of money is a demo or a desk, look at MX.
 
 The next film leaves Europe. Fourteenth of January, twenty twenty six. Dentsu Soken. Tokyo. A named room in Japan.`,
 
-  17: `The Internet of Value has to be a multi-city story or it is a pamphlet. Tokyo is how this desk remembers that.
+  17: `The Internet of Value has to be a multi-city story or it is a pamphlet. Tokyo is how the record remembers that.
 
 Quant, Company value — Ambition: The scale of a task won’t deter us when we believe it will take us closer to our vision. Every problem is an opportunity. Every obstacle is a chance to take a calculated risk and question assumptions. In short, we’re not afraid to think big.
 
@@ -296,7 +296,7 @@ Gilbert Verdian, same essay: The three-layer architecture functions as a coheren
 
 The majority of financial transactions will still run on the rails we already have. The future of money is those rails, speaking. The lab is where a gateway practises the accent.
 
-Quant’s own note files the participation. This desk files Quant’s sentence as Quant’s sentence.
+Quant’s own note files the participation. Quant’s sentence is filed as Quant’s sentence.
 
 Rosalind was twenty twenty three, retail CBDC APIs, concluded. The Synchronisation Lab is twenty twenty six, simulated RT2, wholesale. Keep them in their years.
 
@@ -312,7 +312,7 @@ Then the calendar. Sibos twenty twenty six, Miami Beach Convention Center, the t
 
 Sibos twenty twenty five was Frankfurt, stand thirteen. The industry fair is where a gateway company stands still long enough for the banks to walk over.
 
-This desk reads the wire that week the way we read it every week: headlines that name Quant, Overledger, or QNT. Official voices: at quantnetwork, at OverledgerDev, at gverdian.
+The wire that week is read the way it is read every week: headlines that name Quant, Overledger, or QNT. Official voices: at quantnetwork, at OverledgerDev, at gverdian.
 
 Gilbert Verdian, Founder and CEO, Murex newsroom: The next generation of capital markets infrastructure will not replace what works. It will make what works programmable.
 
@@ -334,7 +334,7 @@ UK Finance, twenty sixth of September, twenty twenty five: These tokenised depos
 
 Jana Mackintosh, Managing Director, UK Finance: This project is a powerful example of industry collaboration to deliver next generation payments for the benefit of customers and businesses - and an opportunity for the UK to lead globally in setting standards for tokenised money.
 
-That is the future of money as this desk can state it from the record. Commercial-bank sterling, programmed, at six UK banks. A gateway operating system archived in twenty eighteen. A utility token burned down and licensed. An IETF protocol for moving an asset once. A Layer 2.5 rollup. A language called PayScript. Workflows an agent can call. Oracle on Fabric. Murex in MX.3. A lab beside RTGS. Miami at the end of September.
+That is the future of money as the record can state it. Commercial-bank sterling, programmed, at six UK banks. A gateway operating system archived in twenty eighteen. A utility token burned down and licensed. An IETF protocol for moving an asset once. A Layer 2.5 rollup. A language called PayScript. Workflows an agent can call. Oracle on Fabric. Murex in MX.3. A lab beside RTGS. Miami at the end of September.
 
 QNT is how the network is metered. Overledger is how the networks speak. The banks still owe the holder. The instruction is new.
 
