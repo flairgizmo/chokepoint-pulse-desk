@@ -604,14 +604,12 @@ function glassMat(
 
 const KEY_DIR = new THREE.Vector3(2.4, 3.2, 2.1).normalize();
 const RIM_DIR = new THREE.Vector3(-2.8, 1.2, -2.4).normalize();
-/** Rest camera → jewel, rotated into crystal space so the −0.34 lean still keys the fire. */
+/** Rest camera → jewel in crystal space. Stone stands upright; restAx supplies the 3/4. */
 const VIEW_DIR = new THREE.Vector3(
   -(3.48 * Math.sin(1.24) * Math.sin(0.72)),
   0.42 - 3.48 * Math.cos(1.24),
   -(3.48 * Math.sin(1.24) * Math.cos(0.72)),
-)
-  .applyAxisAngle(new THREE.Vector3(1, 0, 0), 0.16)
-  .normalize();
+).normalize();
 
 /** Spectral kite fire for lite MeshBasic. Outward Lambert, not |dot| — that painted every kite the same. */
 function facetFire(
@@ -1422,7 +1420,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   base.userData.nodeId = 6;
   const lean = new THREE.Group();
   lean.position.y = 0.28;
-  lean.rotation.x = -0.16;
+  lean.rotation.x = 0;
   lean.add(crystal);
   lean.add(base);
   group.add(lean);

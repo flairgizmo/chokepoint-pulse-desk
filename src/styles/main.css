@@ -2135,7 +2135,7 @@ main {
 .month-cards,
 .cal-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 0.85rem;
   margin: 1.2rem 0 0;
   padding: 0;
@@ -3328,21 +3328,21 @@ button.chip {
 
 .flip-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 1fr;
+  gap: 1.15rem;
   margin-top: 1rem;
 }
 
 .flip-card {
   perspective: 1400px;
-  min-height: 18rem;
+  min-height: 22rem;
   cursor: pointer;
 }
 
 .flip-inner {
   position: relative;
   height: 100%;
-  min-height: 18rem;
+  min-height: 22rem;
   transform-style: preserve-3d;
   transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -4589,7 +4589,7 @@ body.stage-open .grok {
 
 .flip-face .photo-plate img,
 .flip-face .beat-figure img {
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 21 / 9;
   max-height: 22rem;
 }
 
