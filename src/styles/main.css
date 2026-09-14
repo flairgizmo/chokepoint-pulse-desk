@@ -3411,7 +3411,7 @@ button.chip {
   height: 100%;
   object-fit: cover;
   display: block;
-  filter: saturate(1.08) contrast(1.04);
+  filter: saturate(0.9) contrast(1.12) brightness(0.78);
 }
 
 .player-wave {
