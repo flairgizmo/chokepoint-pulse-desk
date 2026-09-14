@@ -466,9 +466,9 @@ vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.05);
 float kite = clamp(dot(diffuseColor.rgb, vec3(0.22, 0.45, 0.33)), 0.0, 1.0);
-vec3 body = vec3(0.07, 0.1, 0.16);
-diffuseColor.rgb = mix(body, envRefl, spec * 0.58);
-diffuseColor.rgb += envRefl * spec * 1.45;
+vec3 body = vec3(0.05, 0.07, 0.11);
+diffuseColor.rgb = mix(body, envRefl, spec * 0.32);
+diffuseColor.rgb += envRefl * spec * 0.85;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * (0.32 + kite * 0.55);
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.38;
 diffuseColor.a = 1.0;`;
@@ -596,7 +596,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-37-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-38-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
