@@ -479,6 +479,15 @@ float kite = 0.42;
 #endif`;
 }
 
+/** Sparse gaussian pins — high-frequency noise turned the crown into grit. */
+function liteSparkPin(sx: number, sy: number, off: number, gate: string, tight: string): string {
+  return `vec2 cellUv = vMapUv * vec2(${sx.toFixed(1)}, ${sy.toFixed(1)});
+vec2 cell = floor(cellUv);
+vec2 f = fract(cellUv) - 0.5;
+float n = fract(sin(dot(cell + ${off.toFixed(1)}, vec2(12.9898, 78.233))) * 43758.5453);
+float pin = step(${gate}, n) * exp(-dot(f, f) * ${tight});`;
+}
+
 function liteFireChunk(kind: LiteFire): string {
   if (kind === 'mirror') {
     return `#include <map_fragment>
@@ -524,52 +533,48 @@ diffuseColor.a = liteFres * liteFres * 0.1;`;
   if (kind === 'bezel') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-float spark = fract(sin(dot(vMapUv * vec2(5.4, 3.8), vec2(12.9898, 78.233))) * 43758.5453);
-float pin = smoothstep(0.97, 0.995, spark);
+${liteSparkPin(3.2, 2.4, 11, '0.7', '86.0')}
 vec3 body = vec3(0.003, 0.004, 0.01);
 diffuseColor.rgb = body;
-diffuseColor.rgb += glint * (0.02 + pin * 3.2 + rim * 0.35);
-diffuseColor.rgb += vec3(0.95, 0.97, 1.0) * pow(rim, 2.6) * 0.18;
-diffuseColor.rgb += texture2D(map, vMapUv).rgb * pin * 0.45;
+diffuseColor.rgb += glint * (0.02 + pin * 3.4 + rim * 0.32);
+diffuseColor.rgb += vec3(0.95, 0.97, 1.0) * pow(rim, 2.6) * 0.16;
+diffuseColor.rgb += texture2D(map, vMapUv).rgb * pin * 0.4;
 diffuseColor.a = mix(0.86, 0.96, rim);`;
   }
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
+${liteSparkPin(2.8, 3.4, 19, '0.78', '92.0')}
 float fleck = pow(kite, 3.25);
-float spark = fract(sin(dot(vMapUv * vec2(4.6, 6.1), vec2(12.9898, 78.233))) * 43758.5453);
-float pin = smoothstep(0.975, 0.997, spark);
 vec3 body = mix(vec3(0.001, 0.002, 0.006), vec3(0.01, 0.014, 0.026), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * pin * 0.12;
-diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * fleck * pin * 0.8;
-diffuseColor.rgb += glint * (0.015 + pin * 3.4 + fleck * pin * 2.2);
+diffuseColor.rgb += envRefl * fleck * pin * 0.14;
+diffuseColor.rgb += vec3(0.86, 0.93, 1.0) * fleck * pin * 0.9;
+diffuseColor.rgb += glint * (0.012 + pin * 3.6 + fleck * pin * 2.4);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
+${liteSparkPin(4.2, 1.6, 7, '0.64', '80.0')}
 float fleck = pow(kite, 3.05);
-float spark = fract(sin(dot(vMapUv * vec2(5.8, 4.2), vec2(12.9898, 78.233))) * 43758.5453);
-float pin = smoothstep(0.97, 0.995, spark);
 vec3 body = mix(vec3(0.003, 0.004, 0.01), vec3(0.016, 0.02, 0.034), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * pin * 0.1;
-diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * fleck * pin * 0.9;
-diffuseColor.rgb += glint * (0.02 + pin * 3.8 + fleck * pin * 2.6 + rim * 0.12);
+diffuseColor.rgb += envRefl * fleck * pin * 0.12;
+diffuseColor.rgb += vec3(1.0, 0.94, 0.82) * fleck * pin * 1.0;
+diffuseColor.rgb += glint * (0.018 + pin * 4.0 + fleck * pin * 2.8 + rim * 0.1);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
+${liteSparkPin(3.4, 2.6, 13, '0.68', '88.0')}
 float fleck = pow(kite, 3.4);
-float spark = fract(sin(dot(vMapUv * vec2(5.2, 4.4), vec2(12.9898, 78.233))) * 43758.5453);
-float pin = smoothstep(0.968, 0.994, spark);
 vec3 body = mix(vec3(0.001, 0.002, 0.006), vec3(0.007, 0.01, 0.018), kite);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * fleck * pin * 0.1;
-diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * fleck * pin * 1.15;
-diffuseColor.rgb += glint * (0.015 + pin * 4.6 + fleck * pin * 3.4);
+diffuseColor.rgb += envRefl * fleck * pin * 0.12;
+diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * fleck * pin * 1.2;
+diffuseColor.rgb += glint * (0.012 + pin * 4.8 + fleck * pin * 3.6);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -645,7 +650,7 @@ varying vec3 vLiteWorldV;`,
       .replace('#include <map_fragment>', liteFireChunk(kind))
       .replace('#include <color_fragment>', '/* kite lives in ice; color_fragment would crush glint */');
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-60-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-61-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
