@@ -70,11 +70,11 @@ function glassGrade(cut: GlassCut, lane: GlassLane, heart = false): GlassGrade {
       ? { sx: 0.2, sy: 0.28, sw: 0.5, sh: 0.28, brightness: 1.08, contrast: 1.12, saturate: 0.62, multiply: 0.03 }
       : cut === 'crown'
         ? lane === 0
-          ? { sx: 0.28, sy: 0.14, sw: 0.22, sh: 0.32, brightness: 1.16, contrast: 1.2, saturate: 1, multiply: 0.01 }
-          : { sx: 0.46, sy: 0.16, sw: 0.2, sh: 0.3, brightness: 1.04, contrast: 1.22, saturate: 0.94, multiply: 0.02 }
+          ? { sx: 0.28, sy: 0.14, sw: 0.22, sh: 0.32, brightness: 1.24, contrast: 1.38, saturate: 0.82, multiply: 0.1 }
+          : { sx: 0.46, sy: 0.16, sw: 0.2, sh: 0.3, brightness: 0.96, contrast: 1.4, saturate: 0.74, multiply: 0.16 }
         : lane === 0
-          ? { sx: 0.34, sy: 0.2, sw: 0.18, sh: 0.26, brightness: 1.02, contrast: 1.22, saturate: 0.9, multiply: 0.04 }
-          : { sx: 0.52, sy: 0.22, sw: 0.16, sh: 0.24, brightness: 0.88, contrast: 1.24, saturate: 0.84, multiply: 0.06 };
+          ? { sx: 0.34, sy: 0.2, sw: 0.18, sh: 0.26, brightness: 1.06, contrast: 1.32, saturate: 0.78, multiply: 0.1 }
+          : { sx: 0.52, sy: 0.22, sw: 0.16, sh: 0.24, brightness: 0.84, contrast: 1.36, saturate: 0.7, multiply: 0.14 };
   if (!heart) return base;
   return {
     ...base,
@@ -149,7 +149,7 @@ function scoreCut(ctx: CanvasRenderingContext2D, w: number, h: number, sides: nu
     }
     ctx.fillStyle = lane === 0 ? 'rgba(234, 241, 255, 0.1)' : 'rgba(234, 241, 255, 0.05)';
     ctx.fillRect(x0, 0, 1.25, h);
-    ctx.fillStyle = 'rgba(2, 6, 14, 0.36)';
+    ctx.fillStyle = 'rgba(2, 6, 14, 0.52)';
     ctx.fillRect(x0 + bw - 1.25, 0, 1.25, h);
   }
   ctx.globalCompositeOperation = 'screen';
