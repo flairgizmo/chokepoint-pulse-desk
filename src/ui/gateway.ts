@@ -49,7 +49,7 @@ const TABLE_Y = 0.42;
 const EQ_Y = 0.18;
 const BOT_Y = -0.24;
 /** Thin brilliant girdle — waist area at rest, not a chrome torus. */
-const GIRDLE_H = 0.054;
+const GIRDLE_H = 0.068;
 const GIRDLE_TOP = EQ_Y + GIRDLE_H * 0.5;
 const GIRDLE_BOT = EQ_Y - GIRDLE_H * 0.5;
 
@@ -1288,6 +1288,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let wellMats: THREE.MeshBasicMaterial[] = [];
   let wellRoot: THREE.Group | null = null;
   const culetFires: THREE.Sprite[] = [];
+  const girdleFires: THREE.Sprite[] = [];
   if (lite) {
     const wraps = [0, 1, 2, 3].map((lane) => {
       const mat = new THREE.MeshBasicMaterial({
@@ -1397,6 +1398,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       crystal.add(spark);
       culetFires.push(spark);
     });
+    for (let i = 0; i < sides; i += 2) {
+      const a = (i / sides) * Math.PI * 2 + face0 - Math.PI / sides;
+      const spark = fireSprite(
+        i % 4 ? 0xf6ead6 : 0xeaf1ff,
+        Math.cos(a) * eqR,
+        eqY,
+        Math.sin(a) * eqR,
+        0.042,
+      );
+      spark.material.opacity = 0.22;
+      crystal.add(spark);
+      girdleFires.push(spark);
+    }
   }
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.028, 0.046, 0.028, sides),
@@ -1666,6 +1680,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
       fire.opacity = beat;
       const base = i === 0 ? 0.52 : i === 1 ? 0.32 : 0.28;
       spark.scale.set(base + beat * 0.08, base + beat * 0.08, 1);
+    });
+    girdleFires.forEach((spark, i) => {
+      const fire = spark.material as THREE.SpriteMaterial;
+      fire.opacity = reduced ? 0.18 : 0.14 + Math.abs(Math.sin((now - t0) / 980 + i * 0.55)) * 0.2;
     });
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;

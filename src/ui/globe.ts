@@ -211,8 +211,8 @@ function orbitSkyTex(): THREE.CanvasTexture {
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.globalCompositeOperation = 'screen';
   const air = ctx.createRadialGradient(c.width * 0.5, c.height * 0.52, 24, c.width * 0.5, c.height * 0.52, 380);
-  air.addColorStop(0, 'rgba(210, 180, 140, 0.16)');
-  air.addColorStop(0.42, 'rgba(90, 100, 130, 0.07)');
+  air.addColorStop(0, 'rgba(158, 196, 238, 0.18)');
+  air.addColorStop(0.42, 'rgba(90, 120, 168, 0.08)');
   air.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = air;
   ctx.fillRect(0, 0, c.width, c.height);
@@ -710,9 +710,9 @@ export class EarthGlobe {
     group.add(lights);
 
     const atmo = new THREE.Mesh(
-      new THREE.SphereGeometry(1.042, this.lite ? 32 : 64, this.lite ? 24 : 48),
+      new THREE.SphereGeometry(1.058, this.lite ? 32 : 64, this.lite ? 24 : 48),
       new THREE.ShaderMaterial({
-        uniforms: { color: { value: new THREE.Color(0xd2c4ae) } },
+        uniforms: { color: { value: new THREE.Color(0xb9d4ee) } },
         vertexShader: `
           varying vec3 vN;
           varying vec3 vV;
@@ -727,8 +727,8 @@ export class EarthGlobe {
           varying vec3 vV;
           uniform vec3 color;
           void main(){
-            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 3.1);
-            gl_FragColor = vec4(color, fresnel * 0.72);
+            float fresnel = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.55);
+            gl_FragColor = vec4(color, fresnel * 0.88);
           }`,
         transparent: true,
         side: THREE.BackSide,
@@ -756,7 +756,7 @@ export class EarthGlobe {
           void main(){
             float f = abs(dot(normalize(vN), normalize(vV)));
             float edge = pow(1.0 - f, 1.45);
-            gl_FragColor = vec4(0.03, 0.04, 0.07, edge * 0.64);
+            gl_FragColor = vec4(0.05, 0.08, 0.14, edge * 0.72);
           }`,
         transparent: true,
         depthWrite: false,

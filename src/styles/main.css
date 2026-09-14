@@ -2300,8 +2300,8 @@ main {
 .era-grid li {
   position: relative;
   overflow: hidden;
-  min-height: 16rem;
-  padding: 1.35rem 1.4rem;
+  min-height: 22rem;
+  padding: 0 0 1.35rem;
   border-radius: 22px;
   border: 1px solid var(--line);
   background: var(--surface);
@@ -2436,7 +2436,7 @@ button.chip {
 
 .people-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   gap: 1.1rem;
   width: 100%;
 }
@@ -2550,9 +2550,8 @@ button.chip {
 }
 
 @media (min-width: 900px) {
-  .era-grid,
-  .featured-grid {
-    grid-template-columns: 1fr 1fr 1fr;
+  .era-grid {
+    grid-template-columns: 1fr;
   }
 
   .featured-grid {
@@ -2720,7 +2719,14 @@ button.chip {
   margin: 0.8rem 0 0;
   padding: 0;
   display: grid;
-  gap: 0.45rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+@media (max-width: 720px) {
+  .pod-list ol {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pod-item {
@@ -2741,7 +2747,7 @@ button.chip {
   grid-column: 1 / -1;
   width: 100%;
   aspect-ratio: 21 / 9;
-  max-height: 7.6rem;
+  max-height: 14rem;
   object-fit: cover;
   border-radius: 0;
   display: block;
@@ -2996,6 +3002,7 @@ button.chip {
 .era-copy {
   position: relative;
   z-index: 1;
+  padding: 0 1.4rem;
 }
 
 .era-copy h3,
@@ -3506,7 +3513,7 @@ button.chip {
 }
 
 .proof-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .proof-chip,
@@ -4612,6 +4619,20 @@ body.stage-open .grok {
 .stack-rungs .photo-plate img,
 .triptych .photo-plate img {
   aspect-ratio: 16 / 9;
+  max-height: 22rem;
+}
+
+.proof-chip .photo-plate img {
+  aspect-ratio: 21 / 9;
+  max-height: 22rem;
+}
+
+.era-grid .photo-plate {
+  margin: 0 0 0.85rem;
+}
+
+.era-grid .photo-plate img {
+  aspect-ratio: 21 / 9;
   max-height: 22rem;
 }
 
