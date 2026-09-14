@@ -1234,8 +1234,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pz1 = Math.sin(a1) * pavR;
     const crown = i % 2 ? crownB : crownA;
     const pav = i % 2 ? pavB : pavA;
-    addCut(triGeo(mx0, midY, mz0, x0, girdleTop, z0, x1, girdleTop, z1, 'crown'), crown, crowns);
-    addCut(triGeo(mx0, midY, mz0, x1, girdleTop, z1, mx1, midY, mz1, 'crown'), crown, crowns);
+    addCut(triGeo(mx0, midY, mz0, x0, girdleTop, z0, x1, girdleTop, z1, 'crown'), crown, crowns, false);
+    addCut(triGeo(mx0, midY, mz0, x1, girdleTop, z1, mx1, midY, mz1, 'crown'), crown, crowns, false);
     addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns, false);
     addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns, false);
     addCut(triGeo(x0, girdleTop, z0, x0, girdleBot, z0, x1, girdleBot, z1, 'crown'), girdleIce, crowns);
