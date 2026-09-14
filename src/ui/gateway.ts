@@ -219,23 +219,24 @@ function diamondPhysical(
   });
 }
 
-function iceCatchTex(): THREE.CanvasTexture {
+function tableLidTex(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = 256;
   c.height = 256;
   const ctx = c.getContext('2d');
   if (ctx) {
-    ctx.clearRect(0, 0, 256, 256);
-    const catchL = ctx.createRadialGradient(92, 78, 2, 92, 78, 72);
-    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.7)');
-    catchL.addColorStop(0.22, 'rgba(234, 241, 255, 0.12)');
+    ctx.fillStyle = '#16120e';
+    ctx.fillRect(0, 0, 256, 256);
+    const catchL = ctx.createRadialGradient(96, 82, 2, 96, 82, 70);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.62)');
+    catchL.addColorStop(0.22, 'rgba(234, 241, 255, 0.14)');
     catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
     ctx.fillStyle = catchL;
     ctx.fillRect(0, 0, 256, 256);
-    const rim = ctx.createRadialGradient(128, 128, 92, 128, 128, 127);
+    const rim = ctx.createRadialGradient(128, 128, 88, 128, 128, 127);
     rim.addColorStop(0, 'rgba(234, 241, 255, 0)');
-    rim.addColorStop(0.72, 'rgba(234, 241, 255, 0.04)');
-    rim.addColorStop(1, 'rgba(234, 241, 255, 0.42)');
+    rim.addColorStop(0.7, 'rgba(234, 241, 255, 0.05)');
+    rim.addColorStop(1, 'rgba(255, 236, 210, 0.38)');
     ctx.fillStyle = rim;
     ctx.fillRect(0, 0, 256, 256);
   }
@@ -408,7 +409,12 @@ function glassTex(
   return tex;
 }
 
-function attachLiteFire(mat: THREE.MeshBasicMaterial, env: THREE.CubeTexture): void {
+function attachLiteFire(
+  mat: THREE.MeshBasicMaterial,
+  env: THREE.CubeTexture,
+  kind: 'window' | 'mirror' = 'window',
+): void {
+  const mirror = kind === 'mirror';
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.liteEnv = { value: env };
     shader.vertexShader = shader.vertexShader
@@ -430,19 +436,24 @@ vLiteView = normalize(-mvPosition.xyz);
 vLiteWorldN = normalize(mat3(modelMatrix) * objectNormal);
 vLiteWorldV = cameraPosition - (modelMatrix * vec4(transformed, 1.0)).xyz;`,
       );
-    shader.fragmentShader = shader.fragmentShader
-      .replace(
-        '#include <common>',
-        `#include <common>
-uniform samplerCube liteEnv;
-varying vec3 vLiteNormal;
-varying vec3 vLiteView;
-varying vec3 vLiteWorldN;
-varying vec3 vLiteWorldV;`,
-      )
-      .replace(
-        '#include <map_fragment>',
-        `#include <map_fragment>
+    const fire = mirror
+      ? `#include <map_fragment>
+vec3 liteN = normalize(vLiteNormal);
+if (!gl_FrontFacing) liteN = -liteN;
+vec3 liteV = normalize(vLiteView);
+float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
+float liteFres = pow(1.0 - liteFacing, 1.35);
+vec3 wN = normalize(vLiteWorldN);
+if (!gl_FrontFacing) wN = -wN;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+float spec = pow(liteFres, 1.15);
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, 0.4 + spec * 0.48);
+diffuseColor.rgb += envRefl * spec * 1.45;
+diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * spec * 0.55;
+diffuseColor.a = mix(0.54, 0.9, spec);`
+      : `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
 if (!gl_FrontFacing) liteN = -liteN;
 vec3 liteV = normalize(vLiteView);
@@ -464,16 +475,27 @@ vec3 wT = refract(-wV, wN, 0.413);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 vec3 envRefr = textureCube(liteEnv, dot(wT, wT) > 0.001 ? wT : wR).rgb;
 float spec = pow(liteFres, 1.85);
+diffuseColor.rgb *= mix(0.8, 1.0, spec);
 diffuseColor.rgb += envRefr * liteFacing * 0.05;
 diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.42);
 diffuseColor.rgb += envRefl * spec * 1.7;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
-diffuseColor.a *= mix(0.78, 1.0, liteFres);`,
-      );
+diffuseColor.a *= mix(0.78, 1.0, liteFres);`;
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>
+uniform samplerCube liteEnv;
+varying vec3 vLiteNormal;
+varying vec3 vLiteView;
+varying vec3 vLiteWorldN;
+varying vec3 vLiteWorldV;`,
+      )
+      .replace('#include <map_fragment>', fire);
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-14';
+  mat.customProgramCacheKey = () => (mirror ? 'qd-lite-fire-15-mirror' : 'qd-lite-fire-15-window');
 }
 
 function glassMat(
@@ -488,6 +510,7 @@ function glassMat(
     vertexColors?: boolean;
     window?: number;
     writeDepth?: boolean;
+    mirror?: boolean;
     env?: THREE.CubeTexture;
   } = {},
 ): CutMat | THREE.MeshBasicMaterial {
@@ -502,7 +525,9 @@ function glassMat(
       depthWrite: Boolean(opts.writeDepth) || opts.window == null || opts.window > 0.84,
     });
     mat.toneMapped = false;
-    if (opts.window != null) attachLiteFire(mat, opts.env ?? duskCubeMap());
+    if (opts.window != null) {
+      attachLiteFire(mat, opts.env ?? duskCubeMap(), opts.mirror ? 'mirror' : 'window');
+    }
     return mat;
   }
   return diamondPhysical(tex, opts);
@@ -937,18 +962,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
     lite
-      ? (() => {
-          const ice = new THREE.MeshBasicMaterial({
-            map: iceCatchTex(),
-            color: 0xf2ebe0,
-            transparent: true,
-            opacity: 0.08,
-            depthWrite: false,
-            side: THREE.DoubleSide,
-          });
-          ice.toneMapped = false;
-          return ice;
-        })()
+      ? glassMat(tableLidTex(), true, {
+          tint: 0xffffff,
+          window: 0.62,
+          writeDepth: true,
+          mirror: true,
+          env: roomEnv,
+        })
       : glassMat(glassTex(photo0, false, 'table'), lite, {
           transmission: 0.38,
           thickness: 0.28,
@@ -958,7 +978,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   );
   table.position.y = tableY;
   table.userData.nodeId = 6;
-  if (lite) table.visible = false;
   crystal.add(table);
   const addCut = (geo: THREE.BufferGeometry, mat: CutMat | THREE.MeshBasicMaterial, list: THREE.Mesh[]): void => {
     const mesh = new THREE.Mesh(geo, mat);
@@ -1284,8 +1303,6 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const photo = visionStill();
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     if (lite && tmat instanceof THREE.MeshBasicMaterial) {
-      tmat.opacity = on ? 0.13 : 0.08;
-      tmat.color.setHex(on ? 0xffffff : 0xf2ebe0);
       tmat.needsUpdate = true;
     } else {
       swapMap(tmat, glassTex(photo, on, 'table'));
