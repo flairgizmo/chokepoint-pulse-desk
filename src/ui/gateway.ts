@@ -267,11 +267,6 @@ function culetFireTex(): THREE.CanvasTexture {
     cool.addColorStop(1, 'rgba(140, 190, 255, 0)');
     ctx.fillStyle = cool;
     ctx.fillRect(0, 0, 256, 256);
-    const mag = ctx.createRadialGradient(104, 146, 1, 104, 146, 36);
-    mag.addColorStop(0, 'rgba(255, 176, 210, 0.32)');
-    mag.addColorStop(1, 'rgba(255, 176, 210, 0)');
-    ctx.fillStyle = mag;
-    ctx.fillRect(0, 0, 256, 256);
     ctx.globalCompositeOperation = 'screen';
     ctx.strokeStyle = 'rgba(255, 220, 160, 0.42)';
     ctx.lineWidth = 2;
@@ -284,7 +279,7 @@ function culetFireTex(): THREE.CanvasTexture {
     ctx.moveTo(128, 44);
     ctx.lineTo(128, 212);
     ctx.stroke();
-    ctx.strokeStyle = 'rgba(255, 190, 210, 0.22)';
+    ctx.strokeStyle = 'rgba(190, 220, 255, 0.22)';
     ctx.beginPath();
     ctx.moveTo(72, 72);
     ctx.lineTo(184, 184);
@@ -341,9 +336,9 @@ function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
   ctx.globalCompositeOperation = 'screen';
   const g = ctx.createRadialGradient(256, 256, 6, 256, 256, 248);
   g.addColorStop(0, 'rgba(234, 241, 255, 0.7)');
-  g.addColorStop(0.12, 'rgba(90, 240, 255, 0.56)');
-  g.addColorStop(0.28, 'rgba(255, 72, 168, 0.34)');
-  g.addColorStop(0.5, 'rgba(255, 196, 72, 0.16)');
+  g.addColorStop(0.12, 'rgba(160, 210, 255, 0.48)');
+  g.addColorStop(0.28, 'rgba(90, 160, 220, 0.22)');
+  g.addColorStop(0.5, 'rgba(255, 214, 160, 0.12)');
   g.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, 512, 512);
@@ -471,7 +466,7 @@ vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.05);
 vec3 body = vec3(0.1, 0.14, 0.2);
-vec3 heart = mix(body, diffuseColor.rgb, 0.16);
+vec3 heart = mix(body, diffuseColor.rgb, 0.22);
 diffuseColor.rgb = mix(heart, envRefl, spec * 0.72);
 diffuseColor.rgb += envRefl * spec * 1.85;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.55;
@@ -510,7 +505,9 @@ vec3 liteV = normalize(vLiteView);
 float liteFacing = clamp(abs(dot(liteN, liteV)), 0.0, 1.0);
 float liteFres = pow(1.0 - liteFacing, 1.2);
 float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
-float liteFlash = smoothstep(0.86, 1.0, liteSpark) * liteFres;
+float liteSpark2 = fract(sin(dot(vMapUv, vec2(78.233, 12.9898))) * 23421.631);
+float liteFlash = smoothstep(0.72, 1.0, liteSpark) * liteFres;
+float liteFlash2 = smoothstep(0.9, 1.0, liteSpark2) * liteFres;
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
 vec3 wV = normalize(vLiteWorldV);
@@ -518,13 +515,14 @@ vec3 wR = reflect(-wV, wN);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 envRefl = mix(vec3(dot(envRefl, vec3(0.28, 0.52, 0.2))), envRefl * vec3(0.78, 0.9, 1.12), 0.36);
 float spec = pow(liteFres, 1.12);
-vec3 body = vec3(0.74, 0.84, 0.96);
+vec3 body = vec3(0.7, 0.82, 0.96);
 diffuseColor.rgb = mix(body, envRefl, spec * 0.88);
 diffuseColor.rgb += envRefl * spec * 2.35;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 1.05;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.7;
-diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.85;
-diffuseColor.a *= mix(0.16, 0.84, spec);`;
+diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 1.15;
+diffuseColor.rgb += vec3(0.72, 0.88, 1.0) * liteFlash2 * 0.85;
+diffuseColor.a *= mix(0.18, 0.88, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -598,7 +596,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-32-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-34-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -798,7 +796,7 @@ function triGeo(
 type WellLane = 0 | 1 | 2 | 3;
 
 function wellGrade(lane: WellLane): GlassGrade {
-  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 1.1, contrast: 1.16, saturate: 0.86, multiply: 0.12 };
+  if (lane === 0) return { sx: 0.14, sy: 0.04, sw: 0.32, sh: 0.72, brightness: 1.18, contrast: 1.2, saturate: 0.9, multiply: 0.1 };
   if (lane === 1) return { sx: 0.38, sy: 0.06, sw: 0.3, sh: 0.7, brightness: 0.98, contrast: 1.2, saturate: 0.8, multiply: 0.14 };
   if (lane === 2) return { sx: 0.58, sy: 0.05, sw: 0.3, sh: 0.7, brightness: 0.86, contrast: 1.24, saturate: 0.74, multiply: 0.16 };
   return { sx: 0.24, sy: 0.1, sw: 0.34, sh: 0.68, brightness: 0.94, contrast: 1.18, saturate: 0.78, multiply: 0.14 };
@@ -1266,8 +1264,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const pz1 = Math.sin(a1) * pavR;
     const crown = i % 2 ? crownB : crownA;
     const pav = i % 2 ? pavB : pavA;
-    addCut(triGeo(mx0, midY, mz0, x0, girdleTop, z0, x1, girdleTop, z1, 'crown'), crown, crowns, false);
-    addCut(triGeo(mx0, midY, mz0, x1, girdleTop, z1, mx1, midY, mz1, 'crown'), crown, crowns, false);
+    addCut(triGeo(mx0, midY, mz0, x0, girdleTop, z0, x1, girdleTop, z1, 'crown'), crown, crowns);
+    addCut(triGeo(mx0, midY, mz0, x1, girdleTop, z1, mx1, midY, mz1, 'crown'), crown, crowns);
     addCut(triGeo(tx0, tableY, tz0, mx0, midY, mz0, mx1, midY, mz1, 'crown'), crown, crowns, false);
     addCut(triGeo(tx0, tableY, tz0, mx1, midY, mz1, tx1, tableY, tz1, 'crown'), crown, crowns, false);
     addCut(triGeo(x0, girdleTop, z0, x0, girdleBot, z0, x1, girdleBot, z1, 'crown'), girdleIce, crowns);
@@ -1352,8 +1350,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     loop.renderOrder = 3;
     crystal.add(loop);
   };
-  addGirdleLoop(girdleTop, lite ? 0.28 : 0.24);
-  addGirdleLoop(girdleBot, lite ? 0.2 : 0.18);
+  if (!lite) {
+    addGirdleLoop(girdleTop, 0.24);
+    addGirdleLoop(girdleBot, 0.18);
+  }
   const core = new THREE.Mesh(
     new THREE.SphereGeometry(0.1, lite ? 10 : 16, lite ? 8 : 12),
     lite
@@ -1473,9 +1473,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(wellRoot);
     core.visible = false;
     const fires = [
-      fireSprite(0xffffff, 0, BOT_Y + 0.1, 0.02, 0.58),
-      fireSprite(0xb4dcff, 0.05, BOT_Y + 0.06, -0.03, 0.34),
-      fireSprite(0xffe4c4, -0.04, BOT_Y + 0.08, 0.04, 0.3),
+      fireSprite(0xffffff, 0, BOT_Y + 0.08, 0.02, 0.22),
+      fireSprite(0xb4dcff, 0.04, BOT_Y + 0.05, -0.02, 0.14),
+      fireSprite(0xffe4c4, -0.03, BOT_Y + 0.06, 0.03, 0.12),
     ];
     fires.forEach((spark) => {
       crystal.add(spark);
@@ -1490,7 +1490,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         Math.sin(a) * eqR,
         0.042,
       );
-      spark.material.opacity = 0.22;
+      spark.material.opacity = 0.28;
       crystal.add(spark);
       girdleFires.push(spark);
     }

@@ -2104,12 +2104,13 @@ main {
 
 .liability-cards li {
   display: grid;
-  grid-template-columns: 3.4rem 1fr;
-  gap: 1rem;
-  padding: 1.3rem 1.4rem;
+  grid-template-columns: 1fr;
+  gap: 0.65rem;
+  padding: 0 0 1.15rem;
   border-radius: 18px;
   border: 1px solid var(--line);
   background: var(--surface);
+  overflow: hidden;
 }
 
 .liability-cards .n {
@@ -3530,14 +3531,22 @@ button.chip {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (max-width: 799px) {
-  .inst-grid {
-    grid-template-columns: 1fr;
-  }
+.patent-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.proof-grid {
-  grid-template-columns: 1fr;
+.proof-grid,
+.model-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 799px) {
+  .inst-grid,
+  .patent-grid,
+  .proof-grid,
+  .model-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .proof-chip,
@@ -4071,6 +4080,7 @@ body.stage-open .grok {
 
 @media (max-width: 900px) {
   .proof-grid,
+  .model-grid,
   .tech-grid {
     grid-template-columns: 1fr;
   }
@@ -5056,10 +5066,26 @@ body.stage-open .grok {
   border-color: transparent;
 }
 
+.proof-chip,
+.cbdc-model {
+  padding: 0 0 1.05rem;
+  overflow: hidden;
+}
+
 .proof-chip strong,
 .proof-chip span,
-.quote-card p,
-.quote-card footer,
+.cbdc-model h3,
+.cbdc-model p {
+  padding-inline: 1.05rem;
+}
+
+.proof-chip strong,
+.cbdc-model h3 {
+  padding-top: 0.15rem;
+}
+
+.proof-chip strong,
+.proof-chip span,
 .essay-card h3,
 .essay-card p,
 .constellation-grid strong,

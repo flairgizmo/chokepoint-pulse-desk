@@ -127,7 +127,8 @@ function oceanMask(
     const b = p[i + 2];
     const lum = 0.3 * r + 0.59 * g + 0.11 * b;
     const ocean = (b > r + 6 && b >= g - 4 && lum < 96 && Math.max(r, g, b) < 130)
-      || (b > r + 10 && b > g + 4 && lum < 150 && r < 90);
+      || (b > r + 10 && b > g + 4 && lum < 150 && r < 90)
+      || (b > r + 4 && g > r + 2 && b >= g - 8 && lum < 165 && r < 115 && b > 70);
     p[i] = rgb[0];
     p[i + 1] = rgb[1];
     p[i + 2] = rgb[2];
@@ -142,16 +143,31 @@ function gradeCinemaDay(img: HTMLImageElement): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = Math.max(1, img.naturalWidth || img.width);
   c.height = Math.max(1, img.naturalHeight || img.height);
-  const ctx = c.getContext('2d');
+  const ctx = c.getContext('2d', { willReadFrequently: true });
   if (!ctx) return c;
   ctx.filter = 'contrast(1.14) saturate(0.9) brightness(0.98)';
   ctx.drawImage(img, 0, 0, c.width, c.height);
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.globalAlpha = 0.22;
-  ctx.drawImage(oceanMask(img, c.width, c.height, [18, 36, 56]), 0, 0);
+  ctx.globalAlpha = 0.28;
+  ctx.drawImage(oceanMask(img, c.width, c.height, [16, 32, 52]), 0, 0);
   ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = 'source-over';
+  const crush = ctx.getImageData(0, 0, c.width, c.height);
+  const p = crush.data;
+  for (let i = 0; i < p.length; i += 4) {
+    const r = p[i];
+    const g = p[i + 1];
+    const b = p[i + 2];
+    const turquoise = b > r + 4 && g > r + 2 && b > 70 && r < 115;
+    const cyan = b > r + 6 && b > g - 8 && b > 56 && r < 120;
+    if (turquoise || cyan) {
+      p[i] = Math.round(r * 0.62);
+      p[i + 1] = Math.round(g * 0.7);
+      p[i + 2] = Math.round(b * 0.82);
+    }
+  }
+  ctx.putImageData(crush, 0, 0);
   return c;
 }
 
