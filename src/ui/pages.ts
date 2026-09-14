@@ -305,8 +305,11 @@ export function quoteButton(id: string): string {
   const q = quotesFor().find((x) => x.id === id);
   if (!q) return '';
   return `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(q.id)}">
-    <span class="qmark" aria-hidden="true">“</span>
+    ${posterFrame(
+      photoFigure(plateFor(q.id), 'quote-still'),
+      `<span class="qmark" aria-hidden="true">“</span>
     <p>${esc(q.text)}</p>
-    <footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>
+    <footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`,
+    )}
   </button>`;
 }

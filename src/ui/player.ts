@@ -1,5 +1,6 @@
 import { quotes } from '../data/catalog';
-import { plateFor, PLATES, type Plate } from '../data/plates';
+import { photoFigure, plateFor, PLATES, type Plate } from '../data/plates';
+import { posterFrame } from './diagrams';
 import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
 
@@ -67,10 +68,11 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
   const quoteCards = ep.quotes
     .map((q) => {
       const id = quoteStageId(q.text);
-      const inner = `<p>${esc(q.text)}</p><footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`;
+      const copy = `<p>${esc(q.text)}</p><footer><strong>${esc(q.who)}</strong><span>${esc(q.role)}</span></footer>`;
+      const still = posterFrame(photoFigure(plateFor(id ?? `pod-${q.who}`), 'quote-still'), copy);
       return id
-        ? `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(id)}">${inner}</button>`
-        : `<blockquote class="quote-card">${inner}</blockquote>`;
+        ? `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(id)}">${still}</button>`
+        : `<blockquote class="quote-card">${still}</blockquote>`;
     })
     .join('');
   const next = episodeByN(ep.n + 1);

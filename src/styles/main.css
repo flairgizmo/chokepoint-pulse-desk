@@ -5092,7 +5092,9 @@ body.stage-open .grok {
 .poster-frame > .token-still,
 .poster-frame > .essay-order-still,
 .poster-frame > .city-essay-still,
-.poster-frame > .city-neighbor-still {
+.poster-frame > .city-neighbor-still,
+.poster-frame > .quote-still,
+.poster-frame > .constellation-still {
   margin: 0;
 }
 
@@ -7050,4 +7052,115 @@ section.block .kicker {
   .treaty-row {
     grid-template-columns: 1fr;
   }
+}
+
+.quote-card,
+.quote-card.quote-feature {
+  padding: 0;
+  margin-top: 1rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 16px;
+  background: #0b1220;
+  color: #f4f7fb;
+}
+
+.quote-card .poster-copy,
+.pod-quotes .quote-card .poster-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 3.2rem 1.1rem 0.95rem;
+}
+
+.quote-card .poster-copy .qmark {
+  font-size: 2.4rem;
+  line-height: 0.7;
+  color: #8eb0ff;
+  margin: 0;
+}
+
+.quote-card .poster-copy p,
+.quote-card .poster-copy footer,
+.quote-card .poster-copy footer strong,
+.quote-card .poster-copy footer span,
+.quote-card .poster-copy .note {
+  color: #f4f7fb;
+  padding: 0;
+  margin: 0;
+}
+
+.quote-card .poster-copy p {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--serif);
+}
+
+.quote-card .poster-copy footer span,
+.quote-card .poster-copy .note {
+  color: #b7c4d8;
+}
+
+.quote-card .poster-frame,
+.quote-card .poster-frame img {
+  min-height: 14rem;
+  max-height: 20rem;
+}
+
+.quote-card.quote-feature .poster-frame,
+.quote-card.quote-feature .poster-frame img {
+  min-height: 18rem;
+  max-height: 26rem;
+}
+
+.quote-card.quote-feature .poster-copy p {
+  -webkit-line-clamp: 7;
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+}
+
+.quote-scroll .quote-card .poster-frame,
+.quote-scroll .quote-card .poster-frame img,
+.pod-quotes .quote-card .poster-frame,
+.pod-quotes .quote-card .poster-frame img {
+  min-height: 12rem;
+  max-height: 16rem;
+}
+
+.quote-scroll .quote-card .poster-copy p,
+.pod-quotes .quote-card .poster-copy p {
+  -webkit-line-clamp: 4;
+}
+
+.constellation-grid a {
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  background: #0b1220;
+}
+
+.constellation-grid .poster-frame,
+.constellation-grid .poster-frame img {
+  min-height: 8.5rem;
+  max-height: 11rem;
+  aspect-ratio: 16 / 9;
+}
+
+.constellation-grid .poster-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  padding: 2rem 0.85rem 0.7rem;
+}
+
+.constellation-grid .poster-copy strong {
+  color: #f4f7fb;
+  margin: 0;
+}
+
+.constellation-grid .poster-copy span {
+  color: #b7c4d8;
 }

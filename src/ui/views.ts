@@ -104,7 +104,10 @@ export function constellation(): string {
     <ul class="constellation-grid">${nodes
       .map(
         ([label, href, sub]) =>
-          `<li><a href="${esc(href)}" target="_blank" rel="noopener noreferrer"><strong>${esc(label)}</strong><span>${esc(sub)}</span></a></li>`,
+          `<li><a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${posterFrame(
+            photoFigure(plateFor(`door-${label}`), 'constellation-still'),
+            `<strong>${esc(label)}</strong><span>${esc(sub)}</span>`,
+          )}</a></li>`,
       )
       .join('')}</ul>
   </section>`;
@@ -231,13 +234,16 @@ function chapterReveal(c: Chapter, open = false): string {
 
 function quoteCard(q: Quote): string {
   return `<button type="button" class="quote-card" data-stage="quote" data-stage-id="${esc(q.id)}">
-    <span class="qmark" aria-hidden="true">“</span>
+    ${posterFrame(
+      photoFigure(plateFor(q.id), 'quote-still'),
+      `<span class="qmark" aria-hidden="true">“</span>
     <p>${esc(q.text)}</p>
     <footer>
       <strong>${esc(q.who)}</strong>
       <span>${esc(q.role)}</span>
       ${q.note ? `<p class="note">${esc(q.note)}</p>` : ''}
-    </footer>
+    </footer>`,
+    )}
   </button>`;
 }
 

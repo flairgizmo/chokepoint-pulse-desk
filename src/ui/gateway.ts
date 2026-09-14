@@ -681,11 +681,16 @@ function facetFire(
   const rim = Math.max(0, n.dot(RIM_DIR));
   const facing = Math.max(0, n.dot(VIEW_DIR));
   const fres = (1 - facing) ** 1.55;
-  const shade = Math.min(1, 0.06 + key * 0.9 + rim * 0.16 + fres * 0.12);
+  /** 16-cut: adjacent kites are π/8 apart, so *8 flips neighbors. Rest camera sees the stripe. */
+  const stripe = 0.5 + 0.5 * Math.cos(Math.atan2(n.x, n.z) * 8);
+  const shade = Math.min(
+    1,
+    0.05 + key * 0.46 + stripe * (0.22 + facing * 0.38) + rim * 0.12 + fres * 0.1,
+  );
   return new THREE.Color(
-    Math.min(1, shade + key * 0.16 + fres * 0.08),
-    shade * 0.94,
-    Math.min(1, shade * 0.86 + rim * 0.1 + fres * 0.05),
+    Math.min(1, shade + key * 0.12 + stripe * 0.1 + fres * 0.06),
+    shade * 0.93,
+    Math.min(1, shade * 0.82 + rim * 0.1 + (1 - stripe) * 0.05),
   );
 }
 
