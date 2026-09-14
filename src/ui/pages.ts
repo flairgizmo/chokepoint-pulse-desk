@@ -286,7 +286,7 @@ export function overledgerRoster(): string {
           <span class="cinema-grain" aria-hidden="true"></span>
           ${face}
           <span class="people-wash" aria-hidden="true"></span>
-          <span class="people-credit"><strong>${esc(p.name)}</strong><em>${esc(b.role)}</em></span>
+          <span class="people-credit"><strong>${esc(p.name)}</strong><span class="people-credit-role">${esc(b.role)}</span></span>
           <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
         </span>
         <em>${esc(b.era)}</em>

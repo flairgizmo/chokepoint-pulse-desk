@@ -1158,7 +1158,7 @@ main {
 }
 
 .person-still .cinema-letterbox {
-  height: 0.7rem;
+  height: 1.6rem;
 }
 
 .person .people-face,
@@ -2535,15 +2535,27 @@ button.chip {
 
 .person-still .people-credit,
 .ol-still .people-credit {
-  left: 0.85rem;
-  right: 0.85rem;
-  bottom: 1.15rem;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 1.7rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.18rem;
+  gap: 0.22rem;
   pointer-events: none;
   text-shadow: 0 1px 8px rgba(7, 11, 20, 0.85);
+}
+
+.person-still .people-credit strong,
+.ol-still .people-credit strong,
+.person-still .people-credit em,
+.ol-still .people-credit em,
+.person-still .people-credit-role,
+.ol-still .people-credit-role {
+  position: relative;
+  z-index: 7;
+  float: none;
+  line-height: 1.25;
 }
 
 .person-still .people-credit strong,
@@ -2558,8 +2570,8 @@ button.chip {
   margin: 0;
 }
 
-.person-still .people-credit em,
-.ol-still .people-credit em {
+.person-still .people-credit-role,
+.ol-still .people-credit-role {
   display: block;
   width: 100%;
   font-style: normal;
@@ -2567,6 +2579,7 @@ button.chip {
   font-size: 0.72rem;
   padding: 0;
   margin: 0;
+  line-height: 1.25;
 }
 
 .person > div > h2,
