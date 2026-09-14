@@ -50,10 +50,13 @@ function displayTitle(title: string, mute = ''): string {
 
 export function pageHero(k: string, title: string, lede: string, mute = '', bed?: VisualId, film?: string): string {
   const skipPlate = Boolean(film) && film !== 'vision';
+  const kick = kicker(k);
+  const filmHtml = film ? filmStageMarkup(film, title, skipPlate ? kick : '') : '';
+  const plateHtml = skipPlate ? '' : heroPlate(k, title, mute, bed, kick);
   return `<header class="page-hero enterprise-hero cinema-hero">
-    ${film ? filmStageMarkup(film, title) : ''}
-    ${skipPlate ? '' : heroPlate(k, title, mute, bed)}
-    ${kicker(k)}
+    ${filmHtml}
+    ${plateHtml}
+    ${!filmHtml && !plateHtml ? kick : ''}
     <div class="hero-split">
       <h1 class="display">${displayTitle(title, mute)}</h1>
       <p class="lede">${esc(lede)}</p>
@@ -616,10 +619,10 @@ export function renderHome(): string {
         <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
         <span class="cinema-grain" aria-hidden="true"></span>
         <canvas id="gateway" class="gateway-stage" role="img" aria-label="Sterling corridor: six UK commercial banks around an Overledger plane. Click a bank. Drag to orbit."></canvas>
+        <div class="poster-copy hero-kicker-copy">${kicker('QntDesk · independent research')}</div>
         <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
         <p class="tess-hint" data-gateway-hint>Six commercial banks. One gateway plane. Click a node.</p>
       </div>
-      ${kicker('QntDesk · independent research')}
       <div class="hero-split">
         <h1 class="display">The ledgers were never the hard part. <span class="display-mute">Making them talk is.</span></h1>
         <div>

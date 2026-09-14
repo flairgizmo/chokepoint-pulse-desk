@@ -59,7 +59,7 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   (pool.material as THREE.MeshBasicMaterial).opacity = 0.28;
   scene.add(pool);
 
-  const plate = makeCinemaPlate(2.28, 1.18, probe.lite, src, 0.1);
+  const plate = makeCinemaPlate(2.28, 1.18, probe.lite, src, 0.1, false, true);
   applyPlateMap(plate.mat, tex);
   plate.root.position.set(0.04, 0.16, 0);
   plate.root.rotation.set(-0.08, -0.3, 0.012);
@@ -68,10 +68,16 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   still.onload = () => applyPlateMap(plate.mat, printGradeImage(still));
   still.src = src;
 
-  scene.add(new THREE.AmbientLight(0xffffff, probe.lite ? 1 : 0.55));
-  const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 0.35 : 1.35);
+  scene.add(new THREE.AmbientLight(0x9aacc8, probe.lite ? 0.3 : 0.55));
+  if (probe.lite) scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, 0.22));
+  const key = new THREE.DirectionalLight(0xfff1dc, probe.lite ? 1.22 : 1.35);
   key.position.set(0.55, 0.7, 1.8);
   scene.add(key);
+  if (probe.lite) {
+    const rim = new THREE.DirectionalLight(0x3b7bff, 0.52);
+    rim.position.set(-1.6, 0.45, -0.9);
+    scene.add(rim);
+  }
   const composer = addUnrealLook(renderer, scene, camera, probe.lite, src);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

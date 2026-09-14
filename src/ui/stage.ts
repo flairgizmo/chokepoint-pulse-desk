@@ -114,12 +114,7 @@ function paint(root: HTMLElement, doc: StageDoc): void {
     : '';
   const relatedChips = (doc.related ?? []).filter((r) => !(r.kind === doc.kind && r.id === doc.id));
   const related = relatedChips.length
-    ? `<div class="stage-related" aria-label="Related">${relatedChips
-        .map(
-          (r) =>
-            `<button type="button" class="stage-chip" data-stage="${esc(r.kind)}" data-stage-id="${esc(r.id)}"><img src="${esc(plateFor(r.id, r.kind, r.label).src)}" alt="" width="240" height="135" /><span>${esc(r.label)}</span></button>`,
-        )
-        .join('')}</div>`
+    ? `<div class="stage-related" aria-label="Related">${relatedButtons(relatedChips)}</div>`
     : '';
   const original = doc.original
     ? `<p class="stage-original">${extLink(doc.original.href.startsWith('http') ? doc.original.href : sourceUrl(doc.original.href), doc.original.label || 'Open original')}</p>`
@@ -334,7 +329,7 @@ export function relatedButtons(chips: RelatedChip[]): string {
   return chips
     .map(
       (r) =>
-        `<button type="button" class="text-link" data-stage="${esc(r.kind)}" data-stage-id="${esc(r.id)}">${esc(r.label)}</button>`,
+        `<button type="button" class="stage-chip" data-stage="${esc(r.kind)}" data-stage-id="${esc(r.id)}"><img src="${esc(plateFor(r.id, r.kind, r.label).src)}" alt="" width="240" height="135" /><span>${esc(r.label)}</span></button>`,
     )
-    .join(' · ');
+    .join('');
 }

@@ -210,7 +210,7 @@ function mountFilm3D(
 
   const puddles: THREE.Mesh[] = [];
   slides.forEach((slide) => {
-    const plate = makeCinemaPlate(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, lite, backdrop, 0.1);
+    const plate = makeCinemaPlate(portrait ? 1.02 : 2.12, portrait ? 1.36 : 1.18, lite, backdrop, 0.1, false, true);
     plate.root.userData.slide = slide;
     plate.face.userData.slide = slide;
     group.add(plate.root);

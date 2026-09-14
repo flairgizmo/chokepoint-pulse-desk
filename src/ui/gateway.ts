@@ -1,7 +1,7 @@
 /** Filmic WebGL upgrade for the sterling corridor. 2D paints first from gateway2d. */
 
 import * as THREE from 'three';
-import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, visionStill } from './cinemaSet';
+import { addCinemaHaze, addUnrealLook, applyPlateMap, cinemaChrome, cinemaFloorMap, climbUserData, duskCubeMap, duskWall, hardenCanvasTex, makeCinemaPlate, makeFloorContact, makeFloorPool, onDuskPhoto, type PlateFaceMat, visionStill } from './cinemaSet';
 import { probeWebGL } from './webgl';
 import {
   BANKS,
@@ -1585,7 +1585,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     return img;
   });
   const cards: THREE.Group[] = [];
-  const cardMats: Array<THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial> = [];
+  const cardMats: PlateFaceMat[] = [];
   const puddles: THREE.Mesh[] = [];
   BANKS.forEach((bank, i) => {
     const tex = hardenCanvasTex(new THREE.CanvasTexture(logoCanvas(null, bank.short, bank.name, false, stills[i])));

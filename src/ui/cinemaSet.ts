@@ -453,12 +453,15 @@ export function addCinemaSet(scene: THREE.Scene, lite: boolean, backdropSrc: str
     prev?.dispose();
   });
 
-  scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.7 : 0.4));
-  scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.68 : 0.52));
-  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 2.15 : 1.95);
+  scene.add(new THREE.AmbientLight(0x9aacc8, lite ? 0.32 : 0.4));
+  scene.add(new THREE.HemisphereLight(0xe4edff, 0x0a1220, lite ? 0.24 : 0.52));
+  const key = new THREE.DirectionalLight(0xfff1dc, lite ? 1.18 : 1.95);
   key.position.set(1.8, 2.9, 2.4);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0x3b7bff, lite ? 0.85 : 0.95);
+  const fill = new THREE.DirectionalLight(0xc4d4ea, lite ? 0.28 : 0.12);
+  fill.position.set(-0.4, 1.6, 2.8);
+  scene.add(fill);
+  const rim = new THREE.DirectionalLight(0x3b7bff, lite ? 0.62 : 0.95);
   rim.position.set(-2.4, 1.3, -1.6);
   scene.add(rim);
   addCinemaHaze(scene);
@@ -634,28 +637,27 @@ export function duskSheen(opts: {
   });
 }
 
-export function plateMaterial(
-  lite: boolean,
-  envSrc?: string,
-): THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial {
+export type PlateFaceMat = THREE.MeshBasicMaterial | THREE.MeshLambertMaterial | THREE.MeshPhysicalMaterial;
+
+export function plateMaterial(lite: boolean, envSrc?: string, lit = false): PlateFaceMat {
   void envSrc;
-  return lite
-    ? new THREE.MeshBasicMaterial({ color: 0x1a2438 })
-    : new THREE.MeshPhysicalMaterial({
-        color: 0x1a2438,
-        roughness: 0.1,
-        metalness: 0.08,
-        clearcoat: 1,
-        clearcoatRoughness: 0.08,
-        ior: 1.52,
-        envMapIntensity: 1.7,
-      });
+  if (!lite) {
+    return new THREE.MeshPhysicalMaterial({
+      color: 0x1a2438,
+      roughness: 0.1,
+      metalness: 0.08,
+      clearcoat: 1,
+      clearcoatRoughness: 0.08,
+      ior: 1.52,
+      envMapIntensity: 1.7,
+    });
+  }
+  return lit
+    ? new THREE.MeshLambertMaterial({ color: 0x1a2438 })
+    : new THREE.MeshBasicMaterial({ color: 0x1a2438 });
 }
 
-export function applyPlateMap(
-  mat: THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial,
-  tex: THREE.Texture,
-): void {
+export function applyPlateMap(mat: PlateFaceMat, tex: THREE.Texture): void {
   mat.map = tex;
   mat.color = new THREE.Color(0xffffff);
   mat.needsUpdate = true;
@@ -664,7 +666,7 @@ export function applyPlateMap(
 export type CinemaPlate = {
   root: THREE.Group;
   face: THREE.Mesh;
-  mat: THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+  mat: PlateFaceMat;
 };
 
 /** Photograph on the front only. Stock and bezel stay dark so box sides cannot blow out to sky. */
@@ -675,9 +677,10 @@ export function makeCinemaPlate(
   envSrc?: string,
   depth = 0.05,
   flush = false,
+  lit = false,
 ): CinemaPlate {
   const root = new THREE.Group();
-  const mat = plateMaterial(lite, envSrc);
+  const mat = plateMaterial(lite, envSrc, lit);
   const face = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
   face.position.z = depth / 2 + 0.003;
   root.add(face);
@@ -714,7 +717,7 @@ export function dimCinemaPlate(root: THREE.Object3D, dim: boolean): void {
     const mesh = obj as THREE.Mesh;
     const raw = mesh.material;
     if (!raw || Array.isArray(raw)) return;
-    const mat = raw as THREE.MeshBasicMaterial | THREE.MeshPhysicalMaterial;
+    const mat = raw as THREE.MeshBasicMaterial | PlateFaceMat;
     if (!('opacity' in mat)) return;
     mat.opacity = dim ? 0.28 : 1;
     mat.transparent = dim;

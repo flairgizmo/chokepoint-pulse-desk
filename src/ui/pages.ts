@@ -21,23 +21,29 @@ function pill(href: string, label: string, hover: string, kind: 'primary' | 'gho
   return `<a class="btn btn-${kind}" href="${esc(href)}"><span class="btn-swap"><span>${esc(label)}</span><span>${esc(hover)}</span></span><span class="btn-arrow" aria-hidden="true">↗</span></a>`;
 }
 
-export function heroPlate(k: string, title: string, mute = '', bed?: VisualId): string {
+export function heroPlate(k: string, title: string, mute = '', bed?: VisualId, overlay = ''): string {
   const plate = plateFor(k, bed, title, mute);
   return `<figure class="hero-plate cinema-frame">
     <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
     <span class="cinema-grain" aria-hidden="true"></span>
     <img class="hero-still" src="${esc(plate.src)}" alt="${esc(plate.alt)}" width="1920" height="820" decoding="async" />
     <span class="hero-wash" aria-hidden="true"></span>
+    ${overlay ? `<div class="poster-copy hero-kicker-copy">${overlay}</div>` : ''}
     <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     <figcaption>${esc(plate.credit)}</figcaption>
   </figure>`;
 }
 
-function hero(k: string, title: string, lede: string, seed: string, film?: string, plate = true): string {
+function hero(k: string, title: string, lede: string, seed: string, film?: string, plate = true, overlayKick = true): string {
+  const skipPlate = Boolean(film) || !plate;
+  const kick = kicker(k);
+  const overlay = overlayKick ? kick : '';
+  const filmHtml = film ? filmStageMarkup(film, title, skipPlate ? overlay : '') : '';
+  const plateHtml = skipPlate ? '' : heroPlate(k, title, seed, undefined, overlay);
   return `<header class="page-hero enterprise-hero cinema-hero">
-    ${film ? filmStageMarkup(film, title) : ''}
-    ${film || !plate ? '' : heroPlate(k, title, seed)}
-    ${kicker(k)}
+    ${filmHtml}
+    ${plateHtml}
+    ${overlayKick && !filmHtml && !plateHtml ? kick : ''}
     <div class="hero-split">
       <h1 class="display">${title}</h1>
       <p class="lede">${esc(lede)}</p>
@@ -162,9 +168,10 @@ export function renderStack(): string {
       <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
       <span class="cinema-grain" aria-hidden="true"></span>
       <canvas id="stack-stage" class="stack-stage" role="img" aria-label="Five Overledger layers as film plates. Click a plate."></canvas>
+      <div class="poster-copy hero-kicker-copy">${kicker('Stack')}</div>
       <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
     </section>
-    ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero', undefined, false)}
+    ${hero('Stack', 'Five layers. One job: make the books talk.', 'Isolate a rung. Dim the rest. Flow Applications, PayScript, Fusion, Overledger, the rails underneath. Each layer has a job, a standard, and a sentence for what it is not.', 'stack-hero', undefined, false, false)}
     ${stillStrip('stack', 'Photographs in the layers', 5)}
     <section class="stack-exploded" id="stack-exploded">
       ${kicker('Exploded instrument')}
@@ -205,7 +212,7 @@ export function renderTechnology(): string {
           <div><h3>Standards</h3><p>${esc(t.standards)}</p></div>
           <div><h3>What it is not</h3><p>${esc(t.isNot)}</p></div>
         </div>
-        <p class="stage-related">${relatedButtons(chipsFromIds(t.related))}</p>
+        <div class="stage-related">${relatedButtons(chipsFromIds(t.related))}</div>
       </details>
     </article>`,
   ).join('');

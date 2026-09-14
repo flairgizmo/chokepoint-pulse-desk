@@ -4619,6 +4619,26 @@ body.stage-open .grok {
   pointer-events: none;
 }
 
+.hero-plate .hero-kicker-copy,
+.film-stage-wrap .hero-kicker-copy,
+.stack-stage-wrap .hero-kicker-copy,
+.hero-stage .hero-kicker-copy {
+  z-index: 6;
+  padding: 3.4rem 1.35rem 1.45rem;
+}
+
+.hero-plate .hero-kicker-copy .kicker,
+.film-stage-wrap .hero-kicker-copy .kicker,
+.stack-stage-wrap .hero-kicker-copy .kicker,
+.hero-stage .hero-kicker-copy .kicker {
+  margin: 0;
+  color: #c5d4ea;
+}
+
+.hero-kicker-copy ~ figcaption {
+  display: none;
+}
+
 .hero-plate img,
 .photo-plate img,
 .beat-figure.photo-plate img {
@@ -6028,6 +6048,10 @@ body.stage-open .grok {
 
 .tech-chapter .card-more summary {
   color: #eaf1ff;
+}
+
+.tech-chapter .stage-related {
+  margin-top: 1rem;
 }
 
 .chapter.city-essay {

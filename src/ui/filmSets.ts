@@ -180,12 +180,13 @@ export function filmBackdrop(set: string): string {
   return FILM_BACKDROPS[set] ?? FILM_SETS[set]?.[0]?.src ?? PLATES.canary.src;
 }
 
-export function filmStageMarkup(set: string, label: string): string {
+export function filmStageMarkup(set: string, label: string, overlay = ''): string {
   if (!set.startsWith('city:') && !FILM_SETS[set]) return '';
   return `<section class="film-stage-wrap cinema-stage" aria-label="${esc(label)}">
     <span class="cinema-letterbox cinema-letterbox-top" aria-hidden="true"></span>
     <span class="cinema-grain" aria-hidden="true"></span>
     <canvas id="film-stage" class="film-stage" data-film-set="${esc(set)}" role="img" aria-label="${esc(label)}"></canvas>
+    ${overlay ? `<div class="poster-copy hero-kicker-copy">${overlay}</div>` : ''}
     <span class="cinema-letterbox cinema-letterbox-bottom" aria-hidden="true"></span>
   </section>`;
 }

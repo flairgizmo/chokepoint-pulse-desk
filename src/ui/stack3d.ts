@@ -167,7 +167,7 @@ function mountStack3D(canvas: HTMLCanvasElement, lite: boolean): Stack3DHandle {
 
   const puddles: THREE.Mesh[] = [];
   STACK_SLABS.forEach((layer) => {
-    const plate = makeCinemaPlate(2.08, 1.16, lite, PLATES.canary.src, 0.1);
+    const plate = makeCinemaPlate(2.08, 1.16, lite, PLATES.canary.src, 0.1, false, true);
     plate.root.userData.layerId = layer.id;
     plate.root.userData.stage = layer.stage;
     plate.face.userData.layerId = layer.id;

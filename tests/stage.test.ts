@@ -100,6 +100,8 @@ describe('Home and Technology against V2 brochure rejects', () => {
     expect(home).toContain('data-proof="hero"');
     expect(home).toContain('earth-stage');
     expect(home).toContain('data-stage="proof"');
+    expect(home).toContain('hero-kicker-copy');
+    expect(home).toContain('QntDesk · independent research');
   });
 
   it('wires technology related chips as stages, not fake tech ids', () => {
@@ -107,6 +109,7 @@ describe('Home and Technology against V2 brochure rejects', () => {
     expect(tech).toContain('data-stage="person"');
     expect(tech).toContain('data-stage-id="riley"');
     expect(tech).toContain('data-stage="programme"');
+    expect(tech).toContain('class="stage-chip"');
     expect(renderStory()).toMatch(/j and k/i);
   });
 });

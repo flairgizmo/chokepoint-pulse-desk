@@ -122,6 +122,22 @@ describe('Topic plates', () => {
     expect(html).toContain('cinema-letterbox');
     expect(html).toContain('cinema-grain');
     expect(html).not.toContain('hero-bed');
+    const header = html.match(/<header class="page-hero[\s\S]*?<\/header>/)?.[0] ?? '';
+    expect(header).toContain('hero-kicker-copy');
+    expect(header.match(/class="kicker"/g)?.length).toBe(1);
+    expect(header.indexOf('hero-kicker-copy')).toBeLessThan(header.indexOf('<h1 class="display">'));
+  });
+
+  it('overlays the kicker on film stages when the page has no hero plate', () => {
+    const story = renderStory().match(/<header class="page-hero[\s\S]*?<\/header>/)?.[0] ?? '';
+    expect(story).toContain('hero-kicker-copy');
+    expect(story).toContain('id="film-stage"');
+    expect(story).not.toContain('hero-plate');
+    expect(story.match(/class="kicker"/g)?.length).toBe(1);
+    const city = renderCity(cityById('geneva')!).match(/<header class="page-hero[\s\S]*?<\/header>/)?.[0] ?? '';
+    expect(city).toContain('hero-kicker-copy');
+    expect(city).toContain('data-film-set="city:geneva"');
+    expect(renderStack()).toContain('hero-kicker-copy');
   });
 
   it('keeps unique city stills on city pages and does not cover them with a bed', () => {
