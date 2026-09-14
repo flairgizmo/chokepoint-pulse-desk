@@ -8259,15 +8259,16 @@ section.block .kicker {
 
 .flip-back > .poster-frame {
   margin: 0;
-  min-height: 0;
+  min-height: 9.2rem;
 }
 
 .flip-back .flip-back-still {
   margin: 0;
 }
 
-.flip-back .poster-frame img,
-.flip-back .flip-back-still img {
+.flip-back .poster-frame .photo-plate.flip-back-still img,
+.flip-back .poster-frame img {
+  height: 9.2rem;
   min-height: 9.2rem;
   max-height: 11rem;
   aspect-ratio: 21 / 9;
@@ -8288,13 +8289,14 @@ section.block .kicker {
 
 .person .poster-frame {
   margin: 0 0 0.7rem;
-  min-height: 0;
+  min-height: 12rem;
   border-radius: 14px;
 }
 
-.person .person-bio-still img,
+.person .poster-frame .photo-plate.person-bio-still img,
 .person .poster-frame img {
-  min-height: 11rem;
+  height: 12rem;
+  min-height: 12rem;
   max-height: 14rem;
   aspect-ratio: 16 / 9;
   filter: saturate(0.86) contrast(1.16) brightness(0.62);
