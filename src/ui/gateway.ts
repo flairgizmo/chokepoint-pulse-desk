@@ -425,16 +425,16 @@ vec3 fillL = normalize(vec3(-2.2, 1.8, 2.0));
 vec3 backL = normalize(vec3(2.8, 2.1, -0.6));
 vec3 coolL = normalize(vec3(-2.0, 1.6, -2.2));
 vec3 camL = normalize(wV);
-float specKey = pow(max(dot(wR, keyL), 0.0), 36.0);
-float specFill = pow(max(dot(wR, fillL), 0.0), 56.0);
-float specBack = pow(max(dot(wR, backL), 0.0), 38.0);
-float specCool = pow(max(dot(wR, coolL), 0.0), 48.0);
-float specCam = pow(max(dot(wR, camL), 0.0), 34.0);
-vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 2.15
-  + vec3(1.0, 0.96, 0.88) * specCam * 1.55
-  + vec3(0.7, 0.86, 1.0) * specFill * 1.2
-  + vec3(0.96, 0.98, 1.0) * specBack * 1.05
-  + vec3(0.58, 0.8, 1.0) * specCool * 0.9;`;
+float specKey = pow(max(dot(wR, keyL), 0.0), 30.0);
+float specFill = pow(max(dot(wR, fillL), 0.0), 48.0);
+float specBack = pow(max(dot(wR, backL), 0.0), 32.0);
+float specCool = pow(max(dot(wR, coolL), 0.0), 40.0);
+float specCam = pow(max(dot(wR, camL), 0.0), 26.0);
+vec3 glint = vec3(1.0, 0.94, 0.86) * specKey * 2.45
+  + vec3(1.0, 0.96, 0.88) * specCam * 1.85
+  + vec3(0.7, 0.86, 1.0) * specFill * 1.35
+  + vec3(0.96, 0.98, 1.0) * specBack * 1.2
+  + vec3(0.58, 0.8, 1.0) * specCool * 1.05;`;
 }
 
 function liteFireChunk(kind: LiteFire): string {
@@ -484,28 +484,28 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.042, 0.058, 0.09) * (0.42 + rim * 0.9);
+vec3 body = vec3(0.022, 0.032, 0.055) * (0.32 + rim * 1.05);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.12;
-diffuseColor.rgb += glint * 0.95;
+diffuseColor.rgb += envRefl * rim * 0.1;
+diffuseColor.rgb += glint * 1.22;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.09, 0.12, 0.17) * (0.55 + rim * 0.75);
+vec3 body = vec3(0.06, 0.08, 0.12) * (0.48 + rim * 0.85);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.2;
-diffuseColor.rgb += glint * 1.18;
+diffuseColor.rgb += envRefl * rim * 0.22;
+diffuseColor.rgb += glint * 1.35;
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.055, 0.072, 0.11) * (0.46 + rim * 0.95);
+vec3 body = vec3(0.028, 0.04, 0.068) * (0.34 + rim * 1.12);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * rim * 0.16;
-diffuseColor.rgb += glint * 1.12;
+diffuseColor.rgb += envRefl * rim * 0.14;
+diffuseColor.rgb += glint * 1.38;
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -580,7 +580,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-43-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-44-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -1489,7 +1489,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         Math.sin(a) * midR,
         i === 1 ? 0.095 : 0.062,
       );
-      spark.material.opacity = i === 1 ? 0.62 : 0.44;
+      spark.material.opacity = i === 1 ? 0.78 : 0.56;
       crystal.add(spark);
       crownFires.push(spark);
     });

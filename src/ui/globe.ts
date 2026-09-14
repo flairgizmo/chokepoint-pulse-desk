@@ -234,9 +234,9 @@ function oceanSpecMat(sunDir: THREE.Vector3): THREE.ShaderMaterial {
         vec3 v = normalize(vV);
         vec3 l = normalize(sunDir);
         float fres = pow(1.0 - abs(dot(n, v)), 2.4);
-        float spec = pow(max(0.0, dot(reflect(-l, n), v)), 42.0);
-        float facing = pow(max(0.0, dot(n, v)), 7.0);
-        float a = wet * (fres * 0.14 + spec * 0.82 + facing * 0.11);
+        float spec = pow(max(0.0, dot(reflect(-l, n), v)), 28.0);
+        float facing = pow(max(0.0, dot(n, v)), 5.5);
+        float a = wet * (fres * 0.2 + spec * 0.95 + facing * 0.18);
         gl_FragColor = vec4(0.76, 0.88, 1.0, a);
       }`,
     transparent: true,

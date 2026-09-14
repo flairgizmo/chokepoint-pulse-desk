@@ -5009,7 +5009,12 @@ body.stage-open .grok {
 .poster-frame > .markets-still,
 .poster-frame > .liability-still,
 .poster-frame > .layer-still,
-.poster-frame > .dyk-still {
+.poster-frame > .dyk-still,
+.poster-frame > .treaty-still,
+.poster-frame > .acid-still,
+.poster-frame > .token-still,
+.poster-frame > .essay-order-still,
+.poster-frame > .city-essay-still {
   margin: 0;
 }
 
@@ -6421,15 +6426,14 @@ section.block .kicker {
 }
 
 .satp-lab .stage-btn {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: end;
-  gap: 0.55rem 0.7rem;
+  display: block;
+  grid-template-columns: none;
+  align-items: stretch;
+  gap: 0;
   padding: 0;
 }
 
 .satp-lab .satp-still {
-  grid-column: 1 / -1;
   margin: 0;
 }
 
@@ -6441,15 +6445,7 @@ section.block .kicker {
 
 .satp-lab .stage-btn .n,
 .satp-lab .satp-title {
-  padding-bottom: 0.15rem;
-}
-
-.satp-lab .stage-btn .n {
-  padding-left: 1rem;
-}
-
-.satp-lab .satp-title {
-  padding-right: 1rem;
+  padding: 0;
 }
 
 .satp-lab .stage[data-satp-n="1"] .satp-still img {
@@ -6755,4 +6751,98 @@ section.block .kicker {
 
 .city-essay > .poster-frame {
   margin: 0 0 1.6rem;
+}
+
+.essay-order > .poster-frame,
+.featured-note > .poster-frame,
+.treaty-stage > .poster-frame {
+  margin: 0 0 1.5rem;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.treaty-stage > .poster-frame {
+  margin-bottom: 0;
+}
+
+.acid li {
+  padding: 0;
+  overflow: hidden;
+}
+
+.acid .poster-copy,
+.film-card .poster-copy,
+.tokencard .poster-copy,
+.treaty-stage .poster-copy,
+.month-card .poster-copy,
+.featured-note > .poster-frame .poster-copy,
+.essay-order .poster-copy,
+.satp-lab .poster-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+}
+
+.acid .poster-copy strong,
+.acid .poster-copy > span,
+.film-card .poster-copy strong,
+.film-card .poster-copy .kicker,
+.tokencard .poster-copy .tokencard-label,
+.treaty-stage .poster-copy h2,
+.month-card .poster-copy h3,
+.month-card .poster-copy time,
+.month-card .poster-copy .mono,
+.satp-lab .poster-copy .n,
+.satp-lab .poster-copy .satp-title {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  color: #f4f7fb;
+}
+
+.acid .poster-copy > span,
+.film-card > span,
+.month-card .poster-copy .rest,
+.month-card .poster-copy .mono {
+  color: #b7c4d8;
+}
+
+.tokencard .poster-copy .tokencard-label {
+  padding: 0;
+  color: #f4f7fb;
+}
+
+.tokencard .poster-copy .n {
+  color: #7dffc4;
+}
+
+.film-card > span {
+  padding: 0.75rem 1.05rem 1.05rem;
+  margin: 0;
+}
+
+.month-card .poster-copy .day {
+  color: #8eb0ff;
+}
+
+.featured-note > .poster-frame img,
+.essay-order .poster-frame img,
+.treaty-stage .poster-frame img,
+.city-essay .poster-frame img {
+  min-height: 16rem;
+  max-height: 28rem;
+}
+
+.film-card .poster-frame img {
+  min-height: 12rem;
+  max-height: 16rem;
+}
+
+.acid .poster-frame img,
+.tokencard .poster-frame img,
+.satp-lab .poster-frame img {
+  min-height: 14rem;
+  max-height: 18rem;
 }

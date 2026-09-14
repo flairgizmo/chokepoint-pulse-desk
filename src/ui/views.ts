@@ -199,14 +199,13 @@ function filmRail(): string {
       .map(
         (f) => `<li>
           <button type="button" class="film-card${f.thumb ? ' has-thumb' : ''}" data-stage="source" data-stage-id="${esc(f.title)}" data-title="${esc(f.title)}" data-url="${esc(f.href)}" data-source="${esc(f.who)}">
-            ${f.thumb
-              ? `<img class="film-bed" src="${esc(f.thumb)}" alt="" width="640" height="360" loading="lazy" decoding="async" />`
-              : diagramFigure(`film-${f.title}`, 'source', f.kind)}
-            <div>
-              <p class="kicker">${esc(f.kind)}</p>
-              <strong>${esc(f.title)}</strong>
-              <span>${esc(f.who)}</span>
-            </div>
+            ${posterFrame(
+              f.thumb
+                ? `<figure class="beat-figure photo-plate cinema-frame"><img class="film-bed" src="${esc(f.thumb)}" alt="" width="640" height="360" loading="lazy" decoding="async" /></figure>`
+                : diagramFigure(`film-${f.title}`, 'source', f.kind),
+              `<p class="kicker">${esc(f.kind)}</p><strong>${esc(f.title)}</strong>`,
+            )}
+            <span>${esc(f.who)}</span>
           </button>
         </li>`,
       )
@@ -443,7 +442,10 @@ export function featuredStory(): string {
   const n = featuredNote();
   return `<section class="featured-note">
     ${kicker('Featured news')}
-    ${diagramFigure('featured-trusted-node', 'news', 'This month')}
+    ${posterFrame(
+      diagramFigure('featured-trusted-node', 'news', 'This month'),
+      '<p class="kicker">This month</p><h2>What most coverage skips.</h2>',
+    )}
     <div class="featured-grid">
       ${noteCard(n, true)}
       <div class="featured-aside">
@@ -464,10 +466,12 @@ export function latestStrip(): string {
     .map((n) => {
       const stamp = dateStamp(n.date);
       return `<li class="month-card">
-        ${photoFigure(plateFor(n.id, n.source, n.title), 'month-still')}
-        <time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
+        ${posterFrame(
+          photoFigure(plateFor(n.id, n.source, n.title), 'month-still'),
+          `<time datetime="${esc(n.date)}"><span class="day">${esc(stamp.day)}</span><span class="rest">${esc(stamp.rest)}</span></time>
         <p class="mono">${esc(n.source)}</p>
-        <h3>${esc(n.title)}</h3>
+        <h3>${esc(n.title)}</h3>`,
+        )}
         ${extLink(sourceUrl(n.href), 'Open the source')}
       </li>`;
     })
@@ -520,7 +524,10 @@ function essayOrder(): string {
   return `<section class="essay-order" aria-labelledby="essay-order-title">
     ${kicker('In order')}
     <h2 class="display" id="essay-order-title">Technology arrived before trust. Then the question changed.</h2>
-    ${photoFigure(plateFor('canary', 'gbtd'), 'essay-order-still')}
+    ${posterFrame(
+      photoFigure(plateFor('canary', 'gbtd'), 'essay-order-still'),
+      '<p class="kicker">In order</p><h2>Technology arrived before trust.</h2>',
+    )}
     <div class="essay-flow">
       <p>We’ve gotten used to seeing a new rail arrive before anyone can trust it.</p>
       <p>It happened with the internet. First the thrill of being connected. Then the patches: passwords everywhere, data moving without a clear owner. The network won anyway. We filled it with workarounds.</p>
@@ -952,7 +959,10 @@ export function renderStandards(): string {
   <section class="treaty-table">
     ${kicker('Treaty table')}
     <div class="treaty-stage">
-      ${photoFigure(plateFor('standards', 'geneva'), 'treaty-still')}
+      ${posterFrame(
+        photoFigure(plateFor('standards', 'geneva'), 'treaty-still'),
+        '<p class="kicker">Treaty table</p><h2>IETF SATP and ISO</h2>',
+      )}
       <ul class="treaty-row">
         <li><button type="button" data-stage="satp" data-stage-id="3"><span class="chip">draft</span><strong>IETF SATP Core</strong><em>Hargreaves, Hardjono, Belchior, Ramakrishna, Chiriac · Facer co-chair</em></button></li>
         <li><button type="button" data-stage="chapter" data-stage-id="iso"><span class="chip">referenced</span><strong>ISO/TS 23516:2026</strong><em>Verdian convenes WG7 · project 82098</em></button></li>
@@ -966,10 +976,10 @@ export function renderStandards(): string {
     <h2 class="display">SATP’s two-phase commit sits inside stage 3 — not instead of the stages.</h2>
     <ol class="stages">${stages}</ol>
     <ul class="acid">
-      <li>${photoFigure(PLATES.canary, 'acid-still')}<strong>Atomicity</strong><span>The transfer commits on both networks or fails with no state change.</span></li>
-      <li>${photoFigure(PLATES.geneva, 'acid-still')}<strong>Consistency</strong><span>When it ends, the asset lives in exactly one network.</span></li>
-      <li>${photoFigure(PLATES.fiber, 'acid-still')}<strong>Isolation</strong><span>Origin state is not modified by anyone else while locked.</span></li>
-      <li>${photoFigure(PLATES.ucl, 'acid-still')}<strong>Durability</strong><span>Once committed, a gateway crash does not undo it.</span></li>
+      <li>${posterFrame(photoFigure(PLATES.canary, 'acid-still'), '<strong>Atomicity</strong><span>The transfer commits on both networks or fails with no state change.</span>')}</li>
+      <li>${posterFrame(photoFigure(PLATES.geneva, 'acid-still'), '<strong>Consistency</strong><span>When it ends, the asset lives in exactly one network.</span>')}</li>
+      <li>${posterFrame(photoFigure(PLATES.fiber, 'acid-still'), '<strong>Isolation</strong><span>Origin state is not modified by anyone else while locked.</span>')}</li>
+      <li>${posterFrame(photoFigure(PLATES.ucl, 'acid-still'), '<strong>Durability</strong><span>Once committed, a gateway crash does not undo it.</span>')}</li>
     </ul>
   </section>
   <div class="chapter-stack cinema-room">${chaptersFor('standards').map(chapterCard).join('')}</div>
@@ -1152,7 +1162,10 @@ export function renderRead(id: string): string {
   const href = sources[p.hrefKey];
   return `${pageHero(p.kind, p.title, p.lede, '', undefined, 'research')}
     <article class="chapter city-essay cinema-room">
-      ${photoFigure(plateFor(p.id, p.kind, p.title), 'city-essay-still')}
+      ${posterFrame(
+        photoFigure(plateFor(p.id, p.kind, p.title), 'city-essay-still'),
+        `<p class="kicker">${esc(p.kind)} · ${esc(p.year)}</p><h2>${esc(p.title)}</h2>`,
+      )}
       <p class="meta">${esc(p.venue)} · ${esc(p.year)}${p.authors.length ? ` · ${esc(p.authors.join(', '))}` : ''}</p>
       ${essayParas(p.lede)}
       <p>The original sits with the publisher. Open it if you want the sentence in its first room.</p>
@@ -1277,19 +1290,19 @@ export function renderMarkets(print?: MarketPrint): string {
     <h2 class="display">Why QNT exists.</h2>
     <div class="tokencards">
       <details class="tokencard" open>
-        <summary>${photoFigure(PLATES.fiber, 'token-still')}<span class="tokencard-label"><span class="n">01</span> Utility</span></summary>
+        <summary>${posterFrame(photoFigure(PLATES.fiber, 'token-still'), '<span class="tokencard-label"><span class="n">01</span> Utility</span>')}</summary>
         <p>Overledger licences settle in QNT. That is the product reason the token trades. It is the utility token of Quant Network, distinct from equity in Quant Network Ltd.</p>
       </details>
       <details class="tokencard">
-        <summary>${photoFigure(PLATES.exchange, 'token-still')}<span class="tokencard-label"><span class="n">02</span> Scarcity</span></summary>
+        <summary>${posterFrame(photoFigure(PLATES.exchange, 'token-still'), '<span class="tokencard-label"><span class="n">02</span> Scarcity</span>')}</summary>
         <p>On 14 September 2018 Quant sent the unsold allocation to the contract itself. Their post records total supply 14,612,493.080826178 QNT. Bitstamp’s MiCA whitepaper cites a post-burn maximum of 14,881,364. Both figures sit on the record. Today’s circulating print is CoinGecko’s.</p>
       </details>
       <details class="tokencard">
-        <summary>${photoFigure(PLATES.canary, 'token-still')}<span class="tokencard-label"><span class="n">03</span> Licence lock</span></summary>
+        <summary>${posterFrame(photoFigure(PLATES.canary, 'token-still'), '<span class="tokencard-label"><span class="n">03</span> Licence lock</span>')}</summary>
         <p>Bitstamp’s MiCA filing (13 May 2026) records that licences can lock QNT for the term of the licence. Locked tokens are not a claim that a holder never sells. They are a contractual term on a utility token.</p>
       </details>
       <details class="tokencard">
-        <summary>${photoFigure(PLATES.datacenter, 'token-still')}<span class="tokencard-label"><span class="n">04</span> The contract</span></summary>
+        <summary>${posterFrame(photoFigure(PLATES.datacenter, 'token-still'), '<span class="tokencard-label"><span class="n">04</span> The contract</span>')}</summary>
         <p>ERC-20 on Ethereum. ${esc(QNT_CONTRACT)}. Check it on Etherscan before you send anything. Burn transaction ${extLink(sources.qntBurnTx, '0x763f32a0…')}.</p>
       </details>
     </div>
@@ -1503,7 +1516,10 @@ export function renderCity(city: City): string {
   return `${pageHero(city.id, city.name, city.lede, city.kicker, undefined, `city:${city.id}`)}
     <p class="mono subtle coord-block">${city.lat.toFixed(4)}, ${city.lon.toFixed(4)} · ${esc(city.country)}</p>
     <article class="chapter city-essay cinema-room">
-      ${photoFigure(plateFor(city.id, city.name), 'city-essay-still')}
+      ${posterFrame(
+        photoFigure(plateFor(city.id, city.name), 'city-essay-still'),
+        `<p class="kicker">${esc(city.country)}</p><h2>${esc(city.name)}</h2>`,
+      )}
       ${essayParas(city.body)}
       <p><button type="button" class="text-link" data-stage="city" data-stage-id="${esc(city.id)}">Open the briefing →</button> · <a class="text-link" href="${esc(city.href)}">Related chapter →</a></p>
     </article>
@@ -1549,7 +1565,10 @@ export function renderNotFound(): string {
   return `${pageHero('404', 'This page is not', 'Try News, Podcast, Vision, Programmes, Research or Markets.', 'on the map.', undefined, 'news')}
   ${stillStrip('news', 'Photographs on the map')}
   <article class="chapter city-essay cinema-room">
-    ${photoFigure(plateFor('news', '404'), 'city-essay-still')}
+    ${posterFrame(
+      photoFigure(plateFor('news', '404'), 'city-essay-still'),
+      '<p class="kicker">404</p><h2>This page is not on the map.</h2>',
+    )}
     <p>This URL is not on the desk. The live rooms are News, Podcast, Vision, Programmes, Research and Markets.</p>
   </article>
   <p class="masthead" style="padding-top:0">${pill('/', 'Earth', 'Back')} ${pill('/news', 'Open the news', 'Official wire', 'ghost')}</p>`;
@@ -1580,7 +1599,10 @@ export function renderEpisode(id: string): string {
     'podcast',
   )}${stillStrip('podcast', 'Photographs of this episode')}${playerMarkup(ep)}
   <article class="chapter city-essay cinema-room">
-    ${photoFigure(plateFor('podcast', ep.id, ep.title), 'city-essay-still')}
+    ${posterFrame(
+      photoFigure(plateFor('podcast', ep.id, ep.title), 'city-essay-still'),
+      `<p class="kicker">Episode ${String(ep.n).padStart(2, '0')}</p><h2>${esc(ep.title)}</h2>`,
+    )}
     ${essayParas(ep.lede)}
   </article>`;
 }
@@ -1626,7 +1648,10 @@ export function renderNote(id: string): string {
   return `<article class="note-page">
     ${pageHero(n.kicker, n.title, `${n.source}. ${n.era[0].toUpperCase()}${n.era.slice(1)} of the Internet of Value.`, '', bed, 'notes')}
     <article class="chapter city-essay note-body cinema-room">
-      ${photoFigure(plateFor(n.id, n.era, n.title), 'city-essay-still')}
+      ${posterFrame(
+        photoFigure(plateFor(n.id, n.era, n.title), 'city-essay-still'),
+        `<p class="kicker">${esc(n.kicker)} · ${esc(n.dateLabel)}</p><h2>${esc(n.title)}</h2>`,
+      )}
       <p class="mono subtle">${esc(n.dateLabel)} · ${esc(n.era)} · ${esc(n.source)}</p>
       ${essayParas(n.body)}
       <p class="source-row">${source}</p>
