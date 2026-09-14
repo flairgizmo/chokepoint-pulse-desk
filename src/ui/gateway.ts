@@ -439,10 +439,11 @@ float liteSpark = fract(sin(dot(vMapUv, vec2(12.9898, 78.233))) * 43758.5453);
 float liteFlash = smoothstep(0.88, 1.0, liteSpark) * liteFres;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
-diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;`,
+diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
+diffuseColor.a *= mix(0.4, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-3';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-4';
 }
 
 function glassMat(
