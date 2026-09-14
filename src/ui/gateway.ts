@@ -408,8 +408,7 @@ function glassTex(
   return tex;
 }
 
-function attachLiteFire(mat: THREE.MeshBasicMaterial): void {
-  const env = duskCubeMap();
+function attachLiteFire(mat: THREE.MeshBasicMaterial, env: THREE.CubeTexture): void {
   mat.onBeforeCompile = (shader) => {
     shader.uniforms.liteEnv = { value: env };
     shader.vertexShader = shader.vertexShader
@@ -455,20 +454,24 @@ vec3 liteT = refract(-liteV, liteN, 0.413);
 vec2 iorOff = (dot(liteT, liteT) > 0.001 ? liteT.xy : liteN.xy) * (0.08 + liteFacing * 0.12);
 vec4 iorSamp = texture2D(map, vMapUv + iorOff);
 vec4 iorBack = texture2D(map, vMapUv - iorOff * 0.55);
-diffuseColor.rgb = mix(diffuseColor.rgb, iorSamp.rgb, 0.28 + liteFacing * 0.42);
-diffuseColor.rgb = mix(diffuseColor.rgb, iorBack.rgb, 0.12 + liteFres * 0.1);
+diffuseColor.rgb = mix(diffuseColor.rgb, iorSamp.rgb, 0.22 + liteFacing * 0.28);
+diffuseColor.rgb = mix(diffuseColor.rgb, iorBack.rgb, 0.1 + liteFres * 0.08);
 vec3 wN = normalize(vLiteWorldN);
 if (!gl_FrontFacing) wN = -wN;
-vec3 wR = reflect(-normalize(vLiteWorldV), wN);
-vec3 envSamp = textureCube(liteEnv, wR).rgb;
-diffuseColor.rgb += envSamp * pow(liteFres, 1.85) * 0.72;
+vec3 wV = normalize(vLiteWorldV);
+vec3 wR = reflect(-wV, wN);
+vec3 wT = refract(-wV, wN, 0.413);
+vec3 envRefl = textureCube(liteEnv, wR).rgb;
+vec3 envRefr = textureCube(liteEnv, dot(wT, wT) > 0.001 ? wT : wR).rgb;
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefr, 0.18 + liteFacing * 0.42);
+diffuseColor.rgb += envRefl * pow(liteFres, 1.7) * 0.82;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.78, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-11';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-12';
 }
 
 function glassMat(
@@ -483,6 +486,7 @@ function glassMat(
     vertexColors?: boolean;
     window?: number;
     writeDepth?: boolean;
+    env?: THREE.CubeTexture;
   } = {},
 ): CutMat | THREE.MeshBasicMaterial {
   if (lite) {
@@ -496,7 +500,7 @@ function glassMat(
       depthWrite: Boolean(opts.writeDepth) || opts.window == null || opts.window > 0.84,
     });
     mat.toneMapped = false;
-    if (opts.window != null) attachLiteFire(mat);
+    if (opts.window != null) attachLiteFire(mat, opts.env ?? duskCubeMap());
     return mat;
   }
   return diamondPhysical(tex, opts);
@@ -835,6 +839,27 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   culet.position.set(0.05, -0.42, 0.28);
   scene.add(culet);
 
+  let cubeCam: THREE.CubeCamera | null = null;
+  let cubeRT: THREE.WebGLCubeRenderTarget | null = null;
+  let roomEnv = duskCubeMap();
+  if (lite) {
+    try {
+      cubeRT = new THREE.WebGLCubeRenderTarget(128, {
+        generateMipmaps: false,
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+      });
+      cubeRT.texture.colorSpace = THREE.SRGBColorSpace;
+      cubeCam = new THREE.CubeCamera(0.15, 16, cubeRT);
+      cubeCam.position.set(0, 0.22, 0);
+      scene.add(cubeCam);
+      roomEnv = cubeRT.texture;
+    } catch {
+      cubeCam = null;
+      cubeRT = null;
+    }
+  }
+
   const crystal = new THREE.Group();
   const crowns: THREE.Mesh[] = [];
   const pavs: THREE.Mesh[] = [];
@@ -859,6 +884,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tint: lite ? 0xffffff : 0xf6f0e8,
     window: lite ? 0.78 : undefined,
     writeDepth: lite,
+    env: roomEnv,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
@@ -866,6 +892,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tint: lite ? 0xffffff : 0xe8ddd0,
     window: lite ? 0.78 : undefined,
     writeDepth: lite,
+    env: roomEnv,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
     transmission: 0.82,
@@ -873,6 +900,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tint: 0xddd2c0,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
+    env: roomEnv,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
@@ -880,6 +908,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     tint: 0xc4b8a6,
     vertexColors: lite,
     window: lite ? 0.56 : undefined,
+    env: roomEnv,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
@@ -1180,6 +1209,19 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const t0 = performance.now();
   let raf = 0;
   const composer = addUnrealLook(renderer, scene, camera, lite);
+  let roomFrames = 0;
+  const paintRoom = (): void => {
+    if (!cubeCam) return;
+    lean.visible = false;
+    backdrop.visible = false;
+    left.visible = false;
+    right.visible = false;
+    cubeCam.update(renderer, scene);
+    lean.visible = true;
+    backdrop.visible = true;
+    left.visible = true;
+    right.visible = true;
+  };
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -1282,7 +1324,10 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     if (!img.complete) img.onload = () => paintCards();
   });
   paintCards();
-  onDuskPhoto(() => stampJewel(selected === 6 || hover === 6));
+  onDuskPhoto(() => {
+    stampJewel(selected === 6 || hover === 6);
+    paintRoom();
+  });
 
   const tick = (now: number): void => {
     const pulse = reduced ? 0 : Math.sin(((now - t0) / 6200) * Math.PI * 2) * 0.022;
@@ -1329,6 +1374,8 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     bead.position.copy(beadPos);
     gateLabel.lookAt(camera.position);
     rt2Label.lookAt(camera.position);
+    roomFrames += 1;
+    if (lite && cubeCam && roomFrames > 1 && roomFrames % 10 === 0) paintRoom();
     if (composer) composer.render();
     else renderer.render(scene, camera);
   };
@@ -1402,6 +1449,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     canvas.removeEventListener('pointercancel', onUp);
     canvas.removeEventListener('click', onClick);
     composer?.dispose();
+    cubeRT?.dispose();
     renderer.dispose();
   };
 }
