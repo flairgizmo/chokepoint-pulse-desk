@@ -4949,6 +4949,22 @@ body.stage-open .grok {
   filter: saturate(0.84) contrast(1.16) brightness(0.64);
 }
 
+.cinema-filter .photo-plate.filter-still img {
+  height: 5.8rem;
+  max-height: 5.8rem;
+  aspect-ratio: 21 / 5;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.14) brightness(0.42);
+}
+
+.letter-head .photo-plate.letter-still img {
+  width: 3.2rem;
+  height: 3.2rem;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  filter: saturate(0.86) contrast(1.16) brightness(0.68);
+}
+
 .page-hero .hero-still {
   transform: scale(1.08);
   animation: ken-burns 38s ease-in-out infinite alternate;
