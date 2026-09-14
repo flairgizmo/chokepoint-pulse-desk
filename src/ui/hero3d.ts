@@ -36,19 +36,19 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   renderer.setPixelRatio(probe.lite ? 1 : Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.setClearColor(0x070b14, 1);
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = probe.lite ? 1.05 : 1.16;
+  renderer.toneMappingExposure = probe.lite ? 1.12 : 1.22;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(28, 1, 0.08, 20);
-  camera.position.set(0, 0.14, 1.92);
+  scene.background = new THREE.Color(0x070b14);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.08, 20);
+  camera.position.set(0.62, 0.28, 2.42);
 
   const tex = new THREE.TextureLoader().load(src, (next) => {
     next.colorSpace = THREE.SRGBColorSpace;
     next.needsUpdate = true;
   });
   tex.colorSpace = THREE.SRGBColorSpace;
-  scene.background = new THREE.Color(0x070b14);
 
   const cyc = new THREE.Mesh(new THREE.PlaneGeometry(7.2, 3.4), duskWall(tex, 0x243044));
   cyc.position.set(0, 0.2, -1.45);
@@ -59,9 +59,10 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   (pool.material as THREE.MeshBasicMaterial).opacity = 0.28;
   scene.add(pool);
 
-  const plate = makeCinemaPlate(2.42, 1.04, probe.lite, src);
+  const plate = makeCinemaPlate(2.28, 1.18, probe.lite, src, 0.1);
   applyPlateMap(plate.mat, tex);
-  plate.root.position.y = 0.1;
+  plate.root.position.set(0.04, 0.16, 0);
+  plate.root.rotation.set(-0.08, -0.3, 0.012);
   scene.add(plate.root);
   const still = new Image();
   still.onload = () => applyPlateMap(plate.mat, printGradeImage(still));
@@ -80,7 +81,6 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
   let pary = 0;
   let tx = 0;
   let ty = 0;
-  let frames = 0;
 
   const resize = (): void => {
     const r = canvas.getBoundingClientRect();
@@ -111,29 +111,31 @@ export function upgradeHero3D(figure: HTMLElement): (() => void) | null {
 
   const tick = (now: number): void => {
     if (disposed) return;
-    const t0 = performance.now();
     parx += (tx - parx) * 0.08;
     pary += (ty - pary) * 0.08;
-    const idle = reduced ? 0 : Math.sin(now / 3800) * 0.03;
-    plate.root.rotation.y = 0.1 + parx * 0.16 + idle;
-    plate.root.rotation.x = -0.05 - pary * 0.09;
-    if (!reduced) plate.root.position.z = Math.sin(now / 4200) * 0.025;
-    camera.position.x = parx * 0.1;
-    camera.position.y = -pary * 0.07;
-    camera.lookAt(0, 0.02, 0);
+    const idle = reduced ? 0 : Math.sin(now / 3800) * 0.025;
+    plate.root.rotation.y = -0.3 + parx * 0.14 + idle;
+    plate.root.rotation.x = -0.08 - pary * 0.07;
+    if (!reduced) plate.root.position.z = Math.sin(now / 4200) * 0.02;
+    camera.position.x = 0.62 + parx * 0.08;
+    camera.position.y = 0.28 - pary * 0.06;
+    camera.lookAt(0.04, 0.08, 0);
     if (composer) composer.render();
     else renderer.render(scene, camera);
-    frames += 1;
-    if (frames < 8 && performance.now() - t0 > 2500) {
-      dispose();
-      return;
-    }
-    raf = requestAnimationFrame(tick);
   };
 
   figure.addEventListener('pointermove', onMove);
   window.addEventListener('resize', resize);
   resize();
-  raf = requestAnimationFrame(tick);
+  const first = performance.now();
+  tick(first);
+  if (probe.lite && performance.now() - first > 8000) {
+    dispose();
+    return null;
+  }
+  if (!reduced) raf = requestAnimationFrame(function loop(now: number) {
+    tick(now);
+    if (!disposed) raf = requestAnimationFrame(loop);
+  });
   return dispose;
 }

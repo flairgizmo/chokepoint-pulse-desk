@@ -135,7 +135,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'the-technology': PLATES.fiber,
   technology: PLATES.fiber,
   tech: PLATES.cable,
-  stack: PLATES.fiber,
+  stack: PLATES.city,
   money: PLATES.payments,
   cbdc: PLATES.sterling,
   sterling: PLATES.sterling,
