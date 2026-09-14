@@ -3074,6 +3074,17 @@ button.chip {
   gap: 0.7rem;
 }
 
+.letter .poster-frame .letter-still,
+.letter .letter-still {
+  flex: none;
+  width: 100%;
+  height: 5.2rem;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 0;
+  background: #070b14;
+}
+
 .letter-still {
   flex: 0 0 3.2rem;
   width: 3.2rem;
@@ -4159,24 +4170,24 @@ button.chip {
 }
 
 .tech-spine {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.45rem;
   margin: 1rem 0 1.5rem;
 }
 
 .tech-spine-hit {
   appearance: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.42rem;
-  border: 1px solid transparent;
+  display: block;
+  width: 100%;
+  border: 0;
   background: #0b1220;
   color: #eaf1ff;
-  border-radius: 999px;
-  padding: 0.18rem 0.7rem 0.18rem 0.18rem;
+  border-radius: 12px;
+  padding: 0;
   font: inherit;
   cursor: pointer;
+  overflow: hidden;
 }
 
 .ol-list button {
@@ -8172,24 +8183,23 @@ section.block .kicker {
 }
 
 .tech-spine-hit .spine-still {
-  width: 2.45rem;
-  height: 1.65rem;
+  width: 100%;
+  height: 4.4rem;
   margin: 0;
-  border-radius: 999px;
+  border-radius: 0;
   overflow: hidden;
   background: #070b14;
-  flex: 0 0 auto;
 }
 
 .tech-spine-hit .spine-still img {
   display: block;
   width: 100%;
-  height: 100%;
+  height: 4.4rem;
+  min-height: 4.4rem;
+  max-height: 4.4rem;
   object-fit: cover;
-  min-height: 0;
-  max-height: none;
-  aspect-ratio: auto;
-  filter: saturate(0.86) contrast(1.14) brightness(0.72);
+  aspect-ratio: 21 / 6;
+  filter: saturate(0.86) contrast(1.14) brightness(0.62);
 }
 
 .wordmark .wm-still {
@@ -8356,19 +8366,19 @@ section.block .kicker {
 }
 
 .letter .poster-frame {
-  min-height: 4.2rem;
+  min-height: 5.2rem;
   margin: 0 0 0.75rem;
 }
 
 .letter .poster-frame .photo-plate.letter-still img,
 .letter-head .photo-plate.letter-still img {
   width: 100%;
-  height: 4.2rem;
-  min-height: 4.2rem;
-  max-height: 4.2rem;
+  height: 5.2rem;
+  min-height: 5.2rem;
+  max-height: 5.2rem;
   aspect-ratio: 21 / 5;
   object-fit: cover;
-  filter: saturate(0.86) contrast(1.16) brightness(0.58);
+  filter: saturate(0.86) contrast(1.16) brightness(0.52);
 }
 
 .letter .poster-copy .letter-head,
