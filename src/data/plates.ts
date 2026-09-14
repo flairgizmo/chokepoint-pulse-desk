@@ -498,6 +498,8 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   phemex: PLATES.sydney,
   websea: PLATES.cable,
   'lloyds-bank': PLATES.royal,
+  'wm-lloyds-bank': PLATES.paris,
+  'wm-nationwide': PLATES.singapore,
   'linux-foundation': PLATES.fiber,
   'dentsu-soken': PLATES.tokyo,
   'nav-news': PLATES.newsroom,

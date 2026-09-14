@@ -345,6 +345,8 @@ describe('Topic plates', () => {
     expect(renderDonate()).toContain('0xFcAD8838195Bdf03dB09999a0E289bf45D6F3FFD');
     expect(renderVision()).toContain('flip-back-still');
     expect(plateFor('lloyds-bank').src).toBe(PLATES.royal.src);
+    expect(plateFor('wm-lloyds-bank').src).toBe(PLATES.paris.src);
+    expect(plateFor('wm-nationwide').src).toBe(PLATES.singapore.src);
     expect(plateFor('wm-barclays').src).toBe(PLATES.city.src);
   });
 
