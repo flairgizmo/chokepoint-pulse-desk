@@ -257,6 +257,7 @@ export class EarthGlobe {
   private glint: THREE.Mesh | null = null;
   private sheen: THREE.Mesh | null = null;
   private medSheen: THREE.Mesh | null = null;
+  private biscaySheen: THREE.Mesh | null = null;
   private sun: THREE.DirectionalLight | null = null;
   private readonly sunDir = new THREE.Vector3(-2.6, 1.2, 2.4).normalize();
   private hoverId: string | undefined;
@@ -284,6 +285,7 @@ export class EarthGlobe {
     if (this.glint) this.glint.visible = this.overlays.day;
     if (this.sheen) this.sheen.visible = this.overlays.day;
     if (this.medSheen) this.medSheen.visible = this.overlays.day;
+    if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day;
     this.applyMaps();
   }
 
@@ -705,6 +707,24 @@ export class EarthGlobe {
     med.renderOrder = 4;
     scene.add(med);
     this.medSheen = med;
+    const biscay = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.42, 0.26),
+      new THREE.MeshBasicMaterial({
+        map: oceanSheenTex(),
+        color: 0xffffff,
+        transparent: true,
+        opacity: this.lite ? 0.24 : 0.28,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+      }),
+    );
+    const biscayDir = latLonToVec(45, -8, 1).applyAxisAngle(Y_AXIS, this.earthSpin).normalize();
+    biscay.position.copy(biscayDir.multiplyScalar(1.016));
+    biscay.lookAt(0, 0, 0);
+    biscay.renderOrder = 4;
+    scene.add(biscay);
+    this.biscaySheen = biscay;
 
     const paintTex = (src: string, assign: (tex: THREE.Texture) => void, cinema = false): void => {
       const img = new Image();
@@ -1076,6 +1096,7 @@ export class EarthGlobe {
     if (this.glint) this.glint.visible = this.overlays.day;
     if (this.sheen) this.sheen.visible = this.overlays.day;
     if (this.medSheen) this.medSheen.visible = this.overlays.day;
+    if (this.biscaySheen) this.biscaySheen.visible = this.overlays.day;
     if (this.lightsMesh) {
       const lm = this.lightsMesh.material as THREE.MeshBasicMaterial;
       const showLights = Boolean(this.overlays.night && this.nightTex && (!this.lite || !this.overlays.day));

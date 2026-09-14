@@ -226,15 +226,16 @@ function iceCatchTex(): THREE.CanvasTexture {
   const ctx = c.getContext('2d');
   if (ctx) {
     ctx.clearRect(0, 0, 256, 256);
-    const catchL = ctx.createRadialGradient(92, 78, 2, 92, 78, 96);
-    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.62)');
-    catchL.addColorStop(0.28, 'rgba(234, 241, 255, 0.16)');
+    const catchL = ctx.createRadialGradient(92, 78, 2, 92, 78, 72);
+    catchL.addColorStop(0, 'rgba(255, 236, 210, 0.7)');
+    catchL.addColorStop(0.22, 'rgba(234, 241, 255, 0.12)');
     catchL.addColorStop(1, 'rgba(234, 241, 255, 0)');
     ctx.fillStyle = catchL;
     ctx.fillRect(0, 0, 256, 256);
-    const rim = ctx.createRadialGradient(128, 128, 78, 128, 128, 126);
+    const rim = ctx.createRadialGradient(128, 128, 92, 128, 128, 127);
     rim.addColorStop(0, 'rgba(234, 241, 255, 0)');
-    rim.addColorStop(1, 'rgba(234, 241, 255, 0.22)');
+    rim.addColorStop(0.72, 'rgba(234, 241, 255, 0.04)');
+    rim.addColorStop(1, 'rgba(234, 241, 255, 0.42)');
     ctx.fillStyle = rim;
     ctx.fillRect(0, 0, 256, 256);
   }
@@ -269,10 +270,47 @@ function culetFireTex(): THREE.CanvasTexture {
     mag.addColorStop(1, 'rgba(255, 176, 210, 0)');
     ctx.fillStyle = mag;
     ctx.fillRect(0, 0, 256, 256);
+    ctx.globalCompositeOperation = 'screen';
+    ctx.strokeStyle = 'rgba(255, 220, 160, 0.42)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(48, 128);
+    ctx.lineTo(208, 128);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(170, 210, 255, 0.34)';
+    ctx.beginPath();
+    ctx.moveTo(128, 44);
+    ctx.lineTo(128, 212);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(255, 190, 210, 0.22)';
+    ctx.beginPath();
+    ctx.moveTo(72, 72);
+    ctx.lineTo(184, 184);
+    ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over';
   }
   const tex = hardenCanvasTex(new THREE.CanvasTexture(c));
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
+}
+
+function fireSprite(tint: number, x: number, y: number, z: number, scale: number): THREE.Sprite {
+  const mat = new THREE.SpriteMaterial({
+    map: culetFireTex(),
+    color: tint,
+    transparent: true,
+    opacity: 0.5,
+    depthWrite: false,
+    depthTest: false,
+    blending: THREE.AdditiveBlending,
+  });
+  mat.toneMapped = false;
+  const spark = new THREE.Sprite(mat);
+  spark.position.set(x, y, z);
+  spark.scale.set(scale, scale, 1);
+  spark.userData.nodeId = 6;
+  spark.renderOrder = 3;
+  return spark;
 }
 
 function causticCanvas(photo: HTMLImageElement | null): HTMLCanvasElement {
@@ -752,14 +790,14 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     thickness: 0.7,
     tint: 0x9aacc2,
     vertexColors: lite,
-    window: lite ? 0.68 : undefined,
+    window: lite ? 0.56 : undefined,
   });
   const pavB = glassMat(glassTex(photo0, false, 'pav', 1), lite, {
     transmission: 0.82,
     thickness: 0.7,
     tint: 0x7a8ca6,
     vertexColors: lite,
-    window: lite ? 0.68 : undefined,
+    window: lite ? 0.56 : undefined,
   });
   const table = new THREE.Mesh(
     tableFan(tableR, sides),
@@ -769,7 +807,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
             map: iceCatchTex(),
             color: 0xe8f0fa,
             transparent: true,
-            opacity: 0.16,
+            opacity: 0.11,
             depthWrite: false,
             side: THREE.DoubleSide,
           });
@@ -891,7 +929,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   let heartRoot: THREE.Group | null = null;
   let ghostRoot: THREE.Group | null = null;
   let flareRoot: THREE.Group | null = null;
-  let culetFire: THREE.Sprite | null = null;
+  const culetFires: THREE.Sprite[] = [];
   if (lite) {
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
@@ -968,22 +1006,15 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     });
     crystal.add(flare);
     flareRoot = flare;
-    const fireMat = new THREE.SpriteMaterial({
-      map: culetFireTex(),
-      color: 0xffffff,
-      transparent: true,
-      opacity: 0.5,
-      depthWrite: false,
-      depthTest: false,
-      blending: THREE.AdditiveBlending,
+    const fires = [
+      fireSprite(0xffffff, 0, BOT_Y + 0.1, 0.02, 0.44),
+      fireSprite(0xb4dcff, 0.05, BOT_Y + 0.06, -0.03, 0.26),
+      fireSprite(0xffb0d2, -0.04, BOT_Y + 0.08, 0.04, 0.22),
+    ];
+    fires.forEach((spark) => {
+      crystal.add(spark);
+      culetFires.push(spark);
     });
-    fireMat.toneMapped = false;
-    culetFire = new THREE.Sprite(fireMat);
-    culetFire.position.set(0, BOT_Y + 0.1, 0.02);
-    culetFire.scale.set(0.34, 0.34, 1);
-    culetFire.userData.nodeId = 6;
-    culetFire.renderOrder = 3;
-    crystal.add(culetFire);
   }
   const base = new THREE.Mesh(
     new THREE.CylinderGeometry(0.028, 0.046, 0.028, sides),
@@ -1134,7 +1165,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     const photo = visionStill();
     const tmat = table.material as CutMat | THREE.MeshBasicMaterial;
     if (lite && tmat instanceof THREE.MeshBasicMaterial) {
-      tmat.opacity = on ? 0.22 : 0.16;
+      tmat.opacity = on ? 0.16 : 0.11;
       tmat.color.setHex(on ? 0xffffff : 0xe8f0fa);
       tmat.needsUpdate = true;
     } else {
@@ -1226,13 +1257,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     if (flareRoot) {
       flareRoot.rotation.y = 0.48 + (reduced ? 0 : Math.sin((now - t0) / 2600 + 2.1) * 0.045);
     }
-    if (culetFire) {
-      const fire = culetFire.material as THREE.SpriteMaterial;
-      const pulse = reduced ? 0.4 : 0.38 + Math.abs(Math.sin((now - t0) / 1400)) * 0.2;
-      fire.opacity = pulse;
-      const size = 0.3 + pulse * 0.1;
-      culetFire.scale.set(size, size, 1);
-    }
+    culetFires.forEach((spark, i) => {
+      const fire = spark.material as THREE.SpriteMaterial;
+      const beat = reduced ? 0.44 : 0.4 + Math.abs(Math.sin((now - t0) / 1400 + i * 0.9)) * 0.22;
+      fire.opacity = beat;
+      const base = i === 0 ? 0.4 : i === 1 ? 0.24 : 0.2;
+      spark.scale.set(base + beat * 0.08, base + beat * 0.08, 1);
+    });
     caustic.rotation.z = reduced ? 0 : (now - t0) / 4200;
     causticMat.opacity = reduced ? 0.2 : 0.16 + Math.abs(Math.sin((now - t0) / 1600)) * 0.14;
     sparks.forEach((mesh, i) => {
