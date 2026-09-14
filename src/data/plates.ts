@@ -142,7 +142,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   tech: PLATES.cable,
   stack: PLATES.city,
   money: PLATES.payments,
-  cbdc: PLATES.sterling,
+  cbdc: PLATES.zurich,
   sterling: PLATES.sterling,
   wholesale: PLATES.sterling,
   retail: PLATES.london,
@@ -251,7 +251,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   odap: PLATES.royal,
   'odap-rename': PLATES.geneva,
   'mondelli-thesis-2017': PLATES.lisbon,
-  'acm-3564532': PLATES.radio,
+  'acm-3564532': PLATES.library,
   'belchior-survey': PLATES.brussels,
   'sok-interop': PLATES.cambridge,
   'brief-history': PLATES.history,
@@ -373,7 +373,7 @@ const KEY_TO_PLATE: Record<string, Plate> = {
   'faster-payments': PLATES.city,
   fnality: PLATES.basel,
   layer25: PLATES.cityDay,
-  correspondent: PLATES.cable,
+  correspondent: PLATES.hongkong,
   dvp: PLATES.hongkong,
   synchronisation: PLATES.boeFacade,
   'digit-gilt': PLATES.future,
@@ -574,12 +574,11 @@ function yearStem(raw: string): string | undefined {
 }
 
 export function plateFor(...keys: Array<string | undefined | null>): Plate {
-  const seed =
-    keys.find((key) => key && String(key).trim() && !isGenericPlateArg(key)) ??
-    keys.find((key) => key && String(key).trim()) ??
-    'desk'
-  for (const key of keys) {
-    if (!key || isGenericPlateArg(key)) continue
+  const list = keys.map((key) => (key == null ? '' : String(key).trim())).filter(Boolean)
+  const specific = list.filter((key) => !isGenericPlateArg(key))
+  const ordered = specific.length ? specific : list
+  const seed = ordered[0] ?? 'desk'
+  for (const key of ordered) {
     const hit = lookup(key)
     if (hit) return hit
     const stem = yearStem(key)

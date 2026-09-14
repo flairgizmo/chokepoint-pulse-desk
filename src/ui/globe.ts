@@ -1410,11 +1410,11 @@ function kindColor(kind: City['kind']): number {
     case 'Banking':
       return 0xb89a6e;
     case 'Lab':
-      return 0x9eb4d0;
+      return 0x6a86a4;
     case 'Standards':
-      return 0xb8c4d8;
+      return 0x7a8ca8;
     case 'Research':
-      return 0xa8c0bc;
+      return 0x6a8880;
     case 'Markets':
       return 0xc8b090;
     default:

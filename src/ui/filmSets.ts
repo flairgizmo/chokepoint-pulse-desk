@@ -95,7 +95,7 @@ export const FILM_SETS: Record<string, FilmSlide[]> = {
     { id: 'gbtd', title: 'GBTD', src: PLATES.canary.src, stageKind: 'term', stageId: 'gbtd' },
     { id: 'satp', title: 'SATP', src: PLATES.geneva.src, stageKind: 'term', stageId: 'satp' },
     { id: 'quantnet', title: 'QUANTNET', src: PLATES.city.src, stageKind: 'term', stageId: 'quantnet' },
-    { id: 'cbdc', title: 'CBDC', src: PLATES.sterling.src, stageKind: 'term', stageId: 'cbdc' },
+    { id: 'cbdc', title: 'CBDC', src: PLATES.zurich.src, stageKind: 'term', stageId: 'cbdc' },
   ],
   news: [
     { id: 'official', title: 'OFFICIAL', src: PLATES.canary.src, stageKind: 'event', stageId: 'ukf-2026' },

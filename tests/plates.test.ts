@@ -244,5 +244,7 @@ describe('Topic plates', () => {
     expect(new Set(srcs(renderNotes())).size).toBeGreaterThanOrEqual(16);
     expect(plateFor('overledger-2018').src).toBe(PLATES.ucl.src);
     expect(plateFor('mondelli-thesis-2017').src).toBe(PLATES.lisbon.src);
+    expect(plateFor('cbdc', 'CBDC').src).toBe(PLATES.zurich.src);
+    expect(plateFor('satp-arch', 'paper-standards').src).not.toBe(PLATES.geneva.src);
   });
 });
