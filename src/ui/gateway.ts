@@ -455,7 +455,7 @@ diffuseColor.rgb += envRefl * spec * 2.25;
 diffuseColor.rgb += vec3(1.0, 0.92, 0.78) * liteFres * 0.95;
 diffuseColor.rgb += vec3(0.55, 0.78, 1.0) * liteFres * liteFres * 0.62;
 diffuseColor.rgb += vec3(1.0, 0.96, 0.88) * liteFlash * 0.8;
-diffuseColor.a *= mix(0.05, 0.9, spec);`;
+diffuseColor.a *= mix(0.05, 0.52, spec);`;
   }
   return `#include <map_fragment>
 vec3 liteN = normalize(vLiteNormal);
@@ -527,7 +527,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-21-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-22-${kind}`;
 }
 
 function glassMat(
@@ -1052,7 +1052,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     env: roomEnv,
   });
   const table = new THREE.Mesh(
-    lite ? tableRing(tableR, tableR * 0.42, sides) : tableFan(tableR, sides),
+    lite ? tableRing(tableR, tableR * 0.55, sides) : tableFan(tableR, sides),
     lite
       ? glassMat(tableLidTex(), true, {
           tint: 0xffffff,
@@ -1194,9 +1194,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     wellMat = wrapMat;
     wellRoot = new THREE.Group();
     wellRoot.userData.nodeId = 6;
-    const wellTopR = tableR * 0.5;
-    const wellTopY = tableY - 0.016;
-    const wellBotR = tableR * 0.1;
+    const wellTopR = tableR * 0.9;
+    const wellTopY = tableY - 0.012;
+    const wellBotR = tableR * 0.08;
     const wellBotY = botY + 0.05;
     const addWell = (geo: THREE.BufferGeometry): void => {
       const mesh = new THREE.Mesh(geo, wrapMat);
