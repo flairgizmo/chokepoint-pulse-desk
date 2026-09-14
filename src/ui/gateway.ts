@@ -847,15 +847,13 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   const crownA = glassMat(glassTex(photo0, false, 'crown', 0), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xf6f0e8,
-    vertexColors: lite,
+    tint: lite ? 0xffffff : 0xf6f0e8,
     window: lite ? 0.74 : undefined,
   });
   const crownB = glassMat(glassTex(photo0, false, 'crown', 1), lite, {
     transmission: 0.7,
     thickness: 0.52,
-    tint: 0xe8ddd0,
-    vertexColors: lite,
+    tint: lite ? 0xffffff : 0xe8ddd0,
     window: lite ? 0.74 : undefined,
   });
   const pavA = glassMat(glassTex(photo0, false, 'pav', 0), lite, {
@@ -1005,11 +1003,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
   if (lite) {
     const heartPavA = glassMat(glassTex(photo0, false, 'pav', 0, true), true, {
       tint: 0xffffff,
-      vertexColors: true,
     });
     const heartPavB = glassMat(glassTex(photo0, false, 'pav', 1, true), true, {
       tint: 0xffffff,
-      vertexColors: true,
     });
     const heart = new THREE.Group();
     heart.scale.setScalar(1.02);
