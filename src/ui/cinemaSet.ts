@@ -183,7 +183,7 @@ export function hardenCanvasTex(tex: THREE.CanvasTexture): THREE.CanvasTexture {
 }
 
 /** Draw filter before printGradeStill — daylight Vision stills into the dusk set. */
-export const DUSK_STILL_FILTER = 'saturate(0.78) contrast(1.2) brightness(0.72)';
+export const DUSK_STILL_FILTER = 'saturate(0.86) contrast(1.16) brightness(0.88)';
 
 /** Keep bright Vision stills on dusk plates. Official portraits skip this. */
 export function printGradeStill(
@@ -228,7 +228,7 @@ export function printGradeStill(
   ctx.save();
   ctx.filter = 'none';
   ctx.globalCompositeOperation = 'multiply';
-  ctx.fillStyle = `rgba(8, 14, 32, ${(0.32 + t * 0.38 + sky * 0.36).toFixed(3)})`;
+  ctx.fillStyle = `rgba(8, 14, 32, ${(0.18 + t * 0.24 + sky * 0.22).toFixed(3)})`;
   ctx.fillRect(x, y, w, h);
   if (sky > 0.1) {
     const skyWash = ctx.createLinearGradient(x, y, x, y + h * 0.52);

@@ -4,13 +4,6 @@ import { posterFrame } from './diagrams';
 import { episodeById, episodeByN, episodesInOrder, type Episode } from '../data/podcast';
 import { esc } from './html';
 
-const BED_STILL: Record<Episode['bed'], Plate> = {
-  future: PLATES.future,
-  gateway: PLATES.gateway,
-  london: PLATES.city,
-  sterling: PLATES.payments,
-};
-
 /** One still per episode so the playlist is a film strip, not four recycled beds. */
 const EPISODE_STILL: Record<string, Plate> = {
   'internet-of-value': PLATES.fiber,
@@ -95,7 +88,7 @@ export function playerMarkup(ep: Episode, playlist = episodesInOrder()): string 
   return `
     <section class="player" data-player data-audio="${esc(ep.audioSrc)}" data-poster="${esc(ep.posterSrc)}" data-next="${next ? `/podcast/${esc(next.id)}` : ''}">
       <div class="player-stage">
-        <img class="player-still" src="${esc(BED_STILL[ep.bed].src)}" alt="" width="1920" height="1080" />
+        <img class="player-still" src="${esc(episodeStill(ep.id).src)}" alt="" width="1920" height="1080" />
         <canvas class="player-wave" data-wave aria-hidden="true"></canvas>
         <div class="player-scrim">
           <p class="kicker">Episode ${String(ep.n).padStart(2, '0')} · James Hale and Amelia Crowe</p>

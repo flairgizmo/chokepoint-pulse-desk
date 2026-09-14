@@ -354,8 +354,9 @@ function terminatorTex(): THREE.CanvasTexture {
   g.addColorStop(0, 'rgba(6, 10, 20, 0.62)');
   g.addColorStop(0.36, 'rgba(8, 14, 28, 0.34)');
   g.addColorStop(0.48, 'rgba(28, 52, 88, 0.1)');
-  g.addColorStop(0.56, 'rgba(170, 200, 230, 0.04)');
-  g.addColorStop(0.64, 'rgba(255, 255, 255, 0)');
+  g.addColorStop(0.54, 'rgba(255, 168, 88, 0.28)');
+  g.addColorStop(0.6, 'rgba(255, 214, 160, 0.1)');
+  g.addColorStop(0.68, 'rgba(255, 255, 255, 0)');
   g.addColorStop(1, 'rgba(255, 255, 255, 0)');
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, c.width, c.height);

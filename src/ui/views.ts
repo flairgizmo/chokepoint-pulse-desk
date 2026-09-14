@@ -1279,8 +1279,10 @@ export function renderMarkets(print?: MarketPrint): string {
     <div data-mk-spark>${sparklineSvg(p?.sparkline ?? [])}</div>
   </section>
   <section class="chapter token-board">
-    ${kicker('How much is out there')}
-    <h2>Circulating against total, from CoinGecko</h2>
+    ${posterFrame(
+      photoFigure(PLATES.exchange, 'token-board-still'),
+      `${kicker('How much is out there')}<h2>Circulating against total, from CoinGecko</h2>`,
+    )}
     <div class="token-visual">
       ${supplyRing(pct)}
       <div>
@@ -1318,9 +1320,11 @@ export function renderMarkets(print?: MarketPrint): string {
     </div>
     <p class="source-row">${extLink(sources.qntEtherscan, 'Etherscan')} ${extLink(sources.qntBurnTweet, 'Burn tweet')} ${extLink(sources.micaBitstamp, 'Bitstamp MiCA')} ${extLink(sources.treasuryPdf.startsWith('http') ? sources.treasuryPdf : sources.overledger, 'Treasury note')}</p>
   </section>
-  <section class="chapter">
-    ${kicker('Where the volume is')}
-    <h2>Each cell is a CoinGecko venue, scaled to the busiest one.</h2>
+  <section class="chapter venue-board">
+    ${posterFrame(
+      photoFigure(PLATES.fiber, 'venue-still'),
+      `${kicker('Where the volume is')}<h2>Each cell is a CoinGecko venue, scaled to the busiest one.</h2>`,
+    )}
     <ul class="bars" data-mk-bars>${bars}</ul>
   </section>`;
 }

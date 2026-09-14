@@ -489,28 +489,28 @@ diffuseColor.a = liteFres * mix(0.04, 0.28, kite);`;
   if (kind === 'pav') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.26, 0.34, 0.48);
+vec3 body = vec3(0.16, 0.2, 0.3);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.16 + kite * 0.1);
-diffuseColor.rgb += glint * (0.7 + kite * 1.05);
+diffuseColor.rgb += envRefl * (rim * 0.14 + kite * 0.08);
+diffuseColor.rgb += glint * (0.55 + kite * 1.35);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'girdle') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.34, 0.42, 0.55);
+vec3 body = vec3(0.28, 0.34, 0.46);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.2 + kite * 0.12);
-diffuseColor.rgb += glint * (0.85 + kite * 0.95);
+diffuseColor.rgb += envRefl * (rim * 0.2 + kite * 0.1);
+diffuseColor.rgb += glint * (0.9 + kite * 1.05);
 diffuseColor.a = 1.0;`;
   }
   if (kind === 'crown') {
     return `#include <map_fragment>
 ${liteIcePreamble()}
-vec3 body = vec3(0.3, 0.4, 0.55);
+vec3 body = vec3(0.34, 0.42, 0.56);
 diffuseColor.rgb = body;
-diffuseColor.rgb += envRefl * (rim * 0.18 + kite * 0.12);
-diffuseColor.rgb += glint * (0.75 + kite * 1.25);
+diffuseColor.rgb += envRefl * (rim * 0.16 + kite * 0.1);
+diffuseColor.rgb += glint * (0.7 + kite * 1.4);
 diffuseColor.a = 1.0;`;
   }
   return `#include <map_fragment>
@@ -585,7 +585,7 @@ varying vec3 vLiteWorldV;`,
       )
       .replace('#include <map_fragment>', liteFireChunk(kind));
   };
-  mat.customProgramCacheKey = () => `qd-lite-fire-48-${kind}`;
+  mat.customProgramCacheKey = () => `qd-lite-fire-49-${kind}`;
 }
 
 function iceHaloMat(env: THREE.CubeTexture): THREE.MeshBasicMaterial {
@@ -683,11 +683,11 @@ function facetFire(
   const fres = (1 - facing) ** 1.55;
   /** 16-cut: adjacent kites are π/8 apart, so *8 flips neighbors. Rest camera sees the stripe. */
   const stripe = 0.5 + 0.5 * Math.cos(Math.atan2(n.x, n.z) * 8);
-  const shade = Math.min(1, 0.16 + stripe * 0.78 + key * 0.14 + facing * 0.08 + rim * 0.06 + fres * 0.05);
+  const shade = Math.min(1, 0.06 + stripe * 0.9 + key * 0.08 + facing * 0.04);
   return new THREE.Color(
-    Math.min(1, 0.22 + shade * 0.82 + key * 0.08),
-    Math.min(1, 0.2 + shade * 0.72),
-    Math.min(1, 0.28 + shade * 0.62 + (1 - stripe) * 0.06),
+    Math.min(1, 0.05 + shade * 0.95 + key * 0.06),
+    Math.min(1, 0.04 + shade * 0.82),
+    Math.min(1, 0.08 + shade * 0.72 + (1 - stripe) * 0.04),
   );
 }
 
@@ -1201,7 +1201,7 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
             map: tableLidTex(),
             color: 0xffffff,
             transparent: true,
-            opacity: 0.38,
+            opacity: 0.22,
             side: THREE.DoubleSide,
             depthWrite: false,
           });
@@ -1478,9 +1478,9 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
     crystal.add(wellRoot);
     core.visible = false;
     const fires = [
-      fireSprite(0xffffff, 0, BOT_Y + 0.08, 0.02, 0.22),
-      fireSprite(0xb4dcff, 0.04, BOT_Y + 0.05, -0.02, 0.14),
-      fireSprite(0xffe4c4, -0.03, BOT_Y + 0.06, 0.03, 0.12),
+      fireSprite(0xffffff, 0, BOT_Y + 0.08, 0.02, 0.3),
+      fireSprite(0xb4dcff, 0.04, BOT_Y + 0.05, -0.02, 0.18),
+      fireSprite(0xffe4c4, -0.03, BOT_Y + 0.06, 0.03, 0.16),
     ];
     fires.forEach((spark) => {
       crystal.add(spark);
