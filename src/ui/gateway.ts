@@ -463,17 +463,17 @@ vec3 wR = reflect(-wV, wN);
 vec3 wT = refract(-wV, wN, 0.413);
 vec3 envRefl = textureCube(liteEnv, wR).rgb;
 vec3 envRefr = textureCube(liteEnv, dot(wT, wT) > 0.001 ? wT : wR).rgb;
-float spec = pow(liteFres, 1.22);
-diffuseColor.rgb = mix(diffuseColor.rgb, envRefr, 0.04 + liteFacing * 0.08);
-diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.28);
-diffuseColor.rgb += envRefl * spec * 1.45;
+float spec = pow(liteFres, 1.85);
+diffuseColor.rgb += envRefr * liteFacing * 0.05;
+diffuseColor.rgb = mix(diffuseColor.rgb, envRefl, spec * 0.42);
+diffuseColor.rgb += envRefl * spec * 1.7;
 diffuseColor.rgb += vec3(1.0, 0.9, 0.72) * liteFres * 0.48;
 diffuseColor.rgb += vec3(0.52, 0.76, 1.0) * liteFres * liteFres * 0.32;
 diffuseColor.rgb += vec3(1.0, 0.95, 0.85) * liteFlash * 0.5;
 diffuseColor.a *= mix(0.78, 1.0, liteFres);`,
       );
   };
-  mat.customProgramCacheKey = () => 'qd-lite-fire-13';
+  mat.customProgramCacheKey = () => 'qd-lite-fire-14';
 }
 
 function glassMat(
@@ -873,11 +873,11 @@ function mountGateway3D(canvas: HTMLCanvasElement, opts: { lite?: boolean } = {}
         scene.add(mesh);
         studio.push(mesh);
       };
-      booth(0xfff6e8, 4.4, 2.6, 2.8, 3.2, 2.5);
-      booth(0xe8ddd0, 3.4, 2.0, -2.6, 1.7, 2.3);
-      booth(0xffffff, 3.8, 2.4, 0.15, 3.6, 0.35);
-      booth(0xc4a888, 3.0, 2.2, -2.4, 1.9, -2.5);
-      booth(0xb8a090, 4.2, 2.2, 0.4, -1.05, 1.7);
+      booth(0xffe8c4, 2.2, 0.32, 2.4, 2.6, 2.2);
+      booth(0xb4dcff, 1.8, 0.26, -2.2, 1.8, 2.0);
+      booth(0xffffff, 2.4, 0.28, 0.1, 3.2, 0.8);
+      booth(0xffb0d2, 1.6, 0.24, -2.0, 1.6, -2.2);
+      booth(0xffc56a, 2.0, 0.26, 0.5, -0.55, 1.8);
     } catch {
       cubeCam = null;
       cubeRT = null;
